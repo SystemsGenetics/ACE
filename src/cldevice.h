@@ -9,6 +9,8 @@
 #include <CL/cl.h>
 #include <string>
 #include "exception.h"
+namespace AccelCompEng
+{
 
 
 
@@ -120,4 +122,5 @@ inline CLDevice::string CLDevice::get_info(cl_device_info infoType) const
 
 
 
+}
 #endif

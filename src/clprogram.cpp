@@ -1,6 +1,8 @@
 #include <fstream>
 #include <sstream>
 #include "clprogram.h"
+namespace AccelCompEng
+{
 
 
 
@@ -100,4 +102,8 @@ CLKernel CLProgram::mkernel(const string& name)
    CLKernel ret(clCreateKernel(_id,name.c_str(),&err),_did);
    assert<CannotFindKern>(err==CL_SUCCESS,__FILE__,__LINE__,err);
    return ret;
+}
+
+
+
 }

@@ -3,6 +3,8 @@
 #include <CL/cl.h>
 #include "clbuffer.h"
 #include "exception.h"
+namespace AccelCompEng
+{
 
 
 
@@ -94,4 +96,5 @@ template<int I,class T, class... Args>
 
 
 
+}
 #endif

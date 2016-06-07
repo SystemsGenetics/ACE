@@ -4,6 +4,8 @@
 #include "filemem.h"
 #include "fstring.h"
 #include "exception.h"
+namespace AccelCompEng
+{
 
 
 
@@ -209,4 +211,5 @@ struct HistItem::IsNullPtr : public HistItem::Exception
 
 
 
+}
 #endif

@@ -14,6 +14,8 @@
 #include "data.h"
 #include "analyticplugin.h"
 #include "plugins/plugins.h"
+namespace AccelCompEng
+{
 
 
 
@@ -666,7 +668,7 @@ void Console::analytic(GetOpts& ops)
 {
    using aptr = std::unique_ptr<AnalyticPlugin>;
    using ilist = std::forward_list<DataPlugin*>;
-   aptr a(KINCPlugins::new_analytic(ops.com_front()));
+   aptr a(new_analytic(ops.com_front()));
    if (!a)
    {
       std::ostringstream buffer;
@@ -867,4 +869,8 @@ inline void Console::print_pad(int d)
    {
       _tm << "  ";
    }
+}
+
+
+
 }

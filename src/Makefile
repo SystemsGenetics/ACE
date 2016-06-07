@@ -1,28 +1,30 @@
 .RECIPEPREFIX := +
 MAKEFLAGS := $(MAKEFLAGS) --no-print-directory
 CXX := g++
-NAME := kinc
+AR := ar
+NAME := ace
 FILES := KINC.files
 
 
 
 build := ../build/
 run := ../run/
+lib := ../lib/
 
 acxxflags := $(CXXFLAGS) -g -std=c++11
 aldflags := $(LDFLAGS)
 aldlibs := $(LDLIBS) -lOpenCL
 
-progf := $(run)$(NAME)
+libf := $(lib)lib$(NAME).a
 
 allsrc := $(filter %.cpp,$(shell cat $(FILES)))
-utest := $(filter-out main.cpp,$(allsrc))
-program := $(filter-out %.t.cpp,$(allsrc))
+utest := $(allsrc)
+library := $(filter-out %.t.cpp,$(allsrc))
 
 alldpds := $(addprefix $(build),$(allsrc:%.cpp=%.d))
 
-dpds := $(addprefix $(build),$(program:%.cpp=%.d))
-objs := $(addprefix $(build),$(program:%.cpp=%.o))
+dpds := $(addprefix $(build),$(library:%.cpp=%.d))
+objs := $(addprefix $(build),$(library:%.cpp=%.o))
 
 udpds := $(addprefix $(build),$(utest:%.cpp=%.d))
 uobjs := $(addprefix $(build),$(utest:%.cpp=%.o))
@@ -31,17 +33,19 @@ plugins := plugins/plugins.a
 
 
 
-.PHONY: clean all program test check plugins pclean
+.PHONY: clean depclean all library test check
 
-all: program test
-program: $(progf)
+
+
+all: library test
+library: $(libf)
 test: $(run)unit
 
 include $(alldpds)
 
-$(progf): $(objs) $(dpds) $(plugins)
-+@echo "Building program."
-+@$(CXX) $(objs) $(plugins) $(aldflags) $(aldlibs) -o $@
+$(libf): $(objs) $(dpds)
++@echo "Building library."
++@$(AR) rcs $@ $(objs)
 
 $(run)unit: $(uobjs) $(udpds)
 +@echo "Building unit test."
@@ -49,12 +53,6 @@ $(run)unit: $(uobjs) $(udpds)
 
 depend: $(alldpds)
 +@echo Done.
-
-plugins:
-+@cd plugins && $(MAKE)
-
-$(plugins):
-+@cd plugins && $(MAKE)
 
 $(build)%.o : %.cpp
 +@echo "Building object $@"
@@ -75,6 +73,3 @@ clean:
 depclean:
 +@echo "Cleaning all dependency files."
 +@rm -f $(build)*.d
-
-pclean:
-+@cd plugins && $(MAKE) clean

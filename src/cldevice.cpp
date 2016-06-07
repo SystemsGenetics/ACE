@@ -6,6 +6,8 @@
  */
 #include <sstream>
 #include "cldevice.h"
+namespace AccelCompEng
+{
 
 
 
@@ -170,4 +172,8 @@ void CLDevice::size_it(std::ostringstream& buffer, long size) const
    buffer.precision(_fPrecision);
    buffer << fsize << sizes[count];
    buffer.unsetf(std::ios::floatfield);
+}
+
+
+
 }

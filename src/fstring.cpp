@@ -1,4 +1,6 @@
 #include "fstring.h"
+namespace AccelCompEng
+{
 
 
 
@@ -109,4 +111,8 @@ inline void FString::load()
    String fStr(_hdr.sSize(),_hdr.addr()+FStringData::hdrSz);
    _mem->sync(fStr,FileSync::read);
    _str = fStr.c_str();
+}
+
+
+
 }

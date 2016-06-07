@@ -2,6 +2,8 @@
 #define CLBUFFER_H
 #include <CL/cl.h>
 #include "exception.h"
+namespace AccelCompEng
+{
 
 
 
@@ -124,4 +126,5 @@ template<class T> CLBuffer<T>::CLBuffer(cl_context cid, int size):
 
 
 
+}
 #endif

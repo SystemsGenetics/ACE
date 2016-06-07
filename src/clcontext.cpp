@@ -1,4 +1,6 @@
 #include "clcontext.h"
+namespace AccelCompEng
+{
 
 
 
@@ -38,4 +40,8 @@ void CLContext::init_cl(CLDevice& dev)
 bool CLContext::is_initd()
 {
    return _initd;
+}
+
+
+
 }

@@ -2,6 +2,8 @@
 #include <memory>
 #include "cldevlist.h"
 #include "cldevice.h"
+namespace AccelCompEng
+{
 
 
 
@@ -192,3 +194,7 @@ CLDevList::Iterator::Iterator(int p, int d, CLDevList* devList):
    _di(d),
    _devList(devList)
 {}
+
+
+
+}

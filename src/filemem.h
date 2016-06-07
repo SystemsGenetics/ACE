@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "exception.h"
+namespace AccelCompEng
+{
 
 
 
@@ -36,11 +38,10 @@ public:
    // *
    // * EXCEPTIONS
    // *
-   struct Exception;
-   struct SystemError;
-   struct InvalidFile;
-   struct FileSegFault;
-   struct OutOfMemory;
+   ACE_EXCEPTION(FileMem,SystemError)
+   ACE_EXCEPTION(FileMem,InvalidFile)
+   ACE_EXCEPTION(FileMem,FileSegFault)
+   ACE_EXCEPTION(FileMem,OutOfMemory)
    // *
    // * DECLERATIONS
    // *
@@ -204,25 +205,6 @@ private:
 
 
 
-/// @brief Reserves additional file memory by raw bytes.
-///
-/// Reserves additional space in file memory to be used for allocation, based
-/// off raw size in bytes.
-///
-/// @param size Additional space to reserve in bytes.
-/// @return Returns true if new space reserved, else false.
-inline bool FileMem::reserve(SizeT size)
-{
-   bool ret = false;
-   if (posix_fallocate64(_fd,lseek64(_fd,0,SEEK_END),size)==0)
-   {
-      ret = true;
-      _capacity += size;
-      _available += size;
-   }
-   return ret;
-}
-
 
 /// @brief Reserves additional file memory by object amount.
 ///
@@ -240,45 +222,12 @@ template<class T> inline bool FileMem::expand(T& obj, SizeT amt)
 
 
 
-/// Returns total size of allocated space in file memory.
-///
-/// @return Total allocated size in bytes.
-inline FileMem::SizeT FileMem::size() const
-{
-   return _next;
-}
-
-
-
-/// @brief Returns total file memory size.
-///
-/// Returns total size of file memory object, being the sum of allocated and
-/// unallocated space.
-///
-/// @return Total capacity in bytes.
-inline FileMem::SizeT FileMem::capacity() const
-{
-   return _capacity;
-}
-
-
-
-/// Returns space available for allocation in file memory.
-///
-/// @return Available space in bytes.
-inline FileMem::SizeT FileMem::available() const
-{
-   return _available;
-}
-
-
-
 /// Allocates new space in file memory for given number of objects.
 ///
 /// @param T Object type to allocate.
 /// @param obj Object buffer instance to allocate.
 /// @param amt Total number of object buffers to allovate.
-template<class T> inline void FileMem::allocate(T& obj, SizeT amt)
+template<class T> void FileMem::allocate(T& obj, SizeT amt)
 {
    if (amt>0)
    {
@@ -294,7 +243,7 @@ template<class T> inline void FileMem::allocate(T& obj, SizeT amt)
 /// @param T Object type to allocate.
 /// @param obj Object buffer instance to allocate.
 /// @param amt Total number of object buffers to allovate.
-template<class T> inline void FileMem::allot(T& obj, SizeT amt)
+template<class T> void FileMem::allot(T& obj, SizeT amt)
 {
    if (amt>0)
    {
@@ -323,10 +272,10 @@ template<class T> inline void FileMem::allot(T& obj, SizeT amt)
 /// memory.
 ///
 /// @exception FileSegFault The file pointer of object buffer is nullptr.
-template<class T> inline void FileMem::sync(T& obj, FileSync which, Ptr inc)
+template<class T> void FileMem::sync(T& obj, FileSync which, Ptr inc)
 {
    bool cond = obj.ptr!=nullPtr;
-   assert<FileSegFault>(cond,__FILE__,__LINE__);
+   assert<FileSegFault>(cond,__LINE__);
    Ptr seekr = obj.ptr + obj.size*inc;
    switch (which)
    {
@@ -337,81 +286,6 @@ template<class T> inline void FileMem::sync(T& obj, FileSync which, Ptr inc)
       write(obj.bytes,seekr,obj.size);
       break;
    }
-}
-
-
-
-/// Returns head or beginning pointer of file memory object.
-///
-/// @return Head of file memory.
-inline FileMem::Ptr FileMem::head()
-{
-   return 0;
-}
-
-
-
-/// Allocates new chunk of memory in file object with given raw byte size.
-///
-/// @param size Size in bytes for new chunk of file memory.
-/// @return File pointer to new chunk of file memory.
-///
-/// @exception OutOfMemory There is not enough available space left to allocate
-/// requested size.
-/// @exception SystemError A system call, lseek64 or write, failed executing.
-inline FileMem::Ptr FileMem::fallocate(SizeT size)
-{
-   assert<OutOfMemory>(size<=_available,__FILE__,__LINE__);
-   Ptr ret = _next;
-   _next += size;
-   _available -= size;
-   bool cond = lseek64(_fd,_idLen,SEEK_SET)==_idLen;
-   assert<SystemError>(cond,__FILE__,__LINE__,"lseek64");
-   cond = ::write(_fd,&_next,sizeof(Ptr))==sizeof(Ptr);
-   assert<SystemError>(cond,__FILE__,__LINE__,"write");
-   return ret;
-}
-
-
-
-/// Write raw byte array to file memory with given address.
-///
-/// @param data Pointer to byte array.
-/// @param ptr File pointer to file memory location.
-/// @param size Size of byte array in bytes.
-///
-/// @exception FileSegFault The location given in file memory exceeds the total
-/// size of allocated space in file memory.
-/// @exception SystemError A system call, lseek64 or write, failed executing.
-inline void FileMem::write(const void* data, Ptr ptr, SizeT size)
-{
-   assert<FileSegFault>((ptr + size)<=_next,__FILE__,__LINE__);
-   int64_t seekr = ptr + _idLen + sizeof(Ptr);
-   bool cond = lseek64(_fd,seekr,SEEK_SET)==seekr;
-   assert<SystemError>(cond,__FILE__,__LINE__,"lseek64");
-   cond = ::write(_fd,data,size)==size;
-   assert<SystemError>(cond,__FILE__,__LINE__,"write");
-}
-
-
-
-/// Read file memory with given address to byte array.
-///
-/// @param data Pointer to byte array.
-/// @param ptr File pointer to file memory location.
-/// @param size Size of byte array in bytes.
-///
-/// @exception FileSegFault The location given in file memory exceeds the total
-/// size of allocated space in file memory.
-/// @exception SystemError A system call, lseek64 or write, failed executing.
-inline void FileMem::read(void* data, Ptr ptr, SizeT size) const
-{
-   assert<FileSegFault>((ptr + size)<=_next,__FILE__,__LINE__);
-   int64_t seekr = ptr + _idLen + sizeof(Ptr);
-   bool cond = lseek64(_fd,seekr,SEEK_SET)==seekr;
-   assert<SystemError>(cond,__FILE__,__LINE__,"lseek64");
-   cond = ::read(_fd,data,size)==size;
-   assert<SystemError>(cond,__FILE__,__LINE__,"read");
 }
 
 
@@ -432,7 +306,7 @@ template<int S> FileMem::Static<S>::Static(Ptr p):
 /// @param S Variable type to get from raw byte array.
 /// @param n Indent into raw byte array in bytes.
 /// @return Variable within byte array with given indent.
-template<int S> template<class T> inline T& FileMem::Static<S>::get(int n)
+template<int S> template<class T> T& FileMem::Static<S>::get(int n)
 {
    return *reinterpret_cast<T*>(&bytes[n]);
 }
@@ -447,8 +321,7 @@ template<int S> template<class T> inline T& FileMem::Static<S>::get(int n)
 /// @param S Variable type to get from raw byte array.
 /// @param n Indent into raw byte array in bytes.
 /// @return Read only value within byte array with given indent.
-template<int S> template<class T>
-inline const T& FileMem::Static<S>::get(int n) const
+template<int S> template<class T> const T& FileMem::Static<S>::get(int n) const
 {
    return *reinterpret_cast<const T*>(&bytes[n]);
 }
@@ -468,96 +341,10 @@ template<int S> inline FileMem::Ptr FileMem::Static<S>::addr() const
 /// Sets new location for buffer object in file memory.
 ///
 /// @param p File pointer of new location.
-template<int S> inline FileMem::Ptr FileMem::Static<S>::addr(Ptr p)
+template<int S> FileMem::Ptr FileMem::Static<S>::addr(Ptr p)
 {
    ptr = p;
    return p;
-}
-
-
-
-/// Initializes dynamic object buffer with given size and file memory location.
-///
-/// @param s Size of buffer object in bytes.
-/// @param p File pointer to location of object in file memory.
-inline FileMem::Object::Object(SizeT s, Ptr p):
-   size(s),
-   ptr(p)
-{
-   bytes = new char[size];
-}
-
-
-
-/// Destroys byte array in heap memory.
-inline FileMem::Object::~Object()
-{
-   if (bytes)
-   {
-      delete[] bytes;
-   }
-}
-
-
-
-/// Copies given dynamic object.
-///
-/// @param obj Object buffer to be copied.
-inline FileMem::Object::Object(const Object& obj):
-   size(obj.size),
-   ptr(obj.ptr)
-{
-   bytes = new char[size];
-   memcpy(bytes,obj.bytes,size);
-}
-
-
-
-/// Copies given dynamic object, overwriting what this object currently stores.
-///
-/// @param obj Object buffer to be copied.
-/// @return Reference to method's object.
-inline FileMem::Object& FileMem::Object::operator=(const Object& obj)
-{
-   size = obj.size;
-   if (bytes)
-   {
-      delete[] bytes;
-   }
-   bytes = new char[size];
-   memcpy(bytes,obj.bytes,size);
-   ptr = obj.ptr;
-}
-
-
-
-/// Moves given dynamic object.
-///
-/// @param tmp Object buffer to take data from.
-inline FileMem::Object::Object(Object&& tmp):
-   size(tmp.size),
-   bytes(tmp.bytes),
-   ptr(tmp.ptr)
-{
-   tmp.bytes = nullptr;
-   tmp.size = 0;
-   tmp.ptr = nullPtr;
-}
-
-
-
-/// Moves given dynamic object, overwriting what this object currently stores.
-///
-/// @param tmp Object buffer to take data from.
-/// @return Reference to method's object.
-inline FileMem::Object& FileMem::Object::operator=(Object&& tmp)
-{
-   size = tmp.size;
-   bytes = tmp.bytes;
-   ptr = tmp.ptr;
-   tmp.bytes = nullptr;
-   tmp.size = 0;
-   tmp.ptr = nullPtr;
 }
 
 
@@ -569,7 +356,7 @@ inline FileMem::Object& FileMem::Object::operator=(Object&& tmp)
 /// @param S Variable type to get from raw byte array.
 /// @param n Indent into raw byte array in bytes.
 /// @return Variable within byte array with given indent.
-template<class T> inline T& FileMem::Object::get(int n)
+template<class T> T& FileMem::Object::get(int n)
 {
    return *reinterpret_cast<T*>(&bytes[n]);
 }
@@ -584,74 +371,12 @@ template<class T> inline T& FileMem::Object::get(int n)
 /// @param S Variable type to get from raw byte array.
 /// @param n Indent into raw byte array in bytes.
 /// @return Read only value within byte array with given indent.
-template<class T> inline const T& FileMem::Object::get(int n) const
+template<class T> const T& FileMem::Object::get(int n) const
 {
    return *reinterpret_cast<const T*>(&bytes[n]);
 }
 
 
 
-/// Return file pointer where object is located in file memory.
-///
-/// @return File pointer location.
-inline FileMem::Ptr FileMem::Object::addr() const
-{
-   return ptr;
 }
-
-
-
-/// Sets new location for buffer object in file memory.
-///
-/// @param p File pointer of new location.
-inline FileMem::Ptr FileMem::Object::addr(Ptr p)
-{
-   ptr = p;
-   return p;
-}
-
-
-
-/// Generic base exception class for all exceptions thrown in FileMem class.
-struct FileMem::Exception : public ::Exception
-{
-   using ::Exception::Exception;
-};
-
-/// Exception that is thrown when a system error occurs.
-struct FileMem::SystemError : public ::SystemError
-{
-   using ::SystemError::SystemError;
-};
-
-/// Exception that is thrown when a file that is not a valid file memory object
-/// is opened.
-struct FileMem::InvalidFile : public FileMem::Exception
-{
-   InvalidFile(const char* file, int line):
-      Exception(file,line,"FileMem::InvalidFile")
-   {}
-};
-
-/// Exception that is thrown when a read or write operation is attempted that
-/// goes beyond the limits of the total file object's size or the pointer given
-/// is nullptr.
-struct FileMem::FileSegFault : public FileMem::Exception
-{
-   FileSegFault(const char* file, int line):
-      Exception(file,line,"FileMem::FileSegFault")
-   {}
-};
-
-/// Exception that is thrown when an allocation of new file memory is attempted
-/// that is greater than the available amount of bytes that can be allocated.
-struct FileMem::OutOfMemory : public FileMem::Exception
-{
-   OutOfMemory(const char* file, int line):
-      Exception(file,line,"FileMem::OutOfMemory")
-   {}
-};
-
-
-
 #endif

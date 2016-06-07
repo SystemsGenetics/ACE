@@ -2,6 +2,8 @@
 #define CLEVENT_H
 #include <CL/cl.h>
 #include "exception.h"
+namespace AccelCompEng
+{
 
 
 
@@ -28,4 +30,5 @@ private:
 
 
 
+}
 #endif

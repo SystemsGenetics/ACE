@@ -1,4 +1,6 @@
 #include "terminal.h"
+namespace AccelCompEng
+{
 
 
 
@@ -105,4 +107,8 @@ Terminal& Terminal::print(const std::string& n)
 Terminal& Terminal::operator<<(Terminal& (*pf)(Terminal&))
 {
    return pf(*this);
+}
+
+
+
 }

@@ -1,7 +1,6 @@
-#include "datamap.h"
+#include "ace.h"
 #include "unit.h"
-#include "plugins/plugins.h"
-#include "linuxterm.h"
+using AccelCompEng;
 
 
 
@@ -42,13 +41,9 @@ public:
 
 
 
-DataPlugin* KINCPlugins::new_data(const std::string& type,
-                                  const std::string& name)
-{
-   DataPlugin* ret = nullptr;
-   if (strcmp(type.c_str(),"FakeData")==0) ret = new FakeData(type,name);
-   return ret;
-}
+ACE_BEGIN_DATA
+ACE_DATA_PLUGIN(FakeData,FakeData)
+ACE_END_DATA
 
 
 

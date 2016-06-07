@@ -2,6 +2,8 @@
 #define ANALYTICPLUGIN_H
 #include "analytic.h"
 #include "clcontext.h"
+namespace AccelCompEng
+{
 
 
 
@@ -13,4 +15,5 @@ public:
 
 
 
+}
 #endif

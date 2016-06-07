@@ -7,6 +7,8 @@
 #include "clkernel.h"
 #include "clbuffer.h"
 #include "clevent.h"
+namespace AccelCompEng
+{
 
 
 
@@ -36,4 +38,5 @@ template<class T> CLBuffer<T> CLContext::buffer(int size)
 
 
 
+}
 #endif

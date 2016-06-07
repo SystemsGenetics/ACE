@@ -5,6 +5,8 @@
 #include <list>
 #include <initializer_list>
 #include "exception.h"
+namespace AccelCompEng
+{
 
 
 
@@ -315,4 +317,5 @@ struct GetOpts::InvalidSyntax : public GetOpts::Exception
 
 
 
+}
 #endif

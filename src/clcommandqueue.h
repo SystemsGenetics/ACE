@@ -4,6 +4,8 @@
 #include "clkernel.h"
 #include "clbuffer.h"
 #include "clevent.h"
+namespace AccelCompEng
+{
 
 
 
@@ -65,4 +67,5 @@ template<class T> CLEvent CLCommandQueue::write_buffer(CLBuffer<T>& buffer)
 
 
 
+}
 #endif

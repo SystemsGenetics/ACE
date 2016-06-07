@@ -1,4 +1,6 @@
 #include "clcommandqueue.h"
+namespace AccelCompEng
+{
 
 
 
@@ -47,4 +49,8 @@ CLEvent CLCommandQueue::add_swarm(CLKernel& kernel)
                                 0,NULL,&ret);
    assert<CannotAddSwarm>(err==CL_SUCCESS,__FILE__,__LINE__,err);
    return CLEvent(ret);
+}
+
+
+
 }

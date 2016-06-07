@@ -2,6 +2,8 @@
 #define DATA_H
 #include "terminal.h"
 #include "getopts.h"
+namespace AccelCompEng
+{
 
 
 
@@ -83,4 +85,5 @@ public:
 
 
 
+}
 #endif

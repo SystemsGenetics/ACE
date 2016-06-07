@@ -6,6 +6,8 @@
 #include <cstdio>
 #include "linuxterm.h"
 #include "exception.h"
+namespace AccelCompEng
+{
 
 
 
@@ -308,4 +310,8 @@ void LinuxTerm::reprint(bool rewind)
       _chCount++;
    }
    std::cout << std::flush;
+}
+
+
+
 }

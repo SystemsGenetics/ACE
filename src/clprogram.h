@@ -5,6 +5,8 @@
 #include <vector>
 #include "exception.h"
 #include "clkernel.h"
+namespace AccelCompEng
+{
 
 
 
@@ -42,4 +44,5 @@ private:
 
 
 
+}
 #endif

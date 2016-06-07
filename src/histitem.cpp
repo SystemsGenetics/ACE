@@ -1,4 +1,6 @@
 #include "histitem.h"
+namespace AccelCompEng
+{
 
 
 
@@ -368,4 +370,8 @@ FileMem::Ptr HistItem::rec_add_item(FileMem* mem, FileMem::Ptr ptr)
       ret = to.addr();
    }
    return ret;
+}
+
+
+
 }

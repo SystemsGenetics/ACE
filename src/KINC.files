@@ -41,7 +41,8 @@ kincfile.h
 dataplugin.h
 datamap.cpp
 datamap.h
-main.cpp
+ace.cpp
+ace.h
 unit.h
 unit.t.cpp
 getopts.t.cpp
@@ -51,5 +52,3 @@ fstring.t.cpp
 histitem.t.cpp
 history.t.cpp
 kincfile.t.cpp
-plugins/plugins.h
-plugins/Makefile

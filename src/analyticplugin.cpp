@@ -1,4 +1,6 @@
 #include "analyticplugin.h"
+namespace AccelCompEng
+{
 
 
 
@@ -12,4 +14,8 @@ void AnalyticPlugin::execute(GetOpts& ops, Terminal& tm)
    {
       execute_pn(ops,tm);
    }
+}
+
+
+
 }

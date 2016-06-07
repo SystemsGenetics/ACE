@@ -1,4 +1,6 @@
 #include "clevent.h"
+namespace AccelCompEng
+{
 
 
 
@@ -74,3 +76,7 @@ CLEvent::CLEvent(cl_event id):
    _hasEvent(true),
    _id(id)
 {}
+
+
+
+}

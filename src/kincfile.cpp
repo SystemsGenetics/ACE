@@ -1,5 +1,7 @@
 #include <cstring>
 #include "kincfile.h"
+namespace AccelCompEng
+{
 
 
 
@@ -106,4 +108,8 @@ void KincFile::create()
    _hdr.ident() = FileMem::nullPtr;
    memcpy(_hdr.idString(),_idString,_idSz);
    _mem.sync(_hdr,FileSync::write);
+}
+
+
+
 }

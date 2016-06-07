@@ -1,9 +1,157 @@
 #include "exception.h"
+namespace AccelCompEng
+{
+
+
+
+Exception::Exception(const string& domain, const string& what, int line):
+   _domain(domain),
+   _what(what),
+   _line(line)
+{}
+
+
+
+int Exception::line() const
+{
+   return _line;
+}
+
+
+
+const Exception::string& Exception::domain() const
+{
+   return _domain;
+}
+
+
+
+const Exception::string& Exception::what() const
+{
+   return _what;
+}
+
+
+
+const Exception::string& Exception::detail() const
+{
+   return _detail;
+}
+
+
+
+Exception& Exception::operator<<(short n)
+{
+   ostream tmp;
+   tmp << n;
+   _detail += tmp.str();
+   return *this;
+}
+
+
+
+Exception& Exception::operator<<(unsigned short n)
+{
+   ostream tmp;
+   tmp << n;
+   _detail += tmp.str();
+   return *this;
+}
+
+
+
+Exception& Exception::operator<<(int n)
+{
+   ostream tmp;
+   tmp << n;
+   _detail += tmp.str();
+   return *this;
+}
+
+
+
+Exception& Exception::operator<<(unsigned int n)
+{
+   ostream tmp;
+   tmp << n;
+   _detail += tmp.str();
+   return *this;
+}
+
+
+
+Exception& Exception::operator<<(long n)
+{
+   ostream tmp;
+   tmp << n;
+   _detail += tmp.str();
+   return *this;
+}
+
+
+
+Exception& Exception::operator<<(unsigned long n)
+{
+   ostream tmp;
+   tmp << n;
+   _detail += tmp.str();
+   return *this;
+}
+
+
+
+Exception& Exception::operator<<(float n)
+{
+   ostream tmp;
+   tmp << n;
+   _detail += tmp.str();
+   return *this;
+}
+
+
+
+Exception& Exception::operator<<(double n)
+{
+   ostream tmp;
+   tmp << n;
+   _detail += tmp.str();
+   return *this;
+}
+
+
+
+Exception& Exception::operator<<(char n)
+{
+   ostream tmp;
+   tmp << n;
+   _detail += tmp.str();
+   return *this;
+}
+
+
+
+Exception& Exception::operator<<(const char* n)
+{
+   ostream tmp;
+   tmp << n;
+   _detail += tmp.str();
+   return *this;
+}
+
+
+
+Exception& Exception::operator<<(const string& n)
+{
+   ostream tmp;
+   tmp << n;
+   _detail += tmp.str();
+   return *this;
+}
 
 
 
 /// C-Style list of all possible OpenCL errors.
-const char* OpenCLError::c_clDescErrors[] = {
+/*const char* OpenCLError::c_clDescErrors[] = {
    "CL_SUCCESS",
    "CL_DEVICE_NOT_FOUND",
    "CL_DEVICE_NOT_AVAILABLE",
@@ -70,150 +218,8 @@ const char* OpenCLError::c_clDescErrors[] = {
    "CL_INVALID_GLOBAL_WORK_SIZE",
    "CL_INVALID_PROPERTY"
 };
-
-
-
-/// Initializes base exception object.
-///
-/// @param file Name of file where exception is thrown.
-/// @param line Line number in file where exception is thrown.
-/// @param what Description of exception thrown.
-Exception::Exception(const char* file, int line, const char* what):
-   _file(file),
-   _line(line),
-   _what(what)
-{}
-
-
-
-/// Gets file where exception was thrown.
-///
-/// @return Name of file.
-const char* Exception::file()
-{
-   return _file;
-}
-
-
-
-/// Gets line number where exception was thrown.
-///
-/// @return File line number.
-const int Exception::line()
-{
-   return _line;
-}
-
-
-
-/// Gets description from exception that was thrown.
-///
-/// @return Description of exception.
-const char* Exception::what()
-{
-   return _what;
-}
-
-
-
-/// Initializes data plugin exception object.
-///
-/// @param file Name of file where exception is thrown.
-/// @param line Line number in file where exception is thrown.
-/// @param what Description of type of exception thrown.
-/// @param lvl Severity level of exception.
-DataException::DataException(const char* file, int line,
-                             const char* what, Level lvl):
-   Exception(file,line,what),
-   _level(lvl)
-{}
-
-
-
-/// Get severity level of data exception that was thrown.
-///
-/// @return Severity of exception.
-DataException::Level DataException::level()
-{
-   return _level;
-}
-
-
-
-/// Initializes analytic plugin exception object.
-///
-/// @param file Name of file where exception is thrown.
-/// @param line Line number in file where exception is thrown.
-/// @param what Description of type of exception thrown.
-AnalyticException::AnalyticException(const char* file, int line,
-                                     const char* what):
-   Exception(file,line,what)
-{}
-
-
-
-/// Initializes system error exception object.
-///
-/// @param file Name of file where exception is thrown.
-/// @param line Line number in file where exception is thrown.
-/// @param system Name of system call that failed.
-SystemError::SystemError(const char* file, int line, const char* system):
-   Exception(file,line,"SystemError"),
-   _system(system)
-{}
-
-
-
-/// Get name of system call that failed.
-///
-/// @return Name of system call.
-const char* SystemError::system()
-{
-   return _system;
-}
-
-
-
-/// Initializes OpenCL error exception object.
-///
-/// @param file Name of file where exception is thrown.
-/// @param line Line number in file where exception is thrown.
-/// @param e OpenCL error object.
-OpenCLError::OpenCLError(const char* file, int line, const char* func,
-                         cl_int e):
-   Exception(file,line,"OpenCLError"),
-   _clFunc(func),
-   _code(e)
-{}
-
-
-
-/// Get name of OpenCL function that failed.
-///
-/// @return Name of OpenCL function.
-const char* OpenCLError::clFunc()
-{
-   return _clFunc;
-}
-
-
-
-/// Get OpenCL error code.
-///
-/// @return OpenCL error code.
-cl_int OpenCLError::code()
-{
-   return _code;
-}
-
-
-
-/// Get textual description of OpenCL error code.
-///
-/// @return Description of OpenCL error code.
-const char* OpenCLError::code_str()
-{
-   if (_code<=0&&_code>=-64)
+*/
+/*   if (_code<=0&&_code>=-64)
    {
       return c_clDescErrors[-_code];
    }
@@ -221,4 +227,8 @@ const char* OpenCLError::code_str()
    {
       return c_clDescErrors[15];
    }
+}*/
+
+
+
 }

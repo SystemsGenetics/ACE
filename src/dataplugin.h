@@ -4,6 +4,8 @@
 #include "data.h"
 #include "kincfile.h"
 #include "exception.h"
+namespace AccelCompEng
+{
 
 
 
@@ -67,4 +69,5 @@ inline DataPlugin::DataPlugin(const string& type, const string& fileName):
 
 
 
+}
 #endif

@@ -1,5 +1,7 @@
 #include "datamap.h"
 #include "plugins/plugins.h"
+namespace AccelCompEng
+{
 
 
 
@@ -219,4 +221,8 @@ DataMap::Map::iterator DataMap::get(const string& file)
    bool cond = i!=_map.end();
    assert<DoesNotExist>(cond,__FILE__,__LINE__);
    return i;
+}
+
+
+
 }

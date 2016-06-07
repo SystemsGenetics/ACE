@@ -1,4 +1,6 @@
 #include "clkernel.h"
+namespace AccelCompEng
+{
 
 
 
@@ -131,3 +133,7 @@ CLKernel::CLKernel(cl_kernel id, cl_device_id did):
    _id(id),
    _did(did)
 {}
+
+
+
+}

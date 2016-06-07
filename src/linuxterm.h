@@ -3,6 +3,8 @@
 #include <string>
 #include <list>
 #include "terminal.h"
+namespace AccelCompEng
+{
 
 
 
@@ -106,4 +108,5 @@ private:
 
 
 
+}
 #endif

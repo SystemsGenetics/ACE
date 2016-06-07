@@ -2,6 +2,8 @@
 #define TERMINAL_H
 #include <string>
 #include "exception.h"
+namespace AccelCompEng
+{
 
 
 
@@ -19,9 +21,8 @@ public:
    // *
    // * EXCEPTIONS
    // *
-   struct Exception;
-   struct SystemError;
-   struct InvalidUse;
+   ACE_EXCEPTION(Terminal,SystemError)
+   ACE_EXCEPTION(Terminal,InvalidUse)
    // *
    // * BASIC METHODS
    // *
@@ -113,27 +114,5 @@ protected:
 
 
 
-/// Generic base exception class for all exceptions thrown in Terminal class.
-struct Terminal::Exception : public ::Exception
-{
-   using ::Exception::Exception;
-};
-
-/// Exception that is thrown when a system error occurs.
-struct Terminal::SystemError : public ::SystemError
-{
-   using ::SystemError::SystemError;
-};
-
-/// Exception that is thrown when an implementation of Terminal is used in an
-/// invalid way.
-struct Terminal::InvalidUse : public Terminal::Exception
-{
-   InvalidUse(const char* file, int line):
-      Exception(file,line,"Terminal::InvalidUse")
-   {}
-};
-
-
-
+}
 #endif

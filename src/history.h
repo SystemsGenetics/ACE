@@ -3,6 +3,8 @@
 #include <string>
 #include "histitem.h"
 #include "exception.h"
+namespace AccelCompEng
+{
 
 
 
@@ -166,4 +168,5 @@ inline bool History::Iterator::operator!=(const Iterator& cmp)
 
 
 
+}
 #endif

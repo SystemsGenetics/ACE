@@ -1,4 +1,6 @@
 #include "history.h"
+namespace AccelCompEng
+{
 
 
 
@@ -82,4 +84,8 @@ History::Iterator::Iterator(FileMem* mem, FPtr ptr):
    {
       _mem->sync(_skim,FileSync::read);
    }
+}
+
+
+
 }

@@ -5,6 +5,8 @@
 #include "filemem.h"
 #include "history.h"
 #include "fstring.h"
+namespace AccelCompEng
+{
 
 
 
@@ -189,4 +191,5 @@ struct KincFile::AlreadySet : public KincFile::Exception
 
 
 
+}
 #endif

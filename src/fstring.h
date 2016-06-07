@@ -1,6 +1,8 @@
 #ifndef FSTRING_H
 #define FSTRING_H
 #include "filemem.h"
+namespace AccelCompEng
+{
 
 
 
@@ -154,4 +156,5 @@ struct FString::AlreadySet : public FString::Exception
 
 
 
+}
 #endif

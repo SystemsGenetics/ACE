@@ -6,6 +6,8 @@
 #include "dataplugin.h"
 #include "getopts.h"
 #include "exception.h"
+namespace AccelCompEng
+{
 
 
 
@@ -284,4 +286,5 @@ struct DataMap::InvalidType : public DataMap::Exception
 
 
 
+}
 #endif

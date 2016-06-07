@@ -8,6 +8,8 @@
 #define CLDEVLIST_H
 #include <vector>
 #include "exception.h"
+namespace AccelCompEng
+{
 
 
 
@@ -102,4 +104,5 @@ private:
 
 
 
+}
 #endif

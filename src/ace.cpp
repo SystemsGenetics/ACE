@@ -1,10 +1,12 @@
 #include <iostream>
 #include "console.h"
 #include "linuxterm.h"
+namespace AccelCompEng
+{
 
 
 
-int main(int argc, char* argv[])
+int run(int argc, char* argv[])
 {
    try
    {
@@ -21,4 +23,8 @@ int main(int argc, char* argv[])
    }
    LinuxTerm::stty_cooked();
    return 0;
+}
+
+
+
 }

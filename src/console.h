@@ -13,6 +13,8 @@
 #include "datamap.h"
 #include "exception.h"
 #include "getopts.h"
+namespace AccelCompEng
+{
 
 
 
@@ -170,4 +172,5 @@ struct Console::InvalidUse : public Console::Exception
 
 
 
+}
 #endif

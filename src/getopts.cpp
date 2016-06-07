@@ -1,5 +1,7 @@
 #include <regex>
 #include "getopts.h"
+namespace AccelCompEng
+{
 
 
 
@@ -120,4 +122,8 @@ bool GetOpts::has_opt(const string& opt, bool del)
       }
    }
    return ret;
+}
+
+
+
 }

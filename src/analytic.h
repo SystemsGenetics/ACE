@@ -7,6 +7,9 @@
 #include "terminal.h"
 #include "cldevice.h"
 #include "clprogram.h"
+namespace AccelCompEng
+{
+
 
 
 /// @brief Analytic interface class
@@ -44,4 +47,5 @@ protected:
 
 
 
+}
 #endif

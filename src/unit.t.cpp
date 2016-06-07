@@ -1,8 +1,5 @@
-#include <iostream>
 #include "unit.h"
-#include "console.h"
-#include "linuxterm.h"
-#include "plugins/plugins.h"
+#include "ace.h"
 
 
 
@@ -11,7 +8,7 @@ int unit::numTestsDone {0};
 
 
 
-AnalyticPlugin* KINCPlugins::new_analytic(const std::string& type)
+AnalyticPlugin* AccelCompEng::new_analytic(const std::string& type)
 {
    AnalyticPlugin* ret = nullptr;
    return ret;
@@ -36,19 +33,5 @@ int main(int argc, char* argv[])
    {
       exit(1);
    }
-   try
-   {
-      DataMap dataMap;
-      LinuxTerm::stty_raw();
-      LinuxTerm terminal;
-      Console console(argc,argv,terminal,dataMap);
-      console.run();
-   }
-   catch (...)
-   {
-      LinuxTerm::stty_cooked();
-      throw;
-   }
-   LinuxTerm::stty_cooked();
-   return 0;
+   return AccelCompEng::run(argc,argv);
 }
