@@ -18,7 +18,7 @@ void CLCommandQueue::init(cl_context cid, cl_device_id did)
 {
    cl_int err;
    _id = clCreateCommandQueue(cid,did,0x0,&err);
-   assert<CannotCreate>(err==CL_SUCCESS,__FILE__,__LINE__,err);
+   assert<CannotCreate>(err==CL_SUCCESS,__LINE__);
    _initd = true;
 }
 
@@ -26,12 +26,12 @@ void CLCommandQueue::init(cl_context cid, cl_device_id did)
 
 CLEvent CLCommandQueue::add_task(CLKernel& kernel)
 {
-   assert<NotInitialized>(_initd,__FILE__,__LINE__);
-   assert<DeadKernelUsed>(kernel._isAlive,__FILE__,__LINE__);
+   assert<NotInitialized>(_initd,__LINE__);
+   assert<DeadKernelUsed>(kernel._isAlive,__LINE__);
    cl_event ret;
    cl_int err;
    err = clEnqueueTask(_id,kernel._id,0,NULL,&ret);
-   assert<CannotAddTask>(err==CL_SUCCESS,__FILE__,__LINE__,err);
+   assert<CannotAddTask>(err==CL_SUCCESS,__LINE__);
    return CLEvent(ret);
 }
 
@@ -39,15 +39,15 @@ CLEvent CLCommandQueue::add_task(CLKernel& kernel)
 
 CLEvent CLCommandQueue::add_swarm(CLKernel& kernel)
 {
-   assert<NotInitialized>(_initd,__FILE__,__LINE__);
-   assert<DeadKernelUsed>(kernel._isAlive,__FILE__,__LINE__);
+   assert<NotInitialized>(_initd,__LINE__);
+   assert<DeadKernelUsed>(kernel._isAlive,__LINE__);
    cl_event ret;
    const size_t offsets[kernel._dims] = {0};
    cl_int err;
    err = clEnqueueNDRangeKernel(_id,kernel._id,kernel._dims,offsets,
                                 kernel._gSizes,kernel._lSizes,
                                 0,NULL,&ret);
-   assert<CannotAddSwarm>(err==CL_SUCCESS,__FILE__,__LINE__,err);
+   assert<CannotAddSwarm>(err==CL_SUCCESS,__LINE__);
    return CLEvent(ret);
 }
 

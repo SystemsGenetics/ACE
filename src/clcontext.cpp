@@ -21,7 +21,7 @@ void CLContext::init_cl(CLDevice& dev)
    cl_device_id device {dev.device()};
    cl_int err;
    _cid = clCreateContext(props,1,&device,NULL,NULL,&err);
-   assert<CreateContext>(err==CL_SUCCESS,__FILE__,__LINE__,err);
+   assert<CreateContext>(err==CL_SUCCESS,__LINE__);
    try
    {
       CLProgram::init(_cid,dev.device());

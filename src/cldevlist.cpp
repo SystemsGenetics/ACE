@@ -29,19 +29,19 @@ void CLDevList::build()
    {
       cl_uint ptotal;
       cl_int err = clGetPlatformIDs(0,NULL,&ptotal);
-      assert<PlatformErr>(err==CL_SUCCESS,__FILE__,__LINE__,err);
+      assert<PlatformErr>(err==CL_SUCCESS,__LINE__);
       platforms = new cl_platform_id[ptotal];
       err = clGetPlatformIDs(ptotal,platforms,NULL);
-      assert<PlatformErr>(err==CL_SUCCESS,__FILE__,__LINE__,err);
+      assert<PlatformErr>(err==CL_SUCCESS,__LINE__);
       for (int i=0;i<ptotal;++i)
       {
          cl_uint dtotal;
          err = clGetDeviceIDs(platforms[i],CL_DEVICE_TYPE_ALL,0,NULL,&dtotal);
-         assert<DeviceErr>(err==CL_SUCCESS,__FILE__,__LINE__,err);
+         assert<DeviceErr>(err==CL_SUCCESS,__LINE__);
          devices = new cl_device_id[dtotal];
          err = clGetDeviceIDs(platforms[i],CL_DEVICE_TYPE_ALL,dtotal,devices,
                               NULL);
-         assert<DeviceErr>(err==CL_SUCCESS,__FILE__,__LINE__,err);
+         assert<DeviceErr>(err==CL_SUCCESS,__LINE__);
          _list.push_back({});
          for (int j=0;j<dtotal;++j)
          {

@@ -1,5 +1,4 @@
 #include "datamap.h"
-#include "plugins/plugins.h"
 namespace AccelCompEng
 {
 
@@ -18,7 +17,7 @@ bool DataMap::_lock {false};
 DataMap::DataMap():
    _i {_map.end()}
 {
-   assert<InvalidUse>(!_lock,__FILE__,__LINE__);
+   assert<InvalidUse>(!_lock,__LINE__);
    _lock = true;
 }
 
@@ -46,9 +45,9 @@ DataPlugin* DataMap::open(const string& file, const string& type, bool select)
 {
    using uptr = std::unique_ptr<DataPlugin>;
    bool cond = _map.find(file)==_map.end();
-   assert<AlreadyExists>(cond,__FILE__,__LINE__);
-   uptr nd(KINCPlugins::new_data(type,file));
-   assert<InvalidType>(bool(nd),__FILE__,__LINE__);
+   assert<AlreadyExists>(cond,__LINE__);
+   uptr nd(new_data(type,file));
+   assert<InvalidType>(bool(nd),__LINE__);
    auto x = _map.emplace(file,std::move(nd));
    auto i = x.first;
    if (select)
@@ -82,6 +81,16 @@ bool DataMap::close(const string& file)
 
 
 
+/// Select a data object ot have focus.
+///
+/// @param file Name of loaded data object to select.
+void DataMap::select(const string& file)
+{
+   _i = get(file);
+}
+
+
+
 /// Clear any selected data object to none.
 ///
 /// @return True if there was a selected data object and it was cleared, else
@@ -108,7 +117,7 @@ bool DataMap::unselect()
 void DataMap::load(GetOpts& ops, Terminal& tm)
 {
    bool cond = _i!=_map.end();
-   assert<NoSelect>(cond,__FILE__,__LINE__);
+   assert<NoSelect>(cond,__LINE__);
    try
    {
       _i->second->load(ops,tm);
@@ -132,7 +141,7 @@ void DataMap::load(GetOpts& ops, Terminal& tm)
 void DataMap::dump(GetOpts& ops, Terminal& tm)
 {
    bool cond = _i!=_map.end();
-   assert<NoSelect>(cond,__FILE__,__LINE__);
+   assert<NoSelect>(cond,__LINE__);
    try
    {
       _i->second->dump(ops,tm);
@@ -156,7 +165,7 @@ void DataMap::dump(GetOpts& ops, Terminal& tm)
 void DataMap::query(GetOpts& ops, Terminal& tm)
 {
    bool cond = _i!=_map.end();
-   assert<NoSelect>(cond,__FILE__,__LINE__);
+   assert<NoSelect>(cond,__LINE__);
    try
    {
       _i->second->query(ops,tm);
@@ -199,8 +208,39 @@ DataPlugin* DataMap::find(const string& file)
 DataPlugin* DataMap::current()
 {
    bool cond = _i!=_map.end();
-   assert<NoSelect>(cond,__FILE__,__LINE__);
+   assert<NoSelect>(cond,__LINE__);
    return _i->second.get();
+}
+
+
+
+/// Get beginning of list iterator.
+///
+/// @return Iterator.
+DataMap::Iterator DataMap::begin()
+{
+   return _map.begin();
+}
+
+
+
+/// Get end of list iterator.
+///
+/// @return Iterator.
+DataMap::Iterator DataMap::end()
+{
+   return _map.end();
+}
+
+
+
+/// Return iterator of currently selected data object, if any.
+///
+/// @return Iterator of currently selected object, end of list iterator if no
+/// object is selected.
+DataMap::Iterator DataMap::selected()
+{
+   return _i;
 }
 
 
@@ -215,13 +255,70 @@ DataPlugin* DataMap::current()
 ///
 /// @exception DoesNotExist Data object with given file name does not exist in
 /// list of opened data objects.
-DataMap::Map::iterator DataMap::get(const string& file)
+inline DataMap::Map::iterator DataMap::get(const string& file)
 {
    auto i = _map.find(file);
    bool cond = i!=_map.end();
-   assert<DoesNotExist>(cond,__FILE__,__LINE__);
+   assert<DoesNotExist>(cond,__LINE__);
    return i;
 }
+
+
+
+/// Get file name of iterator's data object.
+///
+/// @return File name of data object.
+DataMap::Iterator::string DataMap::Iterator::file()
+{
+   return _i->first;
+}
+
+
+
+/// Get iterator's data object type.
+///
+/// @return Data object type.
+DataMap::Iterator::string DataMap::Iterator::type()
+{
+   return _i->second->type();
+}
+
+
+
+/// Iterate to next data object in list of objects.
+void DataMap::Iterator::operator++()
+{
+   ++_i;
+}
+
+
+
+/// Compare between two data object iterators.
+///
+/// @return False if they do not point to the same data object, else true.
+bool DataMap::Iterator::operator!=(const Iterator& cmp)
+{
+   return _i!=cmp._i;
+}
+
+
+
+/// Compare between two data object iterators.
+///
+/// @return True if they point to the same data object, else false.
+bool DataMap::Iterator::operator==(const Iterator& cmp)
+{
+   return _i==cmp._i;
+}
+
+
+
+/// Initializes data object iterator from internal container iterator.
+///
+/// @param i Internal container iterator.
+DataMap::Iterator::Iterator(Map::iterator i):
+   _i(i)
+{}
 
 
 

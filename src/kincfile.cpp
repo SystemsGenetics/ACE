@@ -25,11 +25,11 @@ KincFile::KincFile(const std::string& fileName):
    else
    {
       bool cond = _mem.size()>=_hdrSz;
-      assert<InvalidFile>(cond,__FILE__,__LINE__);
+      assert<InvalidFile>(cond,__LINE__);
       _hdr = _mem.head();
       _mem.sync(_hdr,FileSync::read);
       cond = _hdr.histHead()!=FileMem::nullPtr;
-      assert<InvalidFile>(cond,__FILE__,__LINE__);
+      assert<InvalidFile>(cond,__LINE__);
       cond = true;
       for (int i=0;i<_idSz;++i)
       {
@@ -38,7 +38,7 @@ KincFile::KincFile(const std::string& fileName):
             cond = false;
          }
       }
-      assert<InvalidFile>(cond,__FILE__,__LINE__);
+      assert<InvalidFile>(cond,__LINE__);
       _hist = hptr(new History(_mem,_hdr.histHead()));
       _ident.addr(_hdr.ident());
       _new = false;
@@ -63,6 +63,36 @@ void KincFile::clear()
 
 
 
+/// Tests to see if this object created a new KINC file when constructed.
+///
+/// @return True if this is a new file, else false.
+bool KincFile::is_new()
+{
+   return _new;
+}
+
+
+
+/// Get reference of history object for this object.
+///
+/// @return History object.
+History& KincFile::history()
+{
+   return *_hist;
+}
+
+
+
+/// Get data plugin ident value for this object.
+///
+/// @return data plugin ident.
+KincFile::string KincFile::ident() const
+{
+   return *_ident;
+}
+
+
+
 /// Set value for data plugin ident.
 ///
 /// @param id Value for ident.
@@ -76,10 +106,23 @@ void KincFile::ident(const string& id)
    }
    catch (FString::AlreadySet)
    {
-      throw AlreadySet(__FILE__,__LINE__);
+      throw AlreadySet(__LINE__);
    }
    _hdr.ident() = _ident.addr();
    _mem.sync(_hdr,FileSync::write);
+}
+
+
+
+/// @brief Get data plugin memory head.
+///
+/// Get file memory location for the beginning or head of data plugin memory for
+/// this object.
+///
+/// @return Location to beginning of data plugin memory.
+FileMem::Ptr KincFile::head() const
+{
+   return _hdr.dataHead();
 }
 
 
@@ -91,6 +134,16 @@ void KincFile::head(FileMem::Ptr ptr)
 {
    _hdr.dataHead() = ptr;
    _mem.sync(_hdr,FileSync::write);
+}
+
+
+
+/// Get pointer of file memory object for this object.
+///
+/// @return File memory object.
+FileMem* KincFile::mem()
+{
+   return &_mem;
 }
 
 

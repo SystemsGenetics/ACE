@@ -1,5 +1,5 @@
-#ifndef KINCFILE_H
-#define KINCFILE_H
+#ifndef ACCELCOMPENG_KINCFILE_H
+#define ACCELCOMPENG_KINCFILE_H
 #include <string>
 #include <memory>
 #include "filemem.h"
@@ -44,9 +44,8 @@ public:
    // *
    // * EXCEPTIONS
    // *
-   struct Exception;
-   struct InvalidFile;
-   struct AlreadySet;
+   ACE_EXCEPTION(AccelCompEng::KincFile,InvalidFile)
+   ACE_EXCEPTION(AccelCompEng::KincFile,AlreadySet)
    // *
    // * DECLERATIONS
    // *
@@ -110,83 +109,6 @@ private:
    Header _hdr;
    /// Custom data plugin ident value.
    FString _ident;
-};
-
-
-
-/// Tests to see if this object created a new KINC file when constructed.
-///
-/// @return True if this is a new file, else false.
-inline bool KincFile::is_new()
-{
-   return _new;
-}
-
-
-
-/// Get reference of history object for this object.
-///
-/// @return History object.
-inline History& KincFile::history()
-{
-   return *_hist;
-}
-
-
-
-/// Get data plugin ident value for this object.
-///
-/// @return data plugin ident.
-inline KincFile::string KincFile::ident() const
-{
-   return *_ident;
-}
-
-
-
-/// @brief Get data plugin memory head.
-///
-/// Get file memory location for the beginning or head of data plugin memory for
-/// this object.
-///
-/// @return Location to beginning of data plugin memory.
-inline FileMem::Ptr KincFile::head() const
-{
-   return _hdr.dataHead();
-}
-
-
-
-/// Get pointer of file memory object for this object.
-///
-/// @return File memory object.
-inline FileMem* KincFile::mem()
-{
-   return &_mem;
-}
-
-
-
-/// Generic base exception class for all exceptions thrown in KincFile class.
-struct KincFile::Exception : public ::Exception
-{
-   using ::Exception::Exception;
-};
-
-/// The file being opened is not a valid KINC file.
-struct KincFile::InvalidFile : public KincFile::Exception
-{
-   InvalidFile(const char* file, int line):
-      Exception(file,line,"KincFile::InvalidFile")
-   {}
-};
-
-/// The data plugin ident value has already been set.
-struct KincFile::AlreadySet : public KincFile::Exception
-{
-   AlreadySet(const char* file, int line):
-      Exception(file,line,"KincFile::AlreadySet")
-   {}
 };
 
 

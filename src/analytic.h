@@ -1,5 +1,5 @@
-#ifndef ANALYTIC_H
-#define ANALYTIC_H
+#ifndef ACCELCOMPENG_ANALYTIC_H
+#define ACCELCOMPENG_ANALYTIC_H
 #include <CL/cl.hpp>
 #include <string>
 #include <memory>

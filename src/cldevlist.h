@@ -4,8 +4,8 @@
  * Author: Joshua Burns
  *
  */
-#ifndef CLDEVLIST_H
-#define CLDEVLIST_H
+#ifndef ACCELCOMPENG_CLDEVLIST_H
+#define ACCELCOMPENG_CLDEVLIST_H
 #include <vector>
 #include "exception.h"
 namespace AccelCompEng
@@ -31,8 +31,8 @@ public:
    // *
    // * EXCEPTIONS
    // *
-   OPENCL_EXCEPTION(PlatformErr,clGetPlatformIDs)
-   OPENCL_EXCEPTION(DeviceErr,clGetDeviceIDs)
+   ACE_EXCEPTION(AccelCompEng::CLDevList,PlatformErr)
+   ACE_EXCEPTION(AccelCompEng::CLDevList,DeviceErr)
    // *
    // * DECLERATIONS
    // *

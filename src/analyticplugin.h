@@ -1,5 +1,5 @@
-#ifndef ANALYTICPLUGIN_H
-#define ANALYTICPLUGIN_H
+#ifndef ACCELCOMPENG_ANALYTICPLUGIN_H
+#define ACCELCOMPENG_ANALYTICPLUGIN_H
 #include "analytic.h"
 #include "clcontext.h"
 namespace AccelCompEng

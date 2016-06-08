@@ -1,5 +1,5 @@
-#ifndef ACCELCOMPENG_H
-#define ACCELCOMPENG_H
+#ifndef ACCELCOMPENG_ACE_H
+#define ACCELCOMPENG_ACE_H
 #include "analytic.h"
 #include "analyticplugin.h"
 #include "clbuffer.h"
@@ -23,6 +23,7 @@
 #include "kincfile.h"
 #include "linuxterm.h"
 #include "terminal.h"
+#include "plugins.h"
 #define ACE_BEGIN_DATA DataPlugin* new_data(const std::string& type,\
                                             const std::string& name)\
                        {
@@ -39,8 +40,6 @@ namespace AccelCompEng
 
 
 int run(int,char*[]);
-AnalyticPlugin* new_analytic(const std::string&);
-DataPlugin* new_data(const std::string&,const std::string&);
 
 
 

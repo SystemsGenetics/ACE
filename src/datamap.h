@@ -1,9 +1,9 @@
-#ifndef DATAMAP_H
-#define DATAMAP_H
+#ifndef ACCELCOMPENG_DATAMAP_H
+#define ACCELCOMPENG_DATAMAP_H
 #include <map>
 #include <string>
 #include <memory>
-#include "dataplugin.h"
+#include "plugins.h"
 #include "getopts.h"
 #include "exception.h"
 namespace AccelCompEng
@@ -28,12 +28,11 @@ public:
    // *
    // * EXCEPTIONS
    // *
-   struct Exception;
-   struct InvalidUse;
-   struct AlreadyExists;
-   struct DoesNotExist;
-   struct NoSelect;
-   struct InvalidType;
+   ACE_EXCEPTION(AccelCompEng::DataMap,InvalidUse)
+   ACE_EXCEPTION(AccelCompEng::DataMap,AlreadyExists)
+   ACE_EXCEPTION(AccelCompEng::DataMap,DoesNotExist)
+   ACE_EXCEPTION(AccelCompEng::DataMap,NoSelect)
+   ACE_EXCEPTION(AccelCompEng::DataMap,InvalidType)
    // *
    // * DECLERATIONS
    // *
@@ -132,156 +131,6 @@ private:
    // *
    /// Points to current data object this iterator points to or end of list.
    Map::iterator _i;
-};
-
-
-
-/// Select a data object ot have focus.
-///
-/// @param file Name of loaded data object to select.
-inline void DataMap::select(const string& file)
-{
-   _i = get(file);
-}
-
-
-
-/// Get beginning of list iterator.
-///
-/// @return Iterator.
-inline DataMap::Iterator DataMap::begin()
-{
-   return _map.begin();
-}
-
-
-
-/// Get end of list iterator.
-///
-/// @return Iterator.
-inline DataMap::Iterator DataMap::end()
-{
-   return _map.end();
-}
-
-
-
-/// Return iterator of currently selected data object, if any.
-///
-/// @return Iterator of currently selected object, end of list iterator if no
-/// object is selected.
-inline DataMap::Iterator DataMap::selected()
-{
-   return _i;
-}
-
-
-
-/// Get file name of iterator's data object.
-///
-/// @return File name of data object.
-inline DataMap::Iterator::string DataMap::Iterator::file()
-{
-   return _i->first;
-}
-
-
-
-/// Get iterator's data object type.
-///
-/// @return Data object type.
-inline DataMap::Iterator::string DataMap::Iterator::type()
-{
-   return _i->second->type();
-}
-
-
-
-/// Iterate to next data object in list of objects.
-inline void DataMap::Iterator::operator++()
-{
-   ++_i;
-}
-
-
-
-/// Compare between two data object iterators.
-///
-/// @return False if they do not point to the same data object, else true.
-inline bool DataMap::Iterator::operator!=(const Iterator& cmp)
-{
-   return _i!=cmp._i;
-}
-
-
-
-/// Compare between two data object iterators.
-///
-/// @return True if they point to the same data object, else false.
-inline bool DataMap::Iterator::operator==(const Iterator& cmp)
-{
-   return _i==cmp._i;
-}
-
-
-
-/// Initializes data object iterator from internal container iterator.
-///
-/// @param i Internal container iterator.
-inline DataMap::Iterator::Iterator(Map::iterator i):
-   _i(i)
-{}
-
-
-
-/// Base exception class for any exception thrown from DataMap class.
-struct DataMap::Exception : public ::Exception
-{
-   using ::Exception::Exception;
-};
-
-/// Exception thrown if a second instance of the DataMap class is created.
-struct DataMap::InvalidUse : public DataMap::Exception
-{
-   InvalidUse(const char* file, int line):
-      Exception(file,line,"DataMap::InvalidUse")
-   {}
-};
-
-/// Exception thrown if a data object is opened with the same file name as
-/// another data object already opened.
-struct DataMap::AlreadyExists : public DataMap::Exception
-{
-   AlreadyExists(const char* file, int line):
-      Exception(file,line,"DataMap::AlreadyExists")
-   {}
-};
-
-/// Thrown if attempting to select a data object with a file name is not in
-/// the list of opened data objects.
-struct DataMap::DoesNotExist : public DataMap::Exception
-{
-   DoesNotExist(const char* file, int line):
-      Exception(file,line,"DataMap::DoesNotExist")
-   {}
-};
-
-/// Thrown if the commands load, dump, or query are called and no data object
-/// is selected.
-struct DataMap::NoSelect : public DataMap::Exception
-{
-   NoSelect(const char* file, int line):
-      Exception(file,line,"DataMap::NoSelect")
-   {}
-};
-
-/// Thrown is the data type given in the open command cannot be found using the
-/// KINCPlugins system.
-struct DataMap::InvalidType : public DataMap::Exception
-{
-   InvalidType(const char* file, int line):
-      Exception(file,line,"DataMap::InvalidType")
-   {}
 };
 
 

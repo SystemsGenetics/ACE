@@ -12,8 +12,7 @@
 #include "console.h"
 #include "cldevice.h"
 #include "data.h"
-#include "analyticplugin.h"
-#include "plugins/plugins.h"
+#include "plugins.h"
 namespace AccelCompEng
 {
 
@@ -40,7 +39,7 @@ Console::Console(int argc, char* argv[], Terminal& tm, DataMap& dmap):
    _dataMap {dmap},
    _device {nullptr}
 {
-   assert<InvalidUse>(!_lock,__FILE__,__LINE__);
+   assert<InvalidUse>(!_lock,__LINE__);
    _lock = true;
    _tm.header("KINC:> ");
 }
@@ -100,60 +99,13 @@ void Console::terminal_loop()
          {
             alive = false;
          }
-         catch (DataException e)
-         {
-            _tm << Terminal::error;
-            _tm << "Data Exception Caught!" << Terminal::endl;
-            _tm << "Level: ";
-            switch (e.level())
-            {
-            case DataException::Level::general:
-               _tm << "General" << Terminal::endl;
-               break;
-            case DataException::Level::caution:
-               _tm << "Caution" << Terminal::endl;
-               break;
-            case DataException::Level::warning:
-               _tm << "Warning" << Terminal::endl;
-               break;
-            case DataException::Level::severe:
-               _tm << "Severe" << Terminal::endl;
-               break;
-            case DataException::Level::fatal:
-               _tm << "Fatal" << Terminal::endl;
-               break;
-            }
-            _tm << "Location: " << e.file() << ":" << e.line()
-                << Terminal::endl;
-            _tm << "What: " << e.what() << Terminal::endl;
-            _tm << Terminal::general;
-         }
-         catch (AnalyticException e)
-         {
-            _tm << Terminal::error;
-            _tm << "Analytic Exception Caught!" << Terminal::endl;
-            _tm << "Location: " << e.file() << ":" << e.line()
-                << Terminal::endl;
-            _tm << "What: " << e.what() << Terminal::endl;
-            _tm << Terminal::general;
-         }
-         catch (OpenCLError e)
-         {
-            _tm << Terminal::error;
-            _tm << "OpenCL Exception Caught!" << Terminal::endl;
-            _tm << "Location: " << e.file() << ":" << e.line() << "\n";
-            _tm << "Code: " << e.code_str() << "\n";
-            _tm << Terminal::general;
-         }
          catch (Exception e)
          {
             _tm << Terminal::error;
-            _tm << "GENERAL Exception Caught!" << Terminal::endl;
-            _tm << "Location: " << e.file() << ":" << e.line()
-                << Terminal::endl;
-            _tm << "What: " << e.what() << Terminal::endl;
-            _tm << "It is HIGHLY recommended you immediately close this"
-                   " program." << Terminal::endl;
+            _tm << "ACE Exception Caught!" << Terminal::endl;
+            _tm << "Domain: " << e.domain() << ":" << e.line() << "\n";
+            _tm << "What: " << e.what() << "\n";
+            _tm << "Details...\n" << e.detail() << "\n";
             _tm << Terminal::general;
          }
          catch (std::exception stde)
@@ -869,6 +821,27 @@ inline void Console::print_pad(int d)
    {
       _tm << "  ";
    }
+}
+
+
+
+/// Initializes a new command error and sets who threw it and its message.
+///
+/// @param who Identifies who threw the error message.
+/// @param msg The message describing the error that occured.
+Console::CommandError::CommandError(const string& who, const string& msg):
+   _who(who),
+   _msg(msg)
+{}
+
+
+
+/// Prints the error message to the terminal.
+///
+/// @param tm The program's terminal that will be printed to.
+void Console::CommandError::print(Terminal& tm)
+{
+   tm << _who << ": " << _msg << Terminal::endl;
 }
 
 

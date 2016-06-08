@@ -42,7 +42,7 @@ void CLEvent::wait()
    {
       cl_int err;
       err = clWaitForEvents(1,&_id);
-      assert<CannotWait>(err==CL_SUCCESS,__FILE__,__LINE__,err);
+      assert<CannotWait>(err==CL_SUCCESS,__LINE__);
    }
 }
 
@@ -57,11 +57,8 @@ bool CLEvent::is_done()
       cl_int err;
       err = clGetEventInfo(_id,CL_EVENT_COMMAND_EXECUTION_STATUS,sizeof(cl_int),
                            &status,NULL);
-      assert<CannotGetInfo>(err==CL_SUCCESS,__FILE__,__LINE__,err);
-      if (status<0)
-      {
-         throw ExecutionFail(__FILE__,__LINE__);
-      }
+      assert<CannotGetInfo>(err==CL_SUCCESS,__LINE__);
+      assert<ExecutionFail>(status>=0,__LINE__);
       if (status!=CL_COMPLETE)
       {
          ret = false;

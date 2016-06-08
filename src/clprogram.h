@@ -1,5 +1,5 @@
-#ifndef CLPROGRAM_H
-#define CLPROGRAM_H
+#ifndef ACCELCOMPENG_CLPROGRAM_H
+#define ACCELCOMPENG_CLPROGRAM_H
 #include <CL/cl.h>
 #include <string>
 #include <vector>
@@ -13,12 +13,12 @@ namespace AccelCompEng
 class CLProgram
 {
 public:
-   ACE_EXCEPTION(CLProgram,NoSuchFile)
-   ACE_EXCEPTION(CLProgram,NotCompiled)
-   ACE_EXCEPTION(CLProgram,NotInitialized)
-   OPENCL_EXCEPTION(CannotBind,clCreateProgramWithSource)
-   OPENCL_EXCEPTION(BuildInfoFail,clGetProgramBuildInfo)
-   OPENCL_EXCEPTION(CannotFindKern,clCreateKernel)
+   ACE_EXCEPTION(AccelCompEng::CLProgram,NoSuchFile)
+   ACE_EXCEPTION(AccelCompEng::CLProgram,NotCompiled)
+   ACE_EXCEPTION(AccelCompEng::CLProgram,NotInitialized)
+   ACE_EXCEPTION(AccelCompEng::CLProgram,CannotBind)
+   ACE_EXCEPTION(AccelCompEng::CLProgram,BuildInfoFail)
+   ACE_EXCEPTION(AccelCompEng::CLProgram,CannotFindKern)
    CLProgram() = default;
    ~CLProgram();
    CLProgram(const CLProgram&) = delete;

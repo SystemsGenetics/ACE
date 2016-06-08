@@ -1,5 +1,5 @@
-#ifndef HISTITEM_H
-#define HISTITEM_H
+#ifndef ACCELCOMPENG_HISTITEM_H
+#define ACCELCOMPENG_HISTITEM_H
 #include <string>
 #include "filemem.h"
 #include "fstring.h"
@@ -68,11 +68,10 @@ public:
    // *
    // * EXCEPTIONS
    // *
-   struct Exception;
-   struct AlreadySet;
-   struct IsAllocated;
-   struct IsNullPtr;
-   struct InvalidItem;
+   ACE_EXCEPTION(AccelCompEng::HistItem,AlreadySet)
+   ACE_EXCEPTION(AccelCompEng::HistItem,IsAllocated)
+   ACE_EXCEPTION(AccelCompEng::HistItem,IsNullPtr)
+   ACE_EXCEPTION(AccelCompEng::HistItem,InvalidItem)
    // *
    // * DECLERATIONS
    // *
@@ -142,71 +141,6 @@ private:
    FString _object;
    /// Command that created item.
    FString _command;
-};
-
-
-
-/// Passes initialization to primary constructor.
-///
-/// @param mem File memory that will be used for item.
-/// @param ptr Location where history item is located or nullptr if item to be
-/// created.
-inline HistItem::HistItem(FileMem& mem, FileMem::Ptr ptr):
-   HistItem(&mem,ptr)
-{}
-
-
-
-/// Get file memory location of history item, if any.
-///
-/// @return Location of item or nullptr if not set.
-inline FileMem::Ptr HistItem::addr() const
-{
-   return _item.addr();
-}
-
-
-
-/// Get pointer to file memory object where item is located.
-///
-/// @return Pointer to file memory instance.
-inline FileMem* HistItem::mem() const
-{
-   return _mem;
-}
-
-
-
-/// Generic base exception class for all exceptions thrown in HistItem class.
-struct HistItem::Exception : public ::Exception
-{
-   using ::Exception::Exception;
-};
-
-/// A value that can only be set once is attempting to be set again.
-struct HistItem::AlreadySet : public HistItem::Exception
-{
-   AlreadySet(const char* file, int line):
-      Exception(file,line,"HistItem::AlreadySet")
-   {}
-};
-
-/// A history item object that has already been set or loaded is attempting to
-/// be allocated as a new history item.
-struct HistItem::IsAllocated : public HistItem::Exception
-{
-   IsAllocated(const char* file, int line):
-      Exception(file,line,"HistItem::IsAllocated")
-   {}
-};
-
-/// A history item object that is not set or loaded is trying to query or set
-/// its values.
-struct HistItem::IsNullPtr : public HistItem::Exception
-{
-   IsNullPtr(const char* file, int line):
-      Exception(file,line,"HistItem::IsNullPtr")
-   {}
 };
 
 

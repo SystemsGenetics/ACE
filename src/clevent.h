@@ -1,5 +1,5 @@
-#ifndef CLEVENT_H
-#define CLEVENT_H
+#ifndef ACCELCOMPENG_CLEVENT_H
+#define ACCELCOMPENG_CLEVENT_H
 #include <CL/cl.h>
 #include "exception.h"
 namespace AccelCompEng
@@ -10,9 +10,9 @@ namespace AccelCompEng
 class CLEvent
 {
 public:
-   OPENCL_EXCEPTION(CannotWait,clWaitForEvents)
-   OPENCL_EXCEPTION(CannotGetInfo,clGetEventInfo)
-   ACE_EXCEPTION(CLEvent,ExecutionFail)
+   ACE_EXCEPTION(AccelCompEng::CLEvent,CannotWait)
+   ACE_EXCEPTION(AccelCompEng::CLEvent,CannotGetInfo)
+   ACE_EXCEPTION(AccelCompEng::CLEvent,ExecutionFail)
    friend class CLCommandQueue;
    CLEvent() = default;
    ~CLEvent();

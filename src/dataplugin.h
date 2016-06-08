@@ -1,5 +1,5 @@
-#ifndef DATAPLUGIN_H
-#define DATAPLUGIN_H
+#ifndef ACCELCOMPENG_DATAPLUGIN_H
+#define ACCELCOMPENG_DATAPLUGIN_H
 #include <string>
 #include "data.h"
 #include "kincfile.h"

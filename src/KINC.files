@@ -43,6 +43,7 @@ datamap.cpp
 datamap.h
 ace.cpp
 ace.h
+plugins.h
 unit.h
 unit.t.cpp
 getopts.t.cpp

@@ -1,5 +1,5 @@
-#ifndef TERMINAL_H
-#define TERMINAL_H
+#ifndef ACCELCOMPENG_TERMINAL_H
+#define ACCELCOMPENG_TERMINAL_H
 #include <string>
 #include "exception.h"
 namespace AccelCompEng
@@ -21,8 +21,8 @@ public:
    // *
    // * EXCEPTIONS
    // *
-   ACE_EXCEPTION(Terminal,SystemError)
-   ACE_EXCEPTION(Terminal,InvalidUse)
+   ACE_EXCEPTION(AccelCompEng::Terminal,SystemError)
+   ACE_EXCEPTION(AccelCompEng::Terminal,InvalidUse)
    // *
    // * BASIC METHODS
    // *

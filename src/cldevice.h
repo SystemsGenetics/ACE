@@ -4,8 +4,8 @@
  * Author: Joshua Burns
  *
  */
-#ifndef CLDEVICE_H
-#define CLDEVICE_H
+#ifndef ACCELCOMPENG_CLDEVICE_H
+#define ACCELCOMPENG_CLDEVICE_H
 #include <CL/cl.h>
 #include <string>
 #include "exception.h"
@@ -30,7 +30,7 @@ public:
    // *
    // * EXCEPTIONS
    // *
-   OPENCL_EXCEPTION(InfoErr,clDeviceGetInfo)
+   ACE_EXCEPTION(AccelCompEng::CLDevice,InfoErr)
    // *
    // * DECLERATIONS
    // *
@@ -101,7 +101,7 @@ template<class T> T CLDevice::get_info(cl_device_info infoType) const
    T ret;
    cl_int err;
    err = clGetDeviceInfo(_did,infoType,sizeof(T),&ret,NULL);
-   assert<InfoErr>(err==CL_SUCCESS,__FILE__,__LINE__,err);
+   assert<InfoErr>(err==CL_SUCCESS,__LINE__);
    return ret;
 }
 
@@ -113,10 +113,10 @@ inline CLDevice::string CLDevice::get_info(cl_device_info infoType) const
    size_t strSize;
    cl_int err;
    err = clGetDeviceInfo(_did,infoType,0,NULL,&strSize);
-   assert<InfoErr>(err==CL_SUCCESS,__FILE__,__LINE__,err);
+   assert<InfoErr>(err==CL_SUCCESS,__LINE__);
    char buffer[strSize];
    err = clGetDeviceInfo(_did,infoType,strSize,buffer,NULL);
-   assert<InfoErr>(err==CL_SUCCESS,__FILE__,__LINE__,err);
+   assert<InfoErr>(err==CL_SUCCESS,__LINE__);
    return buffer;
 }
 

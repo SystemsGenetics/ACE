@@ -1,5 +1,5 @@
-#ifndef CLBUFFER_H
-#define CLBUFFER_H
+#ifndef ACCELCOMPENG_CLBUFFER_H
+#define ACCELCOMPENG_CLBUFFER_H
 #include <CL/cl.h>
 #include "exception.h"
 namespace AccelCompEng
@@ -10,9 +10,9 @@ namespace AccelCompEng
 template<class T> class CLBuffer
 {
 public:
-   OPENCL_EXCEPTION(NoCreateBuffer,clCreateBuffer)
-   ACE_EXCEPTION(CLBuffer,NullBufferUse)
-   ACE_EXCEPTION(CLBuffer,OutOfRange)
+   ACE_EXCEPTION(AccelCompEng::CLBuffer,NoCreateBuffer)
+   ACE_EXCEPTION(AccelCompEng::CLBuffer,NullBufferUse)
+   ACE_EXCEPTION(AccelCompEng::CLBuffer,OutOfRange)
    friend class CLContext;
    friend class CLCommandQueue;
    friend class CLKernel;
@@ -75,7 +75,7 @@ template<class T> CLBuffer<T>& CLBuffer<T>::operator=(CLBuffer<T>&& move)
 
 template<class T> T& CLBuffer<T>::operator[](int i)
 {
-   assert<NullBufferUse>(_hostPtr,__FILE__,__LINE__);
+   assert<NullBufferUse>(_hostPtr,__LINE__);
    return _hostPtr[i];
 }
 
@@ -83,7 +83,7 @@ template<class T> T& CLBuffer<T>::operator[](int i)
 
 template<class T> const T& CLBuffer<T>::operator[](int i) const
 {
-   assert<NullBufferUse>(_hostPtr,__FILE__,__LINE__);
+   assert<NullBufferUse>(_hostPtr,__LINE__);
    return _hostPtr[i];
 }
 
@@ -91,8 +91,8 @@ template<class T> const T& CLBuffer<T>::operator[](int i) const
 
 template<class T> T& CLBuffer<T>::at(int i)
 {
-   assert<NullBufferUse>(_hostPtr,__FILE__,__LINE__);
-   assert<OutOfRange>(i<_size,__FILE__,__LINE__);
+   assert<NullBufferUse>(_hostPtr,__LINE__);
+   assert<OutOfRange>(i<_size,__LINE__);
    return _hostPtr[i];
 }
 
@@ -100,8 +100,8 @@ template<class T> T& CLBuffer<T>::at(int i)
 
 template<class T> const T& CLBuffer<T>::at(int i) const
 {
-   assert<NullBufferUse>(_hostPtr,__FILE__,__LINE__);
-   assert<OutOfRange>(i<_size,__FILE__,__LINE__);
+   assert<NullBufferUse>(_hostPtr,__LINE__);
+   assert<OutOfRange>(i<_size,__LINE__);
    return _hostPtr[i];
 }
 
@@ -115,7 +115,7 @@ template<class T> CLBuffer<T>::CLBuffer(cl_context cid, int size):
    {
       cl_int err;
       _id = clCreateBuffer(cid,CL_MEM_READ_WRITE,size*sizeof(T),_hostPtr,&err);
-      assert<NoCreateBuffer>(err==CL_SUCCESS,__FILE__,__LINE__,err);
+      assert<NoCreateBuffer>(err==CL_SUCCESS,__LINE__);
    }
    catch (...)
    {

@@ -4,8 +4,8 @@
  * Author: Joshua Burns
  *
  */
-#ifndef CONSOLE_H
-#define CONSOLE_H
+#ifndef ACCELCOMPENG_CONSOLE_H
+#define ACCELCOMPENG_CONSOLE_H
 #include <string>
 #include <list>
 #include "terminal.h"
@@ -38,8 +38,7 @@ public:
    // *
    // * EXCEPTIONS
    // *
-   struct Exception;
-   struct InvalidUse;
+   ACE_EXCEPTION(AccelCompEng::Console,InvalidUse)
    // *
    // * DECLERATIONS
    // *
@@ -130,44 +129,6 @@ private:
    string _who;
    /// Holds the message of the command error.
    string _msg;
-};
-
-
-
-/// Initializes a new command error and sets who threw it and its message.
-///
-/// @param who Identifies who threw the error message.
-/// @param msg The message describing the error that occured.
-inline Console::CommandError::CommandError(const string& who,
-                                           const string& msg):
-   _who(who),
-   _msg(msg)
-{}
-
-
-
-/// Prints the error message to the terminal.
-///
-/// @param tm The program's terminal that will be printed to.
-inline void Console::CommandError::print(Terminal& tm)
-{
-   tm << _who << ": " << _msg << Terminal::endl;
-}
-
-
-
-/// Base exception class for any exception thrown from Console class.
-struct Console::Exception : public ::Exception
-{
-   using ::Exception::Exception;
-};
-
-/// Exception thrown if console class is used in an invalid way.
-struct Console::InvalidUse : public Console::Exception
-{
-   InvalidUse(const char* file, int line):
-      Exception(file,line,"Terminal::InvalidUse")
-   {}
 };
 
 

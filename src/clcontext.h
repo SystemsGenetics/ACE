@@ -1,5 +1,5 @@
-#ifndef CLCONTEXT_H
-#define CLCONTEXT_H
+#ifndef ACCELCOMPENG_CLCONTEXT_H
+#define ACCELCOMPENG_CLCONTEXT_H
 #include <CL/cl.h>
 #include "cldevice.h"
 #include "clprogram.h"
@@ -15,8 +15,8 @@ namespace AccelCompEng
 class CLContext: public CLProgram, public CLCommandQueue
 {
 public:
-   OPENCL_EXCEPTION(CreateContext,clCreateContext)
-   ACE_EXCEPTION(CLContext,NotInitialized)
+   ACE_EXCEPTION(AccelCompEng::CLContext,CreateContext)
+   ACE_EXCEPTION(AccelCompEng::CLContext,NotInitialized)
    CLContext() = default;
    ~CLContext();
    void init_cl(CLDevice& dev);
@@ -32,7 +32,7 @@ private:
 
 template<class T> CLBuffer<T> CLContext::buffer(int size)
 {
-   assert<NotInitialized>(_initd,__FILE__,__LINE__);
+   assert<NotInitialized>(_initd,__LINE__);
    return CLBuffer<T>(_cid,size);
 }
 

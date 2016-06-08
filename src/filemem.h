@@ -1,5 +1,5 @@
-#ifndef FILEMEM_H
-#define FILEMEM_H
+#ifndef ACCELCOMPENG_FILEMEM_H
+#define ACCELCOMPENG_FILEMEM_H
 #include <string>
 #include <cstring>
 #include <cstdint>
@@ -38,10 +38,10 @@ public:
    // *
    // * EXCEPTIONS
    // *
-   ACE_EXCEPTION(FileMem,SystemError)
-   ACE_EXCEPTION(FileMem,InvalidFile)
-   ACE_EXCEPTION(FileMem,FileSegFault)
-   ACE_EXCEPTION(FileMem,OutOfMemory)
+   ACE_EXCEPTION(AccelCompEng::FileMem,SystemError)
+   ACE_EXCEPTION(AccelCompEng::FileMem,InvalidFile)
+   ACE_EXCEPTION(AccelCompEng::FileMem,FileSegFault)
+   ACE_EXCEPTION(AccelCompEng::FileMem,OutOfMemory)
    // *
    // * DECLERATIONS
    // *

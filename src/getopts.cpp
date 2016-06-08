@@ -33,7 +33,7 @@ GetOpts::GetOpts(const string& raw):
          if (y!=string::npos)
          {
             bool cond = y==i.rfind('=')&&y>x;
-            assert<InvalidSyntax>(cond,__FILE__,__LINE__);
+            assert<InvalidSyntax>(cond,__LINE__);
             val = i.substr(x,y-x);
             key = i.substr(++y);
          }
@@ -48,6 +48,36 @@ GetOpts::GetOpts(const string& raw):
          _comms.push_back(i);
       }
    }
+}
+
+
+
+/// Get origional user input line for this object.
+///
+/// @return Origional user input.
+const GetOpts::string& GetOpts::orig() const
+{
+   return _orig;
+}
+
+
+
+/// Get total number of commands left for this object.
+///
+/// @return Number of commands.
+int GetOpts::com_size() const
+{
+   return _comms.size();
+}
+
+
+
+/// Tests if the commands list for this object is empty.
+///
+/// @return True if commands list is empty, else false.
+bool GetOpts::com_empty() const
+{
+   return _comms.empty();
 }
 
 
@@ -82,6 +112,16 @@ int GetOpts::com_get(initlist commands)
 
 
 
+/// Returns reference to string of command in front of list for this object.
+///
+/// @return Front of list command.
+GetOpts::string& GetOpts::com_front()
+{
+   return _comms.front();
+}
+
+
+
 /// Remove the command at front of list of commands for this object.
 void GetOpts::com_pop()
 {
@@ -89,6 +129,26 @@ void GetOpts::com_pop()
    {
       _comms.pop_front();
    }
+}
+
+
+
+/// Get total number of options left for this object.
+///
+/// @return Number of options.
+int GetOpts::size() const
+{
+   return _opts.size();
+}
+
+
+
+/// Tests if the options list for this object is empty.
+///
+/// @return True if options list is empty, else false.
+bool GetOpts::empty() const
+{
+   return _opts.empty();
 }
 
 
@@ -123,6 +183,106 @@ bool GetOpts::has_opt(const string& opt, bool del)
    }
    return ret;
 }
+
+
+
+/// Gets iterator for options list that points at the beginning of list.
+///
+/// @return Start of list options iterator.
+GetOpts::Iterator GetOpts::begin()
+{
+   return {_opts.begin()};
+}
+
+
+
+/// Gets iterator for options list that points to one past end of list.
+///
+/// @return One past end of list iterator.
+GetOpts::Iterator GetOpts::end()
+{
+   return {_opts.end()};
+}
+
+
+
+/// Removes option from list by iterator given.
+///
+/// @param i Iterator that points to option that will be removed.
+/// @return Iterator that points to next option in list or one past end of list
+/// if the removed option was at back of list.
+GetOpts::Iterator GetOpts::erase(Iterator i)
+{
+   return {_opts.erase(i._i)};
+}
+
+
+
+/// Get key value of this option.
+///
+/// @return Key value.
+const GetOpts::string& GetOpts::Iterator::key() const
+{
+   return _i->first;
+}
+
+
+
+/// Tests if the given key value matches the key value of this option.
+///
+/// @return True if they match, else fail.
+bool GetOpts::Iterator::is_key(const string& cmp) const
+{
+   return _i->first==cmp;
+}
+
+
+
+/// Tests if the value for this option is empty or not.
+///
+/// @return True if there is no value set, else false.
+bool GetOpts::Iterator::val_empty() const
+{
+   return _i->second.empty();
+}
+
+
+
+/// Iterates to next option in list of options.
+void GetOpts::Iterator::operator++()
+{
+   ++_i;
+}
+
+
+
+/// Tests if this option iterator is not equal to the given option iterator.
+///
+/// @return True if they are not equal, else fail.
+bool GetOpts::Iterator::operator!=(const Iterator& cmp)
+{
+   return _i!=cmp._i;
+}
+
+
+
+/// Tests if this option iterator is equal to the given option iterator.
+///
+/// @return True if they are equal, else fail.
+bool GetOpts::Iterator::operator==(const Iterator& cmp)
+{
+   return _i==cmp._i;
+}
+
+
+
+/// Sets internal list iterator to iterator given.
+///
+/// @param i Internal iterator used to store pointer to option in list of
+/// iterators.
+GetOpts::Iterator::Iterator(const oplist::iterator& i):
+   _i(i)
+{}
 
 
 

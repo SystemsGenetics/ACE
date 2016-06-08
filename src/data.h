@@ -1,5 +1,5 @@
-#ifndef DATA_H
-#define DATA_H
+#ifndef ACCELCOMPENG_DATA_H
+#define ACCELCOMPENG_DATA_H
 #include "terminal.h"
 #include "getopts.h"
 namespace AccelCompEng

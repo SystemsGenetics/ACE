@@ -4,8 +4,8 @@
  * Author: Joshua Burns
  *
  */
-#ifndef EXCEPTION_H
-#define EXCEPTION_H
+#ifndef ACCELCOMPENG_EXCEPTION_H
+#define ACCELCOMPENG_EXCEPTION_H
 #include <string>
 #include <sstream>
 #define ACE_EXCEPTION(N,X) struct X : public ::AccelCompEng::Exception\

@@ -1,5 +1,5 @@
-#ifndef LINUXTERM_H
-#define LINUXTERM_H
+#ifndef ACCELCOMPENG_LINUXTERM_H
+#define ACCELCOMPENG_LINUXTERM_H
 #include <string>
 #include <list>
 #include "terminal.h"

@@ -21,7 +21,7 @@ FString::FString(FileMem* mem, FPtr ptr):
    _hdr(ptr)
 {
    bool cond = mem!=nullptr;
-   assert<InvalidPtr>(cond,__FILE__,__LINE__);
+   assert<InvalidPtr>(cond,__LINE__);
    if (_hdr.addr()!=FileMem::nullPtr)
    {
       load();
@@ -56,29 +56,6 @@ FString& FString::operator=(FString&& tmp)
 
 
 
-/// Set file string to given string.
-///
-/// @param nStr Value to set file string to in file memory.
-/// @return Reference to this object.
-///
-/// @exception AlreadySet This file string object has already been set.
-FString& FString::operator=(const string& nStr)
-{
-   bool cond = _hdr.addr()==FileMem::nullPtr;
-   assert<AlreadySet>(cond,__FILE__,__LINE__);
-   String fStr(nStr.size()+1);
-   _mem->allot(_hdr);
-   _mem->allot(fStr);
-   _hdr.stripe() = FStringData::strip;
-   _hdr.sSize() = nStr.size()+1;
-   memcpy(fStr.c_str(),nStr.c_str(),nStr.size()+1);
-   _mem->sync(_hdr,FileSync::write);
-   _mem->sync(fStr,FileSync::write);
-   _str = nStr;
-}
-
-
-
 /// @brief Set new location for this object.
 ///
 /// Set new location in file memory where there is an FString to read or set
@@ -97,6 +74,59 @@ void FString::addr(FPtr ptr)
 
 
 
+/// Returns file memory location of string or nullptr if not set.
+///
+/// @return File memory location.
+FString::FPtr FString::addr() const
+{
+   return _hdr.addr();
+}
+
+
+
+/// Returns read only reference to string, empty if not set.
+///
+/// @return Reference to string.
+const FString::string& FString::operator*() const
+{
+   return _str;
+}
+
+
+
+/// Returns read only pointer to string object for function calls.
+///
+/// @return Pointer to string.
+const FString::string* FString::operator->() const
+{
+   return &_str;
+}
+
+
+
+/// Set file string to given string.
+///
+/// @param nStr Value to set file string to in file memory.
+/// @return Reference to this object.
+///
+/// @exception AlreadySet This file string object has already been set.
+FString& FString::operator=(const string& nStr)
+{
+   bool cond = _hdr.addr()==FileMem::nullPtr;
+   assert<AlreadySet>(cond,__LINE__);
+   String fStr(nStr.size()+1);
+   _mem->allot(_hdr);
+   _mem->allot(fStr);
+   _hdr.stripe() = FStringData::strip;
+   _hdr.sSize() = nStr.size()+1;
+   memcpy(fStr.c_str(),nStr.c_str(),nStr.size()+1);
+   _mem->sync(_hdr,FileSync::write);
+   _mem->sync(fStr,FileSync::write);
+   _str = nStr;
+}
+
+
+
 /// @brief Load file string from file.
 ///
 /// Load value of file string from file memory object from location stored in
@@ -107,7 +137,7 @@ inline void FString::load()
 {
    _mem->sync(_hdr,FileSync::read);
    bool cond = _hdr.stripe()==FStringData::strip;
-   assert<InvalidPtr>(cond,__FILE__,__LINE__);
+   assert<InvalidPtr>(cond,__LINE__);
    String fStr(_hdr.sSize(),_hdr.addr()+FStringData::hdrSz);
    _mem->sync(fStr,FileSync::read);
    _str = fStr.c_str();

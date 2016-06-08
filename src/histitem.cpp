@@ -4,6 +4,17 @@ namespace AccelCompEng
 
 
 
+/// Passes initialization to primary constructor.
+///
+/// @param mem File memory that will be used for item.
+/// @param ptr Location where history item is located or nullptr if item to be
+/// created.
+HistItem::HistItem(FileMem& mem, FileMem::Ptr ptr):
+   HistItem(&mem,ptr)
+{}
+
+
+
 /// @brief Initializes history item.
 ///
 /// Initializes history item object as being empty. If file location given is
@@ -62,7 +73,7 @@ HistItem& HistItem::operator=(HistItem&& tmp)
 void HistItem::allocate()
 {
    bool cond = _item.addr()==FileMem::nullPtr;
-   assert<IsAllocated>(cond,__FILE__,__LINE__);
+   assert<IsAllocated>(cond,__LINE__);
    _mem->allot(_item);
    _item.timeStamp() = 0;
    _item.fileNamePtr() = FileMem::nullPtr;
@@ -87,9 +98,9 @@ void HistItem::allocate()
 void HistItem::copy_from(const HistItem& hist)
 {
    bool cond = _item.addr()==FileMem::nullPtr;
-   assert<IsAllocated>(cond,__FILE__,__LINE__);
+   assert<IsAllocated>(cond,__LINE__);
    cond = hist.addr()!=FileMem::nullPtr;
-   assert<IsNullPtr>(cond,__FILE__,__LINE__);
+   assert<IsNullPtr>(cond,__LINE__);
    _mem->allot(_item);
    _fileName = hist.fileName();
    _object = hist.object();
@@ -111,7 +122,7 @@ void HistItem::copy_from(const HistItem& hist)
 void HistItem::sync()
 {
    bool cond = _item.addr()!=FileMem::nullPtr;
-   assert<IsNullPtr>(cond,__FILE__,__LINE__);
+   assert<IsNullPtr>(cond,__LINE__);
    _mem->sync(_item,FileSync::write);
 }
 
@@ -128,7 +139,7 @@ void HistItem::sync()
 void HistItem::timeStamp(int64_t n)
 {
    bool cond = _item.addr()!=FileMem::nullPtr;
-   assert<IsNullPtr>(cond,__FILE__,__LINE__);
+   assert<IsNullPtr>(cond,__LINE__);
    _item.timeStamp() = n;
 }
 
@@ -142,7 +153,7 @@ void HistItem::timeStamp(int64_t n)
 int64_t HistItem::timeStamp() const
 {
    bool cond = _item.addr()!=FileMem::nullPtr;
-   assert<IsNullPtr>(cond,__FILE__,__LINE__);
+   assert<IsNullPtr>(cond,__LINE__);
    return _item.timeStamp();
 }
 
@@ -157,9 +168,9 @@ int64_t HistItem::timeStamp() const
 void HistItem::fileName(const std::string& str)
 {
    bool cond = _item.addr()!=FileMem::nullPtr;
-   assert<IsNullPtr>(cond,__FILE__,__LINE__);
+   assert<IsNullPtr>(cond,__LINE__);
    cond = _item.fileNamePtr()==FileMem::nullPtr;
-   assert<AlreadySet>(cond,__FILE__,__LINE__);
+   assert<AlreadySet>(cond,__LINE__);
    _fileName = str;
    _item.fileNamePtr() = _fileName.addr();
 }
@@ -174,7 +185,7 @@ void HistItem::fileName(const std::string& str)
 const HistItem::string& HistItem::fileName() const
 {
    bool cond = _item.addr()!=FileMem::nullPtr;
-   assert<IsNullPtr>(cond,__FILE__,__LINE__);
+   assert<IsNullPtr>(cond,__LINE__);
    return *_fileName;
 }
 
@@ -189,9 +200,9 @@ const HistItem::string& HistItem::fileName() const
 void HistItem::object(const std::string& str)
 {
    bool cond = _item.addr()!=FileMem::nullPtr;
-   assert<IsNullPtr>(cond,__FILE__,__LINE__);
+   assert<IsNullPtr>(cond,__LINE__);
    cond = _item.objectPtr()==FileMem::nullPtr;
-   assert<AlreadySet>(cond,__FILE__,__LINE__);
+   assert<AlreadySet>(cond,__LINE__);
    _object = str;
    _item.objectPtr() = _object.addr();
 }
@@ -206,7 +217,7 @@ void HistItem::object(const std::string& str)
 const HistItem::string& HistItem::object() const
 {
    bool cond = _item.addr()!=FileMem::nullPtr;
-   assert<IsNullPtr>(cond,__FILE__,__LINE__);
+   assert<IsNullPtr>(cond,__LINE__);
    return *_object;
 }
 
@@ -221,9 +232,9 @@ const HistItem::string& HistItem::object() const
 void HistItem::command(const std::string& str)
 {
    bool cond = _item.addr()!=FileMem::nullPtr;
-   assert<IsNullPtr>(cond,__FILE__,__LINE__);
+   assert<IsNullPtr>(cond,__LINE__);
    cond = _item.commandPtr()==FileMem::nullPtr;
-   assert<AlreadySet>(cond,__FILE__,__LINE__);
+   assert<AlreadySet>(cond,__LINE__);
    _command = str;
    _item.commandPtr() = _command.addr();
 }
@@ -238,7 +249,7 @@ void HistItem::command(const std::string& str)
 const HistItem::string& HistItem::command() const
 {
    bool cond = _item.addr()!=FileMem::nullPtr;
-   assert<IsNullPtr>(cond,__FILE__,__LINE__);
+   assert<IsNullPtr>(cond,__LINE__);
    return *_command;
 }
 
@@ -253,9 +264,9 @@ const HistItem::string& HistItem::command() const
 void HistItem::next(FileMem::Ptr ptr)
 {
    bool cond = _item.addr()!=FileMem::nullPtr;
-   assert<IsNullPtr>(cond,__FILE__,__LINE__);
+   assert<IsNullPtr>(cond,__LINE__);
    cond = _item.next()==FileMem::nullPtr;
-   assert<AlreadySet>(cond,__FILE__,__LINE__);
+   assert<AlreadySet>(cond,__LINE__);
    _item.next() = ptr;
 }
 
@@ -269,7 +280,7 @@ void HistItem::next(FileMem::Ptr ptr)
 FileMem::Ptr HistItem::next() const
 {
    bool cond = _item.addr()!=FileMem::nullPtr;
-   assert<IsNullPtr>(cond,__FILE__,__LINE__);
+   assert<IsNullPtr>(cond,__LINE__);
    return _item.next();
 }
 
@@ -284,9 +295,9 @@ FileMem::Ptr HistItem::next() const
 void HistItem::childHead(FileMem::Ptr ptr)
 {
    bool cond = _item.addr()!=FileMem::nullPtr;
-   assert<IsNullPtr>(cond,__FILE__,__LINE__);
+   assert<IsNullPtr>(cond,__LINE__);
    cond = _item.childHead()==FileMem::nullPtr;
-   assert<AlreadySet>(cond,__FILE__,__LINE__);
+   assert<AlreadySet>(cond,__LINE__);
    _item.childHead() = ptr;
 }
 
@@ -300,8 +311,28 @@ void HistItem::childHead(FileMem::Ptr ptr)
 FileMem::Ptr HistItem::childHead() const
 {
    bool cond = _item.addr()!=FileMem::nullPtr;
-   assert<IsNullPtr>(cond,__FILE__,__LINE__);
+   assert<IsNullPtr>(cond,__LINE__);
    return _item.childHead();
+}
+
+
+
+/// Get file memory location of history item, if any.
+///
+/// @return Location of item or nullptr if not set.
+FileMem::Ptr HistItem::addr() const
+{
+   return _item.addr();
+}
+
+
+
+/// Get pointer to file memory object where item is located.
+///
+/// @return Pointer to file memory instance.
+FileMem* HistItem::mem() const
+{
+   return _mem;
 }
 
 

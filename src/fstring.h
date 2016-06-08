@@ -1,5 +1,5 @@
-#ifndef FSTRING_H
-#define FSTRING_H
+#ifndef ACCELCOMPENG_FSTRING_H
+#define ACCELCOMPENG_FSTRING_H
 #include "filemem.h"
 namespace AccelCompEng
 {
@@ -45,9 +45,8 @@ public:
    // *
    // * EXCEPTIONS
    // *
-   struct Exception;
-   struct InvalidPtr;
-   struct AlreadySet;
+   ACE_EXCEPTION(AccelCompEng::FString,InvalidPtr)
+   ACE_EXCEPTION(AccelCompEng::FString,AlreadySet)
    // *
    // * DECLERATIONS
    // *
@@ -97,61 +96,6 @@ private:
    Header _hdr;
    /// Actual string data.
    string _str;
-};
-
-
-
-/// Returns file memory location of string or nullptr if not set.
-///
-/// @return File memory location.
-inline FString::FPtr FString::addr() const
-{
-   return _hdr.addr();
-}
-
-
-
-/// Returns read only reference to string, empty if not set.
-///
-/// @return Reference to string.
-inline const FString::string& FString::operator*() const
-{
-   return _str;
-}
-
-
-
-/// Returns read only pointer to string object for function calls.
-///
-/// @return Pointer to string.
-inline const FString::string* FString::operator->() const
-{
-   return &_str;
-}
-
-
-
-/// Generic base exception class for all exceptions thrown in FString class.
-struct FString::Exception : public ::Exception
-{
-   using ::Exception::Exception;
-};
-
-/// The file memory pointer given is either a nullptr or points to a location
-/// in the file memory object that is not a valid file string.
-struct FString::InvalidPtr : public FString::Exception
-{
-   InvalidPtr(const char* file, int line):
-      Exception(file,line,"FString::InvalidPtr")
-   {}
-};
-
-/// Attempting to set the value of a string that has already been set.
-struct FString::AlreadySet : public FString::Exception
-{
-   AlreadySet(const char* file, int line):
-      Exception(file,line,"FString::AlreadySet")
-   {}
 };
 
 

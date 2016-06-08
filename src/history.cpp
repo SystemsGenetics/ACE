@@ -54,6 +54,66 @@ void History::add_child(const History& child)
 
 
 
+/// Test if this object has any children.
+///
+/// @return True if there are children, else false.
+bool History::has_child() const
+{
+   return childHead()!=FileMem::nullPtr;
+}
+
+
+
+/// Get beginning iterator of children list, if any.
+///
+/// @return Beginning of list iterator.
+History::Iterator History::begin()
+{
+   return {mem(),childHead()};
+}
+
+
+
+/// Get one past end of list iterator for any child list.
+///
+/// @return One past end of list iterator.
+History::Iterator History::end()
+{
+   return {mem()};
+}
+
+
+
+/// Get beginning iterator of this iterator's children, if any.
+///
+/// @return Beginning of list iterator.
+History::Iterator History::Iterator::child()
+{
+   return {_mem,_skim.childHead()};
+}
+
+
+
+/// Test if this iterator has any children.
+///
+/// @return True if there are children, else false.
+bool History::Iterator::has_child() const
+{
+   return _skim.childHead()!=FileMem::nullPtr;
+}
+
+
+
+/// Load actual history item that iterator points to, returning the new item.
+///
+/// @return New history item that iterator points to in file memory.
+HistItem History::Iterator::load()
+{
+   return {_mem,_skim.addr()};
+}
+
+
+
 /// Iterate to next history item in list of children.
 void History::Iterator::operator++()
 {
@@ -65,6 +125,16 @@ void History::Iterator::operator++()
          _mem->sync(_skim,FileSync::read);
       }
    }
+}
+
+
+
+/// Test to see if this iterator and one given are not equal.
+///
+/// @return True if iterators are not equal, else false.
+bool History::Iterator::operator!=(const Iterator& cmp)
+{
+   return _skim.addr()!=cmp._skim.addr();
 }
 
 

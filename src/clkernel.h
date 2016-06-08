@@ -1,5 +1,5 @@
-#ifndef CLKERNEL_H
-#define CLKERNEL_H
+#ifndef ACCELCOMPENG_CLKERNEL_H
+#define ACCELCOMPENG_CLKERNEL_H
 #include <CL/cl.h>
 #include "clbuffer.h"
 #include "exception.h"
@@ -11,11 +11,11 @@ namespace AccelCompEng
 class CLKernel
 {
 public:
-   OPENCL_EXCEPTION(CannotSetArg,clSetKernelArg)
-   OPENCL_EXCEPTION(CannotGetInfo,clGetKernelWorkGroupInfo)
-   ACE_EXCEPTION(CLKernel,TooManyDims)
-   ACE_EXCEPTION(CLKernel,DimOutOfRange)
-   ACE_EXCEPTION(CLKernel,NotAlive)
+   ACE_EXCEPTION(AccelCompEng::CLKernel,CannotSetArg)
+   ACE_EXCEPTION(AccelCompEng::CLKernel,CannotGetInfo)
+   ACE_EXCEPTION(AccelCompEng::CLKernel,TooManyDims)
+   ACE_EXCEPTION(AccelCompEng::CLKernel,DimOutOfRange)
+   ACE_EXCEPTION(AccelCompEng::CLKernel,NotAlive)
    constexpr static int _maxDims {16};
    friend class CLCommandQueue;
    friend class CLProgram;
@@ -47,34 +47,34 @@ private:
 
 template<class T> void CLKernel::set_arg(cl_uint index, T arg)
 {
-   assert<NotAlive>(_isAlive,__FILE__,__LINE__);
+   assert<NotAlive>(_isAlive,__LINE__);
    cl_int err = clSetKernelArg(_id,index,sizeof(T),&arg);
-   assert<CannotSetArg>(err==CL_SUCCESS,__FILE__,__LINE__,err);
+   assert<CannotSetArg>(err==CL_SUCCESS,__LINE__);
 }
 
 
 
 template<> inline void CLKernel::set_arg(cl_uint index, size_t lSize)
 {
-   assert<NotAlive>(_isAlive,__FILE__,__LINE__);
+   assert<NotAlive>(_isAlive,__LINE__);
    cl_int err = clSetKernelArg(_id,index,lSize,NULL);
-   assert<CannotSetArg>(err==CL_SUCCESS,__FILE__,__LINE__,err);
+   assert<CannotSetArg>(err==CL_SUCCESS,__LINE__);
 }
 
 
 
 template<class T> void CLKernel::set_arg(cl_uint index, CLBuffer<T>* buffer)
 {
-   assert<NotAlive>(_isAlive,__FILE__,__LINE__);
+   assert<NotAlive>(_isAlive,__LINE__);
    cl_int err = clSetKernelArg(_id,index,sizeof(cl_mem),&(buffer->_id));
-   assert<CannotSetArg>(err==CL_SUCCESS,__FILE__,__LINE__,err);
+   assert<CannotSetArg>(err==CL_SUCCESS,__LINE__);
 }
 
 
 
 template<class... Args> void CLKernel::set_args(Args... args)
 {
-   assert<NotAlive>(_isAlive,__FILE__,__LINE__);
+   assert<NotAlive>(_isAlive,__LINE__);
    set_args_int<0>(args...);
 }
 
