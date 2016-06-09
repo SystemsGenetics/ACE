@@ -1,6 +1,6 @@
-#include "ace.h"
+#include "../src/ace.h"
 #include "unit.h"
-using AccelCompEng;
+using namespace AccelCompEng;
 
 
 

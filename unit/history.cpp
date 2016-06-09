@@ -1,5 +1,6 @@
-#include "history.h"
+#include "../src/history.h"
 #include "unit.h"
+using namespace AccelCompEng;
 
 
 

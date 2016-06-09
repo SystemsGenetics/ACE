@@ -1,5 +1,6 @@
-#include "fstring.h"
+#include "../src/fstring.h"
 #include "unit.h"
+using namespace AccelCompEng;
 
 
 

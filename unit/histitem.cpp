@@ -1,6 +1,7 @@
 #include <string>
 #include "unit.h"
-#include "histitem.h"
+#include "../src/histitem.h"
+using namespace AccelCompEng;
 
 
 

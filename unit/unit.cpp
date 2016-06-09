@@ -1,5 +1,6 @@
 #include "unit.h"
-#include "ace.h"
+#include "../src/ace.h"
+using namespace AccelCompEng;
 
 
 
@@ -8,11 +9,8 @@ int unit::numTestsDone {0};
 
 
 
-AnalyticPlugin* AccelCompEng::new_analytic(const std::string& type)
-{
-   AnalyticPlugin* ret = nullptr;
-   return ret;
-}
+ACE_BEGIN_ANALYTIC
+ACE_END_ANALYTIC
 
 
 

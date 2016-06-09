@@ -1,5 +1,6 @@
-#include "kincfile.h"
+#include "../src/kincfile.h"
 #include "unit.h"
+using namespace AccelCompEng;
 
 
 

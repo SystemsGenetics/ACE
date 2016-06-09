@@ -1,5 +1,6 @@
-#include "getopts.h"
+#include "../src/getopts.h"
 #include "unit.h"
+using namespace AccelCompEng;
 
 
 
