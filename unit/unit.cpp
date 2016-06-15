@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
        unit::fstring::main()&&
        unit::histitem::main()&&
        unit::history::main()&&
-       unit::kincfile::main()&&
+       unit::file::main()&&
        unit::datamap::main())
    {
       unit::complete();

@@ -82,7 +82,7 @@ namespace unit
       bool iter_has_child();
       bool iter_child();
    }
-   namespace kincfile
+   namespace file
    {
       bool main();
       bool construct();

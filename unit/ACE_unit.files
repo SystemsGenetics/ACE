@@ -4,7 +4,7 @@ fstring.cpp
 getopts.cpp
 histitem.cpp
 history.cpp
-kincfile.cpp
+file.cpp
 unit.cpp
 unit.h
 Makefile

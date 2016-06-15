@@ -1,4 +1,4 @@
-#include "../src/kincfile.h"
+#include "../src/file.h"
 #include "unit.h"
 using namespace AccelCompEng;
 
@@ -6,21 +6,21 @@ using namespace AccelCompEng;
 
 namespace unit
 {
-   namespace kincfile
+   namespace file
    {
-      class PublicKincFile : public KincFile
+      class PublicFile : public File
       {
       public:
-         using KincFile::KincFile;
-         using KincFile::ident;
-         using KincFile::head;
+         using File::File;
+         using File::ident;
+         using File::head;
       };
-      constexpr auto tmpFile = "kincfile.tmp";
-      constexpr auto tmpFile2 = "kincfile2.tmp";
-      constexpr auto tmpFile3 = "kincfile3.tmp";
-      constexpr auto invalidFile = "notkincfile.tmp";
-      constexpr auto invalidFile2 = "notkincfile2.tmp";
-      constexpr auto invalidFile3 = "notkincfile3.tmp";
+      constexpr auto tmpFile = "File.tmp";
+      constexpr auto tmpFile2 = "File2.tmp";
+      constexpr auto tmpFile3 = "File3.tmp";
+      constexpr auto invalidFile = "notFile.tmp";
+      constexpr auto invalidFile2 = "notFile2.tmp";
+      constexpr auto invalidFile3 = "notFile3.tmp";
       constexpr const char* identStr = "1234567890123456";
       constexpr int dataPtr = 9999;
       constexpr int tStamp = 8888;
@@ -29,43 +29,43 @@ namespace unit
 
 
 
-void construct_kincfiles()
+void construct_Files()
 {
    {
-      FileMem tf(unit::kincfile::tmpFile);
-      KincFileData::Header header;
+      FileMem tf(unit::file::tmpFile);
+      FileData::Header header;
       tf.allot(header);
       History hist(tf);
-      hist.timeStamp(unit::kincfile::tStamp);
+      hist.timeStamp(unit::file::tStamp);
       hist.sync();
       header.histHead() = hist.addr();
-      header.dataHead() = unit::kincfile::dataPtr;
+      header.dataHead() = unit::file::dataPtr;
       FString ident(&tf);
-      ident = unit::kincfile::identStr;
+      ident = unit::file::identStr;
       header.ident() = ident.addr();
-      memcpy(header.idString(),KincFileData::idString,KincFileData::idSz);
+      memcpy(header.idString(),FileData::idString,FileData::idSz);
       tf.sync(header,FileSync::write);
    }
    {
-      FileMem tf(unit::kincfile::invalidFile);
-      KincFileData::Header header;
+      FileMem tf(unit::file::invalidFile);
+      FileData::Header header;
       tf.allot(header);
       History hist(tf);
       header.histHead() = hist.addr();
-      char buffer[KincFileData::idSz] {'\0'};
-      memcpy(header.idString(),buffer,KincFileData::idSz);
+      char buffer[FileData::idSz] {'\0'};
+      memcpy(header.idString(),buffer,FileData::idSz);
       tf.sync(header,FileSync::write);
    }
    {
-      FileMem tf(unit::kincfile::invalidFile2);
-      KincFileData::Header header;
+      FileMem tf(unit::file::invalidFile2);
+      FileData::Header header;
       tf.allot(header);
       header.histHead() = FileMem::nullPtr;
-      memcpy(header.idString(),KincFileData::idString,KincFileData::idSz);
+      memcpy(header.idString(),FileData::idString,FileData::idSz);
       tf.sync(header,FileSync::write);
    }
    {
-      FileMem tf(unit::kincfile::invalidFile3);
+      FileMem tf(unit::file::invalidFile3);
       FString data(&tf);
       data = "invalid";
    }
@@ -73,13 +73,13 @@ void construct_kincfiles()
 
 
 
-bool unit::kincfile::main()
+bool unit::file::main()
 {
    bool ret = false;
-   header("KincFile");
+   header("File");
    try
    {
-      construct_kincfiles();
+      construct_Files();
       ret = construct()&&
             history()&&
             clear()&&
@@ -100,26 +100,26 @@ bool unit::kincfile::main()
 
 
 
-bool unit::kincfile::construct()
+bool unit::file::construct()
 {
    bool cont = true;
    {
       start();
-      KincFile t(tmpFile2);
+      File t(tmpFile2);
       bool test = t.is_new();
       cont = cont&&finish(test,"construct1");
    }
    if (cont)
    {
       start();
-      KincFile t(tmpFile2);
+      File t(tmpFile2);
       bool test = !t.is_new();
       cont = cont&&finish(test,"construct2");
    }
    if (cont)
    {
       start();
-      KincFile t(tmpFile);
+      File t(tmpFile);
       bool test = !t.is_new();
       cont = cont&&finish(test,"construct3");
    }
@@ -129,9 +129,9 @@ bool unit::kincfile::construct()
       bool test = false;
       try
       {
-         KincFile t(invalidFile);
+         File t(invalidFile);
       }
-      catch (KincFile::InvalidFile)
+      catch (File::InvalidFile)
       {
          test = true;
       }
@@ -143,9 +143,9 @@ bool unit::kincfile::construct()
       bool test = false;
       try
       {
-         KincFile t(invalidFile2);
+         File t(invalidFile2);
       }
-      catch (KincFile::InvalidFile)
+      catch (File::InvalidFile)
       {
          test = true;
       }
@@ -157,9 +157,9 @@ bool unit::kincfile::construct()
       bool test = false;
       try
       {
-         KincFile t(invalidFile3);
+         File t(invalidFile3);
       }
-      catch (KincFile::InvalidFile)
+      catch (File::InvalidFile)
       {
          test = true;
       }
@@ -170,20 +170,20 @@ bool unit::kincfile::construct()
 
 
 
-bool unit::kincfile::history()
+bool unit::file::history()
 {
    start();
-   KincFile t(tmpFile);
+   File t(tmpFile);
    bool test = t.history().timeStamp()==tStamp;
    return finish(test,"history1");
 }
 
 
 
-bool unit::kincfile::clear()
+bool unit::file::clear()
 {
    start();
-   KincFile t(tmpFile2);
+   File t(tmpFile2);
    t.history().timeStamp(6666);
    t.history().sync();
    t.clear();
@@ -193,26 +193,26 @@ bool unit::kincfile::clear()
 
 
 
-bool unit::kincfile::is_new()
+bool unit::file::is_new()
 {
    bool cont {true};
    {
       start();
-      KincFile t(tmpFile3);
+      File t(tmpFile3);
       bool test = t.is_new();
       cont = cont&&finish(test,"is_new1");
    }
    if (cont)
    {
       start();
-      KincFile t(tmpFile3);
+      File t(tmpFile3);
       bool test = !t.is_new();
       cont = cont&&finish(test,"is_new2");
    }
    if (cont)
    {
       start();
-      KincFile t(tmpFile3);
+      File t(tmpFile3);
       t.clear();
       bool test = t.is_new();
       cont = cont&&finish(test,"is_new3");
@@ -222,13 +222,13 @@ bool unit::kincfile::is_new()
 
 
 
-bool unit::kincfile::ident()
+bool unit::file::ident()
 {
    std::string ident(identStr);
    bool cont = true;
    {
       start();
-      PublicKincFile t(tmpFile);
+      PublicFile t(tmpFile);
       bool test = t.ident()==ident;
       cont = cont&&finish(test,"ident1");
    }
@@ -236,23 +236,23 @@ bool unit::kincfile::ident()
    {
       start();
       {
-         PublicKincFile t(tmpFile2);
+         PublicFile t(tmpFile2);
          t.ident(ident);
       }
-      PublicKincFile t(tmpFile2);
+      PublicFile t(tmpFile2);
       bool test = t.ident()==ident;
       cont = cont&&finish(test,"ident2");
    }
    if (cont)
    {
       start();
-      PublicKincFile t(tmpFile2);
+      PublicFile t(tmpFile2);
       bool test = false;
       try
       {
          t.ident(ident);
       }
-      catch (KincFile::AlreadySet)
+      catch (File::AlreadySet)
       {
          test = true;
       }
@@ -263,12 +263,12 @@ bool unit::kincfile::ident()
 
 
 
-bool unit::kincfile::head()
+bool unit::file::head()
 {
    bool cont = true;
    {
       start();
-      PublicKincFile t(tmpFile);
+      PublicFile t(tmpFile);
       bool test = t.head()==dataPtr;
       cont = cont&&finish(test,"head1");
    }
@@ -276,10 +276,10 @@ bool unit::kincfile::head()
    {
       start();
       {
-         PublicKincFile t(tmpFile2);
+         PublicFile t(tmpFile2);
          t.head(dataPtr);
       }
-      PublicKincFile t(tmpFile2);
+      PublicFile t(tmpFile2);
       bool test = t.head()==dataPtr;
       cont = cont&&finish(test,"head2");
    }
