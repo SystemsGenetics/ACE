@@ -22,26 +22,15 @@ bool Console::_lock {false};
 
 
 
-/// @brief Prepares console interface.
-///
-/// Initializes internal variables, locks console interface, and sets terminal
-/// header.
-///
-/// @param argc The argc argument from the main function.
-/// @param argv The argv argument from the main function.
-/// @param tm The terminal interface for the program.
-/// @param dmap The data list manager for the program.
-///
-/// @exception InvalidUse A second instance of this class was being created
-/// which is not allowed.
-Console::Console(int argc, char* argv[], Terminal& tm, DataMap& dmap):
+Console::Console(int argc, char* argv[], Terminal& tm, DataMap& dmap,
+                 const char* header):
    _tm {tm},
    _dataMap {dmap},
-   _device {nullptr}
+   _device {nullptr},
+   _header(header)
 {
    assert<InvalidUse>(!_lock,__LINE__);
    _lock = true;
-   _tm.header("KINC:> ");
 }
 
 
@@ -61,7 +50,6 @@ Console::~Console()
 /// Prints welcome message and goes directly to terminal loop.
 void Console::run()
 {
-   _tm << "Welcome to KINC\nAlpha Version 0.1\n\n";
    terminal_loop();
 }
 
@@ -79,7 +67,16 @@ void Console::terminal_loop()
    bool alive = true;
    while (alive)
    {
+      string header {_header};
       string line;
+      if (_dataMap.selected()!=_dataMap.end())
+      {
+         header += "[";
+         header += _dataMap.selected().file();
+         header += "]";
+      }
+      header += ":>";
+      _tm.header(header);
       _tm >> line;
       _tm << "\n";
       if (!line.empty())
@@ -377,12 +374,6 @@ void Console::data_open(GetOpts& ops)
       buffer << "error: '" << type << "' is not valid data type.";
       throw CommandError("open",buffer.str());
    }
-   if (willSelect)
-   {
-      std::ostringstream buffer;
-      buffer << "KINC[" << file << "]:> ";
-      _tm.header(buffer.str());
-   }
    if (np->is_new())
    {
       time_t t;
@@ -426,10 +417,6 @@ void Console::data_close(GetOpts& ops)
       throw CommandError("close",buffer.str());
    }
    _tm << ops.com_front() << " data file closed." << Terminal::endl;
-   if (wasSelected)
-   {
-      _tm.header("KINC:> ");
-   }
 }
 
 
@@ -457,9 +444,6 @@ void Console::data_select(GetOpts& ops)
       throw CommandError("select",buffer.str());
    }
    _tm << ops.com_front() << " data file selected." << Terminal::endl;
-   std::ostringstream buffer;
-   buffer << "KINC[" << ops.com_front() << "]:> ";
-   _tm.header(buffer.str());
 }
 
 
@@ -470,7 +454,6 @@ void Console::data_clear()
    if (_dataMap.unselect())
    {
       _tm << "data selection cleared." << Terminal::endl;
-      _tm.header("KINC:> ");
    }
    else
    {

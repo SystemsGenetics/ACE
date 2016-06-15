@@ -29,7 +29,7 @@ namespace AccelCompEng
 
 
 
-int run(int,char*[]);
+int run(const char*,int,char*[]);
 
 
 

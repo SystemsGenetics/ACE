@@ -31,5 +31,5 @@ int main(int argc, char* argv[])
    {
       exit(1);
    }
-   return AccelCompEng::run(argc,argv);
+   return AccelCompEng::run("ACE_TEST",argc,argv);
 }

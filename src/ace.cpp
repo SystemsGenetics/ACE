@@ -6,14 +6,14 @@ namespace AccelCompEng
 
 
 
-int run(int argc, char* argv[])
+int run(const char* header, int argc, char* argv[])
 {
    try
    {
       DataMap dataMap;
       LinuxTerm::stty_raw();
       LinuxTerm terminal;
-      Console console(argc,argv,terminal,dataMap);
+      Console console(argc,argv,terminal,dataMap,header);
       console.run();
    }
    catch (...)
