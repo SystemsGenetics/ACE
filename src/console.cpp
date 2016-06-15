@@ -360,10 +360,10 @@ void Console::data_open(GetOpts& ops)
       throw CommandError("open","syntax error detected in first argument.");
    }
    bool willSelect {ops.has_opt("select")};
-   KincFile* np;
+   File* np;
    try
    {
-      np = dynamic_cast<KincFile*>(_dataMap.open(file,type,willSelect));
+      np = dynamic_cast<File*>(_dataMap.open(file,type,willSelect));
    }
    catch (DataMap::AlreadyExists)
    {
@@ -508,7 +508,7 @@ void Console::data_history(GetOpts& ops)
    {
       throw CommandError("history","command requires 1 argument.");
    }
-   KincFile* kp = dynamic_cast<KincFile*>(_dataMap.find(ops.com_front()));
+   File* kp = dynamic_cast<File*>(_dataMap.find(ops.com_front()));
    if (!kp)
    {
       std::ostringstream buffer;
@@ -707,7 +707,7 @@ void Console::analytic(GetOpts& ops)
             throw CommandError("analytic",
                                "cannot overwrite non-empty data object.");
          }
-         KincFile& k = *dynamic_cast<KincFile*>(d);
+         File& k = *dynamic_cast<File*>(d);
          k.clear();
          History& h = k.history();
          time_t t;

@@ -20,7 +20,7 @@
 #include "getopts.h"
 #include "histitem.h"
 #include "history.h"
-#include "kincfile.h"
+#include "file.h"
 #include "linuxterm.h"
 #include "terminal.h"
 #include "plugins.h"

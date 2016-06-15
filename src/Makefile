@@ -3,7 +3,7 @@ MAKEFLAGS := $(MAKEFLAGS) --no-print-directory
 CXX := g++
 AR := ar
 NAME := ace
-FILES := KINC.files
+FILES := ACE.files
 
 
 

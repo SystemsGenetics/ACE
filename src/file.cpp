@@ -1,5 +1,5 @@
 #include <cstring>
-#include "kincfile.h"
+#include "file.h"
 namespace AccelCompEng
 {
 
@@ -14,7 +14,7 @@ namespace AccelCompEng
 /// @param fileName Location of file for memory object.
 ///
 /// @exception InvalidFile The file being opened is not a valid KINC file.
-KincFile::KincFile(const std::string& fileName):
+File::File(const std::string& fileName):
    _mem(fileName),
    _ident(&_mem)
 {
@@ -51,7 +51,7 @@ KincFile::KincFile(const std::string& fileName):
 ///
 /// Clear all data in this object, including all data plugin memory, making this
 /// object a new KINC file with no information.
-void KincFile::clear()
+void File::clear()
 {
    _hist.reset();
    _new = true;
@@ -66,7 +66,7 @@ void KincFile::clear()
 /// Tests to see if this object created a new KINC file when constructed.
 ///
 /// @return True if this is a new file, else false.
-bool KincFile::is_new()
+bool File::is_new()
 {
    return _new;
 }
@@ -76,7 +76,7 @@ bool KincFile::is_new()
 /// Get reference of history object for this object.
 ///
 /// @return History object.
-History& KincFile::history()
+History& File::history()
 {
    return *_hist;
 }
@@ -86,7 +86,7 @@ History& KincFile::history()
 /// Get data plugin ident value for this object.
 ///
 /// @return data plugin ident.
-KincFile::string KincFile::ident() const
+File::string File::ident() const
 {
    return *_ident;
 }
@@ -98,7 +98,7 @@ KincFile::string KincFile::ident() const
 /// @param id Value for ident.
 ///
 /// @exception AlreadySet The ident value for data plugin has already been set.
-void KincFile::ident(const string& id)
+void File::ident(const string& id)
 {
    try
    {
@@ -120,7 +120,7 @@ void KincFile::ident(const string& id)
 /// this object.
 ///
 /// @return Location to beginning of data plugin memory.
-FileMem::Ptr KincFile::head() const
+FileMem::Ptr File::head() const
 {
    return _hdr.dataHead();
 }
@@ -130,7 +130,7 @@ FileMem::Ptr KincFile::head() const
 /// Set value of file memory location for beginning of data plugin memory.
 ///
 /// @param ptr Location of data plugin memory.
-void KincFile::head(FileMem::Ptr ptr)
+void File::head(FileMem::Ptr ptr)
 {
    _hdr.dataHead() = ptr;
    _mem.sync(_hdr,FileSync::write);
@@ -141,7 +141,7 @@ void KincFile::head(FileMem::Ptr ptr)
 /// Get pointer of file memory object for this object.
 ///
 /// @return File memory object.
-FileMem* KincFile::mem()
+FileMem* File::mem()
 {
    return &_mem;
 }
@@ -152,7 +152,7 @@ FileMem* KincFile::mem()
 ///
 /// Create a new KINC file for this object, writing to this object's file memory
 /// object.
-void KincFile::create()
+void File::create()
 {
    _mem.allot(_hdr);
    _hist = hptr(new History(_mem));

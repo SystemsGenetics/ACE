@@ -2,7 +2,7 @@
 #define ACCELCOMPENG_DATAPLUGIN_H
 #include <string>
 #include "data.h"
-#include "kincfile.h"
+#include "file.h"
 #include "exception.h"
 namespace AccelCompEng
 {
@@ -16,7 +16,7 @@ namespace AccelCompEng
 /// the interface Data class that defines the virtual functions data plugins
 /// must implement along with the KincFile helper class for manipulating the
 /// associated binary file.
-class DataPlugin : public Data, public KincFile
+class DataPlugin : public Data, public File
 {
 public:
    // *
@@ -64,7 +64,7 @@ inline DataPlugin::string DataPlugin::type()
 /// @param fileName Name of file where data object exists.
 inline DataPlugin::DataPlugin(const string& type, const string& fileName):
    _type(type),
-   KincFile(fileName)
+   File(fileName)
 {}
 
 

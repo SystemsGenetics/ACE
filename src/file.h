@@ -1,5 +1,5 @@
-#ifndef ACCELCOMPENG_KINCFILE_H
-#define ACCELCOMPENG_KINCFILE_H
+#ifndef ACCELCOMPENG_File_H
+#define ACCELCOMPENG_File_H
 #include <string>
 #include <memory>
 #include "filemem.h"
@@ -10,7 +10,7 @@ namespace AccelCompEng
 
 
 
-namespace KincFileData
+namespace FileData
 {
    struct Header;
    constexpr FileMem::SizeT idSz = 4;
@@ -18,7 +18,7 @@ namespace KincFileData
    constexpr auto idString = "\113\111\116\103";
 }
 
-struct KincFileData::Header : FileMem::Static<hdrSz>
+struct FileData::Header : FileMem::Static<hdrSz>
 {
    using FPtr = FileMem::Ptr;
    using FSizeT = FileMem::SizeT;
@@ -38,14 +38,14 @@ struct KincFileData::Header : FileMem::Static<hdrSz>
 /// Opens and manages a file memory object for a data plugin object. Provides
 /// functions for the data plugin to interface with the file memory object. Also
 /// provides a history object that is stored within the same file.
-class KincFile
+class File
 {
 public:
    // *
    // * EXCEPTIONS
    // *
-   ACE_EXCEPTION(AccelCompEng::KincFile,InvalidFile)
-   ACE_EXCEPTION(AccelCompEng::KincFile,AlreadySet)
+   ACE_EXCEPTION(AccelCompEng::File,InvalidFile)
+   ACE_EXCEPTION(AccelCompEng::File,AlreadySet)
    // *
    // * DECLERATIONS
    // *
@@ -54,17 +54,17 @@ public:
    // *
    // * BASIC METHODS
    // *
-   KincFile(const string&);
+   File(const string&);
    // *
    // * COPY METHODS
    // *
-   KincFile(const KincFile&) = delete;
-   KincFile& operator=(const KincFile&) = delete;
+   File(const File&) = delete;
+   File& operator=(const File&) = delete;
    // *
    // * MOVE METHODS
    // *
-   KincFile(KincFile&&) = delete;
-   KincFile& operator=(KincFile&&) = delete;
+   File(File&&) = delete;
+   File& operator=(File&&) = delete;
    // *
    // * FUNCTIONS
    // *
@@ -84,7 +84,7 @@ private:
    // *
    // * DECLERATIONS
    // *
-   using Header = KincFileData::Header;
+   using Header = FileData::Header;
    using hptr = std::unique_ptr<History>;
    // *
    // * FUNCTIONS
@@ -93,9 +93,9 @@ private:
    // *
    // * CONSTANTS
    // *
-   constexpr static auto _idString  = KincFileData::idString;
-   constexpr static auto _idSz = KincFileData::idSz;
-   constexpr static auto _hdrSz = KincFileData::hdrSz;
+   constexpr static auto _idString  = FileData::idString;
+   constexpr static auto _idSz = FileData::idSz;
+   constexpr static auto _hdrSz = FileData::hdrSz;
    // *
    // * VARIABLES
    // *
