@@ -8,12 +8,11 @@
 #define ACCELCOMPENG_EXCEPTION_H
 #include <string>
 #include <sstream>
-#define ACE_EXCEPTION(N,X) struct X : public ::AccelCompEng::Exception\
-                           {\
-                              X(int line):\
-                                 Exception(#N,#X,line)\
-                              {}\
-                           };
+#define ACE_EXCEPTION(N,X) \
+struct X : public ::AccelCompEng::Exception\
+{\
+   X(int line): Exception(#N,#X,line) {}\
+};
 namespace AccelCompEng
 {
 
