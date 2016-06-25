@@ -6,32 +6,6 @@ namespace AccelCompEng
 
 
 
-namespace FStringData
-{
-   struct Header;
-   struct String;
-   constexpr FileMem::SizeT hdrSz = 3;
-   constexpr uint8_t strip = 170;
-}
-
-struct FStringData::Header : FileMem::Static<hdrSz>
-{
-   using Static<hdrSz>::Static;
-   uint8_t& stripe() { get<uint8_t>(0); }
-   uint16_t& sSize() { get<uint16_t>(1); }
-};
-
-struct FStringData::String : FileMem::Object
-{
-   using FPtr = FileMem::Ptr;
-   using FSizeT = FileMem::SizeT;
-   using Object::operator=;
-   String(FSizeT size, FPtr ptr = FileMem::nullPtr): Object(size,ptr) {}
-   char* c_str() { &get<char>(0); }
-};
-
-
-
 /// @ingroup dataplugin
 /// @brief File memory string.
 ///
@@ -79,10 +53,25 @@ public:
    FString& operator=(const string&);
 private:
    // *
-   // * DECLERATIONS
+   // * CONSTANTS
    // *
-   using Header = FStringData::Header;
-   using String = FStringData::String;
+   constexpr static FileMem::SizeT _hdrSz {3};
+   constexpr static uint8_t _strip {170};
+   // *
+   // * FILEMEM TYPES
+   // *
+   ACE_FMEM_STATIC(Header,_hdrSz)
+      ACE_FMEM_VAL(stripe,uint8_t,0)
+      ACE_FMEM_VAL(sSize,uint16_t,1)
+   ACE_FMEM_END()
+   ACE_FMEM_OBJECT(String)
+      using FPtr = FileMem::Ptr;
+      using FSizeT = FileMem::SizeT;
+      String(FSizeT size, FPtr ptr = FileMem::nullPtr):
+         Object(size,ptr) {}
+      using Object::operator=;
+      char* c_str() { &get<char>(0); }
+   ACE_FMEM_END()
    // *
    // * FUNCTIONS
    // *

@@ -10,28 +10,6 @@ namespace AccelCompEng
 
 
 
-namespace FileData
-{
-   struct Header;
-   constexpr FileMem::SizeT idSz = 4;
-   constexpr FileMem::SizeT hdrSz = idSz+24;
-   constexpr auto idString = "\113\111\116\103";
-}
-
-struct FileData::Header : FileMem::Static<hdrSz>
-{
-   using FPtr = FileMem::Ptr;
-   using FSizeT = FileMem::SizeT;
-   using Static<hdrSz>::Static;
-   char* idString() { &get<char>(0); }
-   FPtr& histHead() { get<FPtr>(idSz); }
-   FPtr& dataHead() { get<FPtr>(idSz+8); }
-   const FPtr& dataHead() const { get<FPtr>(idSz+8); }
-   FPtr& ident() { get<FPtr>(idSz+16); }
-};
-
-
-
 /// @ingroup dataplugin
 /// @brief Base file utility class for data plugin.
 ///
@@ -79,23 +57,33 @@ protected:
    void ident(const string&);
    FPtr head() const;
    void head(FPtr);
-   FileMem* mem();//NOT TESTED.
+   FileMem* mem();
 private:
+   // *
+   // * CONSTANTS
+   // *
+   constexpr static int _hdrSz {28};
+   constexpr static int _idSz {4};
+   constexpr static auto _idString = "\113\111\116\103";
+   // *
+   // * FILEMEM TYPES
+   // *
+   ACE_FMEM_STATIC(Header,_hdrSz)
+      using FPtr = FileMem::Ptr;
+      char* idString() { &get<char>(0); }
+      ACE_FMEM_VAL(histHead,FPtr,_idSz)
+      ACE_FMEM_VAL(dataHead,FPtr,_idSz+8)
+      ACE_FMEM_VAL(ident,FPtr,_idSz+16)
+   ACE_FMEM_END()
    // *
    // * DECLERATIONS
    // *
-   using Header = FileData::Header;
+   //using Header = FileData::Header;
    using hptr = std::unique_ptr<History>;
    // *
    // * FUNCTIONS
    // *
    void create();
-   // *
-   // * CONSTANTS
-   // *
-   constexpr static auto _idString  = FileData::idString;
-   constexpr static auto _idSz = FileData::idSz;
-   constexpr static auto _hdrSz = FileData::hdrSz;
    // *
    // * VARIABLES
    // *

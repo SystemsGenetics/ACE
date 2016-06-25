@@ -117,7 +117,7 @@ FString& FString::operator=(const string& nStr)
    String fStr(nStr.size()+1);
    _mem->allot(_hdr);
    _mem->allot(fStr);
-   _hdr.stripe() = FStringData::strip;
+   _hdr.stripe() = _strip;
    _hdr.sSize() = nStr.size()+1;
    memcpy(fStr.c_str(),nStr.c_str(),nStr.size()+1);
    _mem->sync(_hdr,FileSync::write);
@@ -136,9 +136,9 @@ FString& FString::operator=(const string& nStr)
 inline void FString::load()
 {
    _mem->sync(_hdr,FileSync::read);
-   bool cond = _hdr.stripe()==FStringData::strip;
+   bool cond = _hdr.stripe()==_strip;
    assert<InvalidPtr>(cond,__LINE__);
-   String fStr(_hdr.sSize(),_hdr.addr()+FStringData::hdrSz);
+   String fStr(_hdr.sSize(),_hdr.addr()+_hdrSz);
    _mem->sync(fStr,FileSync::read);
    _str = fStr.c_str();
 }

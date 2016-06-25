@@ -8,41 +8,6 @@ namespace AccelCompEng
 {
 
 
-
-namespace HistItemData
-{
-   struct Skim;
-   struct Item;
-   constexpr FileMem::SizeT skimSz = 16;
-   constexpr FileMem::SizeT nodeSz = 48;
-}
-
-struct HistItemData::Skim : FileMem::Static<skimSz>
-{
-   using FPtr = FileMem::Ptr;
-   using Static<skimSz>::Static;
-   FPtr& childHead() { get<FPtr>(0); }
-   const FPtr& childHead() const { get<FPtr>(0); }
-   FPtr& next() { get<FPtr>(8); }
-};
-
-struct HistItemData::Item : FileMem::Static<nodeSz>
-{
-   using FPtr = FileMem::Ptr;
-   using Static<nodeSz>::Static;
-   FPtr& childHead() { get<FPtr>(0); }
-   const FPtr& childHead() const { get<FPtr>(0); }
-   FPtr& next() { get<FPtr>(8); }
-   const FPtr& next() const { get<FPtr>(8); }
-   int64_t& timeStamp() { get<int64_t>(16); }
-   const int64_t& timeStamp() const { get<int64_t>(16); }
-   FPtr& fileNamePtr() { get<FPtr>(24); }
-   FPtr& objectPtr() { get<FPtr>(32); }
-   FPtr& commandPtr() { get<FPtr>(40); }
-};
-
-
-
 /// @brief History item in file memory.
 ///
 /// Represents a single history item in file memory. Has ability to create a new
@@ -72,6 +37,14 @@ public:
    ACE_EXCEPTION(AccelCompEng::HistItem,IsAllocated)
    ACE_EXCEPTION(AccelCompEng::HistItem,IsNullPtr)
    ACE_EXCEPTION(AccelCompEng::HistItem,InvalidItem)
+   // *
+   // * FILEMEM TYPES
+   // *
+   ACE_FMEM_STATIC(Skim,16)
+      using FPtr = FileMem::Ptr;
+      ACE_FMEM_VAL(childHead,FPtr,0)
+      ACE_FMEM_VAL(next,FPtr,8)
+   ACE_FMEM_END()
    // *
    // * DECLERATIONS
    // *
@@ -119,9 +92,21 @@ public:
    void operator=(FPtr);
 private:
    // *
+   // * FILEMEM TYPES
+   // *
+   ACE_FMEM_STATIC(Item,48)
+      using FPtr = FileMem::Ptr;
+      ACE_FMEM_VAL(childHead,FPtr,0)
+      ACE_FMEM_VAL(next,FPtr,8)
+      ACE_FMEM_VAL(timeStamp,FPtr,16)
+      ACE_FMEM_VAL(fileNamePtr,FPtr,24)
+      ACE_FMEM_VAL(objectPtr,FPtr,32)
+      ACE_FMEM_VAL(commandPtr,FPtr,40)
+   ACE_FMEM_END()
+   // *
+   // *
    // * DECLERATIONS
    // *
-   using Item = HistItemData::Item;
    using FSizeT = FileMem::SizeT;
    // *
    // * FUNCTIONS

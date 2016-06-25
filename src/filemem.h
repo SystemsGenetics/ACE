@@ -6,6 +6,17 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "exception.h"
+#define ACE_FMEM_STATIC(N,S) \
+struct N : public ::AccelCompEng::FileMem::Static<S>\
+{\
+   using ::AccelCompEng::FileMem::Static<S>::Static;
+#define ACE_FMEM_OBJECT(N) \
+struct N : public ::AccelCompEng::FileMem::Object\
+{
+#define ACE_FMEM_VAL(N,T,L) \
+   T& N() { get<T>(L); }\
+   const T& N() const { get<T>(L); }
+#define ACE_FMEM_END() };
 namespace AccelCompEng
 {
 

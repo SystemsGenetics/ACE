@@ -82,7 +82,7 @@ public:
    void operator++();
    bool operator!=(const Iterator&);
 private:
-   using Skim = HistItemData::Skim;
+   using Skim = HistItem::Skim;
    // *
    // * BASIC METHODS
    // *
