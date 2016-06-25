@@ -8,6 +8,16 @@ namespace unit
 {
    namespace file
    {
+      constexpr static int hdrSzVal {28};
+      constexpr static int idSzVal {4};
+      constexpr static auto idStringVal = "\113\111\116\103";
+      ACE_FMEM_STATIC(Header,hdrSzVal)
+         using FPtr = FileMem::Ptr;
+         char* idString() { &get<char>(0); }
+         ACE_FMEM_VAL(histHead,FPtr,idSzVal)
+         ACE_FMEM_VAL(dataHead,FPtr,idSzVal+8)
+         ACE_FMEM_VAL(ident,FPtr,idSzVal+16)
+      ACE_FMEM_END()
       class PublicFile : public File
       {
       public:
@@ -33,7 +43,7 @@ void construct_Files()
 {
    {
       FileMem tf(unit::file::tmpFile);
-      FileData::Header header;
+      unit::file::Header header;
       tf.allot(header);
       History hist(tf);
       hist.timeStamp(unit::file::tStamp);
@@ -43,25 +53,25 @@ void construct_Files()
       FString ident(&tf);
       ident = unit::file::identStr;
       header.ident() = ident.addr();
-      memcpy(header.idString(),FileData::idString,FileData::idSz);
+      memcpy(header.idString(),unit::file::idStringVal,unit::file::idSzVal);
       tf.sync(header,FileSync::write);
    }
    {
       FileMem tf(unit::file::invalidFile);
-      FileData::Header header;
+      unit::file::Header header;
       tf.allot(header);
       History hist(tf);
       header.histHead() = hist.addr();
-      char buffer[FileData::idSz] {'\0'};
-      memcpy(header.idString(),buffer,FileData::idSz);
+      char buffer[unit::file::idSzVal] {'\0'};
+      memcpy(header.idString(),buffer,unit::file::idSzVal);
       tf.sync(header,FileSync::write);
    }
    {
       FileMem tf(unit::file::invalidFile2);
-      FileData::Header header;
+      unit::file::Header header;
       tf.allot(header);
       header.histHead() = FileMem::nullPtr;
-      memcpy(header.idString(),FileData::idString,FileData::idSz);
+      memcpy(header.idString(),unit::file::idStringVal,unit::file::idSzVal);
       tf.sync(header,FileSync::write);
    }
    {

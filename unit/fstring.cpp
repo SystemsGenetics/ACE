@@ -8,12 +8,13 @@ namespace unit
 {
    namespace fstring
    {
+      constexpr int stripeVal {170};
       constexpr const char* testStr = "hello world! A really long string.";
       struct TestString : FileMem::Static<38>
       {
          TestString()
          {
-            stripe() = FStringData::strip;
+            stripe() = stripeVal;
             sSize() = 35;
             memcpy(c_str(),testStr,35);
          }
@@ -87,7 +88,7 @@ bool unit::fstring::construct()
          FileMem tf(tmpFile);
          tf.clear();
          TestString tmp;
-         tmp.stripe() = FStringData::strip+1;
+         tmp.stripe() = stripeVal+1;
          tf.allot(tmp);
          tf.sync(tmp,FileSync::write);
       }
