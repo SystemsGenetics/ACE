@@ -4,6 +4,14 @@
 #include "data.h"
 #include "file.h"
 #include "exception.h"
+#define ACE_DATA_HEADER() \
+using FPtr = ::AccelCompEng::FileMem::Ptr;\
+using GetOpts = ::AccelCompEng::GetOpts;\
+using Terminal = ::AccelCompEng::Terminal;\
+using FileMem = ::AccelCompEng::FileMem;\
+using FSync = ::AccelCompEng::FileSync;\
+using File = ::AccelCompEng::File;\
+using FString = ::AccelCompEng::FString;
 namespace AccelCompEng
 {
 
@@ -38,6 +46,10 @@ public:
    // *
    string type();
 protected:
+   // *
+   // * CONSTANTS
+   // *
+   constexpr static FileMem::Ptr fNullPtr {AccelCompEng::FileMem::nullPtr};
    // *
    // * BASIC METHODS
    // *
