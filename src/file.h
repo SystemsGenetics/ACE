@@ -57,7 +57,7 @@ protected:
    void ident(const string&);
    FPtr head() const;
    void head(FPtr);
-   FileMem* mem();
+   FileMem& mem();
 private:
    // *
    // * CONSTANTS

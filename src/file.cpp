@@ -141,9 +141,9 @@ void File::head(FileMem::Ptr ptr)
 /// Get pointer of file memory object for this object.
 ///
 /// @return File memory object.
-FileMem* File::mem()
+FileMem& File::mem()
 {
-   return &_mem;
+   return _mem;
 }
 
 
