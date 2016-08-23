@@ -16,9 +16,10 @@ CLCommandQueue::~CLCommandQueue()
 
 void CLCommandQueue::init(cl_context cid, cl_device_id did)
 {
+   static const char* failInit = "Cannot create OpenCL command queue";
    cl_int err;
    _id = clCreateCommandQueue(cid,did,0x0,&err);
-   assert<CannotCreate>(err==CL_SUCCESS,__LINE__);
+   classert<CannotCreate>(err,__LINE__,failInit);
    _initd = true;
 }
 
@@ -26,12 +27,15 @@ void CLCommandQueue::init(cl_context cid, cl_device_id did)
 
 CLEvent CLCommandQueue::add_task(CLKernel& kernel)
 {
-   assert<NotInitialized>(_initd,__LINE__);
-   assert<DeadKernelUsed>(kernel._isAlive,__LINE__);
+   static const char* notInit = "OpenCL command queue not initialized";
+   static const char* nullKern = "Cannot use OpenCL kernel that is null";
+   static const char* failEnqueue = "Failed adding OpenCL kernel to command queue";
+   assert<NotInitialized>(_initd,__LINE__,notInit);
+   assert<NullKernelUsed>(kernel._isAlive,__LINE__,nullKern);
    cl_event ret;
    cl_int err;
    err = clEnqueueTask(_id,kernel._id,0,NULL,&ret);
-   assert<CannotAddTask>(err==CL_SUCCESS,__LINE__);
+   classert<CannotAddTask>(err,__LINE__,failEnqueue);
    return CLEvent(ret);
 }
 
@@ -39,15 +43,18 @@ CLEvent CLCommandQueue::add_task(CLKernel& kernel)
 
 CLEvent CLCommandQueue::add_swarm(CLKernel& kernel)
 {
-   assert<NotInitialized>(_initd,__LINE__);
-   assert<DeadKernelUsed>(kernel._isAlive,__LINE__);
+   static const char* notInit = "OpenCL command queue not initialized";
+   static const char* nullKern = "Cannot use OpenCL kernel that is null";
+   static const char* failEnqueue = "Failed adding OpenCL kernel swarm to command queue";
+   assert<NotInitialized>(_initd,__LINE__,notInit);
+   assert<NullKernelUsed>(kernel._isAlive,__LINE__,nullKern);
    cl_event ret;
    const size_t offsets[kernel._dims] = {0};
    cl_int err;
    err = clEnqueueNDRangeKernel(_id,kernel._id,kernel._dims,offsets,
                                 kernel._gSizes,kernel._lSizes,
                                 0,NULL,&ret);
-   assert<CannotAddSwarm>(err==CL_SUCCESS,__LINE__);
+   classert<CannotAddSwarm>(err,__LINE__,failEnqueue);
    return CLEvent(ret);
 }
 

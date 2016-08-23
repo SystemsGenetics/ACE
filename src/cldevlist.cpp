@@ -23,25 +23,27 @@ CLDevList::CLDevList()
 /// @pre The internal vector list must be empty.
 void CLDevList::build()
 {
+   static const char* cannotEnumPl = "Cannot Enumerate OpenCL Platorms";
+   static const char* cannotEnumDe = "Cannot Enumerate OpenCL Devices";
    cl_platform_id* platforms {nullptr};
    cl_device_id* devices {nullptr};
    try
    {
       cl_uint ptotal;
       cl_int err = clGetPlatformIDs(0,NULL,&ptotal);
-      assert<PlatformErr>(err==CL_SUCCESS,__LINE__);
+      classert<PlatformErr>(err,__LINE__,cannotEnumPl);
       platforms = new cl_platform_id[ptotal];
       err = clGetPlatformIDs(ptotal,platforms,NULL);
-      assert<PlatformErr>(err==CL_SUCCESS,__LINE__);
+      classert<PlatformErr>(err,__LINE__,cannotEnumPl);
       for (int i=0;i<ptotal;++i)
       {
          cl_uint dtotal;
          err = clGetDeviceIDs(platforms[i],CL_DEVICE_TYPE_ALL,0,NULL,&dtotal);
-         assert<DeviceErr>(err==CL_SUCCESS,__LINE__);
+         classert<DeviceErr>(err,__LINE__,cannotEnumDe);
          devices = new cl_device_id[dtotal];
          err = clGetDeviceIDs(platforms[i],CL_DEVICE_TYPE_ALL,dtotal,devices,
                               NULL);
-         assert<DeviceErr>(err==CL_SUCCESS,__LINE__);
+         classert<DeviceErr>(err,__LINE__,cannotEnumDe);
          _list.push_back({});
          for (int j=0;j<dtotal;++j)
          {

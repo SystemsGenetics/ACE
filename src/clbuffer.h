@@ -75,7 +75,8 @@ template<class T> CLBuffer<T>& CLBuffer<T>::operator=(CLBuffer<T>&& move)
 
 template<class T> T& CLBuffer<T>::operator[](int i)
 {
-   assert<NullBufferUse>(_hostPtr,__LINE__);
+   static const char* nullBuf = "Cannot access null OpenCL buffer";
+   assert<NullBufferUse>(_hostPtr,__LINE__,nullBuf);
    return _hostPtr[i];
 }
 
@@ -83,7 +84,8 @@ template<class T> T& CLBuffer<T>::operator[](int i)
 
 template<class T> const T& CLBuffer<T>::operator[](int i) const
 {
-   assert<NullBufferUse>(_hostPtr,__LINE__);
+   static const char* nullBuf = "Cannot access null OpenCL buffer";
+   assert<NullBufferUse>(_hostPtr,__LINE__,nullBuf);
    return _hostPtr[i];
 }
 
@@ -91,8 +93,10 @@ template<class T> const T& CLBuffer<T>::operator[](int i) const
 
 template<class T> T& CLBuffer<T>::at(int i)
 {
-   assert<NullBufferUse>(_hostPtr,__LINE__);
-   assert<OutOfRange>(i<_size,__LINE__);
+   static const char* nullBuf = "Cannot access null OpenCL buffer";
+   static const char* outRange = "Index into OpenCL buffer is out of range";
+   assert<NullBufferUse>(_hostPtr,__LINE__,nullBuf);
+   assert<OutOfRange>(i<_size,__LINE__,outRange);
    return _hostPtr[i];
 }
 
@@ -100,8 +104,10 @@ template<class T> T& CLBuffer<T>::at(int i)
 
 template<class T> const T& CLBuffer<T>::at(int i) const
 {
-   assert<NullBufferUse>(_hostPtr,__LINE__);
-   assert<OutOfRange>(i<_size,__LINE__);
+   static const char* nullBuf = "Cannot access null OpenCL buffer";
+   static const char* outRange = "Index into OpenCL buffer is out of range";
+   assert<NullBufferUse>(_hostPtr,__LINE__,nullBuf);
+   assert<OutOfRange>(i<_size,__LINE__,outRange);
    return _hostPtr[i];
 }
 
@@ -110,12 +116,13 @@ template<class T> const T& CLBuffer<T>::at(int i) const
 template<class T> CLBuffer<T>::CLBuffer(cl_context cid, int size):
    _size(size)
 {
+   static const char* createBuf = "Cannot create OpenCL buffer";
    _hostPtr = new T[size];
    try
    {
       cl_int err;
       _id = clCreateBuffer(cid,CL_MEM_READ_WRITE,size*sizeof(T),_hostPtr,&err);
-      assert<NoCreateBuffer>(err==CL_SUCCESS,__LINE__);
+      classert<NoCreateBuffer>(err==CL_SUCCESS,__LINE__,createBuf);
    }
    catch (...)
    {
