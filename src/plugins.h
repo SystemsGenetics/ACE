@@ -2,12 +2,12 @@
 #define ACCELCOMPENG_PLUGINS_H
 #include <string>
 #include "analytic.h"
-#include "dataplugin.h"
+#include "data.h"
 #define ACE_BEGIN_DATA \
-::AccelCompEng::DataPlugin* ::AccelCompEng::new_data( const std::string& type,\
+::AccelCompEng::Data* ::AccelCompEng::new_data( const std::string& type,\
                                                       const std::string& name)\
 {\
-   ::AccelCompEng::DataPlugin* ret = nullptr;
+   ::AccelCompEng::Data* ret = nullptr;
 #define ACE_DATA_PLUGIN(N,D) \
    if (type==std::string(#N)) ret = new D(type,name);
 #define ACE_END_DATA return ret; }
@@ -25,7 +25,7 @@ namespace AccelCompEng
 
 
 Analytic* new_analytic(const std::string&);
-DataPlugin* new_data(const std::string&,const std::string&);
+Data* new_data(const std::string&,const std::string&);
 
 
 

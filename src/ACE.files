@@ -19,10 +19,10 @@ clprogram.cpp
 clprogram.h
 console.cpp
 console.h
+data.cpp
 data.h
 datamap.cpp
 datamap.h
-dataplugin.h
 exception.cpp
 exception.h
 filemem.cpp

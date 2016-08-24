@@ -3,7 +3,7 @@
 #include <CL/cl.hpp>
 #include <string>
 #include <memory>
-#include "dataplugin.h"
+#include "data.h"
 #include "terminal.h"
 //#include "cldevice.h"
 //#include "clprogram.h"
@@ -33,7 +33,7 @@ public:
    /// The pointer will not be deleted by the analytic object.
    ///
    /// @param in Pointer to the data object to be used as input.
-   virtual void input(DataPlugin* in) = 0;
+   virtual void input(Data* in) = 0;
    /// @brief Output data object.
    ///
    /// Must take a single output data object that will be used in execution. All
@@ -41,7 +41,7 @@ public:
    /// The pointer will not be deleted by the analytic object.
    ///
    /// @param out Pointer to the data object to be used as output.
-   virtual void output(DataPlugin* out) = 0;
+   virtual void output(Data* out) = 0;
 protected:
    virtual void execute_cl(GetOpts& ops, Terminal& tm) = 0;
    virtual void execute_pn(GetOpts& ops, Terminal& tm) = 0;

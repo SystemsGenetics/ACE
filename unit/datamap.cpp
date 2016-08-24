@@ -4,12 +4,12 @@ using namespace AccelCompEng;
 
 
 
-class FakeData : public DataPlugin
+class FakeData : public Data
 {
 public:
    using string = std::string;
    FakeData(const string& type, const string& name):
-      DataPlugin(type,name)
+      Data(type,name)
    {}
    void load(GetOpts&,Terminal&) override final
    {
@@ -105,7 +105,7 @@ bool unit::datamap::open()
    bool cont = true;
    {
       start();
-      DataPlugin* n = t.open("test.tmp","FakeData",true);
+      Data* n = t.open("test.tmp","FakeData",true);
       bool test = n==t.current();
       cont = cont&&finish(test,"open1");
    }

@@ -56,15 +56,15 @@ public:
    // *
    // * FUNCTIONS
    // *
-   DataPlugin* open(const string&,const string&,bool = false);
+   Data* open(const string&,const string&,bool = false);
    bool close(const string&);
    void select(const string&);
    bool unselect();
    void load(GetOpts&,Terminal&);
    void dump(GetOpts&,Terminal&);
    void query(GetOpts&,Terminal&);
-   DataPlugin* find(const string&);
-   DataPlugin* current();
+   Data* find(const string&);
+   Data* current();
    Iterator begin();
    Iterator end();
    Iterator selected();
@@ -72,7 +72,7 @@ private:
    // *
    // * DECLERATIONS
    // *
-   using Map = std::map<std::string,std::unique_ptr<DataPlugin>>;
+   using Map = std::map<std::string,std::unique_ptr<Data>>;
    // *
    // * FUNCTIONS
    // *

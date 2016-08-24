@@ -41,9 +41,9 @@ DataMap::~DataMap()
 /// already loaded in the manager.
 /// @exception InvalidType Data type cannot be found within the KINCPlugins
 /// system.
-DataPlugin* DataMap::open(const string& file, const string& type, bool select)
+Data* DataMap::open(const string& file, const string& type, bool select)
 {
-   using uptr = std::unique_ptr<DataPlugin>;
+   using uptr = std::unique_ptr<Data>;
    bool cond = _map.find(file)==_map.end();
    assert<AlreadyExists>(cond,__LINE__);
    uptr nd(new_data(type,file));
@@ -187,7 +187,7 @@ void DataMap::query(GetOpts& ops, Terminal& tm)
 ///
 /// @param file File name of data object to find.
 /// @return Pointer to data object that is found, else nullptr if not found.
-DataPlugin* DataMap::find(const string& file)
+Data* DataMap::find(const string& file)
 {
    try
    {
@@ -205,7 +205,7 @@ DataPlugin* DataMap::find(const string& file)
 ///
 /// @return Pointer to data object that is selected, else if no object is
 /// selected nullptr is returned.
-DataPlugin* DataMap::current()
+Data* DataMap::current()
 {
    bool cond = _i!=_map.end();
    assert<NoSelect>(cond,__LINE__);

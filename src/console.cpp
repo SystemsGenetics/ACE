@@ -528,7 +528,7 @@ void Console::data_load(GetOpts& ops)
 {
    try
    {
-      DataPlugin& k = *(_dataMap.current());
+      Data& k = *(_dataMap.current());
       bool willForce {ops.has_opt("force",true)};
       if (!k.empty()&&!willForce)
       {
@@ -602,7 +602,7 @@ void Console::data_query(GetOpts& ops)
 void Console::analytic(GetOpts& ops)
 {
    using aptr = std::unique_ptr<Analytic>;
-   using ilist = std::forward_list<DataPlugin*>;
+   using ilist = std::forward_list<Data*>;
    aptr a(new_analytic(ops.com_front()));
    if (!a)
    {
@@ -628,7 +628,7 @@ void Console::analytic(GetOpts& ops)
          string file;
          string type;
          seperate("analytic",raw,file,type);
-         DataPlugin* d = _dataMap.find(file);
+         Data* d = _dataMap.find(file);
          if (d==nullptr)
          {
             try
@@ -671,7 +671,7 @@ void Console::analytic(GetOpts& ops)
          string file;
          string type;
          seperate("analytic",raw,file,type);
-         DataPlugin* d = _dataMap.find(file);
+         Data* d = _dataMap.find(file);
          if (d==nullptr)
          {
             try

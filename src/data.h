@@ -2,6 +2,7 @@
 #define ACCELCOMPENG_DATA_H
 #include "terminal.h"
 #include "getopts.h"
+#include "file.h"
 namespace AccelCompEng
 {
 
@@ -49,10 +50,24 @@ namespace AccelCompEng
 /// Defines the interface between the main program and any data object class.
 /// Any data object is instantiated when the file is opened and destroyed when
 /// the file is closed.
-class Data
+class Data : public File
 {
 public:
+   using string = std::string;
    virtual ~Data() = default;
+   // * COPY METHODS
+   // *
+   Data(const Data&) = delete;
+   Data& operator=(const Data&) = delete;
+   // *
+   // * MOVE METHODS
+   // *
+   Data(Data&&) = delete;
+   Data& operator=(Data&&) = delete;
+   // *
+   // * FUNCTIONS
+   // *
+   string type();
    /// Executes data load command.
    ///
    /// Must execute this as a user load command with arguments given, printing
@@ -81,6 +96,16 @@ public:
    ///
    /// @return True if data object is empty else false.
    virtual bool empty() = 0;
+protected:
+   // *
+   // * BASIC METHODS
+   // *
+   Data(const string&,const string&);
+private:
+   // *
+   // * VARIABLES
+   // *
+   string _type;
 };
 
 

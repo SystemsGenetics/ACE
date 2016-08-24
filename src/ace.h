@@ -12,7 +12,6 @@
 #include "console.h"
 #include "data.h"
 #include "datamap.h"
-#include "dataplugin.h"
 #include "exception.h"
 #include "filemem.h"
 #include "fstring.h"
