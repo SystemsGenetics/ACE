@@ -601,7 +601,7 @@ void Console::data_query(GetOpts& ops)
 /// the analytic, such as a parsing error. Exception specifies error detected.
 void Console::analytic(GetOpts& ops)
 {
-   using aptr = std::unique_ptr<AnalyticPlugin>;
+   using aptr = std::unique_ptr<Analytic>;
    using ilist = std::forward_list<DataPlugin*>;
    aptr a(new_analytic(ops.com_front()));
    if (!a)

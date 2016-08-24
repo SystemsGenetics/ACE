@@ -5,8 +5,9 @@
 #include <memory>
 #include "dataplugin.h"
 #include "terminal.h"
-#include "cldevice.h"
-#include "clprogram.h"
+//#include "cldevice.h"
+//#include "clprogram.h"
+#include "clcontext.h"
 namespace AccelCompEng
 {
 
@@ -20,10 +21,11 @@ namespace AccelCompEng
 ///
 /// @author Josh Burns
 /// @date 17 March 2016
-class Analytic
+class Analytic : public CLContext
 {
 public:
    virtual ~Analytic() = default;
+   void execute(GetOpts& ops, Terminal& tm);
    /// @brief Input data object.
    ///
    /// Must take a single input data object that will be used in execution. All

@@ -1,7 +1,6 @@
 #ifndef ACCELCOMPENG_ACE_H
 #define ACCELCOMPENG_ACE_H
 #include "analytic.h"
-#include "analyticplugin.h"
 #include "clbuffer.h"
 #include "clcommandqueue.h"
 #include "clcontext.h"

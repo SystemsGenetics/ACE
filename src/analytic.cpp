@@ -1,10 +1,10 @@
-#include "analyticplugin.h"
+#include "analytic.h"
 namespace AccelCompEng
 {
 
 
 
-void AnalyticPlugin::execute(GetOpts& ops, Terminal& tm)
+void Analytic::execute(GetOpts& ops, Terminal& tm)
 {
    if (CLContext::is_initd())
    {

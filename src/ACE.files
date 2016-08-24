@@ -1,8 +1,7 @@
 ace.cpp
 ace.h
+analytic.cpp
 analytic.h
-analyticplugin.cpp
-analyticplugin.h
 clbuffer.h
 clcommandqueue.cpp
 clcommandqueue.h
