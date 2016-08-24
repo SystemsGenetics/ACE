@@ -38,7 +38,7 @@ public:
    // *
    // * EXCEPTIONS
    // *
-   ACE_EXCEPTION(AccelCompEng::Console,InvalidUse)
+   struct InvalidUse : public Exception { using Exception::Exception; };
    // *
    // * DECLERATIONS
    // *

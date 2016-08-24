@@ -21,8 +21,8 @@ public:
    // *
    // * EXCEPTIONS
    // *
-   ACE_EXCEPTION(AccelCompEng::Terminal,SystemError)
-   ACE_EXCEPTION(AccelCompEng::Terminal,InvalidUse)
+   struct SystemError : public Exception { using Exception::Exception; };
+   struct InvalidUse : public Exception { using Exception::Exception; };
    // *
    // * BASIC METHODS
    // *

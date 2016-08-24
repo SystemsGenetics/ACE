@@ -106,7 +106,7 @@ void File::ident(const string& id)
    }
    catch (FString::AlreadySet)
    {
-      throw AlreadySet(__LINE__);
+      assert<AlreadySet>(false,__LINE__);
    }
    _hdr.ident() = _ident.addr();
    _mem.sync(_hdr,FileSync::write);

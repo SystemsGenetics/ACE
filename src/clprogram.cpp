@@ -60,7 +60,7 @@ bool CLProgram::compile(const string& options)
    {
       cl_int err;
       _id = clCreateProgramWithSource(_cid,s,codes,codeSzs,&err);
-      assert<CannotBind>(err==CL_SUCCESS,__LINE__);
+      classert<CannotBind>(err,__LINE__);
       _binded = true;
    }
    if (clBuildProgram(_id,0,NULL,options.c_str(),NULL,NULL)>=0)
@@ -82,11 +82,11 @@ CLProgram::string CLProgram::log()
       size_t strSize = 0;
       cl_int err = clGetProgramBuildInfo(_id,_did,CL_PROGRAM_BUILD_LOG,0,NULL,
                                          &strSize);
-      assert<BuildInfoFail>(err==CL_SUCCESS,__LINE__);
+      classert<BuildInfoFail>(err,__LINE__);
       char buffer[strSize];
       err = clGetProgramBuildInfo(_id,_did,CL_PROGRAM_BUILD_LOG,strSize,buffer,
                                   NULL);
-      assert<BuildInfoFail>(err==CL_SUCCESS,__LINE__);
+      classert<BuildInfoFail>(err,__LINE__);
       ret = buffer;
    }
    return ret;
@@ -100,7 +100,7 @@ CLKernel CLProgram::mkernel(const string& name)
    assert<NotCompiled>(_compiled,__LINE__);
    cl_int err;
    CLKernel ret(clCreateKernel(_id,name.c_str(),&err),_did);
-   assert<CannotFindKern>(err==CL_SUCCESS,__LINE__);
+   classert<CannotFindKern>(err,__LINE__);
    return ret;
 }
 

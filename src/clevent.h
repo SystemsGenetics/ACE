@@ -10,9 +10,9 @@ namespace AccelCompEng
 class CLEvent
 {
 public:
-   ACE_EXCEPTION(AccelCompEng::CLEvent,CannotWait)
-   ACE_EXCEPTION(AccelCompEng::CLEvent,CannotGetInfo)
-   ACE_EXCEPTION(AccelCompEng::CLEvent,ExecutionFail)
+   struct CannotWait : public Exception { using Exception::Exception; };
+   struct CannotGetInfo : public Exception { using Exception::Exception; };
+   struct ExecutionFail : public Exception { using Exception::Exception; };
    friend class CLCommandQueue;
    CLEvent() = default;
    ~CLEvent();

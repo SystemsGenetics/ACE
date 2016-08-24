@@ -49,10 +49,10 @@ public:
    // *
    // * EXCEPTIONS
    // *
-   ACE_EXCEPTION(AccelCompEng::FileMem,SystemError)
-   ACE_EXCEPTION(AccelCompEng::FileMem,InvalidFile)
-   ACE_EXCEPTION(AccelCompEng::FileMem,FileSegFault)
-   ACE_EXCEPTION(AccelCompEng::FileMem,OutOfMemory)
+   struct SystemError : public Exception { using Exception::Exception; };
+   struct InvalidFile : public Exception { using Exception::Exception; };
+   struct FileSegFault : public Exception { using Exception::Exception; };
+   struct OutOfMemory : public Exception { using Exception::Exception; };
    // *
    // * DECLERATIONS
    // *

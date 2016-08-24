@@ -15,8 +15,8 @@ namespace AccelCompEng
 class CLContext: public CLProgram, public CLCommandQueue
 {
 public:
-   ACE_EXCEPTION(AccelCompEng::CLContext,CreateContext)
-   ACE_EXCEPTION(AccelCompEng::CLContext,NotInitialized)
+   struct CannotCreate : public Exception { using Exception::Exception; };
+   struct NotInitialized : public Exception { using Exception::Exception; };
    CLContext() = default;
    ~CLContext();
    void init_cl(CLDevice& dev);

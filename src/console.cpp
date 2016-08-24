@@ -102,7 +102,10 @@ void Console::terminal_loop()
             _tm << "ACE Exception Caught!\n";
             _tm << "What: " << e.what() << "\n";
             _tm << "Line: " << e.line() << "\n";
-            _tm << "Details:" << e.detail() << "\n";
+            if (e.detail())
+            {
+               _tm << "Details:" << e.detail() << "\n";
+            }
             _tm << Terminal::general;
          }
          catch (std::exception& stde)

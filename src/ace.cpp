@@ -19,15 +19,26 @@ int run(const char* header, int argc, char* argv[])
    catch(Exception e)
    {
       std::cout << "Fatal Exception Caught!\n";
-      std::cout << e.domain() << "::" << e.what() << "(" << e.line() <<  "): " << e.detail()
-                << "\n";
+      std::cout << e.what() << "(" << e.line() <<  ")";
+      if (e.detail())
+      {
+         std::cout << ": " << e.detail();
+      }
+      std::cout << "\n";
+      LinuxTerm::stty_cooked();
+      return -1;
+   }
+   catch (std::exception& e)
+   {
+      std::cout << "Fatal STD Exception Caught!\n";
+      std::cout << e.what() << "\n";
       LinuxTerm::stty_cooked();
       return -1;
    }
    catch (...)
    {
       LinuxTerm::stty_cooked();
-      return -1;
+      throw;
    }
    LinuxTerm::stty_cooked();
    return 0;

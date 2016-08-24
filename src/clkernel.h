@@ -11,11 +11,11 @@ namespace AccelCompEng
 class CLKernel
 {
 public:
-   ACE_EXCEPTION(AccelCompEng::CLKernel,CannotSetArg)
-   ACE_EXCEPTION(AccelCompEng::CLKernel,CannotGetInfo)
-   ACE_EXCEPTION(AccelCompEng::CLKernel,TooManyDims)
-   ACE_EXCEPTION(AccelCompEng::CLKernel,DimOutOfRange)
-   ACE_EXCEPTION(AccelCompEng::CLKernel,NotAlive)
+   struct CannotSetArg : public Exception { using Exception::Exception; };
+   struct CannotGetInfo : public Exception { using Exception::Exception; };
+   struct TooManyDims : public Exception { using Exception::Exception; };
+   struct DimOutOfRange : public Exception { using Exception::Exception; };
+   struct NullKernel : public Exception { using Exception::Exception; };
    constexpr static int _maxDims {16};
    friend class CLCommandQueue;
    friend class CLProgram;
@@ -47,34 +47,34 @@ private:
 
 template<class T> void CLKernel::set_arg(cl_uint index, T arg)
 {
-   assert<NotAlive>(_isAlive,__LINE__);
+   assert<NullKernel>(_isAlive,__LINE__);
    cl_int err = clSetKernelArg(_id,index,sizeof(T),&arg);
-   assert<CannotSetArg>(err==CL_SUCCESS,__LINE__);
+   classert<CannotSetArg>(err,__LINE__);
 }
 
 
 
 template<> inline void CLKernel::set_arg(cl_uint index, size_t lSize)
 {
-   assert<NotAlive>(_isAlive,__LINE__);
+   assert<NullKernel>(_isAlive,__LINE__);
    cl_int err = clSetKernelArg(_id,index,lSize,NULL);
-   assert<CannotSetArg>(err==CL_SUCCESS,__LINE__);
+   classert<CannotSetArg>(err,__LINE__);
 }
 
 
 
 template<class T> void CLKernel::set_arg(cl_uint index, CLBuffer<T>* buffer)
 {
-   assert<NotAlive>(_isAlive,__LINE__);
+   assert<NullKernel>(_isAlive,__LINE__);
    cl_int err = clSetKernelArg(_id,index,sizeof(cl_mem),&(buffer->_id));
-   assert<CannotSetArg>(err==CL_SUCCESS,__LINE__);
+   classert<CannotSetArg>(err,__LINE__);
 }
 
 
 
 template<class... Args> void CLKernel::set_args(Args... args)
 {
-   assert<NotAlive>(_isAlive,__LINE__);
+   assert<NullKernel>(_isAlive,__LINE__);
    set_args_int<0>(args...);
 }
 

@@ -22,8 +22,8 @@ public:
    // *
    // * EXCEPTIONS
    // *
-   ACE_EXCEPTION(AccelCompEng::File,InvalidFile)
-   ACE_EXCEPTION(AccelCompEng::File,AlreadySet)
+   struct InvalidFile : public Exception { using Exception::Exception; };
+   struct AlreadySet : public Exception { using Exception::Exception; };
    // *
    // * DECLERATIONS
    // *

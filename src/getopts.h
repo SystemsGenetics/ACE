@@ -26,8 +26,8 @@ public:
    // *
    // * EXCEPTIONS
    // *
-   ACE_EXCEPTION(AccelCompEng::GetOpts,InvalidType)
-   ACE_EXCEPTION(AccelCompEng::GetOpts,InvalidSyntax)
+   struct InvalidType : public Exception { using Exception::Exception; };
+   struct InvalidSyntax : public Exception { using Exception::Exception; };
    // *
    // * DECLERATIONS
    // *

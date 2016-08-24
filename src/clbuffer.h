@@ -10,9 +10,9 @@ namespace AccelCompEng
 template<class T> class CLBuffer
 {
 public:
-   ACE_EXCEPTION(AccelCompEng::CLBuffer,NoCreateBuffer)
-   ACE_EXCEPTION(AccelCompEng::CLBuffer,NullBufferUse)
-   ACE_EXCEPTION(AccelCompEng::CLBuffer,OutOfRange)
+   struct CannotCreate : public Exception { using Exception::Exception; };
+   struct NullBufferUse : public Exception { using Exception::Exception; };
+   struct OutOfRange : public Exception { using Exception::Exception; };
    friend class CLContext;
    friend class CLCommandQueue;
    friend class CLKernel;
@@ -75,8 +75,7 @@ template<class T> CLBuffer<T>& CLBuffer<T>::operator=(CLBuffer<T>&& move)
 
 template<class T> T& CLBuffer<T>::operator[](int i)
 {
-   static const char* nullBuf = "Cannot access null OpenCL buffer";
-   assert<NullBufferUse>(_hostPtr,__LINE__,nullBuf);
+   assert<NullBufferUse>(_hostPtr,__LINE__);
    return _hostPtr[i];
 }
 
@@ -84,8 +83,7 @@ template<class T> T& CLBuffer<T>::operator[](int i)
 
 template<class T> const T& CLBuffer<T>::operator[](int i) const
 {
-   static const char* nullBuf = "Cannot access null OpenCL buffer";
-   assert<NullBufferUse>(_hostPtr,__LINE__,nullBuf);
+   assert<NullBufferUse>(_hostPtr,__LINE__);
    return _hostPtr[i];
 }
 
@@ -93,10 +91,8 @@ template<class T> const T& CLBuffer<T>::operator[](int i) const
 
 template<class T> T& CLBuffer<T>::at(int i)
 {
-   static const char* nullBuf = "Cannot access null OpenCL buffer";
-   static const char* outRange = "Index into OpenCL buffer is out of range";
-   assert<NullBufferUse>(_hostPtr,__LINE__,nullBuf);
-   assert<OutOfRange>(i<_size,__LINE__,outRange);
+   assert<NullBufferUse>(_hostPtr,__LINE__);
+   assert<OutOfRange>(i<_size,__LINE__);
    return _hostPtr[i];
 }
 
@@ -104,10 +100,8 @@ template<class T> T& CLBuffer<T>::at(int i)
 
 template<class T> const T& CLBuffer<T>::at(int i) const
 {
-   static const char* nullBuf = "Cannot access null OpenCL buffer";
-   static const char* outRange = "Index into OpenCL buffer is out of range";
-   assert<NullBufferUse>(_hostPtr,__LINE__,nullBuf);
-   assert<OutOfRange>(i<_size,__LINE__,outRange);
+   assert<NullBufferUse>(_hostPtr,__LINE__);
+   assert<OutOfRange>(i<_size,__LINE__);
    return _hostPtr[i];
 }
 
@@ -116,13 +110,12 @@ template<class T> const T& CLBuffer<T>::at(int i) const
 template<class T> CLBuffer<T>::CLBuffer(cl_context cid, int size):
    _size(size)
 {
-   static const char* createBuf = "Cannot create OpenCL buffer";
    _hostPtr = new T[size];
    try
    {
       cl_int err;
       _id = clCreateBuffer(cid,CL_MEM_READ_WRITE,size*sizeof(T),_hostPtr,&err);
-      classert<NoCreateBuffer>(err==CL_SUCCESS,__LINE__,createBuf);
+      classert<CannotCreate>(err==CL_SUCCESS,__LINE__);
    }
    catch (...)
    {

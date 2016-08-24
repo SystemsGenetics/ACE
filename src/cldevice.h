@@ -30,7 +30,7 @@ public:
    // *
    // * EXCEPTIONS
    // *
-   ACE_EXCEPTION(AccelCompEng::CLDevice,InfoErr)
+   struct InfoErr : public Exception { using Exception::Exception; };
    // *
    // * DECLERATIONS
    // *
@@ -101,7 +101,7 @@ template<class T> T CLDevice::get_info(cl_device_info infoType) const
    T ret;
    cl_int err;
    err = clGetDeviceInfo(_did,infoType,sizeof(T),&ret,NULL);
-   assert<InfoErr>(err==CL_SUCCESS,__LINE__);
+   classert<InfoErr>(err,__LINE__);
    return ret;
 }
 
@@ -113,10 +113,10 @@ inline CLDevice::string CLDevice::get_info(cl_device_info infoType) const
    size_t strSize;
    cl_int err;
    err = clGetDeviceInfo(_did,infoType,0,NULL,&strSize);
-   assert<InfoErr>(err==CL_SUCCESS,__LINE__);
+   classert<InfoErr>(err,__LINE__);
    char buffer[strSize];
    err = clGetDeviceInfo(_did,infoType,strSize,buffer,NULL);
-   assert<InfoErr>(err==CL_SUCCESS,__LINE__);
+   classert<InfoErr>(err,__LINE__);
    return buffer;
 }
 

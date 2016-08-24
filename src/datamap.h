@@ -28,11 +28,11 @@ public:
    // *
    // * EXCEPTIONS
    // *
-   ACE_EXCEPTION(AccelCompEng::DataMap,InvalidUse)
-   ACE_EXCEPTION(AccelCompEng::DataMap,AlreadyExists)
-   ACE_EXCEPTION(AccelCompEng::DataMap,DoesNotExist)
-   ACE_EXCEPTION(AccelCompEng::DataMap,NoSelect)
-   ACE_EXCEPTION(AccelCompEng::DataMap,InvalidType)
+   struct InvalidUse : public Exception { using Exception::Exception; };
+   struct AlreadyExists : public Exception { using Exception::Exception; };
+   struct DoesNotExist : public Exception { using Exception::Exception; };
+   struct NoSelect : public Exception { using Exception::Exception; };
+   struct InvalidType : public Exception { using Exception::Exception; };
    // *
    // * DECLERATIONS
    // *

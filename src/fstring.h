@@ -19,8 +19,8 @@ public:
    // *
    // * EXCEPTIONS
    // *
-   ACE_EXCEPTION(AccelCompEng::FString,InvalidPtr)
-   ACE_EXCEPTION(AccelCompEng::FString,AlreadySet)
+   struct InvalidPtr : public Exception { using Exception::Exception; };
+   struct AlreadySet : public Exception { using Exception::Exception; };
    // *
    // * DECLERATIONS
    // *

@@ -13,12 +13,12 @@ namespace AccelCompEng
 class CLProgram
 {
 public:
-   ACE_EXCEPTION(AccelCompEng::CLProgram,NoSuchFile)
-   ACE_EXCEPTION(AccelCompEng::CLProgram,NotCompiled)
-   ACE_EXCEPTION(AccelCompEng::CLProgram,NotInitialized)
-   ACE_EXCEPTION(AccelCompEng::CLProgram,CannotBind)
-   ACE_EXCEPTION(AccelCompEng::CLProgram,BuildInfoFail)
-   ACE_EXCEPTION(AccelCompEng::CLProgram,CannotFindKern)
+   struct NoSuchFile : public Exception { using Exception::Exception; };
+   struct NotCompiled : public Exception { using Exception::Exception; };
+   struct NotInitialized : public Exception { using Exception::Exception; };
+   struct CannotBind : public Exception { using Exception::Exception; };
+   struct BuildInfoFail : public Exception { using Exception::Exception; };
+   struct CannotFindKern : public Exception { using Exception::Exception; };
    CLProgram() = default;
    ~CLProgram();
    CLProgram(const CLProgram&) = delete;

@@ -6,42 +6,24 @@
  */
 #ifndef ACCELCOMPENG_EXCEPTION_H
 #define ACCELCOMPENG_EXCEPTION_H
-#include <string>
-#include <sstream>
+#include <typeinfo>
 #include <CL/cl.h>
-#define ACE_EXCEPTION(N,X) \
-struct X : public ::AccelCompEng::Exception\
-{\
-   X(int line): Exception(#N,#X,line) {}\
-};
 namespace AccelCompEng
 {
 
 
 
-template<class T> inline void assert(bool cond, int line)
+template<class T> inline void assert(bool cond, int line, const char* detail = nullptr)
 {
    if (!cond)
    {
-      throw T(line);
+      throw T(typeid(T).name(),detail,line);
    }
 }
 
 
 
-template<class T> inline void assert(bool cond, int line, const char* detail)
-{
-   if (!cond)
-   {
-      T tmp(line);
-      tmp << detail;
-      throw tmp;
-   }
-}
-
-
-
-template<class T> inline void classert(cl_int code, int line, const char* detail)
+template<class T> inline void classert(cl_int code, int line)
 {
    static const char* clDescErrors[] = {
       "CL_SUCCESS",
@@ -112,17 +94,16 @@ template<class T> inline void classert(cl_int code, int line, const char* detail
    };
    if (code!=CL_SUCCESS)
    {
-      T tmp(line);
-      tmp << detail;
+      const char* tmp;
       if (code<=0&&code>=-64)
       {
-         tmp << ": " << clDescErrors[-code];
+         tmp = clDescErrors[-code];
       }
       else
       {
-         tmp << ": " << clDescErrors[15];
+         tmp = clDescErrors[15];
       }
-      throw tmp;
+      throw T(typeid(T).name(),tmp,line);;
    }
 }
 
@@ -131,38 +112,25 @@ template<class T> inline void classert(cl_int code, int line, const char* detail
 class Exception
 {
 public:
-   using string = std::string;
-   using ostream = std::ostringstream;
    // *
    // * BASIC METHODS
    // *
-   Exception(const string&,const string&,int);
+   Exception(const char*,const char*,int) noexcept;
+   ~Exception();
    // *
    // * FUNCTIONS
    // *
-   int line() const;
-   const string& domain() const;
-   const string& what() const;
-   const string& detail() const;
-   Exception& operator<<(short);
-   Exception& operator<<(unsigned short);
-   Exception& operator<<(int);
-   Exception& operator<<(unsigned int);
-   Exception& operator<<(long);
-   Exception& operator<<(unsigned long);
-   Exception& operator<<(float);
-   Exception& operator<<(double);
-   Exception& operator<<(char);
-   Exception& operator<<(const char*);
-   Exception& operator<<(const string&);
+   int line() const noexcept;
+   const char* what() const noexcept;
+   const char* detail() const noexcept;
 private:
    // *
    // * VARIABLES
    // *
-   int _line {0};
-   string _domain;
-   string _what;
-   string _detail;
+   int _line;
+   const char* _what;
+   const char* _detail;
+   mutable char* _demangle {nullptr};
 };
 
 

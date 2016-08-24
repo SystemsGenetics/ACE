@@ -31,8 +31,8 @@ public:
    // *
    // * EXCEPTIONS
    // *
-   ACE_EXCEPTION(AccelCompEng::CLDevList,PlatformErr)
-   ACE_EXCEPTION(AccelCompEng::CLDevList,DeviceErr)
+   struct PlatformErr : public Exception { using Exception::Exception; };
+   struct DeviceErr : public Exception { using Exception::Exception; };
    // *
    // * DECLERATIONS
    // *

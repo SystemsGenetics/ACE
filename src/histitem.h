@@ -33,10 +33,10 @@ public:
    // *
    // * EXCEPTIONS
    // *
-   ACE_EXCEPTION(AccelCompEng::HistItem,AlreadySet)
-   ACE_EXCEPTION(AccelCompEng::HistItem,IsAllocated)
-   ACE_EXCEPTION(AccelCompEng::HistItem,IsNullPtr)
-   ACE_EXCEPTION(AccelCompEng::HistItem,InvalidItem)
+   struct AlreadySet : public Exception { using Exception::Exception; };
+   struct IsAllocated : public Exception { using Exception::Exception; };
+   struct IsNullPtr : public Exception { using Exception::Exception; };
+   struct InvalidItem : public Exception { using Exception::Exception; };
    // *
    // * FILEMEM TYPES
    // *
