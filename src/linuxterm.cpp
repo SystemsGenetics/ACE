@@ -24,17 +24,18 @@ bool LinuxTerm::_cooked {true};
 /// @pre Terminal status is in cooked mode.
 void LinuxTerm::stty_raw()
 {
-   assert<InvalidUse>(_cooked,__LINE__);
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<InvalidUse>(_cooked,f,__LINE__);
    struct termios term = {0};
    bool cond;
    cond = tcgetattr(0,&term)>=0;
-   assert<SystemError>(cond,__LINE__);
+   assert<SystemError>(cond,f,__LINE__);
    term.c_lflag &= ~ICANON;
    term.c_lflag &= ~ECHO;
    term.c_cc[VMIN] = 1;
    term.c_cc[VTIME] = 0;
    cond = tcsetattr(0,TCSANOW,&term)>=0;
-   assert<SystemError>(cond,__LINE__);
+   assert<SystemError>(cond,f,__LINE__);
    _cooked = false;
 }
 
@@ -49,16 +50,17 @@ void LinuxTerm::stty_raw()
 /// @pre There can be no current instance of this function's class.
 void LinuxTerm::stty_cooked()
 {
-   assert<InvalidUse>(!_cooked,__LINE__);
-   assert<InvalidUse>(!_lock,__LINE__);
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<InvalidUse>(!_cooked,f,__LINE__);
+   assert<InvalidUse>(!_lock,f,__LINE__);
    struct termios term = {0};
    bool cond;
    cond = tcgetattr(0,&term)>=0;
-   assert<SystemError>(cond,__LINE__);
+   assert<SystemError>(cond,f,__LINE__);
    term.c_lflag |= ICANON;
    term.c_lflag |= ECHO;
    cond = tcsetattr(0,TCSANOW,&term)>=0;
-   assert<SystemError>(cond,__LINE__);
+   assert<SystemError>(cond,f,__LINE__);
    _cooked = true;
 }
 
@@ -75,8 +77,9 @@ LinuxTerm::LinuxTerm():
    _i {_line.end()},
    _chCount {0}
 {
-   assert<InvalidUse>(!_lock,__LINE__);
-   assert<InvalidUse>(!_cooked,__LINE__);
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<InvalidUse>(!_lock,f,__LINE__);
+   assert<InvalidUse>(!_cooked,f,__LINE__);
    _lock = true;
 #ifdef TIOCGSIZE
    struct ttysize ts;
@@ -180,7 +183,8 @@ LinuxTerm& LinuxTerm::operator<<(const std::string& n)
 /// blank line.
 void LinuxTerm::operator>>(std::string& buffer)
 {
-   assert<InvalidUse>(!_cooked,__LINE__);
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<InvalidUse>(!_cooked,f,__LINE__);
    buffer.clear();
    _line.clear();
    _i = _line.end();

@@ -72,8 +72,9 @@ HistItem& HistItem::operator=(HistItem&& tmp)
 /// @exception IsAllocated This history object has already been allocated.
 void HistItem::allocate()
 {
+   static const char* f = __PRETTY_FUNCTION__;
    bool cond = _item.addr()==FileMem::nullPtr;
-   assert<IsAllocated>(cond,__LINE__);
+   assert<IsAllocated>(cond,f,__LINE__);
    _mem->allot(_item);
    _item.timeStamp() = 0;
    _item.fileNamePtr() = FileMem::nullPtr;
@@ -97,10 +98,11 @@ void HistItem::allocate()
 /// address is nullptr).
 void HistItem::copy_from(const HistItem& hist)
 {
+   static const char* f = __PRETTY_FUNCTION__;
    bool cond = _item.addr()==FileMem::nullPtr;
-   assert<IsAllocated>(cond,__LINE__);
+   assert<IsAllocated>(cond,f,__LINE__);
    cond = hist.addr()!=FileMem::nullPtr;
-   assert<IsNullPtr>(cond,__LINE__);
+   assert<IsNullPtr>(cond,f,__LINE__);
    _mem->allot(_item);
    _fileName = hist.fileName();
    _object = hist.object();
@@ -121,8 +123,9 @@ void HistItem::copy_from(const HistItem& hist)
 /// @exception IsNullPtr This object has not been set(address is nullptr).
 void HistItem::sync()
 {
+   static const char* f = __PRETTY_FUNCTION__;
    bool cond = _item.addr()!=FileMem::nullPtr;
-   assert<IsNullPtr>(cond,__LINE__);
+   assert<IsNullPtr>(cond,f,__LINE__);
    _mem->sync(_item,FileSync::write);
 }
 
@@ -138,8 +141,9 @@ void HistItem::sync()
 /// @exception IsNullPtr This object has not been set(address is nullptr).
 void HistItem::timeStamp(int64_t n)
 {
+   static const char* f = __PRETTY_FUNCTION__;
    bool cond = _item.addr()!=FileMem::nullPtr;
-   assert<IsNullPtr>(cond,__LINE__);
+   assert<IsNullPtr>(cond,f,__LINE__);
    _item.timeStamp() = n;
 }
 
@@ -152,8 +156,9 @@ void HistItem::timeStamp(int64_t n)
 /// @exception IsNullPtr This object has not been set(address is nullptr).
 int64_t HistItem::timeStamp() const
 {
+   static const char* f = __PRETTY_FUNCTION__;
    bool cond = _item.addr()!=FileMem::nullPtr;
-   assert<IsNullPtr>(cond,__LINE__);
+   assert<IsNullPtr>(cond,f,__LINE__);
    return _item.timeStamp();
 }
 
@@ -167,10 +172,11 @@ int64_t HistItem::timeStamp() const
 /// @exception AlreadySet This object's file name has already been set.
 void HistItem::fileName(const std::string& str)
 {
+   static const char* f = __PRETTY_FUNCTION__;
    bool cond = _item.addr()!=FileMem::nullPtr;
-   assert<IsNullPtr>(cond,__LINE__);
+   assert<IsNullPtr>(cond,f,__LINE__);
    cond = _item.fileNamePtr()==FileMem::nullPtr;
-   assert<AlreadySet>(cond,__LINE__);
+   assert<AlreadySet>(cond,f,__LINE__);
    _fileName = str;
    _item.fileNamePtr() = _fileName.addr();
 }
@@ -184,8 +190,9 @@ void HistItem::fileName(const std::string& str)
 /// @exception IsNullPtr This object has not been set(address is nullptr).
 const HistItem::string& HistItem::fileName() const
 {
+   static const char* f = __PRETTY_FUNCTION__;
    bool cond = _item.addr()!=FileMem::nullPtr;
-   assert<IsNullPtr>(cond,__LINE__);
+   assert<IsNullPtr>(cond,f,__LINE__);
    return *_fileName;
 }
 
@@ -199,10 +206,11 @@ const HistItem::string& HistItem::fileName() const
 /// @exception AlreadySet This object's object has already been set.
 void HistItem::object(const std::string& str)
 {
+   static const char* f = __PRETTY_FUNCTION__;
    bool cond = _item.addr()!=FileMem::nullPtr;
-   assert<IsNullPtr>(cond,__LINE__);
+   assert<IsNullPtr>(cond,f,__LINE__);
    cond = _item.objectPtr()==FileMem::nullPtr;
-   assert<AlreadySet>(cond,__LINE__);
+   assert<AlreadySet>(cond,f,__LINE__);
    _object = str;
    _item.objectPtr() = _object.addr();
 }
@@ -216,8 +224,9 @@ void HistItem::object(const std::string& str)
 /// @exception IsNullPtr This object has not been set(address is nullptr).
 const HistItem::string& HistItem::object() const
 {
+   static const char* f = __PRETTY_FUNCTION__;
    bool cond = _item.addr()!=FileMem::nullPtr;
-   assert<IsNullPtr>(cond,__LINE__);
+   assert<IsNullPtr>(cond,f,__LINE__);
    return *_object;
 }
 
@@ -231,10 +240,11 @@ const HistItem::string& HistItem::object() const
 /// @exception AlreadySet This object's command has already been set.
 void HistItem::command(const std::string& str)
 {
+   static const char* f = __PRETTY_FUNCTION__;
    bool cond = _item.addr()!=FileMem::nullPtr;
-   assert<IsNullPtr>(cond,__LINE__);
+   assert<IsNullPtr>(cond,f,__LINE__);
    cond = _item.commandPtr()==FileMem::nullPtr;
-   assert<AlreadySet>(cond,__LINE__);
+   assert<AlreadySet>(cond,f,__LINE__);
    _command = str;
    _item.commandPtr() = _command.addr();
 }
@@ -248,8 +258,9 @@ void HistItem::command(const std::string& str)
 /// @exception IsNullPtr This object has not been set(address is nullptr).
 const HistItem::string& HistItem::command() const
 {
+   static const char* f = __PRETTY_FUNCTION__;
    bool cond = _item.addr()!=FileMem::nullPtr;
-   assert<IsNullPtr>(cond,__LINE__);
+   assert<IsNullPtr>(cond,f,__LINE__);
    return *_command;
 }
 
@@ -263,10 +274,11 @@ const HistItem::string& HistItem::command() const
 /// @exception AlreadySet This object's next pointer has already been set.
 void HistItem::next(FileMem::Ptr ptr)
 {
+   static const char* f = __PRETTY_FUNCTION__;
    bool cond = _item.addr()!=FileMem::nullPtr;
-   assert<IsNullPtr>(cond,__LINE__);
+   assert<IsNullPtr>(cond,f,__LINE__);
    cond = _item.next()==FileMem::nullPtr;
-   assert<AlreadySet>(cond,__LINE__);
+   assert<AlreadySet>(cond,f,__LINE__);
    _item.next() = ptr;
 }
 
@@ -279,8 +291,9 @@ void HistItem::next(FileMem::Ptr ptr)
 /// @exception IsNullPtr This object has not been set(address is nullptr).
 FileMem::Ptr HistItem::next() const
 {
+   static const char* f = __PRETTY_FUNCTION__;
    bool cond = _item.addr()!=FileMem::nullPtr;
-   assert<IsNullPtr>(cond,__LINE__);
+   assert<IsNullPtr>(cond,f,__LINE__);
    return _item.next();
 }
 
@@ -294,10 +307,11 @@ FileMem::Ptr HistItem::next() const
 /// @exception AlreadySet This object's child pointer has already been set.
 void HistItem::childHead(FileMem::Ptr ptr)
 {
+   static const char* f = __PRETTY_FUNCTION__;
    bool cond = _item.addr()!=FileMem::nullPtr;
-   assert<IsNullPtr>(cond,__LINE__);
+   assert<IsNullPtr>(cond,f,__LINE__);
    cond = _item.childHead()==FileMem::nullPtr;
-   assert<AlreadySet>(cond,__LINE__);
+   assert<AlreadySet>(cond,f,__LINE__);
    _item.childHead() = ptr;
 }
 
@@ -310,8 +324,9 @@ void HistItem::childHead(FileMem::Ptr ptr)
 /// @exception IsNullPtr This object has not been set(address is nullptr).
 FileMem::Ptr HistItem::childHead() const
 {
+   static const char* f = __PRETTY_FUNCTION__;
    bool cond = _item.addr()!=FileMem::nullPtr;
-   assert<IsNullPtr>(cond,__LINE__);
+   assert<IsNullPtr>(cond,f,__LINE__);
    return _item.childHead();
 }
 

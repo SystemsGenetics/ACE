@@ -17,6 +17,7 @@ namespace AccelCompEng
 GetOpts::GetOpts(const string& raw):
    _orig(raw)
 {
+   static const char* f = __PRETTY_FUNCTION__;
    using regex = std::regex;
    using regtok = std::sregex_token_iterator;
    regex pat {"[\\s\\t]+"};
@@ -33,7 +34,7 @@ GetOpts::GetOpts(const string& raw):
          if (y!=string::npos)
          {
             bool cond = y==i.rfind('=')&&y>x;
-            assert<InvalidSyntax>(cond,__LINE__);
+            assert<InvalidSyntax>(cond,f,__LINE__);
             val = i.substr(x,y-x);
             key = i.substr(++y);
          }

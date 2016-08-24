@@ -26,26 +26,27 @@ FileMem::FileMem(const std::string& fileName):
    _available(0),
    _next(0)
 {
+   static const char* f = __PRETTY_FUNCTION__;
    constexpr static int flags = O_CREAT|O_RDWR|O_LARGEFILE;
    constexpr static mode_t modes = S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH;
    _fd = open(fileName.c_str(),flags,modes);
-   assert<SystemError>(_fd!=-1,__LINE__);
+   assert<SystemError>(_fd!=-1,f,__LINE__);
    bool cond;
    if (lseek64(_fd,0,SEEK_END)==0)
    {
       cond = ::write(_fd,_identString,_idLen)==_idLen&&
              ::write(_fd,&_next,sizeof(Ptr))==sizeof(Ptr);
-      assert<SystemError>(cond,__LINE__);
+      assert<SystemError>(cond,f,__LINE__);
    }
    else
    {
       cond = lseek64(_fd,0,SEEK_END)>=(_idLen + sizeof(Ptr));
-      assert<InvalidFile>(cond,__LINE__);
+      assert<InvalidFile>(cond,f,__LINE__);
       char buf[_idLen];
       cond = ::lseek64(_fd,0,SEEK_SET)==0;
-      assert<SystemError>(cond,__LINE__);
+      assert<SystemError>(cond,f,__LINE__);
       cond = ::read(_fd,buf,_idLen)!=-1;
-      assert<SystemError>(cond,__LINE__);
+      assert<SystemError>(cond,f,__LINE__);
       cond = true;
       for (int i=0;i<_idLen;++i)
       {
@@ -54,9 +55,9 @@ FileMem::FileMem(const std::string& fileName):
             cond = false;
          }
       }
-      assert<InvalidFile>(cond,__LINE__);
+      assert<InvalidFile>(cond,f,__LINE__);
       cond = ::read(_fd,&_next,sizeof(Ptr))==sizeof(Ptr);
-      assert<SystemError>(cond,__LINE__);
+      assert<SystemError>(cond,f,__LINE__);
       _capacity = lseek64(_fd,0,SEEK_END) - _idLen - sizeof(Ptr);
       _available = _capacity - _next;
    }
@@ -83,12 +84,13 @@ FileMem::~FileMem()
 /// @exception SystemError A system call, lseek64 or write, failed to execute.
 void FileMem::clear()
 {
+   static const char* f = __PRETTY_FUNCTION__;
    _available = _capacity;
    _next = 0;
    bool cond = lseek64(_fd,_idLen,SEEK_SET)==_idLen;
-   assert<SystemError>(cond,__LINE__);
+   assert<SystemError>(cond,f,__LINE__);
    cond = ::write(_fd,&_next,sizeof(Ptr))==sizeof(Ptr);
-   assert<SystemError>(cond,__LINE__);
+   assert<SystemError>(cond,f,__LINE__);
 }
 
 
@@ -166,14 +168,15 @@ FileMem::Ptr FileMem::head()
 /// @exception SystemError A system call, lseek64 or write, failed executing.
 FileMem::Ptr FileMem::fallocate(SizeT size)
 {
-   assert<OutOfMemory>(size<=_available,__LINE__);
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<OutOfMemory>(size<=_available,f,__LINE__);
    Ptr ret = _next;
    _next += size;
    _available -= size;
    bool cond = lseek64(_fd,_idLen,SEEK_SET)==_idLen;
-   assert<SystemError>(cond,__LINE__);
+   assert<SystemError>(cond,f,__LINE__);
    cond = ::write(_fd,&_next,sizeof(Ptr))==sizeof(Ptr);
-   assert<SystemError>(cond,__LINE__);
+   assert<SystemError>(cond,f,__LINE__);
    return ret;
 }
 
@@ -190,12 +193,13 @@ FileMem::Ptr FileMem::fallocate(SizeT size)
 /// @exception SystemError A system call, lseek64 or write, failed executing.
 void FileMem::write(const void* data, Ptr ptr, SizeT size)
 {
-   assert<FileSegFault>((ptr + size)<=_next,__LINE__);
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<FileSegFault>((ptr + size)<=_next,f,__LINE__);
    int64_t seekr = ptr + _idLen + sizeof(Ptr);
    bool cond = lseek64(_fd,seekr,SEEK_SET)==seekr;
-   assert<SystemError>(cond,__LINE__);
+   assert<SystemError>(cond,f,__LINE__);
    cond = ::write(_fd,data,size)==size;
-   assert<SystemError>(cond,__LINE__);
+   assert<SystemError>(cond,f,__LINE__);
 }
 
 
@@ -211,12 +215,13 @@ void FileMem::write(const void* data, Ptr ptr, SizeT size)
 /// @exception SystemError A system call, lseek64 or write, failed executing.
 void FileMem::read(void* data, Ptr ptr, SizeT size) const
 {
-   assert<FileSegFault>((ptr + size)<=_next,__LINE__);
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<FileSegFault>((ptr + size)<=_next,f,__LINE__);
    int64_t seekr = ptr + _idLen + sizeof(Ptr);
    bool cond = lseek64(_fd,seekr,SEEK_SET)==seekr;
-   assert<SystemError>(cond,__LINE__);
+   assert<SystemError>(cond,f,__LINE__);
    cond = ::read(_fd,data,size)==size;
-   assert<SystemError>(cond,__LINE__);
+   assert<SystemError>(cond,f,__LINE__);
 }
 
 

@@ -47,34 +47,38 @@ private:
 
 template<class T> void CLKernel::set_arg(cl_uint index, T arg)
 {
-   assert<NullKernel>(_isAlive,__LINE__);
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NullKernel>(_isAlive,f,__LINE__);
    cl_int err = clSetKernelArg(_id,index,sizeof(T),&arg);
-   classert<CannotSetArg>(err,__LINE__);
+   classert<CannotSetArg>(err,f,__LINE__);
 }
 
 
 
 template<> inline void CLKernel::set_arg(cl_uint index, size_t lSize)
 {
-   assert<NullKernel>(_isAlive,__LINE__);
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NullKernel>(_isAlive,f,__LINE__);
    cl_int err = clSetKernelArg(_id,index,lSize,NULL);
-   classert<CannotSetArg>(err,__LINE__);
+   classert<CannotSetArg>(err,f,__LINE__);
 }
 
 
 
 template<class T> void CLKernel::set_arg(cl_uint index, CLBuffer<T>* buffer)
 {
-   assert<NullKernel>(_isAlive,__LINE__);
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NullKernel>(_isAlive,f,__LINE__);
    cl_int err = clSetKernelArg(_id,index,sizeof(cl_mem),&(buffer->_id));
-   classert<CannotSetArg>(err,__LINE__);
+   classert<CannotSetArg>(err,f,__LINE__);
 }
 
 
 
 template<class... Args> void CLKernel::set_args(Args... args)
 {
-   assert<NullKernel>(_isAlive,__LINE__);
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NullKernel>(_isAlive,f,__LINE__);
    set_args_int<0>(args...);
 }
 

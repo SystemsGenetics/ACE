@@ -20,8 +20,9 @@ FString::FString(FileMem* mem, FPtr ptr):
    _mem(mem),
    _hdr(ptr)
 {
+   static const char* f = __PRETTY_FUNCTION__;
    bool cond = mem!=nullptr;
-   assert<InvalidPtr>(cond,__LINE__);
+   assert<InvalidPtr>(cond,f,__LINE__);
    if (_hdr.addr()!=FileMem::nullPtr)
    {
       load();
@@ -112,8 +113,9 @@ const FString::string* FString::operator->() const
 /// @exception AlreadySet This file string object has already been set.
 FString& FString::operator=(const string& nStr)
 {
+   static const char* f = __PRETTY_FUNCTION__;
    bool cond = _hdr.addr()==FileMem::nullPtr;
-   assert<AlreadySet>(cond,__LINE__);
+   assert<AlreadySet>(cond,f,__LINE__);
    String fStr(nStr.size()+1);
    _mem->allot(_hdr);
    _mem->allot(fStr);
@@ -135,9 +137,10 @@ FString& FString::operator=(const string& nStr)
 /// @exception InvalidPtr The file memory location is not a valid file string.
 inline void FString::load()
 {
+   static const char* f = __PRETTY_FUNCTION__;
    _mem->sync(_hdr,FileSync::read);
    bool cond = _hdr.stripe()==_strip;
-   assert<InvalidPtr>(cond,__LINE__);
+   assert<InvalidPtr>(cond,f,__LINE__);
    String fStr(_hdr.sSize(),_hdr.addr()+_hdrSz);
    _mem->sync(fStr,FileSync::read);
    _str = fStr.c_str();

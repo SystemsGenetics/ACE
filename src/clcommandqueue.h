@@ -40,13 +40,14 @@ private:
 
 template<class T> CLEvent CLCommandQueue::read_buffer(CLBuffer<T>& buffer)
 {
-   assert<NotInitialized>(_initd,__LINE__);
-   assert<NullBufferUsed>(buffer._hostPtr,__LINE__);
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NotInitialized>(_initd,f,__LINE__);
+   assert<NullBufferUsed>(buffer._hostPtr,f,__LINE__);
    cl_event ret;
    cl_int err = clEnqueueReadBuffer(_id,buffer._id,CL_FALSE,0,
                                     buffer._size*sizeof(T),buffer._hostPtr,0,
                                     NULL,&ret);
-   classert<CannotEnqueue>(err,__LINE__);
+   classert<CannotEnqueue>(err,f,__LINE__);
    return CLEvent(ret);
 }
 
@@ -54,13 +55,14 @@ template<class T> CLEvent CLCommandQueue::read_buffer(CLBuffer<T>& buffer)
 
 template<class T> CLEvent CLCommandQueue::write_buffer(CLBuffer<T>& buffer)
 {
-   assert<NotInitialized>(_initd,__LINE__);
-   assert<NullBufferUsed>(buffer._hostPtr,__LINE__);
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NotInitialized>(_initd,f,__LINE__);
+   assert<NullBufferUsed>(buffer._hostPtr,f,__LINE__);
    cl_event ret;
    cl_int err = clEnqueueWriteBuffer(_id,buffer._id,CL_FALSE,0,
                                      buffer._size*sizeof(T),buffer._hostPtr,0,
                                      NULL,&ret);
-   classert<CannotEnqueue>(err,__LINE__);
+   classert<CannotEnqueue>(err,f,__LINE__);
    return CLEvent(ret);
 }
 

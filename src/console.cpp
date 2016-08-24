@@ -29,7 +29,8 @@ Console::Console(int argc, char* argv[], Terminal& tm, DataMap& dmap,
    _device {nullptr},
    _header(header)
 {
-   assert<InvalidUse>(!_lock,__LINE__);
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<InvalidUse>(!_lock,f,__LINE__);
    _lock = true;
 }
 
@@ -101,7 +102,7 @@ void Console::terminal_loop()
             _tm << Terminal::error;
             _tm << "ACE Exception Caught!\n";
             _tm << "What: " << e.what() << "\n";
-            _tm << "Line: " << e.line() << "\n";
+            _tm << "Location: " << e.function() << ":" << e.line() << "\n";
             if (e.detail())
             {
                _tm << "Details:" << e.detail() << "\n";

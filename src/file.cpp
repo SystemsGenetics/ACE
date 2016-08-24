@@ -18,6 +18,7 @@ File::File(const std::string& fileName):
    _mem(fileName),
    _ident(&_mem)
 {
+   static const char* f = __PRETTY_FUNCTION__;
    if (_mem.size()==0)
    {
       create();
@@ -25,11 +26,11 @@ File::File(const std::string& fileName):
    else
    {
       bool cond = _mem.size()>=_hdrSz;
-      assert<InvalidFile>(cond,__LINE__);
+      assert<InvalidFile>(cond,f,__LINE__);
       _hdr = _mem.head();
       _mem.sync(_hdr,FileSync::read);
       cond = _hdr.histHead()!=FileMem::nullPtr;
-      assert<InvalidFile>(cond,__LINE__);
+      assert<InvalidFile>(cond,f,__LINE__);
       cond = true;
       for (int i=0;i<_idSz;++i)
       {
@@ -38,7 +39,7 @@ File::File(const std::string& fileName):
             cond = false;
          }
       }
-      assert<InvalidFile>(cond,__LINE__);
+      assert<InvalidFile>(cond,f,__LINE__);
       _hist = hptr(new History(_mem,_hdr.histHead()));
       _ident.addr(_hdr.ident());
       _new = false;
@@ -100,13 +101,14 @@ File::string File::ident() const
 /// @exception AlreadySet The ident value for data plugin has already been set.
 void File::ident(const string& id)
 {
+   static const char* f = __PRETTY_FUNCTION__;
    try
    {
       _ident = id;
    }
    catch (FString::AlreadySet)
    {
-      assert<AlreadySet>(false,__LINE__);
+      assert<AlreadySet>(false,f,__LINE__);
    }
    _hdr.ident() = _ident.addr();
    _mem.sync(_hdr,FileSync::write);

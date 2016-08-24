@@ -98,10 +98,11 @@ private:
 
 template<class T> T CLDevice::get_info(cl_device_info infoType) const
 {
+   static const char* f = __PRETTY_FUNCTION__;
    T ret;
    cl_int err;
    err = clGetDeviceInfo(_did,infoType,sizeof(T),&ret,NULL);
-   classert<InfoErr>(err,__LINE__);
+   classert<InfoErr>(err,f,__LINE__);
    return ret;
 }
 
@@ -110,13 +111,14 @@ template<class T> T CLDevice::get_info(cl_device_info infoType) const
 template<>
 inline CLDevice::string CLDevice::get_info(cl_device_info infoType) const
 {
+   static const char* f = __PRETTY_FUNCTION__;
    size_t strSize;
    cl_int err;
    err = clGetDeviceInfo(_did,infoType,0,NULL,&strSize);
-   classert<InfoErr>(err,__LINE__);
+   classert<InfoErr>(err,f,__LINE__);
    char buffer[strSize];
    err = clGetDeviceInfo(_did,infoType,strSize,buffer,NULL);
-   classert<InfoErr>(err,__LINE__);
+   classert<InfoErr>(err,f,__LINE__);
    return buffer;
 }
 

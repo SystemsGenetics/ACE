@@ -19,7 +19,7 @@ int run(const char* header, int argc, char* argv[])
    catch(Exception e)
    {
       std::cout << "Fatal Exception Caught!\n";
-      std::cout << e.what() << "(" << e.line() <<  ")";
+      std::cout << e.what() << "(" << e.function() << ":" << e.line() <<  ")";
       if (e.detail())
       {
          std::cout << ": " << e.detail();

@@ -121,11 +121,12 @@ private:
 /// there is no value set for this option.
 template<class T> T GetOpts::Iterator::value() const
 {
+   static const char* f = __PRETTY_FUNCTION__;
    T ret;
    using istring = std::istringstream;
    istring buffer(_i->second);
    bool cond = buffer >> ret;
-   assert<InvalidType>(cond,__LINE__);
+   assert<InvalidType>(cond,f,__LINE__);
    return ret;
 }
 

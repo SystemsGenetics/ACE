@@ -16,12 +16,13 @@ CLContext::~CLContext()
 
 void CLContext::init_cl(CLDevice& dev)
 {
+   static const char* f = __PRETTY_FUNCTION__;
    cl_context_properties props[] = {
       CL_CONTEXT_PLATFORM, (cl_context_properties)dev.platform(), 0 };
    cl_device_id device {dev.device()};
    cl_int err;
    _cid = clCreateContext(props,1,&device,NULL,NULL,&err);
-   classert<CannotCreate>(err,__LINE__);
+   classert<CannotCreate>(err,f,__LINE__);
    try
    {
       CLProgram::init(_cid,dev.device());

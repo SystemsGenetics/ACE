@@ -86,8 +86,9 @@ CLKernel& CLKernel::operator=(CLKernel&& move)
 
 void CLKernel::set_swarm_dims(cl_uint dims)
 {
-   assert<NullKernel>(_isAlive,__LINE__);
-   assert<TooManyDims>(dims<=_maxDims,__LINE__);
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NullKernel>(_isAlive,f,__LINE__);
+   assert<TooManyDims>(dims<=_maxDims,f,__LINE__);
    _dims = dims;
 }
 
@@ -95,8 +96,9 @@ void CLKernel::set_swarm_dims(cl_uint dims)
 
 void CLKernel::set_swarm_size(int dim, cl_uint gSize, cl_uint lSize)
 {
-   assert<NullKernel>(_isAlive,__LINE__);
-   assert<DimOutOfRange>(dim<_dims,__LINE__);
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NullKernel>(_isAlive,f,__LINE__);
+   assert<DimOutOfRange>(dim<_dims,f,__LINE__);
    _gSizes[dim] = gSize;
    _lSizes[dim] = lSize;
 }
@@ -105,11 +107,12 @@ void CLKernel::set_swarm_size(int dim, cl_uint gSize, cl_uint lSize)
 
 size_t CLKernel::get_wg_size()
 {
-   assert<NullKernel>(_isAlive,__LINE__);
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NullKernel>(_isAlive,f,__LINE__);
    size_t ret;
    cl_int err = clGetKernelWorkGroupInfo(_id,_did,CL_KERNEL_WORK_GROUP_SIZE,
                                          sizeof(size_t),&ret,NULL);
-   classert<CannotGetInfo>(err,__LINE__);
+   classert<CannotGetInfo>(err,f,__LINE__);
    return ret;
 }
 
@@ -117,12 +120,13 @@ size_t CLKernel::get_wg_size()
 
 size_t CLKernel::get_wg_multiple()
 {
-   assert<NullKernel>(_isAlive,__LINE__);
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NullKernel>(_isAlive,f,__LINE__);
    size_t ret;
    cl_int err = clGetKernelWorkGroupInfo(_id,_did,
                                    CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE,
                                          sizeof(size_t),&ret,NULL);
-   classert<CannotGetInfo>(err,__LINE__);
+   classert<CannotGetInfo>(err,f,__LINE__);
    return ret;
 }
 

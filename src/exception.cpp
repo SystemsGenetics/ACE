@@ -5,9 +5,10 @@ namespace AccelCompEng
 
 
 
-Exception::Exception(const char* what, const char* detail, int line) noexcept:
+Exception::Exception(const char* what, const char* detail, const char* function, int line) noexcept:
    _what(what),
    _detail(detail),
+   _function(function),
    _line(line)
 {}
 
@@ -19,6 +20,13 @@ Exception::~Exception() noexcept
    {
       free(_demangle);
    }
+}
+
+
+
+const char* Exception::function() const noexcept
+{
+   return _function;
 }
 
 

@@ -17,7 +17,8 @@ bool DataMap::_lock {false};
 DataMap::DataMap():
    _i {_map.end()}
 {
-   assert<InvalidUse>(!_lock,__LINE__);
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<InvalidUse>(!_lock,f,__LINE__);
    _lock = true;
 }
 
@@ -43,11 +44,12 @@ DataMap::~DataMap()
 /// system.
 Data* DataMap::open(const string& file, const string& type, bool select)
 {
+   static const char* f = __PRETTY_FUNCTION__;
    using uptr = std::unique_ptr<Data>;
    bool cond = _map.find(file)==_map.end();
-   assert<AlreadyExists>(cond,__LINE__);
+   assert<AlreadyExists>(cond,f,__LINE__);
    uptr nd(new_data(type,file));
-   assert<InvalidType>(bool(nd),__LINE__);
+   assert<InvalidType>(bool(nd),f,__LINE__);
    auto x = _map.emplace(file,std::move(nd));
    auto i = x.first;
    if (select)
@@ -116,8 +118,9 @@ bool DataMap::unselect()
 /// @exception NoSelect No data object is selected.
 void DataMap::load(GetOpts& ops, Terminal& tm)
 {
+   static const char* f = __PRETTY_FUNCTION__;
    bool cond = _i!=_map.end();
-   assert<NoSelect>(cond,__LINE__);
+   assert<NoSelect>(cond,f,__LINE__);
    try
    {
       _i->second->load(ops,tm);
@@ -140,8 +143,9 @@ void DataMap::load(GetOpts& ops, Terminal& tm)
 /// @exception NoSelect No data object is selected.
 void DataMap::dump(GetOpts& ops, Terminal& tm)
 {
+   static const char* f = __PRETTY_FUNCTION__;
    bool cond = _i!=_map.end();
-   assert<NoSelect>(cond,__LINE__);
+   assert<NoSelect>(cond,f,__LINE__);
    try
    {
       _i->second->dump(ops,tm);
@@ -164,8 +168,9 @@ void DataMap::dump(GetOpts& ops, Terminal& tm)
 /// @exception NoSelect No data object is selected.
 void DataMap::query(GetOpts& ops, Terminal& tm)
 {
+   static const char* f = __PRETTY_FUNCTION__;
    bool cond = _i!=_map.end();
-   assert<NoSelect>(cond,__LINE__);
+   assert<NoSelect>(cond,f,__LINE__);
    try
    {
       _i->second->query(ops,tm);
@@ -207,8 +212,9 @@ Data* DataMap::find(const string& file)
 /// selected nullptr is returned.
 Data* DataMap::current()
 {
+   static const char* f = __PRETTY_FUNCTION__;
    bool cond = _i!=_map.end();
-   assert<NoSelect>(cond,__LINE__);
+   assert<NoSelect>(cond,f,__LINE__);
    return _i->second.get();
 }
 
@@ -257,9 +263,10 @@ DataMap::Iterator DataMap::selected()
 /// list of opened data objects.
 inline DataMap::Map::iterator DataMap::get(const string& file)
 {
+   static const char* f = __PRETTY_FUNCTION__;
    auto i = _map.find(file);
    bool cond = i!=_map.end();
-   assert<DoesNotExist>(cond,__LINE__);
+   assert<DoesNotExist>(cond,f,__LINE__);
    return i;
 }
 

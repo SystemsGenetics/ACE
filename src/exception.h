@@ -13,17 +13,18 @@ namespace AccelCompEng
 
 
 
-template<class T> inline void assert(bool cond, int line, const char* detail = nullptr)
+template<class T> inline void assert(bool cond, const char* function, int line,
+                                     const char* detail = nullptr)
 {
    if (!cond)
    {
-      throw T(typeid(T).name(),detail,line);
+      throw T(typeid(T).name(),detail,function,line);
    }
 }
 
 
 
-template<class T> inline void classert(cl_int code, int line)
+template<class T> inline void classert(cl_int code, const char* function, int line)
 {
    static const char* clDescErrors[] = {
       "CL_SUCCESS",
@@ -103,7 +104,7 @@ template<class T> inline void classert(cl_int code, int line)
       {
          tmp = clDescErrors[15];
       }
-      throw T(typeid(T).name(),tmp,line);;
+      throw T(typeid(T).name(),tmp,function,line);
    }
 }
 
@@ -115,11 +116,12 @@ public:
    // *
    // * BASIC METHODS
    // *
-   Exception(const char*,const char*,int) noexcept;
+   Exception(const char*,const char*,const char*,int) noexcept;
    ~Exception();
    // *
    // * FUNCTIONS
    // *
+   const char* function() const noexcept;
    int line() const noexcept;
    const char* what() const noexcept;
    const char* detail() const noexcept;
@@ -127,6 +129,7 @@ private:
    // *
    // * VARIABLES
    // *
+   const char* _function;
    int _line;
    const char* _what;
    const char* _detail;

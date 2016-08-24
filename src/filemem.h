@@ -285,8 +285,9 @@ template<class T> void FileMem::allot(T& obj, SizeT amt)
 /// @exception FileSegFault The file pointer of object buffer is nullptr.
 template<class T> void FileMem::sync(T& obj, FileSync which, Ptr inc)
 {
+   static const char* f = __PRETTY_FUNCTION__;
    bool cond = obj.ptr!=nullPtr;
-   assert<FileSegFault>(cond,__LINE__);
+   assert<FileSegFault>(cond,f,__LINE__);
    Ptr seekr = obj.ptr + obj.size*inc;
    switch (which)
    {

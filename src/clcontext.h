@@ -32,7 +32,8 @@ private:
 
 template<class T> CLBuffer<T> CLContext::buffer(int size)
 {
-   assert<NotInitialized>(_initd,__LINE__);
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NotInitialized>(_initd,f,__LINE__);
    return CLBuffer<T>(_cid,size);
 }
 
