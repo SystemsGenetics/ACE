@@ -99,27 +99,25 @@ void Console::terminal_loop()
          catch (Exception e)
          {
             _tm << Terminal::error;
-            _tm << "ACE Exception Caught!" << Terminal::endl;
-            _tm << "Domain: " << e.domain() << ":" << e.line() << "\n";
+            _tm << "ACE Exception Caught!\n";
             _tm << "What: " << e.what() << "\n";
-            _tm << "Details...\n" << e.detail() << "\n";
+            _tm << "Line: " << e.line() << "\n";
+            _tm << "Details:" << e.detail() << "\n";
             _tm << Terminal::general;
          }
-         catch (std::exception stde)
+         catch (std::exception& stde)
          {
             _tm << Terminal::error;
-            _tm << "Standard Library Exception Caught!" << Terminal::endl;
-            _tm << "What: " << stde.what() << Terminal::endl;
-            _tm << "It is HIGHLY recommended you immediately close this"
-                   " program." << Terminal::endl;
+            _tm << "Standard Library Exception Caught!\n";
+            _tm << "What: " << stde.what() << "\n";
+            _tm << "It is HIGHLY recommended you immediately close this program.\n";
             _tm << Terminal::general;
          }
          catch (...)
          {
             _tm << Terminal::error;
-            _tm << "UNKNOWN EXCEPTION CAUGHT!" << Terminal::endl;
-            _tm << "It is HIGHLY recommended you immediately close this"
-                   " program." << Terminal::endl;
+            _tm << "UNKNOWN EXCEPTION CAUGHT!\n";
+            _tm << "It is HIGHLY recommended you immediately close this program.\n";
             _tm << Terminal::general;
          }
       }
@@ -239,7 +237,7 @@ void Console::gpu_list()
       {
          _tm << " ***";
       }
-      _tm << Terminal::endl;
+      _tm << "\n";
    }
    _tm << Terminal::flush;
 }
@@ -272,8 +270,7 @@ void Console::gpu_info(GetOpts& ops)
       _tm << dev.info(CLDevice::compute_units) << " compute unit(s), "
           << dev.info(CLDevice::work_size) << " work-item(s) per unit.\n";
       _tm << dev.info(CLDevice::global_mem) << " global memory, "
-          << dev.info(CLDevice::local_mem) << " local memory."
-          << Terminal::endl;
+          << dev.info(CLDevice::local_mem) << " local memory.\n";
    }
    else
    {
@@ -326,11 +323,11 @@ void Console::gpu_clear()
    {
       delete _device;
       _device = nullptr;
-      _tm << "OpenCL device cleared." << Terminal::endl;
+      _tm << "OpenCL device cleared.\n";
    }
    else
    {
-      _tm << "no OpenCL devie set." << Terminal::endl;
+      _tm << "no OpenCL devie set.\n";
    }
 }
 
@@ -383,11 +380,11 @@ void Console::data_open(GetOpts& ops)
       h.object("__NEW__");
       h.command(ops.orig());
       h.sync();
-      _tm << "new file " << file << " opened." << Terminal::endl;
+      _tm << "New file " << file << " opened.\n";
    }
    else
    {
-      _tm << "old file " << file << " opened." << Terminal::endl;
+      _tm << "Old file " << file << " opened.";
    }
 }
 
@@ -416,7 +413,7 @@ void Console::data_close(GetOpts& ops)
       buffer << ops.com_front() << " cannot be found.";
       throw CommandError("close",buffer.str());
    }
-   _tm << ops.com_front() << " data file closed." << Terminal::endl;
+   _tm << ops.com_front() << " data file closed.\n";
 }
 
 
@@ -443,7 +440,7 @@ void Console::data_select(GetOpts& ops)
       buffer << ops.com_front() << " cannot be found.";
       throw CommandError("select",buffer.str());
    }
-   _tm << ops.com_front() << " data file selected." << Terminal::endl;
+   _tm << ops.com_front() << " data file selected.\n";
 }
 
 
@@ -453,11 +450,11 @@ void Console::data_clear()
 {
    if (_dataMap.unselect())
    {
-      _tm << "data selection cleared." << Terminal::endl;
+      _tm << "data selection cleared.\n";
    }
    else
    {
-      _tm << "no data object selected." << Terminal::endl;
+      _tm << "no data object selected.\n";
    }
 }
 
@@ -473,7 +470,7 @@ void Console::data_list()
       {
          _tm << " ***";
       }
-      _tm << Terminal::endl;
+      _tm << "\n";
    }
 }
 
@@ -503,15 +500,15 @@ void Console::data_history(GetOpts& ops)
    struct tm* bt = localtime(&t);
    _tm << "Time Stamp: ";
    _tm << bt->tm_mday << "-" << (bt->tm_mon+1) << "-" << (bt->tm_year+1900)
-       << " " << bt->tm_hour << ":" << bt->tm_min << Terminal::endl;
-   _tm << "File Name: " << h.fileName() << Terminal::endl;
-   _tm << "Object: " << h.object() << Terminal::endl;
-   _tm << "Command: " << h.command() << Terminal::endl;
+       << " " << bt->tm_hour << ":" << bt->tm_min << "\n";
+   _tm << "File Name: " << h.fileName() << "\n";
+   _tm << "Object: " << h.object() << "\n";
+   _tm << "Command: " << h.command() << "\n";
    if (h.has_child())
    {
-      _tm << "{" << Terminal::endl;
+      _tm << "{\n";
       rec_history(h.begin(),h.end(),1);
-      _tm << "{" << Terminal::endl;
+      _tm << "{\n";
    }
 }
 
@@ -770,25 +767,25 @@ inline void Console::rec_history(hiter begin, hiter end, int d)
       if (i!=begin)
       {
          print_pad(d);
-         _tm << Terminal::endl;
+         _tm << "\n";
       }
       print_pad(d);
       _tm << "Time Stamp: ";
       _tm << bt->tm_mday << "-" << (bt->tm_mon+1) << "-" << (bt->tm_year+1900)
-          << " " << bt->tm_hour << ":" << bt->tm_min << Terminal::endl;
+          << " " << bt->tm_hour << ":" << bt->tm_min << "\n";
       print_pad(d);
-      _tm << "File Name: " << h.fileName() << Terminal::endl;
+      _tm << "File Name: " << h.fileName() << "\n";
       print_pad(d);
-      _tm << "Object: " << h.object() << Terminal::endl;
+      _tm << "Object: " << h.object() << "\n";
       print_pad(d);
-      _tm << "Command: " << h.command() << Terminal::endl;
+      _tm << "Command: " << h.command() << "\n";
       if (i.has_child())
       {
          print_pad(d);
-         _tm << "{" << Terminal::endl;
+         _tm << "{\n";
          rec_history(i.child(),end,d+1);
          print_pad(d);
-         _tm << "{" << Terminal::endl;
+         _tm << "{\n";
       }
    }
 }
@@ -824,7 +821,7 @@ Console::CommandError::CommandError(const string& who, const string& msg):
 /// @param tm The program's terminal that will be printed to.
 void Console::CommandError::print(Terminal& tm)
 {
-   tm << _who << ": " << _msg << Terminal::endl;
+   tm << _who << ": " << _msg << "\n";
 }
 
 
