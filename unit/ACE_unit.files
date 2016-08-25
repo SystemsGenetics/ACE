@@ -5,6 +5,9 @@ getopts.cpp
 histitem.cpp
 history.cpp
 file.cpp
+nvmemory.cpp
 unit.cpp
 unit.h
+utests.cpp
+utests.h
 Makefile

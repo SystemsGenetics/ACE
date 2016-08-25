@@ -25,6 +25,12 @@ int main(int argc, char* argv[])
    {
       exit(1);
    }
+   UTests tests;
+   add_nvmemory(tests);
+   if (!tests.execute())
+   {
+      exit(1);
+   }
    AceTestFactory factory;
    return AccelCompEng::run("ACE_TEST",factory,argc,argv);
 }

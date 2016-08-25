@@ -2,9 +2,14 @@
 #define UNIT_H
 #include <iostream>
 #include "../src/ace.h"
+#include "utests.h"
 
 
 namespace ace = AccelCompEng;
+
+
+
+void add_nvmemory(UTests&);
 
 
 class FakeData : public ace::Data
