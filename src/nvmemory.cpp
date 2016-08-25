@@ -9,6 +9,10 @@ namespace AccelCompEng
 
 
 
+const uint32_t NVMemory::_endianTest {1};
+
+
+
 NVMemory::NVMemory(const std::string& fileName)
 {
    open(fileName);

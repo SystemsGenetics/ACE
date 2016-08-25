@@ -45,7 +45,7 @@ private:
    int64_t _capacity {0};
    int64_t _avail {0};
    int64_t _next {0};
-   static const uint32_t _endianTest {1};
+   static const uint32_t _endianTest;
    constexpr static const char* _idStr {"\33\102\104\101\124"};
    constexpr static int _idLen {5};
 };
