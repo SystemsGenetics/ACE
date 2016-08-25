@@ -1,6 +1,64 @@
 #ifndef UNIT_H
 #define UNIT_H
 #include <iostream>
+#include "../src/ace.h"
+
+
+namespace ace = AccelCompEng;
+
+
+class FakeData : public ace::Data
+{
+public:
+   using string = std::string;
+   FakeData(const string& type, const string& name):
+      Data(type,name)
+   {}
+   void load(ace::GetOpts&,ace::Terminal&) override final
+   {
+      if (touched)
+      {
+         throw int(0);
+      }
+      touched = true;
+   }
+   void dump(ace::GetOpts&,ace::Terminal&) override final
+   {
+      if (touched)
+      {
+         throw int(1);
+      }
+      touched = true;
+   }
+   void query(ace::GetOpts&,ace::Terminal&) override final
+   {
+      if (touched)
+      {
+         throw int(2);
+      }
+      touched = true;
+   }
+   bool empty() override final { return true; }
+   bool touched {false};
+};
+
+
+
+class AceTestFactory : public ace::Factory
+{
+   ace::Analytic* build_analytic(const std::string&) override final { return nullptr; }
+   ace::Data* build_data(const std::string& type, const std::string& file) override final
+   {
+      if (type==std::string("FakeData"))
+      {
+         return new FakeData(type,file);
+      }
+      else
+      {
+         return nullptr;
+      }
+   }
+};
 
 
 

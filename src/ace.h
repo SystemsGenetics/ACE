@@ -21,13 +21,13 @@
 #include "file.h"
 #include "linuxterm.h"
 #include "terminal.h"
-#include "plugins.h"
+#include "factory.h"
 namespace AccelCompEng
 {
 
 
 
-int run(const char*,int,char*[]);
+int run(const char*,Factory&,int,char*[]);
 
 
 

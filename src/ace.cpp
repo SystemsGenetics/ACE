@@ -1,19 +1,18 @@
 #include <iostream>
-#include "console.h"
-#include "linuxterm.h"
+#include "ace.h"
 namespace AccelCompEng
 {
 
 
 
-int run(const char* header, int argc, char* argv[])
+int run(const char* header, Factory& factory, int argc, char* argv[])
 {
    try
    {
-      DataMap dataMap;
+      DataMap dataMap(factory);
       LinuxTerm::stty_raw();
       LinuxTerm terminal;
-      Console console(argc,argv,terminal,dataMap,header);
+      Console console(argc,argv,terminal,factory,dataMap,header);
       console.run();
    }
    catch(Exception e)

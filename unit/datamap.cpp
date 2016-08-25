@@ -4,47 +4,7 @@ using namespace AccelCompEng;
 
 
 
-class FakeData : public Data
-{
-public:
-   using string = std::string;
-   FakeData(const string& type, const string& name):
-      Data(type,name)
-   {}
-   void load(GetOpts&,Terminal&) override final
-   {
-      if (touched)
-      {
-         throw int(0);
-      }
-      touched = true;
-   }
-   void dump(GetOpts&,Terminal&) override final
-   {
-      if (touched)
-      {
-         throw int(1);
-      }
-      touched = true;
-   }
-   void query(GetOpts&,Terminal&) override final
-   {
-      if (touched)
-      {
-         throw int(2);
-      }
-      touched = true;
-   }
-   bool empty() override final { return true; }
-   bool touched {false};
-};
-
-
-
-ACE_BEGIN_DATA
-ACE_DATA_PLUGIN(FakeData,FakeData)
-ACE_END_DATA
-
+AceTestFactory factory;
 
 
 bool unit::datamap::main()
@@ -87,8 +47,8 @@ bool unit::datamap::construct()
    bool test = false;
    try
    {
-      DataMap t;
-      DataMap tt;
+      DataMap t(factory);
+      DataMap tt(factory);
    }
    catch (DataMap::InvalidUse)
    {
@@ -101,7 +61,7 @@ bool unit::datamap::construct()
 
 bool unit::datamap::open()
 {
-   DataMap t;
+   DataMap t(factory);
    bool cont = true;
    {
       start();
@@ -145,7 +105,7 @@ bool unit::datamap::open()
 bool unit::datamap::close()
 {
    bool cont {true};
-   DataMap t;
+   DataMap t(factory);
    {
       start();
       t.open("test.tmp","FakeData");
@@ -167,7 +127,7 @@ bool unit::datamap::close()
 
 bool unit::datamap::unselect()
 {
-   DataMap t;
+   DataMap t(factory);
    bool cont {true};
    {
       start();
@@ -189,7 +149,7 @@ bool unit::datamap::load()
 {
    LinuxTerm term;
    GetOpts got("one");
-   DataMap t;
+   DataMap t(factory);
    t.open("test.tmp","FakeData");
    bool cont = true;
    {
@@ -237,7 +197,7 @@ bool unit::datamap::dump()
 {
    LinuxTerm term;
    GetOpts got("one");
-   DataMap t;
+   DataMap t(factory);
    t.open("test.tmp","FakeData");
    bool cont = true;
    {
@@ -285,7 +245,7 @@ bool unit::datamap::query()
 {
    LinuxTerm term;
    GetOpts got("one");
-   DataMap t;
+   DataMap t(factory);
    t.open("test.tmp","FakeData");
    bool cont = true;
    {
@@ -332,7 +292,7 @@ bool unit::datamap::query()
 bool unit::datamap::iterate()
 {
    start();
-   DataMap t;
+   DataMap t(factory);
    t.open("test1.tmp","FakeData");
    t.open("test2.tmp","FakeData");
    t.open("test3.tmp","FakeData");
@@ -350,7 +310,7 @@ bool unit::datamap::iterate()
 bool unit::datamap::selected()
 {
    bool cont {true};
-   DataMap t;
+   DataMap t(factory);
    {
       start();
       bool test {t.selected()==t.end()};
@@ -371,7 +331,7 @@ bool unit::datamap::iter_file()
 {
    start();
    std::string file("test.tmp");
-   DataMap t;
+   DataMap t(factory);
    t.open(file,"FakeData");
    auto i = t.begin();
    bool test = i.file()==file;
@@ -384,7 +344,7 @@ bool unit::datamap::iter_type()
 {
    start();
    std::string type("FakeData");
-   DataMap t;
+   DataMap t(factory);
    t.open("test.tmp",type);
    auto i = t.begin();
    bool test = i.type()==type;

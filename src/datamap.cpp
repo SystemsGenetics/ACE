@@ -14,7 +14,8 @@ bool DataMap::_lock {false};
 /// instance of this class in existence.
 ///
 /// @exception InvalidUse An instance of this class already exists.
-DataMap::DataMap():
+DataMap::DataMap(Factory& factory):
+   _factory(factory),
    _i {_map.end()}
 {
    static const char* f = __PRETTY_FUNCTION__;
@@ -48,7 +49,7 @@ Data* DataMap::open(const string& file, const string& type, bool select)
    using uptr = std::unique_ptr<Data>;
    bool cond = _map.find(file)==_map.end();
    assert<AlreadyExists>(cond,f,__LINE__);
-   uptr nd(new_data(type,file));
+   uptr nd(_factory.build_data(type,file));
    assert<InvalidType>(bool(nd),f,__LINE__);
    auto x = _map.emplace(file,std::move(nd));
    auto i = x.first;

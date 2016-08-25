@@ -46,7 +46,7 @@ public:
    // *
    // * BASIC METHODS
    // *
-   Console(int,char*[],Terminal&,DataMap&,const char*);
+   Console(int,char*[],Terminal&,Factory&,DataMap&,const char*);
    ~Console();
    // *
    // * COPY METHODS
@@ -107,6 +107,7 @@ private:
    /// List of all possible OpenCL devices on program's machine.
    CLDevList _devList;
    string _header;
+   Factory& _factory;
 };
 
 

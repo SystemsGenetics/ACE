@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 #include <memory>
-#include "plugins.h"
+#include "factory.h"
 #include "getopts.h"
 #include "exception.h"
 namespace AccelCompEng
@@ -41,7 +41,7 @@ public:
    // *
    // * BASIC METHODS
    // *
-   DataMap();
+   DataMap(Factory&);
    ~DataMap();
    // *
    // * COPY METHODS
@@ -90,6 +90,7 @@ private:
    /// Iterator that points to selected data object, or end of list iterator if
    /// no object is selected.
    Map::iterator _i;
+   Factory& _factory;
 };
 
 

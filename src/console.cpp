@@ -12,7 +12,7 @@
 #include "console.h"
 #include "cldevice.h"
 #include "data.h"
-#include "plugins.h"
+#include "factory.h"
 namespace AccelCompEng
 {
 
@@ -22,9 +22,10 @@ bool Console::_lock {false};
 
 
 
-Console::Console(int argc, char* argv[], Terminal& tm, DataMap& dmap,
+Console::Console(int argc, char* argv[], Terminal& tm, Factory& factory, DataMap& dmap,
                  const char* header):
    _tm {tm},
+   _factory(factory),
    _dataMap {dmap},
    _device {nullptr},
    _header(header)
@@ -604,7 +605,7 @@ void Console::analytic(GetOpts& ops)
 {
    using aptr = std::unique_ptr<Analytic>;
    using ilist = std::forward_list<Data*>;
-   aptr a(new_analytic(ops.com_front()));
+   aptr a(_factory.build_analytic(ops.com_front()));
    if (!a)
    {
       std::ostringstream buffer;

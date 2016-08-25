@@ -1,16 +1,10 @@
 #include "unit.h"
-#include "../src/ace.h"
 using namespace AccelCompEng;
 
 
 
 const char* unit::headerStr {nullptr};
 int unit::numTestsDone {0};
-
-
-
-ACE_BEGIN_ANALYTIC
-ACE_END_ANALYTIC
 
 
 
@@ -31,5 +25,6 @@ int main(int argc, char* argv[])
    {
       exit(1);
    }
-   return AccelCompEng::run("ACE_TEST",argc,argv);
+   AceTestFactory factory;
+   return AccelCompEng::run("ACE_TEST",factory,argc,argv);
 }
