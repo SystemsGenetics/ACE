@@ -25,6 +25,7 @@ datamap.cpp
 datamap.h
 exception.cpp
 exception.h
+factory.h
 filemem.cpp
 filemem.h
 fstring.cpp
@@ -39,7 +40,8 @@ file.cpp
 file.h
 linuxterm.cpp
 linuxterm.h
-Makefile
-plugins.h
 terminal.cpp
 terminal.h
+nvmemory.cpp
+nvmemory.h
+Makefile
