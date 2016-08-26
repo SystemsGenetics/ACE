@@ -45,7 +45,7 @@ UTests::Run::Run(const std::string& name, void (*in)(void), void (*out)(void)):
 
 void UTests::Run::add_test(const std::string& name, void (*func)(void))
 {
-   _tests.push_back(Test{name,func});
+   _tests.push_back({name,func});
 }
 
 
@@ -69,7 +69,7 @@ bool UTests::Run::execute() const
          }
          catch (Fail)
          {
-            std::cout << "\n" << _name << "::" << i->_name << " FAILED!\n";
+            std::cout << "\n" << _name << "::" << i->_name << " FAILED!" << std::endl;
             ret = false;
             break;
          }
