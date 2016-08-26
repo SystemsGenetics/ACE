@@ -96,6 +96,10 @@ void NVMemory::clear()
    assert<NotOpen>(is_open(),f,__LINE__);
    _avail = _capacity;
    _next = 0;
+   bool cond = lseek64(_fd,_idLen,SEEK_SET)==_idLen;
+   assert<SystemError>(cond,f,__LINE__);
+   cond = ::write(_fd,&_next,sizeof(int64_t))==sizeof(int64_t);
+   assert<SystemError>(cond,f,__LINE__);
 }
 
 
