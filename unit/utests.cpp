@@ -28,7 +28,7 @@ bool UTests::execute()
    }
    if (ret)
    {
-      std::cout << "\n" << _count << " unit test(s) passed.\n";
+      std::cout << "\n" << _count << " unit test(s) of " << _runs.size() << " module(s) passed.\n";
    }
    return ret;
 }
@@ -72,6 +72,11 @@ bool UTests::Run::execute() const
             std::cout << "\n" << _name << "::" << i->_name << " FAILED!" << std::endl;
             ret = false;
             break;
+         }
+         catch (...)
+         {
+            std::cout << "\n" << _name << "::" << i->_name << " FAILED!" << std::endl;
+            throw;
          }
       }
    }
