@@ -25,8 +25,8 @@ public:
    NVMemory(const std::string& fileName);
    ~NVMemory();
    NVMemory(const NVMemory&) = delete;
-   NVMemory& operator=(const NVMemory&) = delete;
    NVMemory(NVMemory&&) = delete;
+   NVMemory& operator=(const NVMemory&) = delete;
    NVMemory& operator=(NVMemory&&) = delete;
    void open(const std::string& fileName);
    bool is_open() const;
@@ -60,14 +60,15 @@ public:
    struct NullPtr : public Exception { using Exception::Exception; };
    struct AllotFail : public Exception { using Exception::Exception; };
    struct InvalidInput : public Exception { using Exception::Exception; };
-   Node();
+   Node() = default;
    Node(const std::shared_ptr<NVMemory>& mem);
    Node(const std::shared_ptr<NVMemory>& mem, int64_t ptr);
    Node(const Node&);
+   Node(Node&&);
    Node& operator=(const Node&);
-   Node(Node&&) = default;
-   Node& operator=(Node&&) = default;
+   Node& operator=(Node&&);
    std::shared_ptr<NVMemory> mem() const;
+   NVMemory& rmem();
    void mem(const std::shared_ptr<NVMemory>& mem);
    int64_t addr() const;
    void addr(int64_t ptr);

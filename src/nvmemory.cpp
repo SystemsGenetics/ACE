@@ -221,7 +221,24 @@ NVMemory::Node::Node(const Node& copy):
    if (_size>0)
    {
       _data.reset(new char[_size]);
-      memcpy(_data.get(),copy._mem.get(),_size);
+      memcpy(_data.get(),copy._data.get(),_size);
+   }
+}
+
+
+
+NVMemory::Node::Node(Node&& move):
+   _mem(move._mem),
+   _ptr(move._ptr),
+   _size(move._size)
+{
+   move._mem.reset();
+   move._ptr = fnullptr;
+   if (_size>0)
+   {
+      _data.reset(new char[_size]);
+      memcpy(_data.get(),move._data.release(),_size);
+      move._size = 0;
    }
 }
 
@@ -241,9 +258,33 @@ NVMemory::Node& NVMemory::Node::operator=(const Node& copy)
 
 
 
+NVMemory::Node& NVMemory::Node::operator=(Node&& move)
+{
+   _mem = move._mem;
+   _ptr = move._ptr;
+   _size = move._size;
+   move._mem.reset();
+   move._ptr = fnullptr;
+   if (_size>0)
+   {
+      _data.reset(new char[_size]);
+      memcpy(_data.get(),move._data.release(),_size);
+      move._size = 0;
+   }
+}
+
+
+
 std::shared_ptr<NVMemory> NVMemory::Node::mem() const
 {
    return _mem;
+}
+
+
+
+NVMemory& NVMemory::Node::rmem()
+{
+   return *(_mem.get());
 }
 
 
@@ -278,7 +319,7 @@ void NVMemory::Node::allocate(int64_t numNodes)
    int64_t realSize = _size*numNodes;
    if (_mem->available()<realSize)
    {
-      bool cond {_mem->reserve(_mem->available()-realSize)};
+      bool cond {_mem->reserve(realSize-_mem->available())};
       assert<AllotFail>(cond,f,__LINE__);
    }
    _ptr = _mem->allocate(realSize);
@@ -314,7 +355,7 @@ void NVMemory::Node::write(int64_t i)
    {
       flip_endian();
    }
-   _mem->read(_data.get(),_ptr+i*_size,_size);
+   _mem->write(_data.get(),_ptr+i*_size,_size);
    if (!NVMemory::is_network_endian())
    {
       flip_endian();
