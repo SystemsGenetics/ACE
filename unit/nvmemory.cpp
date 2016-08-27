@@ -35,6 +35,7 @@ const char* tmpFile = "memfile.tmp";
 const char* validFile = "memfile2.tmp";
 const char* invalidFile = "notmemfile.tmp";
 const char* invalidFile2 = "notmemfile2.tmp";
+const char* dataStr = "123456789012345";
 constexpr int rmDelayUS {10000};
 
 
@@ -340,6 +341,525 @@ void is_network_endian1()
 
 
 
+namespace node
+{
+
+
+
+void construct1()
+{
+   TestNode node;
+   if (node.mem()!=nullptr||node.addr()!=fnullptr)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void construct2()
+{
+   std::shared_ptr<NVMemory> mem(new NVMemory(validFile));
+   TestNode node(mem);
+   if (node.mem()!=mem||node.addr()!=fnullptr)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void construct3()
+{
+   std::shared_ptr<NVMemory> mem(new NVMemory(validFile));
+   TestNode node(mem,666);
+   if (node.mem()!=mem||node.addr()!=666)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void construct4()
+{
+   std::shared_ptr<NVMemory> mem(new NVMemory(validFile));
+   TestNode copy(mem,666);
+   TestNode node(copy);
+   if (node.mem()!=mem||node.addr()!=666)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void construct5()
+{
+   std::shared_ptr<NVMemory> mem(new NVMemory(validFile));
+   TestNode copy(mem,666);
+   TestNode node(std::move(copy));
+   if (node.mem()!=mem||node.addr()!=666||copy.mem()!=nullptr||copy.addr()!=fnullptr)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void copy1()
+{
+   std::shared_ptr<NVMemory> mem(new NVMemory(validFile));
+   TestNode copy(mem,666);
+   TestNode node;
+   node = copy;
+   if (node.mem()!=mem||node.addr()!=666)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void move1()
+{
+   std::shared_ptr<NVMemory> mem(new NVMemory(validFile));
+   TestNode copy(mem,666);
+   TestNode node;
+   node = std::move(copy);
+   if (node.mem()!=mem||node.addr()!=666||copy.mem()!=nullptr||copy.addr()!=fnullptr)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void mem1()
+{
+   std::shared_ptr<NVMemory> mem(new NVMemory(validFile));
+   TestNode node;
+   node.mem(mem);
+   if (node.mem()!=mem)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void rmem1()
+{
+   std::shared_ptr<NVMemory> mem(new NVMemory(validFile));
+   TestNode node;
+   node.mem(mem);
+   if (&(node.rmem())!=mem.get())
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void addr1()
+{
+   TestNode node;
+   node.addr(666);
+   if (node.addr()!=666)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void allocate1()
+{
+   std::shared_ptr<NVMemory> mem(new NVMemory(tmpFile));
+   mem->reserve(1024);
+   TestNode node(mem);
+   node.resize(16);
+   node.allocate();
+   if (node.addr()!=0)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void allocate2()
+{
+   std::shared_ptr<NVMemory> mem(new NVMemory(tmpFile));
+   TestNode node(mem);
+   node.resize(16);
+   node.allocate(4);
+   if (node.addr()!=16||mem->size()!=80)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void allocate3()
+{
+   std::shared_ptr<NVMemory> mem(new NVMemory(tmpFile));
+   TestNode node(mem);
+   node.resize(945);
+   node.allocate();
+   if (node.addr()!=80||mem->size()!=1025)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void allocate4()
+{
+   std::shared_ptr<NVMemory> mem(new NVMemory(tmpFile));
+   TestNode node(mem);
+   node.resize(16);
+   bool caught {false};
+   try
+   {
+      node.allocate(0);
+   }
+   catch (NVMemory::Node::InvalidInput)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void allocate5()
+{
+   std::shared_ptr<NVMemory> mem(new NVMemory(tmpFile));
+   TestNode node(mem);
+   bool caught {false};
+   try
+   {
+      node.allocate();
+   }
+   catch (NVMemory::Node::NullData)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void allocate6()
+{
+   TestNode node;
+   node.resize(16);
+   bool caught {false};
+   try
+   {
+      node.allocate();
+   }
+   catch (NVMemory::Node::NullMemory)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void read1()
+{
+   int tmp {13};
+   if (tmp!=htons(tmp))
+   {
+      std::shared_ptr<NVMemory> mem(new NVMemory(tmpFile));
+      TestNode node(mem,0);
+      node.resize(16);
+      node.read();
+      if (node._counter!=1)
+      {
+         throw UTests::Fail();
+      }
+   }
+}
+
+
+
+void write1()
+{
+   int tmp {13};
+   if (tmp!=htons(tmp))
+   {
+      std::shared_ptr<NVMemory> mem(new NVMemory(tmpFile));
+      TestNode node(mem,0);
+      node.resize(16);
+      node.write();
+      if (node._counter!=2)
+      {
+         throw UTests::Fail();
+      }
+   }
+}
+
+
+
+void readwrite1()
+{
+   std::shared_ptr<NVMemory> mem(new NVMemory(tmpFile));
+   TestNode node(mem,0);
+   node.resize(16);
+   memcpy(node.get_ptr<char>(),dataStr,16);
+   node.write();
+   node.read();
+   if (strcmp(node.get_ptr<char>(),dataStr)!=0)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void readwrite2()
+{
+   std::shared_ptr<NVMemory> mem(new NVMemory(tmpFile));
+   TestNode node(mem,0);
+   node.resize(16);
+   node.read();
+   if (strcmp(node.get_ptr<char>(),dataStr)!=0)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void readwrite3()
+{
+   std::shared_ptr<NVMemory> mem(new NVMemory(tmpFile));
+   TestNode node(mem,0);
+   node.resize(16);
+   bool caught {false};
+   try
+   {
+      node.read(-1);
+   }
+   catch (NVMemory::Node::InvalidInput)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+   caught = false;
+   try
+   {
+      node.write(-1);
+   }
+   catch (NVMemory::Node::InvalidInput)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void readwrite4()
+{
+   TestNode node;
+   node.addr(0);
+   node.resize(16);
+   bool caught {false};
+   try
+   {
+      node.read();
+   }
+   catch (NVMemory::Node::NullMemory)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+   caught = false;
+   try
+   {
+      node.write();
+   }
+   catch (NVMemory::Node::NullMemory)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void readwrite5()
+{
+   std::shared_ptr<NVMemory> mem(new NVMemory(tmpFile));
+   TestNode node(mem,0);
+   bool caught {false};
+   try
+   {
+      node.read();
+   }
+   catch (NVMemory::Node::NullData)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+   caught = false;
+   try
+   {
+      node.write();
+   }
+   catch (NVMemory::Node::NullData)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void readwrite6()
+{
+   std::shared_ptr<NVMemory> mem(new NVMemory(tmpFile));
+   TestNode node(mem);
+   node.resize(16);
+   bool caught {false};
+   try
+   {
+      node.read();
+   }
+   catch (NVMemory::Node::NullPtr)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+   caught = false;
+   try
+   {
+      node.write();
+   }
+   catch (NVMemory::Node::NullPtr)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void operator1()
+{
+   std::shared_ptr<NVMemory> mem(new NVMemory(tmpFile));
+   TestNode node1;
+   TestNode node2;
+   node2.addr(666);
+   if (node1==node2)
+   {
+      throw UTests::Fail();
+   }
+   node2.addr(fnullptr);
+   node2.mem(mem);
+   if (node1==node2)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void operator2()
+{
+   std::shared_ptr<NVMemory> mem(new NVMemory(tmpFile));
+   TestNode node1;
+   TestNode node2;
+   if (node1!=node2)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void operator3()
+{
+   TestNode node;
+   node.addr(600);
+   node.resize(66);
+   ++node;
+   if (node.addr()!=666)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void get_ptr1()
+{
+   TestNode node;
+   node.resize(16);
+   if (node.get_ptr<void>()==nullptr)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void resize1()
+{
+   TestNode node;
+   node.resize(16);
+   sprintf(node.get_ptr<char>(),"123456789012345");
+   void* oldptr {node.get_ptr<void>()};
+   node.resize(16,true);
+   if (oldptr==node.get_ptr<void>()||strcmp("123456789012345",node.get_ptr<char>())!=0)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+}
 }
 using namespace nvmemory;
 
@@ -368,4 +888,34 @@ void add_nvmemory(UTests& tests)
    run->add_test("is_network_endian1",is_network_endian1);
    tests.attach(run);
    run.reset(new UTests::Run("NVMemory::Node",in,out));
+   run->add_test("construct1",node::construct1);
+   run->add_test("construct2",node::construct2);
+   run->add_test("construct3",node::construct3);
+   run->add_test("construct4",node::construct4);
+   run->add_test("construct5",node::construct5);
+   run->add_test("copy1",node::copy1);
+   run->add_test("move1",node::move1);
+   run->add_test("mem1",node::mem1);
+   run->add_test("rmem1",node::mem1);
+   run->add_test("addr1",node::addr1);
+   run->add_test("allocate1",node::allocate1);
+   run->add_test("allocate2",node::allocate2);
+   run->add_test("allocate3",node::allocate3);
+   run->add_test("allocate4",node::allocate4);
+   run->add_test("allocate5",node::allocate5);
+   run->add_test("allocate6",node::allocate6);
+   run->add_test("read1",node::read1);
+   run->add_test("write1",node::write1);
+   run->add_test("readwrite1",node::readwrite1);
+   run->add_test("readwrite2",node::readwrite2);
+   run->add_test("readwrite3",node::readwrite3);
+   run->add_test("readwrite4",node::readwrite4);
+   run->add_test("readwrite5",node::readwrite5);
+   run->add_test("readwrite6",node::readwrite6);
+   run->add_test("operator1",node::operator1);
+   run->add_test("operator2",node::operator2);
+   run->add_test("operator3",node::operator3);
+   run->add_test("get_ptr1",node::get_ptr1);
+   run->add_test("resize1",node::resize1);
+   tests.attach(run);
 }
