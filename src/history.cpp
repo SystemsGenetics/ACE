@@ -61,7 +61,7 @@ void History::add_child(const History& child)
    assert<AlreadySet>(addr()==fnullptr,f,__LINE__);
    std::unique_ptr<History> nchild {new History(mem())};
    nchild->part_copy(child);
-   copy_children(nchild.get(),child);
+   nchild->copy_children(child);
    _children.push_back(std::move(nchild));
 }
 
@@ -173,14 +173,15 @@ void History::load()
 
 
 
-void History::copy_children(History* dest, const History& src)
+void History::copy_children(const History& src)
 {
    for (auto i = src._children.begin();i!=src._children.end();++i)
    {
+      const std::unique_ptr<History>& child {*i};
       std::unique_ptr<History> nchild {new History(mem())};
-      nchild->part_copy(*((*i).get()));
-      copy_children(nchild.get(),*((*i).get()));
-      dest->_children.push_back(std::move(nchild));
+      nchild->part_copy(*(child.get()));
+      nchild->copy_children(*(child.get()));
+      _children.push_back(std::move(nchild));
    }
 }
 

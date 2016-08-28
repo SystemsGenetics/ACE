@@ -38,7 +38,7 @@ private:
       int64_t _childHead {fnullptr};
    };
    void load();
-   void copy_children(History* dest, const History& src);
+   void copy_children(const History& src);
    void part_copy(const History& copy);
    int64_t init_write();
    void final_write();
