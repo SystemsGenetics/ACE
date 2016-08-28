@@ -85,7 +85,8 @@ protected:
    void init_mem();
    template<class T> void give_mem(T* ptr);
    template<class T> T& get();
-   void flip(int i, int len);//UNIT TEST
+   template<class T> const T& get() const;//UNIT TEST!!!
+   void flip(int i, int len);
    virtual void null_data() = 0;
    virtual void flip_endian() = 0;
 private:
@@ -107,6 +108,15 @@ template<class T> void NVMemory::Node::give_mem(T* ptr)
 
 
 template<class T> T& NVMemory::Node::get()
+{
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NullData>(_data.get(),f,__LINE__);
+   return *reinterpret_cast<T*>(_data.get());
+}
+
+
+
+template<class T> const T& NVMemory::Node::get() const
 {
    static const char* f = __PRETTY_FUNCTION__;
    assert<NullData>(_data.get(),f,__LINE__);
