@@ -200,16 +200,31 @@ void NVMemory::write(const void* data, int64_t ptr, int64_t byteSize)
 
 
 
-NVMemory::Node::Node(const std::shared_ptr<NVMemory>& mem):
-   _mem(mem)
-{}
+NVMemory::Node::Node(int size):
+   _size(size)
+{
+   static const char* f = __PRETTY_FUNCTION__;
+   if (size<=0)
+   {
+      _size = 0;
+      assert<InvalidInput>(false,f,__LINE__);
+   }
+}
 
 
 
-NVMemory::Node::Node(const std::shared_ptr<NVMemory>& mem, int64_t ptr):
+NVMemory::Node::Node(int size, const std::shared_ptr<NVMemory>& mem, int64_t ptr):
+   _size(size),
    _mem(mem),
    _ptr(ptr)
-{}
+{
+   static const char* f = __PRETTY_FUNCTION__;
+   if (size<=0)
+   {
+      _size = 0;
+      assert<InvalidInput>(false,f,__LINE__);
+   }
+}
 
 
 
@@ -218,7 +233,7 @@ NVMemory::Node::Node(const Node& copy):
    _ptr(copy._ptr),
    _size(copy._size)
 {
-   if (_size>0)
+   if (copy._data.get())
    {
       _data.reset(new char[_size]);
       memcpy(_data.get(),copy._data.get(),_size);
@@ -234,11 +249,11 @@ NVMemory::Node::Node(Node&& move):
 {
    move._mem.reset();
    move._ptr = fnullptr;
-   if (_size>0)
+   if (move._data.get())
    {
       _data.reset(new char[_size]);
-      memcpy(_data.get(),move._data.release(),_size);
-      move._size = 0;
+      memcpy(_data.get(),move._data.get(),_size);
+      move.null_data();
    }
 }
 
@@ -249,10 +264,14 @@ NVMemory::Node& NVMemory::Node::operator=(const Node& copy)
    _mem = copy._mem;
    _ptr = copy._ptr;
    _size = copy._size;
-   if (_size>0)
+   if (copy._data.get())
    {
       _data.reset(new char[_size]);
-      memcpy(_data.get(),copy._mem.get(),_size);
+      memcpy(_data.get(),copy._data.get(),_size);
+   }
+   else
+   {
+      _data.reset();
    }
 }
 
@@ -265,12 +284,23 @@ NVMemory::Node& NVMemory::Node::operator=(Node&& move)
    _size = move._size;
    move._mem.reset();
    move._ptr = fnullptr;
-   if (_size>0)
+   if (move._data.get())
    {
       _data.reset(new char[_size]);
       memcpy(_data.get(),move._data.release(),_size);
-      move._size = 0;
+      move.null_data();
    }
+   else
+   {
+      _data.reset();
+   }
+}
+
+
+
+bool NVMemory::Node::is_null_memory() const
+{
+   return _mem.get()==nullptr;
 }
 
 
@@ -284,6 +314,8 @@ std::shared_ptr<NVMemory> NVMemory::Node::mem() const
 
 NVMemory& NVMemory::Node::rmem()
 {
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NullMemory>(_mem.get(),f,__LINE__);
    return *(_mem.get());
 }
 
@@ -315,7 +347,6 @@ void NVMemory::Node::allocate(int64_t numNodes)
    static const char* f = __PRETTY_FUNCTION__;
    assert<InvalidInput>(numNodes>0,f,__LINE__);
    assert<NullMemory>(_mem.get(),f,__LINE__);
-   assert<NullData>(_size>0,f,__LINE__);
    int64_t realSize = _size*numNodes;
    if (_mem->available()<realSize)
    {
@@ -332,8 +363,8 @@ void NVMemory::Node::read(int64_t i)
 {
    static const char* f = __PRETTY_FUNCTION__;
    assert<InvalidInput>(i>=0,f,__LINE__);
+   assert<NullData>(_data.get(),f,__LINE__);
    assert<NullMemory>(_mem.get(),f,__LINE__);
-   assert<NullData>(_size>0,f,__LINE__);
    assert<NullPtr>(_ptr!=fnullptr,f,__LINE__);
    _mem->read(_data.get(),_ptr+i*_size,_size);
    if (!NVMemory::is_network_endian())
@@ -348,8 +379,8 @@ void NVMemory::Node::write(int64_t i)
 {
    static const char* f = __PRETTY_FUNCTION__;
    assert<InvalidInput>(i>=0,f,__LINE__);
+   assert<NullData>(_data.get(),f,__LINE__);
    assert<NullMemory>(_mem.get(),f,__LINE__);
-   assert<NullData>(_size>0,f,__LINE__);
    assert<NullPtr>(_ptr!=fnullptr,f,__LINE__);
    if (!NVMemory::is_network_endian())
    {
@@ -385,20 +416,53 @@ void NVMemory::Node::operator++()
 
 
 
-void NVMemory::Node::resize(int64_t numBytes, bool copy)
+void NVMemory::Node::init_mem()
 {
-   char* oldData {_data.release()};
-   _data.reset(new char[numBytes]);
-   if (oldData)
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<DataExists>(!_data.get(),f,__LINE__);
+   _data.reset(new char[_size]);
+}
+
+
+
+void NVMemory::Node::flip(int i, int len)
+{
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<InvalidInput>(len==2||len==4||len==8,f,__LINE__);
+   assert<NullData>(_data.get(),f,__LINE__);
+   assert<OutOfRange>((i+len)<=_size,f,__LINE__);
+   char* sw {&(_data.get()[i])};
+   char tmp;
+   switch (len)
    {
-      if (copy)
-      {
-         int64_t len {(_size>numBytes) ? numBytes : _size};
-         memcpy(_data.get(),oldData,len);
-      }
-      delete oldData;
+   case 2:
+      tmp = sw[0];
+      sw[0] = sw[1];
+      sw[1] = tmp;
+      break;
+   case 4:
+      tmp = sw[0];
+      sw[0] = sw[3];
+      sw[3] = tmp;
+      tmp = sw[1];
+      sw[1] = sw[2];
+      sw[2] = tmp;
+      break;
+   case 8:
+      tmp = sw[0];
+      sw[0] = sw[7];
+      sw[7] = tmp;
+      tmp = sw[1];
+      sw[1] = sw[6];
+      sw[6] = tmp;
+      tmp = sw[2];
+      sw[2] = sw[5];
+      sw[5] = tmp;
+      tmp = sw[3];
+      sw[3] = sw[4];
+      sw[4] = tmp;
+      break;
    }
-   _size = numBytes;
 }
 
 

@@ -60,13 +60,16 @@ public:
    struct NullPtr : public Exception { using Exception::Exception; };
    struct AllotFail : public Exception { using Exception::Exception; };
    struct InvalidInput : public Exception { using Exception::Exception; };
-   Node() = default;
-   Node(const std::shared_ptr<NVMemory>& mem);
-   Node(const std::shared_ptr<NVMemory>& mem, int64_t ptr);
+   struct DataExists : public Exception { using Exception::Exception; };
+   struct OutOfRange : public Exception { using Exception::Exception; };
+   struct NullSize : public Exception { using Exception::Exception; };
+   Node(int);
+   Node(int,const std::shared_ptr<NVMemory>& mem, int64_t ptr = fnullptr);
    Node(const Node&);
    Node(Node&&);
    Node& operator=(const Node&);
    Node& operator=(Node&&);
+   bool is_null_memory() const;
    std::shared_ptr<NVMemory> mem() const;
    NVMemory& rmem();
    void mem(const std::shared_ptr<NVMemory>& mem);
@@ -79,21 +82,35 @@ public:
    bool operator!=(const Node&);
    void operator++();
 protected:
-   template<class T> T* get_ptr();
-   void resize(int64_t numBytes, bool copy = false);
+   void init_mem();
+   template<class T> void give_mem(T* ptr);
+   template<class T> T& get();
+   void flip(int i, int len);//UNIT TEST
+   virtual void null_data() = 0;
    virtual void flip_endian() = 0;
 private:
    std::shared_ptr<NVMemory> _mem {nullptr};
    int64_t _ptr {fnullptr};
-   int64_t _size {0};
+   int64_t _size;
    std::unique_ptr<char> _data {nullptr};
 };
 
 
 
-template<class T> T* NVMemory::Node::get_ptr()
+template<class T> void NVMemory::Node::give_mem(T* ptr)
 {
-   return reinterpret_cast<T*>(_data.get());
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<DataExists>(!_data.get(),f,__LINE__);
+   _data.reset(reinterpret_cast<char*>(ptr));
+}
+
+
+
+template<class T> T& NVMemory::Node::get()
+{
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NullData>(_data.get(),f,__LINE__);
+   return *reinterpret_cast<T*>(_data.get());
 }
 
 
