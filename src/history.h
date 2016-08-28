@@ -1,99 +1,73 @@
 #ifndef ACCELCOMPENG_HISTORY_H
 #define ACCELCOMPENG_HISTORY_H
 #include <string>
-#include "histitem.h"
+#include <vector>
 #include "exception.h"
+#include "nvmemory.h"
 namespace AccelCompEng
 {
 
 
 
-/// @brief Provides history of file.
-///
-/// Provides entire history for one file, including all children of inputs that
-/// were involved in the creation of this file.
-///
-/// @author Josh Burns
-/// @date 25 March 2016
-class History : private HistItem
+class History : private NVMemory::Node
 {
-public:
-   // *
-   // * DECLERATIONS
-   // *
+   struct AlreadySet : public Exception { using Exception::Exception; };
+   struct NullMemory : public Exception { using Exception::Exception; };
    class Iterator;
-   using FPtr = FileMem::Ptr;
-   using HistItem::sync;
-   using HistItem::timeStamp;
-   using HistItem::fileName;
-   using HistItem::object;
-   using HistItem::command;
-   using HistItem::addr;
-   // *
-   // * BASIC METHODS
-   // *
-   History(FileMem&,FPtr = FileMem::nullPtr);
-   // *
-   // * COPY METHODS
-   // *
-   History(const History&) = delete;
-   History& operator=(const History&) = delete;
-   // *
-   // * MOVE METHODS
-   // *
-   History(History&&) = delete;
-   History& operator=(History&&) = delete;
-   // *
-   // * FUNCTIONS
-   // *
-   void add_child(const History&);
-   bool has_child() const;
-   Iterator begin();
-   Iterator end();
+   History();
+   History(const std::shared_ptr<NVMemory>& mem);
+   History(const std::shared_ptr<NVMemory>& mem, int64_t ptr);
+   using Node::mem;
+   void load(int64_t ptr);
+   void init(const std::string& fileName, const std::string& object, const std::string& command,
+             uint64_t timeStamp);
+   void add_child(const History& child);
+   int64_t write();
+   const std::string& file_name() const;
+   const std::string& object() const;
+   const std::string& command() const;
+   uint64_t time_stamp() const;
+   bool has_children() const;
+   Iterator begin() const;
+   Iterator end() const;
+private:
+   struct __attribute__ ((__packed__)) Header
+   {
+      uint64_t _timeStamp {0};
+      int64_t _next {fnullptr};
+      int64_t _childHead {fnullptr};
+   };
+   void load();
+   void copy_children(History* dest, const History& src);
+   void part_copy(const History& copy);
+   int64_t init_write();
+   void final_write();
+   void null_data() override final;
+   void flip_endian() override final;
+   constexpr static int _strSize {16384};
+   std::string _fileName;
+   std::string _object;
+   std::string _command;
+   std::vector<std::unique_ptr<History>> _children;
 };
 
 
 
-/// @brief Iterates through all children of history.
-///
-/// Iterates through all children of history file, also allowing iteration
-/// through all children of each child recursively until end of all children
-/// reached.
-///
-/// @author Josh Burns
-/// @date 25 March 2016
 class History::Iterator
 {
 public:
-   // *
-   // * DECLERATIONS
-   // *
+   struct OutOfRange : public Exception { using Exception::Exception; };
    friend class History;
-   using FPtr = History::FPtr;
-   // *
-   // * FUNCTIONS
-   // *
-   Iterator child();
-   bool has_child() const;
-   // *
-   // * OPERATORS
-   // *
-   HistItem load();
-   void operator++();
+   Iterator begin();
+   Iterator end();
+   const History& operator*();
+   const History* operator->();
    bool operator!=(const Iterator&);
+   void operator++();
 private:
-   using Skim = HistItem::Skim;
-   // *
-   // * BASIC METHODS
-   // *
-   Iterator(FileMem*,FPtr = FileMem::nullPtr);
-   // *
-   // * VARIABLES
-   // *
-   /// Pointer to file memory object.
-   FileMem* _mem;
-   /// Compact version of history item chunk for navigating.
-   Skim _skim;
+   Iterator(const History* p, int i);
+   const History* _p;
+   int _i;
 };
 
 

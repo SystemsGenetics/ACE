@@ -1,160 +1,312 @@
 #include "history.h"
+#include "fstring.h"
 namespace AccelCompEng
 {
 
 
 
-/// @brief Initialize history of file.
-///
-/// Initialize history data for file memory object from given file location. If
-/// nullptr is given for location then a new history data structure is created
-/// for the file.
-///
-/// @param mem File memory object.
-/// @param ptr Location in file memory where history data is location, or
-/// nullptr is history structure is to be created.
-History::History(FileMem& mem, FPtr ptr):
-   HistItem(mem,ptr)
+History::History():
+   Node(sizeof(Header))
 {
-   if (ptr==FileMem::nullPtr)
-   {
-      allocate();
-      sync();
-   }
+   init_mem();
 }
 
 
 
-/// @brief Add history child.
-///
-/// Add a new history child for this object by making a recursive copy of the
-/// given history object.
-///
-/// @param child History object to make a child copy of.
+History::History(const std::shared_ptr<NVMemory>& mem):
+   Node(sizeof(Header),mem)
+{
+   init_mem();
+}
+
+
+
+History::History(const std::shared_ptr<NVMemory>& mem, int64_t ptr):
+   Node(sizeof(Header),mem,ptr)
+{
+   init_mem();
+   load();
+}
+
+
+
+void History::load(int64_t ptr)
+{
+   if (addr()!=fnullptr)
+   {
+      _children.clear();
+   }
+   addr(ptr);
+   load();
+}
+
+
+
+void History::init(const std::string& fileName, const std::string& object,
+                   const std::string& command, uint64_t timeStamp)
+{
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<AlreadySet>(addr()==fnullptr,f,__LINE__);
+   _fileName = fileName;
+   _object = object;
+   _command = command;
+   get<Header>()._timeStamp = timeStamp;
+}
+
+
+
 void History::add_child(const History& child)
 {
-   HistItem nChild(mem());
-   nChild.copy_from(child);
-   if (childHead()==FileMem::nullPtr)
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<AlreadySet>(addr()==fnullptr,f,__LINE__);
+   std::unique_ptr<History> nchild {new History(mem())};
+   nchild->part_copy(child);
+   copy_children(nchild.get(),child);
+   _children.push_back(std::move(nchild));
+}
+
+
+
+int64_t History::write()
+{
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<AlreadySet>(addr()==fnullptr,f,__LINE__);
+   assert<NullMemory>(!is_null_memory(),f,__LINE__);
+   try
    {
-      childHead(nChild.addr());
-      sync();
+      int64_t ret = init_write();
+      final_write();
+      return ret;
    }
-   else
+   catch (...)
    {
-      HistItem tmp(mem(),childHead());
-      while (tmp.next()!=FileMem::nullPtr)
+      _fileName.clear();
+      _object.clear();
+      _command.clear();
+      _children.clear();
+      addr(fnullptr);
+      throw;
+   }
+}
+
+
+
+const std::string& History::file_name() const
+{
+   return _fileName;
+}
+
+
+
+const std::string& History::object() const
+{
+   return _object;
+}
+
+
+
+const std::string& History::command() const
+{
+   return _command;
+}
+
+
+
+uint64_t History::time_stamp() const
+{
+   return get<Header>()._timeStamp;
+}
+
+
+
+bool History::has_children() const
+{
+   return _children.size()>0;
+}
+
+
+
+History::Iterator History::begin() const
+{
+   return Iterator(this,0);
+}
+
+
+
+History::Iterator History::end() const
+{
+   return Iterator(this,_children.size());
+}
+
+
+
+void History::load()
+{
+   try
+   {
+      read();
+      FString fstr(mem(),addr()+sizeof(Header));
+      fstr.static_buffer(_strSize);
+      _fileName = fstr.str();
+      fstr.bump();
+      _object = fstr.str();
+      fstr.bump();
+      _command = fstr.str();
+      int64_t ptr {get<Header>()._childHead};
+      while (ptr!=fnullptr)
       {
-         tmp = tmp.next();
+         std::unique_ptr<History> child {new History(mem(),ptr)};
+         ptr = child->get<Header>()._next;
+         _children.push_back(std::move(child));
       }
-      tmp.next(nChild.addr());
-      tmp.sync();
    }
-}
-
-
-
-/// Test if this object has any children.
-///
-/// @return True if there are children, else false.
-bool History::has_child() const
-{
-   return childHead()!=FileMem::nullPtr;
-}
-
-
-
-/// Get beginning iterator of children list, if any.
-///
-/// @return Beginning of list iterator.
-History::Iterator History::begin()
-{
-   return {mem(),childHead()};
-}
-
-
-
-/// Get one past end of list iterator for any child list.
-///
-/// @return One past end of list iterator.
-History::Iterator History::end()
-{
-   return {mem()};
-}
-
-
-
-/// Get beginning iterator of this iterator's children, if any.
-///
-/// @return Beginning of list iterator.
-History::Iterator History::Iterator::child()
-{
-   return {_mem,_skim.childHead()};
-}
-
-
-
-/// Test if this iterator has any children.
-///
-/// @return True if there are children, else false.
-bool History::Iterator::has_child() const
-{
-   return _skim.childHead()!=FileMem::nullPtr;
-}
-
-
-
-/// Load actual history item that iterator points to, returning the new item.
-///
-/// @return New history item that iterator points to in file memory.
-HistItem History::Iterator::load()
-{
-   return {_mem,_skim.addr()};
-}
-
-
-
-/// Iterate to next history item in list of children.
-void History::Iterator::operator++()
-{
-   if (_skim.addr()!=FileMem::nullPtr)
+   catch (...)
    {
-      _skim = _skim.next();
-      if (_skim.addr()!=FileMem::nullPtr)
-      {
-         _mem->sync(_skim,FileSync::read);
-      }
+      _fileName.clear();
+      _object.clear();
+      _command.clear();
+      _children.clear();
+      addr(fnullptr);
+      throw;
    }
 }
 
 
 
-/// Test to see if this iterator and one given are not equal.
-///
-/// @return True if iterators are not equal, else false.
+void History::copy_children(History* dest, const History& src)
+{
+   for (auto i = src._children.begin();i!=src._children.end();++i)
+   {
+      std::unique_ptr<History> nchild {new History(mem())};
+      nchild->part_copy(*((*i).get()));
+      copy_children(nchild.get(),*((*i).get()));
+      dest->_children.push_back(std::move(nchild));
+   }
+}
+
+
+
+void History::part_copy(const History& pCopy)
+{
+   _fileName = pCopy._fileName;
+   _object = pCopy._object;
+   _command = pCopy._command;
+   get<Header>()._timeStamp = pCopy.get<Header>()._timeStamp;
+}
+
+
+
+int64_t History::init_write()
+{
+   allocate();
+   FString fstr(mem());
+   fstr.static_buffer(_strSize);
+   fstr.write(_fileName);
+   fstr.reset();
+   fstr.write(_object);
+   fstr.reset();
+   fstr.write(_command);
+   History* last {nullptr};
+   for (auto i = _children.begin();i!=_children.end();++i)
+   {
+      std::unique_ptr<History>& ptr {*i};
+      if (!last)
+      {
+         get<Header>()._childHead = ptr->init_write();
+      }
+      else
+      {
+         last->get<Header>()._next = ptr->init_write();
+      }
+      last = ptr.get();
+   }
+   return addr();
+}
+
+
+
+void History::final_write()
+{
+   Node::write();
+   for (auto i = _children.begin();i!=_children.end();++i)
+   {
+      std::unique_ptr<History>& ptr {*i};
+      ptr->final_write();
+   }
+}
+
+
+
+void History::null_data()
+{
+   get<Header>()._timeStamp = 0;
+   get<Header>()._next = 0;
+   get<Header>()._childHead = 0;
+}
+
+
+
+void History::flip_endian()
+{
+   flip(0,8);
+   flip(8,8);
+   flip(16,8);
+}
+
+
+
+History::Iterator History::Iterator::begin()
+{
+   return _p->begin();
+}
+
+
+
+History::Iterator History::Iterator::end()
+{
+   return _p->end();
+}
+
+
+
+const History& History::Iterator::operator*()
+{
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<OutOfRange>(_i<(_p->_children.size()),f,__LINE__);
+   return *(_p->_children[_i].get());
+}
+
+
+
+const History* History::Iterator::operator->()
+{
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<OutOfRange>(_i<(_p->_children.size()),f,__LINE__);
+   return _p->_children[_i].get();
+}
+
+
+
 bool History::Iterator::operator!=(const Iterator& cmp)
 {
-   return _skim.addr()!=cmp._skim.addr();
+   return _p!=cmp._p||_i!=cmp._i;
 }
 
 
 
-/// Initialize history iterator.
-///
-/// Initialize history item iterator from given file memory object at given
-/// file location.
-///
-/// @param mem Pointer to file memory object.
-/// @param ptr File location of history item iterator will point to.
-History::Iterator::Iterator(FileMem* mem, FPtr ptr):
-   _mem(mem),
-   _skim(ptr)
+void History::Iterator::operator++()
 {
-   if (ptr!=FileMem::nullPtr)
-   {
-      _mem->sync(_skim,FileSync::read);
-   }
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<OutOfRange>(_i<=(_p->_children.size()),f,__LINE__);
+   ++_i;
 }
+
+
+
+History::Iterator::Iterator(const History* p, int i):
+   _p(p),
+   _i(i)
+{}
 
 
 
