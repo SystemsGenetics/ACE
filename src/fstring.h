@@ -1,90 +1,58 @@
 #ifndef ACCELCOMPENG_FSTRING_H
 #define ACCELCOMPENG_FSTRING_H
-#include "filemem.h"
+#include "nvmemory.h"
 namespace AccelCompEng
 {
 
 
 
-/// @ingroup dataplugin
-/// @brief File memory string.
-///
-/// String object that stores a string in file memory. You can set the object
-/// once, which will then write the string to file memory and get a file pointer
-/// where it is stored. After the string has been written, or if loading a
-/// string, access to the string is read only.
-class FString
+class FString : private NVMemory::Node
 {
 public:
-   // *
-   // * EXCEPTIONS
-   // *
    struct InvalidPtr : public Exception { using Exception::Exception; };
    struct AlreadySet : public Exception { using Exception::Exception; };
-   // *
-   // * DECLERATIONS
-   // *
-   using string = std::string;
-   using FPtr = FileMem::Ptr;
-   // *
-   // * BASIC METHODS
-   // *
-   FString(FileMem*,FPtr = FileMem::nullPtr);
-   // *
-   // * COPY METHODS
-   // *
-   FString(const FString&) = delete;
-   FString& operator=(const FString&) = delete;
-   // *
-   // * MOVE METHODS
-   // *
-   FString(FString&&);
-   FString& operator=(FString&&);
-   // *
-   // * FUNCTIONS
-   // *
-   void addr(FPtr);
-   FPtr addr() const;
-   // *
-   // * OPERATORS
-   // *
-   const string& operator*() const;
-   const string* operator->() const;
-   FString& operator=(const string&);
+   struct NullStr : public Exception { using Exception::Exception; };
+   struct NullMemory : public Exception { using Exception::Exception; };
+   struct StringTooBig : public Exception { using Exception::Exception; };
+   struct InvalidInput : public Exception { using Exception::Exception; };
+   FString();
+   FString(const std::shared_ptr<NVMemory>& mem);
+   FString(const std::shared_ptr<NVMemory>& mem, int64_t ptr);
+   using Node::mem;
+   void load(int64_t ptr);
+   void reset();
+   const std::string& str() const;
+   void write(const std::string& str);
+   void static_buffer(int size);
+   void clear_buffer();
+   void bump();
 private:
-   // *
-   // * CONSTANTS
-   // *
-   constexpr static FileMem::SizeT _hdrSz {3};
-   constexpr static uint8_t _strip {170};
-   // *
-   // * FILEMEM TYPES
-   // *
-   ACE_FMEM_STATIC(Header,_hdrSz)
-      ACE_FMEM_VAL(stripe,uint8_t,0)
-      ACE_FMEM_VAL(sSize,uint16_t,1)
-   ACE_FMEM_END()
-   ACE_FMEM_OBJECT(String)
-      using FPtr = FileMem::Ptr;
-      using FSizeT = FileMem::SizeT;
-      String(FSizeT size, FPtr ptr = FileMem::nullPtr):
-         Object(size,ptr) {}
-      using Object::operator=;
-      char* c_str() { &get<char>(0); }
-   ACE_FMEM_END()
-   // *
-   // * FUNCTIONS
-   // *
+   struct __attribute__ ((__packed__)) Header
+   {
+      int16_t _size {0};
+      uint8_t _strip {0};
+   };
+   struct CString;
    void load();
-   // *
-   // * VARIABLES
-   // *
-   /// File memory object string is associated with.
-   FileMem* _mem;
-   /// Header chunk of string.
-   Header _hdr;
-   /// Actual string data.
-   string _str;
+   void null_data() override final;
+   void flip_endian() override final;
+   constexpr static uint8_t _strip {170};
+   std::string _str;
+   std::unique_ptr<char> _buffer {nullptr};
+   int _bSize {0};
+};
+
+
+
+struct FString::CString : public NVMemory::Node
+{
+   using Node::Node;
+   using Node::init_mem;
+   using Node::give_mem;
+   using Node::get;
+private:
+   void null_data() override final { get<char>() = '\0'; }
+   void flip_endian() override final {}
 };
 
 

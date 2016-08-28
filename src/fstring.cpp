@@ -1,149 +1,159 @@
 #include "fstring.h"
+#include <string.h>
 namespace AccelCompEng
 {
 
 
 
-/// @brief Initialize file string object.
-///
-/// Initializes file string, making sure file memory object pointer is valid and
-/// loading the file string from memory if location of string given is not
-/// nullptr.
-///
-/// @param mem Pointer to file memory object that is used.
-/// @param ptr File pointer location where file string is location, nullptr if
-/// string object is not yet set.
-///
-/// @exception InvalidPtr The pointer given for the file memory object is
-/// nullptr.
-FString::FString(FileMem* mem, FPtr ptr):
-   _mem(mem),
-   _hdr(ptr)
+FString::FString():
+   Node(sizeof(Header))
+{
+   init_mem();
+}
+
+
+
+FString::FString(const std::shared_ptr<NVMemory>& mem):
+   Node(sizeof(Header),mem)
+{
+   init_mem();
+}
+
+
+
+FString::FString(const std::shared_ptr<NVMemory>& mem, int64_t ptr):
+   Node(sizeof(Header),mem,ptr)
+{
+   init_mem();
+   load();
+}
+
+
+
+void FString::load(int64_t ptr)
 {
    static const char* f = __PRETTY_FUNCTION__;
-   bool cond = mem!=nullptr;
-   assert<InvalidPtr>(cond,f,__LINE__);
-   if (_hdr.addr()!=FileMem::nullPtr)
-   {
-      load();
-   }
+   assert<NullMemory>(!is_null_memory(),f,__LINE__);
+   addr(ptr);
+   load();
 }
 
 
 
-/// Move given file string.
-///
-/// @param tmp Object to take data from.
-FString::FString(FString&& tmp):
-   _mem(tmp._mem),
-   _hdr(tmp._hdr),
-   _str(std::move(tmp._str))
+void FString::reset()
 {
-   tmp._hdr = FileMem::nullPtr;
+   addr(fnullptr);
 }
 
 
 
-/// Move given file string, overwriting what this object currently stores.
-///
-/// @param tmp Object to take data from.
-FString& FString::operator=(FString&& tmp)
+const std::string& FString::str() const
 {
-   _mem = tmp._mem;
-   _hdr = tmp._hdr;
-   _str = std::move(tmp._str);
-   tmp._hdr = FileMem::nullPtr;
-}
-
-
-
-/// @brief Set new location for this object.
-///
-/// Set new location in file memory where there is an FString to read or set
-/// the adress to nullptr so a new string can be allocated.
-///
-/// @param ptr New location of FString for nullptr if unset.
-void FString::addr(FPtr ptr)
-{
-   _hdr = ptr;
-   _str.clear();
-   if (_hdr.addr()!=FileMem::nullPtr)
-   {
-      load();
-   }
-}
-
-
-
-/// Returns file memory location of string or nullptr if not set.
-///
-/// @return File memory location.
-FString::FPtr FString::addr() const
-{
-   return _hdr.addr();
-}
-
-
-
-/// Returns read only reference to string, empty if not set.
-///
-/// @return Reference to string.
-const FString::string& FString::operator*() const
-{
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NullStr>(!is_null_memory()&&addr()!=fnullptr,f,__LINE__);
    return _str;
 }
 
 
 
-/// Returns read only pointer to string object for function calls.
-///
-/// @return Pointer to string.
-const FString::string* FString::operator->() const
+void FString::write(const std::string& str)
 {
-   return &_str;
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NullMemory>(!is_null_memory(),f,__LINE__);
+   assert<AlreadySet>(addr()==fnullptr,f,__LINE__);
+   try
+   {
+      int len = str.size()+1;
+      _str = str;
+      CString c_str(len,mem());
+      if (_buffer.get())
+      {
+         assert<StringTooBig>(len<=_bSize,f,__LINE__);
+         c_str.give_mem(_buffer.get());
+      }
+      {
+         c_str.init_mem();
+      }
+      allocate();
+      c_str.allocate();
+      get<Header>()._size = len;
+      get<Header>()._strip = _strip;
+      memcpy(&c_str.get<char>(),str.c_str(),len);
+      Node::write();
+      c_str.write();
+   }
+   catch (...)
+   {
+      _str.clear();
+      addr(fnullptr);
+      throw;
+   }
 }
 
 
 
-/// Set file string to given string.
-///
-/// @param nStr Value to set file string to in file memory.
-/// @return Reference to this object.
-///
-/// @exception AlreadySet This file string object has already been set.
-FString& FString::operator=(const string& nStr)
+void FString::static_buffer(int size)
 {
    static const char* f = __PRETTY_FUNCTION__;
-   bool cond = _hdr.addr()==FileMem::nullPtr;
-   assert<AlreadySet>(cond,f,__LINE__);
-   String fStr(nStr.size()+1);
-   _mem->allot(_hdr);
-   _mem->allot(fStr);
-   _hdr.stripe() = _strip;
-   _hdr.sSize() = nStr.size()+1;
-   memcpy(fStr.c_str(),nStr.c_str(),nStr.size()+1);
-   _mem->sync(_hdr,FileSync::write);
-   _mem->sync(fStr,FileSync::write);
-   _str = nStr;
+   assert<InvalidInput>(size>0,f,__LINE__);
+   _buffer.reset(new char[size]);
 }
 
 
 
-/// @brief Load file string from file.
-///
-/// Load value of file string from file memory object from location stored in
-/// this object.
-///
-/// @exception InvalidPtr The file memory location is not a valid file string.
-inline void FString::load()
+void FString::clear_buffer()
+{
+   _buffer.reset();
+}
+
+
+
+void FString::bump()
+{
+   addr(addr()+sizeof(Header)+get<Header>()._size);
+   load();
+}
+
+
+
+void FString::load()
 {
    static const char* f = __PRETTY_FUNCTION__;
-   _mem->sync(_hdr,FileSync::read);
-   bool cond = _hdr.stripe()==_strip;
-   assert<InvalidPtr>(cond,f,__LINE__);
-   String fStr(_hdr.sSize(),_hdr.addr()+_hdrSz);
-   _mem->sync(fStr,FileSync::read);
-   _str = fStr.c_str();
+   try
+   {
+      read();
+      assert<InvalidPtr>(get<Header>()._strip==_strip,f,__LINE__);
+      CString c_str(get<Header>()._size,Node::mem(),addr()+3);
+      if (_buffer.get())
+      {
+         assert<StringTooBig>(get<Header>()._size<=_bSize,f,__LINE__);
+         c_str.give_mem(_buffer.get());
+      }
+      {
+         c_str.init_mem();
+      }
+      c_str.read();
+      _str = &c_str.get<char>();
+   }
+   catch (...)
+   {
+      addr(fnullptr);
+   }
+}
+
+
+
+void FString::null_data()
+{
+   get<Header>()._size = 0;
+   get<Header>()._strip = 0;
+}
+
+
+
+void FString::flip_endian()
+{
+   flip(0,2);
 }
 
 
