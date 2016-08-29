@@ -26,8 +26,6 @@ datamap.h
 exception.cpp
 exception.h
 factory.h
-filemem.cpp
-filemem.h
 fstring.cpp
 fstring.h
 getopts.cpp
