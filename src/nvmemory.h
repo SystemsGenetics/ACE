@@ -1,6 +1,7 @@
 #ifndef ACCELCOMPENG_NVMEMORY_H
 #define ACCELCOMPENG_NVMEMORY_H
 #define fnullptr -1
+#define fheadptr 0
 #include <cstdint>
 #include <string>
 #include "exception.h"
@@ -73,6 +74,7 @@ public:
    std::shared_ptr<NVMemory> mem() const;
    NVMemory& rmem();
    void mem(const std::shared_ptr<NVMemory>& mem);
+   void mem(NVMemory* memPtr);//UNIT TEST!!
    int64_t addr() const;
    void addr(int64_t ptr);
    void allocate(int64_t numNodes = 1);
@@ -82,7 +84,7 @@ public:
    bool operator!=(const Node&);
    void operator++();
 protected:
-   void init_mem();
+   template<class T> void init_mem(int size = 1);//UNIT TEST
    template<class T> void give_mem(T* ptr);
    template<class T> T& get();
    template<class T> const T& get() const;//UNIT TEST!!!
@@ -95,6 +97,16 @@ private:
    int64_t _size;
    std::unique_ptr<char> _data {nullptr};
 };
+
+
+
+template<class T> void NVMemory::Node::init_mem(int size)
+{
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<InvalidInput>(size>0,f,__LINE__);
+   assert<DataExists>(!_data.get(),f,__LINE__);
+   _data.reset(reinterpret_cast<char*>(new T[size]));
+}
 
 
 

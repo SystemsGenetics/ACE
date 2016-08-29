@@ -22,7 +22,7 @@ public:
    void load(int64_t ptr);
    void reset();
    const std::string& str() const;
-   void write(const std::string& str);
+   int64_t write(const std::string& str);
    void static_buffer(int size);
    void clear_buffer();
    void bump();

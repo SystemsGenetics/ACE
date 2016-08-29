@@ -328,6 +328,13 @@ void NVMemory::Node::mem(const std::shared_ptr<NVMemory>& mem)
 
 
 
+void NVMemory::Node::mem(NVMemory* memPtr)
+{
+   _mem.reset(memPtr);
+}
+
+
+
 int64_t NVMemory::Node::addr() const
 {
    return _ptr;
@@ -412,15 +419,6 @@ bool NVMemory::Node::operator!=(const Node& cmp)
 void NVMemory::Node::operator++()
 {
    _ptr += _size;
-}
-
-
-
-void NVMemory::Node::init_mem()
-{
-   static const char* f = __PRETTY_FUNCTION__;
-   assert<DataExists>(!_data.get(),f,__LINE__);
-   _data.reset(new char[_size]);
 }
 
 

@@ -11,6 +11,7 @@ namespace AccelCompEng
 
 class History : private NVMemory::Node
 {
+public:
    struct AlreadySet : public Exception { using Exception::Exception; };
    struct NullMemory : public Exception { using Exception::Exception; };
    class Iterator;
@@ -19,8 +20,7 @@ class History : private NVMemory::Node
    History(const std::shared_ptr<NVMemory>& mem, int64_t ptr);
    using Node::mem;
    void load(int64_t ptr);
-   void init(const std::string& fileName, const std::string& object, const std::string& command,
-             uint64_t timeStamp);
+   void init(const std::string& fileName, const std::string& object, const std::string& command);
    void add_child(const History& child);
    int64_t write();
    const std::string& file_name() const;

@@ -1,5 +1,6 @@
 #include "history.h"
 #include "fstring.h"
+#include <time.h>
 namespace AccelCompEng
 {
 
@@ -8,7 +9,7 @@ namespace AccelCompEng
 History::History():
    Node(sizeof(Header))
 {
-   init_mem();
+   init_mem<Header>();
 }
 
 
@@ -16,7 +17,7 @@ History::History():
 History::History(const std::shared_ptr<NVMemory>& mem):
    Node(sizeof(Header),mem)
 {
-   init_mem();
+   init_mem<Header>();
 }
 
 
@@ -24,7 +25,7 @@ History::History(const std::shared_ptr<NVMemory>& mem):
 History::History(const std::shared_ptr<NVMemory>& mem, int64_t ptr):
    Node(sizeof(Header),mem,ptr)
 {
-   init_mem();
+   init_mem<Header>();
    load();
 }
 
@@ -43,14 +44,15 @@ void History::load(int64_t ptr)
 
 
 void History::init(const std::string& fileName, const std::string& object,
-                   const std::string& command, uint64_t timeStamp)
+                   const std::string& command)
 {
    static const char* f = __PRETTY_FUNCTION__;
    assert<AlreadySet>(addr()==fnullptr,f,__LINE__);
+   time_t t;
+   get<Header>()._timeStamp = time(&t);
    _fileName = fileName;
    _object = object;
    _command = command;
-   get<Header>()._timeStamp = timeStamp;
 }
 
 

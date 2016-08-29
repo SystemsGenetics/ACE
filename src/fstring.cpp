@@ -8,7 +8,7 @@ namespace AccelCompEng
 FString::FString():
    Node(sizeof(Header))
 {
-   init_mem();
+   init_mem<Header>();
 }
 
 
@@ -16,7 +16,7 @@ FString::FString():
 FString::FString(const std::shared_ptr<NVMemory>& mem):
    Node(sizeof(Header),mem)
 {
-   init_mem();
+   init_mem<Header>();
 }
 
 
@@ -24,7 +24,7 @@ FString::FString(const std::shared_ptr<NVMemory>& mem):
 FString::FString(const std::shared_ptr<NVMemory>& mem, int64_t ptr):
    Node(sizeof(Header),mem,ptr)
 {
-   init_mem();
+   init_mem<Header>();
    load();
 }
 
@@ -56,7 +56,7 @@ const std::string& FString::str() const
 
 
 
-void FString::write(const std::string& str)
+int64_t FString::write(const std::string& str)
 {
    static const char* f = __PRETTY_FUNCTION__;
    assert<NullMemory>(!is_null_memory(),f,__LINE__);
@@ -72,7 +72,7 @@ void FString::write(const std::string& str)
          c_str.give_mem(_buffer.get());
       }
       {
-         c_str.init_mem();
+         c_str.init_mem<char>(len);
       }
       allocate();
       c_str.allocate();
@@ -81,6 +81,7 @@ void FString::write(const std::string& str)
       memcpy(&c_str.get<char>(),str.c_str(),len);
       Node::write();
       c_str.write();
+      return addr();
    }
    catch (...)
    {
@@ -130,7 +131,7 @@ void FString::load()
          c_str.give_mem(_buffer.get());
       }
       {
-         c_str.init_mem();
+         c_str.init_mem<char>(get<Header>()._size);
       }
       c_str.read();
       _str = &c_str.get<char>();
