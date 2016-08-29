@@ -2,101 +2,53 @@
 #define ACCELCOMPENG_File_H
 #include <string>
 #include <memory>
-#include "filemem.h"
+#include "nvmemory.h"
 #include "history.h"
-#include "fstring.h"
+#include "exception.h"
 namespace AccelCompEng
 {
 
 
 
-/// @ingroup dataplugin
-/// @brief Base file utility class for data plugin.
-///
-/// Opens and manages a file memory object for a data plugin object. Provides
-/// functions for the data plugin to interface with the file memory object. Also
-/// provides a history object that is stored within the same file.
-class File
+class File : private NVMemory::Node
 {
 public:
-   // *
-   // * EXCEPTIONS
-   // *
    struct InvalidFile : public Exception { using Exception::Exception; };
+   struct AlreadyNew : public Exception { using Exception::Exception; };
+   struct NullMemory : public Exception { using Exception::Exception; };
+   struct NullIdent : public Exception { using Exception::Exception; };
    struct AlreadySet : public Exception { using Exception::Exception; };
-   // *
-   // * DECLERATIONS
-   // *
-   using string = std::string;
-   using FPtr = FileMem::Ptr;
-   // *
-   // * BASIC METHODS
-   // *
-   File(const string&);
-   // *
-   // * COPY METHODS
-   // *
-   File(const File&) = delete;
-   File& operator=(const File&) = delete;
-   // *
-   // * MOVE METHODS
-   // *
-   File(File&&) = delete;
-   File& operator=(File&&) = delete;
-   // *
-   // * FUNCTIONS
-   // *
+   struct NullHistory : public Exception { using Exception::Exception; };
+   friend class DataMap;
+   friend class Console;
+   File() = default;
+protected:
+   const std::string& ident() const;
+   void ident(const std::string& ident);
+   int64_t head() const;
+   void head(int64_t ptr);
+   NVMemory& mem();
+private:
+   constexpr static int _idSize {4};
+   constexpr static const char* _idString = "\113\111\116\103";
+   struct __attribute__ ((__packed__)) Header
+   {
+      char _id[_idSize] {_idString[0],_idString[1],_idString[2],_idString[3]};
+      int64_t _historyHead {fnullptr};
+      int64_t _dataHead {fnullptr};
+      int64_t _identPtr {fnullptr};
+   };
+   void load(const std::string& fileName);
    void clear();
    bool is_new();
+   void init_history();
+   void write_history();
+   void null_data();
+   void flip_endian();
    History& history();
-protected:
-   // *
-   // * FUNCTIONS
-   // *
-   string ident() const;
-   void ident(const string&);
-   FPtr head() const;
-   void head(FPtr);
-   FileMem& mem();
-private:
-   // *
-   // * CONSTANTS
-   // *
-   constexpr static int _hdrSz {28};
-   constexpr static int _idSz {4};
-   constexpr static auto _idString = "\113\111\116\103";
-   // *
-   // * FILEMEM TYPES
-   // *
-   ACE_FMEM_STATIC(Header,_hdrSz)
-      using FPtr = FileMem::Ptr;
-      char* idString() { &get<char>(0); }
-      ACE_FMEM_VAL(histHead,FPtr,_idSz)
-      ACE_FMEM_VAL(dataHead,FPtr,_idSz+8)
-      ACE_FMEM_VAL(ident,FPtr,_idSz+16)
-   ACE_FMEM_END()
-   // *
-   // * DECLERATIONS
-   // *
-   //using Header = FileData::Header;
-   using hptr = std::unique_ptr<History>;
-   // *
-   // * FUNCTIONS
-   // *
-   void create();
-   // *
-   // * VARIABLES
-   // *
-   /// File memory object.
-   FileMem _mem;
-   /// Remembers if the file opened is new or not.
+   std::string _ident;
    bool _new {true};
-   /// Pointer to history object of file.
-   hptr _hist {nullptr};
-   /// Header for KINC file.
-   Header _hdr;
-   /// Custom data plugin ident value.
-   FString _ident;
+   std::unique_ptr<History> _history {nullptr};
 };
 
 

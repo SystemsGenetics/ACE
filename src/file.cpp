@@ -1,168 +1,178 @@
-#include <cstring>
 #include "file.h"
+#include "fstring.h"
 namespace AccelCompEng
 {
 
 
 
-/// @brief Open KINC file object.
-///
-/// Open file memory object from file given. If the size of the file memory
-/// object is zero then create a new KINC file from it, else attempt to load
-/// KINC file from head location of file memory object.
-///
-/// @param fileName Location of file for memory object.
-///
-/// @exception InvalidFile The file being opened is not a valid KINC file.
-File::File(const std::string& fileName):
-   _mem(fileName),
-   _ident(&_mem)
+const std::string& File::ident() const
 {
    static const char* f = __PRETTY_FUNCTION__;
-   if (_mem.size()==0)
+   assert<NullMemory>(is_null_memory(),f,__LINE__);
+   assert<NullIdent>(get<Header>()._identPtr!=fnullptr,f,__LINE__);
+   return _ident;
+}
+
+
+
+void File::ident(const std::string& ident)
+{
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NullMemory>(is_null_memory(),f,__LINE__);
+   assert<NullIdent>(get<Header>()._identPtr==fnullptr,f,__LINE__);
+   try
    {
-      create();
+      FString fstr(Node::mem());
+      get<Header>()._identPtr = fstr.write(ident);
+      write();
+      _ident = ident;
    }
-   else
+   catch (...)
    {
-      bool cond = _mem.size()>=_hdrSz;
-      assert<InvalidFile>(cond,f,__LINE__);
-      _hdr = _mem.head();
-      _mem.sync(_hdr,FileSync::read);
-      cond = _hdr.histHead()!=FileMem::nullPtr;
-      assert<InvalidFile>(cond,f,__LINE__);
-      cond = true;
-      for (int i=0;i<_idSz;++i)
-      {
-         if (_hdr.idString()[i]!=_idString[i])
-         {
-            cond = false;
-         }
-      }
-      assert<InvalidFile>(cond,f,__LINE__);
-      _hist = hptr(new History(_mem,_hdr.histHead()));
-      _ident.addr(_hdr.ident());
-      _new = false;
+      get<Header>()._identPtr = fnullptr;
+      throw;
    }
 }
 
 
 
-/// @brief Clear this object.
-///
-/// Clear all data in this object, including all data plugin memory, making this
-/// object a new KINC file with no information.
+int64_t File::head() const
+{
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NullMemory>(is_null_memory(),f,__LINE__);
+   return get<Header>()._dataHead;
+}
+
+
+
+void File::head(int64_t ptr)
+{
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NullMemory>(is_null_memory(),f,__LINE__);
+   get<Header>()._dataHead = ptr;
+   write();
+}
+
+
+
+NVMemory& File::mem()
+{
+   return rmem();
+}
+
+
+
+void File::load(const std::string& fileName)
+{
+   static const char* f = __PRETTY_FUNCTION__;
+   Node::mem(new NVMemory(fileName));
+   try
+   {
+      if (rmem().size()==0)
+      {
+         allocate();
+         write();
+      }
+      else
+      {
+         addr(fheadptr);
+         read();
+         bool cond {true};
+         for (int i=0;i<_idSize;++i)
+         {
+            if (get<Header>()._id[i]!=_idString[i])
+            {
+               cond = false;
+               break;
+            }
+         }
+         assert<InvalidFile>(cond,f,__LINE__);
+         if (get<Header>()._identPtr!=fnullptr)
+         {
+            FString fstr(Node::mem(),get<Header>()._identPtr);
+            _ident = fstr.str();
+         }
+         _new = false;
+      }
+   }
+   catch (...)
+   {
+      Node::mem(nullptr);
+      addr(fnullptr);
+      throw;
+   }
+}
+
+
+
 void File::clear()
 {
-   _hist.reset();
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NullMemory>(is_null_memory(),f,__LINE__);
+   assert<AlreadyNew>(!is_new(),f,__LINE__);
+   rmem().clear();
+   _ident.clear();
+   null_data();
+   allocate();
+   write();
    _new = true;
-   _hdr = FileMem::nullPtr;
-   _ident.addr(FileMem::nullPtr);
-   _mem.clear();
-   create();
 }
 
 
 
-/// Tests to see if this object created a new KINC file when constructed.
-///
-/// @return True if this is a new file, else false.
 bool File::is_new()
 {
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NullMemory>(is_null_memory(),f,__LINE__);
    return _new;
 }
 
 
 
-/// Get reference of history object for this object.
-///
-/// @return History object.
-History& File::history()
-{
-   return *_hist;
-}
-
-
-
-/// Get data plugin ident value for this object.
-///
-/// @return data plugin ident.
-File::string File::ident() const
-{
-   return *_ident;
-}
-
-
-
-/// Set value for data plugin ident.
-///
-/// @param id Value for ident.
-///
-/// @exception AlreadySet The ident value for data plugin has already been set.
-void File::ident(const string& id)
+void File::init_history()
 {
    static const char* f = __PRETTY_FUNCTION__;
-   try
-   {
-      _ident = id;
-   }
-   catch (FString::AlreadySet)
-   {
-      assert<AlreadySet>(false,f,__LINE__);
-   }
-   _hdr.ident() = _ident.addr();
-   _mem.sync(_hdr,FileSync::write);
+   assert<NullMemory>(is_null_memory(),f,__LINE__);
+   _history.reset(new History(Node::mem()));
 }
 
 
 
-/// @brief Get data plugin memory head.
-///
-/// Get file memory location for the beginning or head of data plugin memory for
-/// this object.
-///
-/// @return Location to beginning of data plugin memory.
-FileMem::Ptr File::head() const
+void File::write_history()
 {
-   return _hdr.dataHead();
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NullMemory>(is_null_memory(),f,__LINE__);
+   assert<NullHistory>(_history.get(),f,__LINE__);
+   get<Header>()._historyHead = _history->write();
+   write();
 }
 
 
 
-/// Set value of file memory location for beginning of data plugin memory.
-///
-/// @param ptr Location of data plugin memory.
-void File::head(FileMem::Ptr ptr)
+History& File::history()
 {
-   _hdr.dataHead() = ptr;
-   _mem.sync(_hdr,FileSync::write);
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NullMemory>(is_null_memory(),f,__LINE__);
+   assert<NullHistory>(_history.get(),f,__LINE__);
+   return *(_history.get());
 }
 
 
 
-/// Get pointer of file memory object for this object.
-///
-/// @return File memory object.
-FileMem& File::mem()
+void File::null_data()
 {
-   return _mem;
+   get<Header>()._historyHead = fnullptr;
+   get<Header>()._dataHead = fnullptr;
+   get<Header>()._identPtr = fnullptr;
 }
 
 
 
-/// @brief Create new KINC file.
-///
-/// Create a new KINC file for this object, writing to this object's file memory
-/// object.
-void File::create()
+void File::flip_endian()
 {
-   _mem.allot(_hdr);
-   _hist = hptr(new History(_mem));
-   _hdr.histHead() = _hist->addr();
-   _hdr.dataHead() = FileMem::nullPtr;
-   _hdr.ident() = FileMem::nullPtr;
-   memcpy(_hdr.idString(),_idString,_idSz);
-   _mem.sync(_hdr,FileSync::write);
+   flip(4,8);
+   flip(12,8);
+   flip(20,8);
 }
 
 
