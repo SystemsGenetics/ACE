@@ -32,8 +32,6 @@ fstring.cpp
 fstring.h
 getopts.cpp
 getopts.h
-histitem.cpp
-histitem.h
 history.cpp
 history.h
 file.cpp

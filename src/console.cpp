@@ -378,13 +378,9 @@ void Console::data_open(GetOpts& ops)
    }
    if (np->is_new())
    {
-      time_t t;
-      History& h = np->history();
-      h.timeStamp(time(&t));
-      h.fileName(file);
-      h.object("__NEW__");
-      h.command(ops.orig());
-      h.sync();
+      np->init_history();
+      np->history().init(file,"__NEW__",ops.orig());
+      np->write_history();
       _tm << "New file " << file << " opened.\n";
    }
    else
@@ -501,15 +497,15 @@ void Console::data_history(GetOpts& ops)
       throw CommandError("history",buffer.str());
    }
    History& h = kp->history();
-   time_t t = h.timeStamp();
+   time_t t = h.time_stamp();
    struct tm* bt = localtime(&t);
    _tm << "Time Stamp: ";
    _tm << bt->tm_mday << "-" << (bt->tm_mon+1) << "-" << (bt->tm_year+1900)
        << " " << bt->tm_hour << ":" << bt->tm_min << "\n";
-   _tm << "File Name: " << h.fileName() << "\n";
+   _tm << "File Name: " << h.file_name() << "\n";
    _tm << "Object: " << h.object() << "\n";
    _tm << "Command: " << h.command() << "\n";
-   if (h.has_child())
+   if (h.has_children())
    {
       _tm << "{\n";
       rec_history(h.begin(),h.end(),1);
@@ -537,13 +533,9 @@ void Console::data_load(GetOpts& ops)
          throw CommandError("load","cannot overwrite non-empty data object.");
       }
       k.clear();
-      History& h = k.history();
-      time_t t;
-      h.timeStamp(time(&t));
-      h.fileName(_dataMap.selected().file());
-      h.object("__LOAD__");
-      h.command(ops.orig());
-      h.sync();
+      k.init_history();
+      k.history().init(_dataMap.selected().file(),"__LOAD__",ops.orig());
+      k.write_history();
       _dataMap.load(ops,_tm);
    }
    catch (DataMap::NoSelect)
@@ -694,17 +686,13 @@ void Console::analytic(GetOpts& ops)
          }
          File& k = *dynamic_cast<File*>(d);
          k.clear();
-         History& h = k.history();
-         time_t t;
-         h.timeStamp(time(&t));
-         h.fileName(file);
-         h.object(ops.com_front());
-         h.command(ops.orig());
+         k.init_history();
+         k.history().init(file,ops.com_front(),ops.orig());
          for (auto i:ins)
          {
-            h.add_child(i->history());
+            k.history().add_child(i->history());
          }
-         h.sync();
+         k.write_history();
          a->output(d);
          i = ops.erase(i);
       }
@@ -766,8 +754,8 @@ inline void Console::rec_history(hiter begin, hiter end, int d)
 {
    for (auto i = begin;i!=end;++i)
    {
-      HistItem h = i.load();
-      time_t t = h.timeStamp();
+      const History& h {*i};
+      time_t t = h.time_stamp();
       struct tm* bt = localtime(&t);
       if (i!=begin)
       {
@@ -779,16 +767,16 @@ inline void Console::rec_history(hiter begin, hiter end, int d)
       _tm << bt->tm_mday << "-" << (bt->tm_mon+1) << "-" << (bt->tm_year+1900)
           << " " << bt->tm_hour << ":" << bt->tm_min << "\n";
       print_pad(d);
-      _tm << "File Name: " << h.fileName() << "\n";
+      _tm << "File Name: " << h.file_name() << "\n";
       print_pad(d);
       _tm << "Object: " << h.object() << "\n";
       print_pad(d);
       _tm << "Command: " << h.command() << "\n";
-      if (i.has_child())
+      if (h.has_children())
       {
          print_pad(d);
          _tm << "{\n";
-         rec_history(i.child(),end,d+1);
+         rec_history(h.begin(),h.end(),d+1);
          print_pad(d);
          _tm << "{\n";
       }

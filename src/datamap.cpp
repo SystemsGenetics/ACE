@@ -49,8 +49,10 @@ Data* DataMap::open(const string& file, const string& type, bool select)
    using uptr = std::unique_ptr<Data>;
    bool cond = _map.find(file)==_map.end();
    assert<AlreadyExists>(cond,f,__LINE__);
-   uptr nd(_factory.build_data(type,file));
+   uptr nd(_factory.build_data(type));
    assert<InvalidType>(bool(nd),f,__LINE__);
+   nd->type(type);
+   nd->File::load(file);
    auto x = _map.emplace(file,std::move(nd));
    auto i = x.first;
    if (select)

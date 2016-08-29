@@ -11,8 +11,8 @@ namespace AccelCompEng
 class Factory
 {
 public:
-   virtual Data* build_data(const std::string&, const std::string&) = 0;
-   virtual Analytic* build_analytic(const std::string&) = 0;
+   virtual Data* build_data(const std::string& type) = 0;
+   virtual Analytic* build_analytic(const std::string& type) = 0;
 };
 
 
