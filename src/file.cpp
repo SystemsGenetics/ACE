@@ -92,6 +92,10 @@ void File::load(const std::string& fileName)
             FString fstr(Node::mem(),get<Header>()._identPtr);
             _ident = fstr.str();
          }
+         if (get<Header>()._historyHead!=fnullptr)
+         {
+            _history.reset(new History(Node::mem(),get<Header>()._historyHead));
+         }
          _new = false;
       }
    }
