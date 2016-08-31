@@ -25,6 +25,7 @@ public:
    using Node::init_mem;
    using Node::give_mem;
    using Node::get;
+   using Node::pget;
    using Node::flip;
    int _counter {0};
    int _fData {1};
@@ -51,19 +52,19 @@ void in()
    int fd;
    char identString[6] = "\33\102\104\101\124";
    int idLen = 5;
-   FileMem::Ptr next = 0;
+   int64_t next = 0;
    fd = open(validFile,flags,modes);
    ::write(fd,identString,idLen);
-   ::write(fd,&next,sizeof(FileMem::Ptr));
+   ::write(fd,&next,sizeof(int64_t));
    close(fd);
    fd = open(invalidFile,flags,modes);
    ::write(fd,identString,idLen);
-   ::write(fd,&next,sizeof(FileMem::Ptr)-1);
+   ::write(fd,&next,sizeof(int64_t)-1);
    close(fd);
    identString[1] = '\16';
    fd = open(invalidFile2,flags,modes);
    ::write(fd,identString,idLen);
-   ::write(fd,&next,sizeof(FileMem::Ptr));
+   ::write(fd,&next,sizeof(int64_t));
    close(fd);
 }
 
@@ -389,7 +390,7 @@ void construct4()
 {
    std::shared_ptr<NVMemory> mem(new NVMemory(validFile));
    TestNode copy(16,mem,666);
-   copy.init_mem();
+   copy.init_mem<char>(16);
    memcpy(&(copy.get<char>()),dataStr,16);
    TestNode node(copy);
    if (node.mem()!=mem||node.addr()!=666||copy._fData!=1||strcmp(&(copy.get<char>()),dataStr)!=0||
@@ -405,7 +406,7 @@ void construct5()
 {
    std::shared_ptr<NVMemory> mem(new NVMemory(validFile));
    TestNode copy(16,mem,666);
-   copy.init_mem();
+   copy.init_mem<char>(16);
    memcpy(&(copy.get<char>()),dataStr,16);
    TestNode node(std::move(copy));
    if (node.mem()!=mem||node.addr()!=666||copy.mem()!=nullptr||copy.addr()!=fnullptr||
@@ -461,7 +462,7 @@ void copy1()
    std::shared_ptr<NVMemory> mem(new NVMemory(validFile));
    TestNode copy(16,mem,666);
    TestNode node(16);
-   copy.init_mem();
+   copy.init_mem<char>(16);
    memcpy(&(copy.get<char>()),dataStr,16);
    node = copy;
    if (node.mem()!=mem||node.addr()!=666||copy._fData!=1||strcmp(&(copy.get<char>()),dataStr)!=0||
@@ -478,7 +479,7 @@ void move1()
    std::shared_ptr<NVMemory> mem(new NVMemory(validFile));
    TestNode copy(16,mem,666);
    TestNode node(16);
-   copy.init_mem();
+   copy.init_mem<char>(16);
    memcpy(&(copy.get<char>()),dataStr,16);
    node = std::move(copy);
    if (node.mem()!=mem||node.addr()!=666||copy.mem()!=nullptr||copy.addr()!=fnullptr||
@@ -514,6 +515,19 @@ void mem1()
 
 
 
+void mem2()
+{
+   NVMemory* mem {new NVMemory(validFile)};
+   TestNode node(16);
+   node.mem(mem);
+   if (node.pmem()!=mem)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
 void rmem1()
 {
    std::shared_ptr<NVMemory> mem(new NVMemory(validFile));
@@ -539,6 +553,29 @@ void rmem2()
       caught = true;
    }
    if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void pmem1()
+{
+   std::shared_ptr<NVMemory> mem(new NVMemory(validFile));
+   TestNode node(16,mem);
+   if (node.pmem()!=mem.get())
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void pmem2()
+{
+   TestNode node(16);
+   if (node.pmem()!=nullptr)
    {
       throw UTests::Fail();
    }
@@ -646,7 +683,7 @@ void read1()
    {
       std::shared_ptr<NVMemory> mem(new NVMemory(tmpFile));
       TestNode node(16,mem,0);
-      node.init_mem();
+      node.init_mem<char>(16);
       node.read();
       if (node._counter!=1)
       {
@@ -664,7 +701,7 @@ void write1()
    {
       std::shared_ptr<NVMemory> mem(new NVMemory(tmpFile));
       TestNode node(16,mem,0);
-      node.init_mem();
+      node.init_mem<char>(16);
       node.write();
       if (node._counter!=2)
       {
@@ -679,7 +716,7 @@ void readwrite1()
 {
    std::shared_ptr<NVMemory> mem(new NVMemory(tmpFile));
    TestNode node(16,mem,0);
-   node.init_mem();
+   node.init_mem<char>(16);
    memcpy(&(node.get<char>()),dataStr,16);
    node.write();
    node.read();
@@ -695,7 +732,7 @@ void readwrite2()
 {
    std::shared_ptr<NVMemory> mem(new NVMemory(tmpFile));
    TestNode node(16,mem,0);
-   node.init_mem();
+   node.init_mem<char>(16);
    node.read();
    if (strcmp(&(node.get<char>()),dataStr)!=0)
    {
@@ -709,7 +746,7 @@ void readwrite3()
 {
    std::shared_ptr<NVMemory> mem(new NVMemory(tmpFile));
    TestNode node(16,mem,0);
-   node.init_mem();
+   node.init_mem<char>(16);
    bool caught {false};
    try
    {
@@ -743,7 +780,7 @@ void readwrite3()
 void readwrite4()
 {
    TestNode node(16);
-   node.init_mem();
+   node.init_mem<char>(16);
    node.addr(0);
    bool caught {false};
    try
@@ -813,7 +850,7 @@ void readwrite6()
 {
    std::shared_ptr<NVMemory> mem(new NVMemory(tmpFile));
    TestNode node(16,mem);
-   node.init_mem();
+   node.init_mem<char>(16);
    bool caught {false};
    try
    {
@@ -893,12 +930,8 @@ void operator3()
 void init_mem1()
 {
    TestNode node(16);
-   node.init_mem();
-   try
-   {
-      node.get<char>();
-   }
-   catch (NVMemory::Node::NullData)
+   node.init_mem<char>(16);
+   if (node.pget<char>()==nullptr)
    {
       throw UTests::Fail();
    }
@@ -909,11 +942,51 @@ void init_mem1()
 void init_mem2()
 {
    TestNode node(16);
-   node.init_mem();
    bool caught {false};
    try
    {
-      node.init_mem();
+      node.init_mem<char>(15);
+   }
+   catch (NVMemory::Node::SizeMismatch)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void init_mem3()
+{
+   TestNode node(16);
+   bool caught {false};
+   try
+   {
+      node.init_mem<char>(-1);
+   }
+   catch (NVMemory::Node::InvalidInput)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void init_mem4()
+{
+   TestNode node(16);
+   node.init_mem<char>(16);
+   bool caught {false};
+   try
+   {
+      node.init_mem<char>(16);
    }
    catch (NVMemory::Node::DataExists)
    {
@@ -998,6 +1071,109 @@ void get2()
 
 
 
+void get3()
+{
+   TestNode node(16);
+   auto p = new char[16];
+   node.give_mem(p);
+   const TestNode& rnode {node};
+   if (&(rnode.get<char>())!=p)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void get4()
+{
+   TestNode node(16);
+   const TestNode& rnode {node};
+   bool caught {false};
+   try
+   {
+      rnode.get<char>();
+   }
+   catch (NVMemory::Node::NullData)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void pget1()
+{
+   TestNode node(16);
+   auto p = new char[16];
+   node.give_mem(p);
+   if (node.pget<char>()!=p)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void pget2()
+{
+   TestNode node(16);
+   bool caught {false};
+   try
+   {
+      node.pget<char>();
+   }
+   catch (NVMemory::Node::NullData)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void pget3()
+{
+   TestNode node(16);
+   auto p = new char[16];
+   node.give_mem(p);
+   const TestNode& rnode {node};
+   if (rnode.pget<char>()!=p)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void pget4()
+{
+   TestNode node(16);
+   const TestNode& rnode {node};
+   bool caught {false};
+   try
+   {
+      rnode.pget<char>();
+   }
+   catch (NVMemory::Node::NullData)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
 void flip1()
 {
    TestNode node(3);
@@ -1044,7 +1220,7 @@ void flip3()
 void flip4()
 {
    TestNode node(16);
-   node.init_mem();
+   node.init_mem<char>(16);
    bool caught {false};
    try
    {
@@ -1085,7 +1261,7 @@ void flip5()
 void flip6()
 {
    TestNode node(16);
-   node.init_mem();
+   node.init_mem<char>(16);
    bool caught {false};
    try
    {
@@ -1143,8 +1319,11 @@ void add_nvmemory(UTests& tests)
    run->add_test("move1",node::move1);
    run->add_test("is_null_memory1",node::is_null_memory1);
    run->add_test("mem1",node::mem1);
+   run->add_test("mem2",node::mem2);
    run->add_test("rmem1",node::rmem1);
    run->add_test("rmem2",node::rmem2);
+   run->add_test("pmem1",node::pmem1);
+   run->add_test("pmem2",node::pmem2);
    run->add_test("addr1",node::addr1);
    run->add_test("allocate1",node::allocate1);
    run->add_test("allocate2",node::allocate2);
@@ -1164,10 +1343,18 @@ void add_nvmemory(UTests& tests)
    run->add_test("operator3",node::operator3);
    run->add_test("init_mem1",node::init_mem1);
    run->add_test("init_mem2",node::init_mem2);
+   run->add_test("init_mem3",node::init_mem3);
+   run->add_test("init_mem4",node::init_mem4);
    run->add_test("give_mem1",node::give_mem1);
    run->add_test("give_mem2",node::give_mem2);
    run->add_test("get1",node::get1);
    run->add_test("get2",node::get2);
+   run->add_test("get3",node::get3);
+   run->add_test("get4",node::get4);
+   run->add_test("pget1",node::pget1);
+   run->add_test("pget2",node::pget2);
+   run->add_test("pget3",node::pget3);
+   run->add_test("pget4",node::pget4);
    run->add_test("flip1",node::flip1);
    run->add_test("flip2",node::flip2);
    run->add_test("flip3",node::flip3);
