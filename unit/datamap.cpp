@@ -3,7 +3,7 @@
 using namespace AccelCompEng;
 
 
-
+/*
 AceTestFactory factory;
 
 
@@ -350,3 +350,4 @@ bool unit::datamap::iter_type()
    bool test = i.type()==type;
    return finish(test,"iter_type1");
 }
+*/

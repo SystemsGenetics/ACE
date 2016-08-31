@@ -1,8 +1,6 @@
 datamap.cpp
-filemem.cpp
 fstring.cpp
 getopts.cpp
-histitem.cpp
 history.cpp
 file.cpp
 nvmemory.cpp

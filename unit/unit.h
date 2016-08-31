@@ -10,8 +10,10 @@ namespace ace = AccelCompEng;
 
 
 void add_nvmemory(UTests&);
+void add_fstring(UTests&);
 
 
+/*
 class FakeData : public ace::Data
 {
 public:
@@ -46,23 +48,13 @@ public:
    bool empty() override final { return true; }
    bool touched {false};
 };
-
+*/
 
 
 class AceTestFactory : public ace::Factory
 {
    ace::Analytic* build_analytic(const std::string&) override final { return nullptr; }
-   ace::Data* build_data(const std::string& type, const std::string& file) override final
-   {
-      if (type==std::string("FakeData"))
-      {
-         return new FakeData(type,file);
-      }
-      else
-      {
-         return nullptr;
-      }
-   }
+   ace::Data* build_data(const std::string&) override final { return nullptr; }
 };
 
 

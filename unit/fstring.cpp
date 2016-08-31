@@ -1,9 +1,106 @@
 #include "../src/fstring.h"
 #include "unit.h"
+#include <string.h>
 using namespace AccelCompEng;
 
 
 
+
+namespace fstring
+{
+
+
+
+struct TestStringHead : public NVMemory::Node
+{
+   TestStringHead(): Node(sizeof(Header)) { init_mem<Header>(); }
+   using Node::get;
+   struct __attribute__ ((__packed__)) Header
+   {
+      int16_t _size {0};
+      uint8_t _strip {0};
+   };
+   void null_data() override final {}
+   void flip_endian() override final { flip(0,2); }
+};
+struct TestString : public NVMemory::Node
+{
+   TestString(int len): Node(len) { init_mem<char>(len); }
+   using Node::get;
+   void null_data() override final {}
+   void flip_endian() override final {}
+};
+constexpr int stripVal {170};
+const char* testStr = "hello world! A really long string.";
+const char* tmpFile = "strfile.tmp";
+int64_t badAddr;
+
+
+
+void in()
+{
+   int len = strlen(testStr)+1;
+   std::shared_ptr<NVMemory> mem {new NVMemory(tmpFile)};
+   TestStringHead strhead;
+   strhead.mem(mem);
+   strhead.allocate();
+   strhead.get<TestStringHead::Header>()._size = len;
+   strhead.get<TestStringHead::Header>()._strip = stripVal;
+   strhead.write();
+   TestString str(len);
+   str.mem(mem);
+   str.allocate();
+   memcpy(&(str.get<char>()),testStr,len);
+   str.write();
+   strhead.addr(fnullptr);
+   strhead.allocate();
+   badAddr = strhead.addr();
+   strhead.get<TestStringHead::Header>()._strip = stripVal+1;
+   strhead.write();
+}
+
+
+
+void out()
+{
+   system("rm -fr *.tmp");
+}
+
+
+
+void construct1()
+{
+   FString str;
+   auto mem = str.mem();
+   if (mem.get())
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void construct2()
+{}
+void construct3() {}
+
+
+
+}
+using namespace fstring;
+
+
+void add_fstring(UTests& tests)
+{
+   std::shared_ptr<UTests::Run> run(new UTests::Run("FString",in,out));
+   run->add_test("construct1",construct1);
+   run->add_test("construct2",construct2);
+   run->add_test("construct3",construct3);
+   tests.attach(run);
+}
+
+
+/*
 namespace unit
 {
    namespace fstring
@@ -249,3 +346,4 @@ bool unit::fstring::final()
    test = test&&*t==hello;
    return finish(test,"final1");
 }
+*/
