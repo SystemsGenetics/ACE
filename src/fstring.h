@@ -49,7 +49,7 @@ struct FString::CString : public NVMemory::Node
    using Node::Node;
    using Node::init_mem;
    using Node::give_mem;
-   using Node::get;
+   using Node::pget;
 private:
    void null_data() override final { get<char>() = '\0'; }
    void flip_endian() override final {}

@@ -78,7 +78,7 @@ int64_t FString::write(const std::string& str)
       c_str.allocate();
       get<Header>()._size = len;
       get<Header>()._strip = _strip;
-      memcpy(&c_str.get<char>(),str.c_str(),len);
+      memcpy(c_str.pget<char>(),str.c_str(),len);
       Node::write();
       c_str.write();
       return addr();
@@ -134,7 +134,7 @@ void FString::load()
          c_str.init_mem<char>(get<Header>()._size);
       }
       c_str.read();
-      _str = &c_str.get<char>();
+      _str = c_str.pget<char>();
    }
    catch (...)
    {
