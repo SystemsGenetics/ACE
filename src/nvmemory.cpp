@@ -312,11 +312,18 @@ std::shared_ptr<NVMemory> NVMemory::Node::mem() const
 
 
 
-NVMemory& NVMemory::Node::rmem()
+NVMemory& NVMemory::Node::rmem() const
 {
    static const char* f = __PRETTY_FUNCTION__;
    assert<NullMemory>(_mem.get(),f,__LINE__);
    return *(_mem.get());
+}
+
+
+
+NVMemory* NVMemory::Node::pmem() const
+{
+   return _mem.get();
 }
 
 

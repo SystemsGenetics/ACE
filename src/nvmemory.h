@@ -64,6 +64,7 @@ public:
    struct DataExists : public Exception { using Exception::Exception; };
    struct OutOfRange : public Exception { using Exception::Exception; };
    struct NullSize : public Exception { using Exception::Exception; };
+   struct SizeMismatch : public Exception { using Exception::Exception; };
    Node(int);
    Node(int,const std::shared_ptr<NVMemory>& mem, int64_t ptr = fnullptr);
    Node(const Node&);
@@ -72,9 +73,10 @@ public:
    Node& operator=(Node&&);
    bool is_null_memory() const;
    std::shared_ptr<NVMemory> mem() const;
-   NVMemory& rmem();
+   NVMemory& rmem() const;
+   NVMemory* pmem() const;
    void mem(const std::shared_ptr<NVMemory>& mem);
-   void mem(NVMemory* memPtr);//UNIT TEST!!
+   void mem(NVMemory* memPtr);
    int64_t addr() const;
    void addr(int64_t ptr);
    void allocate(int64_t numNodes = 1);
@@ -84,10 +86,12 @@ public:
    bool operator!=(const Node&);
    void operator++();
 protected:
-   template<class T> void init_mem(int size = 1);//UNIT TEST
+   template<class T> void init_mem(int size = 1);
    template<class T> void give_mem(T* ptr);
    template<class T> T& get();
-   template<class T> const T& get() const;//UNIT TEST!!!
+   template<class T> const T& get() const;
+   template<class T> T* pget();
+   template<class T> const T* pget() const;
    void flip(int i, int len);
    virtual void null_data() = 0;
    virtual void flip_endian() = 0;
@@ -105,6 +109,7 @@ template<class T> void NVMemory::Node::init_mem(int size)
    static const char* f = __PRETTY_FUNCTION__;
    assert<InvalidInput>(size>0,f,__LINE__);
    assert<DataExists>(!_data.get(),f,__LINE__);
+   assert<SizeMismatch>(sizeof(T)*size==_size,f,__LINE__);
    _data.reset(reinterpret_cast<char*>(new T[size]));
 }
 
@@ -133,6 +138,24 @@ template<class T> const T& NVMemory::Node::get() const
    static const char* f = __PRETTY_FUNCTION__;
    assert<NullData>(_data.get(),f,__LINE__);
    return *reinterpret_cast<T*>(_data.get());
+}
+
+
+
+template<class T> T* NVMemory::Node::pget()
+{
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NullData>(_data.get(),f,__LINE__);
+   return reinterpret_cast<T*>(_data.get());
+}
+
+
+
+template<class T> const T* NVMemory::Node::pget() const
+{
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NullData>(_data.get(),f,__LINE__);
+   return reinterpret_cast<T*>(_data.get());
 }
 
 
