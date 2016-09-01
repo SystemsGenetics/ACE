@@ -13,12 +13,13 @@ public:
    struct AlreadySet : public Exception { using Exception::Exception; };
    struct NullStr : public Exception { using Exception::Exception; };
    struct NullMemory : public Exception { using Exception::Exception; };
-   struct StringTooBig : public Exception { using Exception::Exception; };
+   struct BufferOverrun : public Exception { using Exception::Exception; };
    struct InvalidInput : public Exception { using Exception::Exception; };
    FString();
    FString(const std::shared_ptr<NVMemory>& mem);
    FString(const std::shared_ptr<NVMemory>& mem, int64_t ptr);
    using Node::mem;
+   using Node::pmem;
    void load(int64_t ptr);
    void reset();
    const std::string& str() const;
@@ -47,8 +48,8 @@ private:
 struct FString::CString : public NVMemory::Node
 {
    using Node::Node;
-   using Node::init_mem;
-   using Node::give_mem;
+   using Node::init_data;
+   using Node::give_data;
    using Node::pget;
 private:
    void null_data() override final { get<char>() = '\0'; }

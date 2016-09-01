@@ -8,7 +8,7 @@ namespace AccelCompEng
 FString::FString():
    Node(sizeof(Header))
 {
-   init_mem<Header>();
+   init_data<Header>();
 }
 
 
@@ -16,7 +16,7 @@ FString::FString():
 FString::FString(const std::shared_ptr<NVMemory>& mem):
    Node(sizeof(Header),mem)
 {
-   init_mem<Header>();
+   init_data<Header>();
 }
 
 
@@ -24,7 +24,7 @@ FString::FString(const std::shared_ptr<NVMemory>& mem):
 FString::FString(const std::shared_ptr<NVMemory>& mem, int64_t ptr):
    Node(sizeof(Header),mem,ptr)
 {
-   init_mem<Header>();
+   init_data<Header>();
    load();
 }
 
@@ -68,11 +68,12 @@ int64_t FString::write(const std::string& str)
       CString c_str(len,mem());
       if (_buffer.get())
       {
-         assert<StringTooBig>(len<=_bSize,f,__LINE__);
-         c_str.give_mem(_buffer.get());
+         assert<BufferOverrun>(len<=_bSize,f,__LINE__);
+         c_str.give_data(_buffer.get());
       }
+      else
       {
-         c_str.init_mem<char>(len);
+         c_str.init_data<char>(len);
       }
       allocate();
       c_str.allocate();
@@ -98,12 +99,14 @@ void FString::static_buffer(int size)
    static const char* f = __PRETTY_FUNCTION__;
    assert<InvalidInput>(size>0,f,__LINE__);
    _buffer.reset(new char[size]);
+   _bSize = size;
 }
 
 
 
 void FString::clear_buffer()
 {
+   _bSize = 0;
    _buffer.reset();
 }
 
@@ -127,11 +130,12 @@ void FString::load()
       CString c_str(get<Header>()._size,Node::mem(),addr()+3);
       if (_buffer.get())
       {
-         assert<StringTooBig>(get<Header>()._size<=_bSize,f,__LINE__);
-         c_str.give_mem(_buffer.get());
+         assert<BufferOverrun>(get<Header>()._size<=_bSize,f,__LINE__);
+         c_str.give_data(_buffer.get());
       }
+      else
       {
-         c_str.init_mem<char>(get<Header>()._size);
+         c_str.init_data<char>(get<Header>()._size);
       }
       c_str.read();
       _str = c_str.pget<char>();
@@ -139,6 +143,7 @@ void FString::load()
    catch (...)
    {
       addr(fnullptr);
+      throw;
    }
 }
 
