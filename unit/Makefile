@@ -10,6 +10,7 @@ FILES := ACE_unit.files
 build := ../build/unit/
 run := ../run/
 lib := ../lib/
+libf := $(lib)libace.a
 
 acxxflags := $(CXXFLAGS) -g -std=c++11
 aldflags := $(LDFLAGS)
@@ -30,7 +31,7 @@ unit: $(unitf)
 
 include $(dpds)
 
-$(unitf): $(objs) $(dpds)
+$(unitf): $(objs) $(dpds) $(libf)
 +@echo "Building unit test."
 +@$(CXX) $(objs) $(aldflags) $(aldlibs) -o $@
 
