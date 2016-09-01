@@ -17,13 +17,14 @@ class CLContext: public CLProgram, public CLCommandQueue
 public:
    struct CannotCreate : public Exception { using Exception::Exception; };
    struct NotInitialized : public Exception { using Exception::Exception; };
+   friend class Console;
    CLContext() = default;
    ~CLContext();
-   void init_cl(CLDevice& dev);
    bool is_initd();
 protected:
    template<class T> CLBuffer<T> buffer(int);
 private:
+   void init_cl(CLDevice& dev);
    bool _initd {false};
    cl_context _cid;
 };
