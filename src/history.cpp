@@ -9,7 +9,7 @@ namespace AccelCompEng
 History::History():
    Node(sizeof(Header))
 {
-   init_mem<Header>();
+   init_data<Header>();
 }
 
 
@@ -17,7 +17,7 @@ History::History():
 History::History(const std::shared_ptr<NVMemory>& mem):
    Node(sizeof(Header),mem)
 {
-   init_mem<Header>();
+   init_data<Header>();
 }
 
 
@@ -25,7 +25,7 @@ History::History(const std::shared_ptr<NVMemory>& mem):
 History::History(const std::shared_ptr<NVMemory>& mem, int64_t ptr):
    Node(sizeof(Header),mem,ptr)
 {
-   init_mem<Header>();
+   init_data<Header>();
    load();
 }
 

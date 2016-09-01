@@ -65,7 +65,7 @@ NVMemory& File::mem()
 void File::load(const std::string& fileName)
 {
    static const char* f = __PRETTY_FUNCTION__;
-   Node::mem(new NVMemory(fileName));
+   Node::init_mem(new NVMemory(fileName));
    try
    {
       if (rmem().size()==0)
