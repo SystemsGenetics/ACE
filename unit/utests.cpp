@@ -17,7 +17,7 @@ void UTests::attach(const std::shared_ptr<Run>& run)
 bool UTests::execute()
 {
    bool ret {true};
-   std::cout << "Running unit tests" << std::flush;
+   std::cout << "Running unit tests " << std::flush;
    for (auto i = _runs.begin();i!=_runs.end();++i)
    {
       if (!(*i)->execute())
