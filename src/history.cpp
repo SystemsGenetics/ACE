@@ -258,21 +258,25 @@ void History::flip_endian()
 
 
 
-History::Iterator History::Iterator::begin()
+History::Iterator History::Iterator::begin() const
 {
-   return _p->begin();
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<OutOfRange>(_i<(_p->_children.size()),f,__LINE__);
+   return _p->_children[_i]->begin();
 }
 
 
 
-History::Iterator History::Iterator::end()
+History::Iterator History::Iterator::end() const
 {
-   return _p->end();
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<OutOfRange>(_i<(_p->_children.size()),f,__LINE__);
+   return _p->_children[_i]->end();
 }
 
 
 
-const History& History::Iterator::operator*()
+const History& History::Iterator::history() const
 {
    static const char* f = __PRETTY_FUNCTION__;
    assert<OutOfRange>(_i<(_p->_children.size()),f,__LINE__);
@@ -281,16 +285,28 @@ const History& History::Iterator::operator*()
 
 
 
-const History* History::Iterator::operator->()
+const History& History::Iterator::operator*() const
 {
-   static const char* f = __PRETTY_FUNCTION__;
-   assert<OutOfRange>(_i<(_p->_children.size()),f,__LINE__);
+   return *(_p->_children[_i].get());
+}
+
+
+
+const History* History::Iterator::operator->() const
+{
    return _p->_children[_i].get();
 }
 
 
 
-bool History::Iterator::operator!=(const Iterator& cmp)
+bool History::Iterator::operator==(const Iterator& cmp) const
+{
+   return _p==cmp._p&&_i==cmp._i;
+}
+
+
+
+bool History::Iterator::operator!=(const Iterator& cmp) const
 {
    return _p!=cmp._p||_i!=cmp._i;
 }
@@ -299,9 +315,10 @@ bool History::Iterator::operator!=(const Iterator& cmp)
 
 void History::Iterator::operator++()
 {
-   static const char* f = __PRETTY_FUNCTION__;
-   assert<OutOfRange>(_i<=(_p->_children.size()),f,__LINE__);
-   ++_i;
+   if (_i<(_p->_children.size()))
+   {
+      ++_i;
+   }
 }
 
 

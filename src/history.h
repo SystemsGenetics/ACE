@@ -58,11 +58,13 @@ class History::Iterator
 public:
    struct OutOfRange : public Exception { using Exception::Exception; };
    friend class History;
-   Iterator begin();
-   Iterator end();
-   const History& operator*();
-   const History* operator->();
-   bool operator!=(const Iterator&);
+   Iterator begin() const;
+   Iterator end() const;
+   const History& history() const;
+   const History& operator*() const;
+   const History* operator->() const;
+   bool operator==(const Iterator&) const;
+   bool operator!=(const Iterator&) const;
    void operator++();
 private:
    Iterator(const History* p, int i);
