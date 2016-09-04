@@ -13,6 +13,7 @@ int main(int argc, char* argv[])
    UTests tests;
    add_nvmemory(tests);
    add_fstring(tests);
+   add_history(tests);
    if (!tests.execute())
    {
       exit(1);

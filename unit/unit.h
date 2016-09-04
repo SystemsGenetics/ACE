@@ -11,6 +11,7 @@ namespace ace = AccelCompEng;
 
 void add_nvmemory(UTests&);
 void add_fstring(UTests&);
+void add_history(UTests&);
 
 
 /*
