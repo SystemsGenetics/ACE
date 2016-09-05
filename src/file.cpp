@@ -5,6 +5,119 @@ namespace AccelCompEng
 
 
 
+File::File():
+   Node(sizeof(Header))
+{
+   init_data<Header>();
+}
+
+
+
+void File::load(const std::string& fileName)
+{
+   static const char* f = __PRETTY_FUNCTION__;
+   if (!is_null_memory())
+   {
+      reset();
+   }
+   init_mem(new NVMemory(fileName));
+   try
+   {
+      if (rmem().size()==0)
+      {
+         allocate();
+         write();
+      }
+      else
+      {
+         addr(fheadptr);
+         read();
+         bool cond {true};
+         for (int i=0;i<_idSize;++i)
+         {
+            if (get<Header>()._id[i]!=_idString[i])
+            {
+               cond = false;
+               break;
+            }
+         }
+         assert<InvalidFile>(cond,f,__LINE__);
+         if (get<Header>()._identPtr!=fnullptr)
+         {
+            FString fstr(Node::mem(),get<Header>()._identPtr);
+            _ident = fstr.str();
+         }
+         if (get<Header>()._historyHead!=fnullptr)
+         {
+            _history.reset(new History(Node::mem(),get<Header>()._historyHead));
+         }
+         _new = false;
+      }
+   }
+   catch (...)
+   {
+      init_mem(nullptr);
+      addr(fnullptr);
+      reset();
+      throw;
+   }
+}
+
+
+
+void File::clear()
+{
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NullMemory>(is_null_memory(),f,__LINE__);
+   assert<AlreadyNew>(!is_new(),f,__LINE__);
+   rmem().clear();
+   reset();
+   allocate();
+   write();
+   _new = true;
+}
+
+
+
+bool File::is_new()
+{
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NullMemory>(is_null_memory(),f,__LINE__);
+   return _new;
+}
+
+
+
+void File::init_history()
+{
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NullMemory>(is_null_memory(),f,__LINE__);
+   _history.reset(new History(Node::mem()));
+}
+
+
+
+History& File::history()
+{
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NullMemory>(is_null_memory(),f,__LINE__);
+   assert<NullHistory>(_history.get(),f,__LINE__);
+   return *(_history.get());
+}
+
+
+
+void File::write_history()
+{
+   static const char* f = __PRETTY_FUNCTION__;
+   assert<NullMemory>(is_null_memory(),f,__LINE__);
+   assert<NullHistory>(_history.get(),f,__LINE__);
+   get<Header>()._historyHead = _history->write();
+   write();
+}
+
+
+
 const std::string& File::ident() const
 {
    static const char* f = __PRETTY_FUNCTION__;
@@ -55,110 +168,11 @@ void File::head(int64_t ptr)
 
 
 
-NVMemory& File::mem()
+void File::reset()
 {
-   return rmem();
-}
-
-
-
-void File::load(const std::string& fileName)
-{
-   static const char* f = __PRETTY_FUNCTION__;
-   Node::init_mem(new NVMemory(fileName));
-   try
-   {
-      if (rmem().size()==0)
-      {
-         allocate();
-         write();
-      }
-      else
-      {
-         addr(fheadptr);
-         read();
-         bool cond {true};
-         for (int i=0;i<_idSize;++i)
-         {
-            if (get<Header>()._id[i]!=_idString[i])
-            {
-               cond = false;
-               break;
-            }
-         }
-         assert<InvalidFile>(cond,f,__LINE__);
-         if (get<Header>()._identPtr!=fnullptr)
-         {
-            FString fstr(Node::mem(),get<Header>()._identPtr);
-            _ident = fstr.str();
-         }
-         if (get<Header>()._historyHead!=fnullptr)
-         {
-            _history.reset(new History(Node::mem(),get<Header>()._historyHead));
-         }
-         _new = false;
-      }
-   }
-   catch (...)
-   {
-      Node::mem(nullptr);
-      addr(fnullptr);
-      throw;
-   }
-}
-
-
-
-void File::clear()
-{
-   static const char* f = __PRETTY_FUNCTION__;
-   assert<NullMemory>(is_null_memory(),f,__LINE__);
-   assert<AlreadyNew>(!is_new(),f,__LINE__);
-   rmem().clear();
    _ident.clear();
+   _history.reset();
    null_data();
-   allocate();
-   write();
-   _new = true;
-}
-
-
-
-bool File::is_new()
-{
-   static const char* f = __PRETTY_FUNCTION__;
-   assert<NullMemory>(is_null_memory(),f,__LINE__);
-   return _new;
-}
-
-
-
-void File::init_history()
-{
-   static const char* f = __PRETTY_FUNCTION__;
-   assert<NullMemory>(is_null_memory(),f,__LINE__);
-   _history.reset(new History(Node::mem()));
-}
-
-
-
-void File::write_history()
-{
-   static const char* f = __PRETTY_FUNCTION__;
-   assert<NullMemory>(is_null_memory(),f,__LINE__);
-   assert<NullHistory>(_history.get(),f,__LINE__);
-   get<Header>()._historyHead = _history->write();
-   write();
-}
-
-
-
-History& File::history()
-{
-   static const char* f = __PRETTY_FUNCTION__;
-   assert<NullMemory>(is_null_memory(),f,__LINE__);
-   assert<NullHistory>(_history.get(),f,__LINE__);
-   return *(_history.get());
 }
 
 
@@ -168,6 +182,10 @@ void File::null_data()
    get<Header>()._historyHead = fnullptr;
    get<Header>()._dataHead = fnullptr;
    get<Header>()._identPtr = fnullptr;
+   for (int i=0;i<_idSize;++i)
+   {
+      get<Header>()._id[i] = _idString[i];
+   }
 }
 
 
