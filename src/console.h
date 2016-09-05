@@ -105,7 +105,7 @@ private:
    /// nullptr if no device is selected.
    CLDevice* _device;
    /// List of all possible OpenCL devices on program's machine.
-   CLDevList _devList;
+   CLDevList* _devList;
    string _header;
    Factory& _factory;
 };

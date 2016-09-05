@@ -33,6 +33,24 @@ Console::Console(int argc, char* argv[], Terminal& tm, Factory& factory, DataMap
    static const char* f = __PRETTY_FUNCTION__;
    assert<InvalidUse>(!_lock,f,__LINE__);
    _lock = true;
+   try
+   {
+      _devList = new CLDevList(true);
+   }
+   catch (CLDevList::PlatformErr)
+   {
+      tm << Terminal::warning;
+      tm << "OpenCL error while attempting to enumerate platforms, OpenCL is now DISABLED.\n";
+      tm << Terminal::general;
+      _devList = new CLDevList;
+   }
+   catch (CLDevList::DeviceErr)
+   {
+      tm << Terminal::warning;
+      tm << "OpenCL error while attempting to enumerate devices, OpenCL is now DISABLED.\n";
+      tm << Terminal::general;
+      _devList = new CLDevList;
+   }
 }
 
 
@@ -44,6 +62,10 @@ Console::~Console()
    if (_device)
    {
       delete _device;
+   }
+   if (_devList)
+   {
+      delete _devList;
    }
 }
 
@@ -234,7 +256,7 @@ void Console::gpu_process(GetOpts& ops)
 /// Executes command to list all available OpenCL devices.
 void Console::gpu_list()
 {
-   for (auto d:_devList)
+   for (auto d:*_devList)
    {
       _tm << d.info(CLDevice::ident) << " ";
       _tm << d.info(CLDevice::name);
@@ -263,9 +285,9 @@ void Console::gpu_info(GetOpts& ops)
    int p,d;
    char sep;
    std::istringstream str(ops.com_front());
-   if ((str >> p >> sep >> d)&&sep==':'&&_devList.exist(p,d))
+   if ((str >> p >> sep >> d)&&sep==':'&&_devList->exist(p,d))
    {
-      CLDevice& dev {_devList.at(p,d)};
+      CLDevice& dev {_devList->at(p,d)};
       _tm << "===== " << dev.info(CLDevice::name) << " ("
           << dev.info(CLDevice::type) << ") =====\n";
       _tm << "Online: " << dev.info(CLDevice::online) << ".\n";
@@ -301,13 +323,13 @@ void Console::gpu_set(GetOpts& ops)
    int p,d;
    char sep;
    std::istringstream str(ops.com_front());
-   if ((str >> p >> sep >> d)&&sep==':'&&_devList.exist(p,d))
+   if ((str >> p >> sep >> d)&&sep==':'&&_devList->exist(p,d))
    {
       if (_device)
       {
          delete _device;
       }
-      _device = new CLDevice {_devList.at(p,d)};
+      _device = new CLDevice {_devList->at(p,d)};
       _tm << "OpenCL device set to \"" << _device->info(CLDevice::CLInfo::name)
           << "\".\n";
    }
