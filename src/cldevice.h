@@ -64,6 +64,10 @@ public:
    // * BASIC METHODS
    // *
    CLDevice(int,int,cl_platform_id,cl_device_id);
+   CLDevice(const CLDevice&) = default;
+   CLDevice(CLDevice&&) = default;
+   CLDevice& operator=(const CLDevice&) = default;
+   CLDevice& operator=(CLDevice&&) = default;
    // *
    // * FUNCTIONS
    // *

@@ -19,13 +19,13 @@ public:
    struct CannotBind : public Exception { using Exception::Exception; };
    struct BuildInfoFail : public Exception { using Exception::Exception; };
    struct CannotFindKern : public Exception { using Exception::Exception; };
-   friend class CLContext;
    CLProgram() = default;
    ~CLProgram();
    CLProgram(const CLProgram&) = delete;
    CLProgram& operator=(const CLProgram&) = delete;
    CLProgram(CLProgram&&) = delete;
    CLProgram& operator=(CLProgram&&) = delete;
+   void init(cl_context,cl_device_id);
    using string = std::string;
 protected:
    void add_source(const string& input, bool file = false);
@@ -33,7 +33,6 @@ protected:
    string log();
    CLKernel mkernel(const string& name);
 private:
-   void init(cl_context,cl_device_id);
    bool _initd {false};
    bool _binded {false};
    bool _compiled {false};

@@ -118,6 +118,10 @@ public:
    // *
    Exception(const char*,const char*,const char*,int) noexcept;
    ~Exception();
+   Exception(const Exception&) = default;
+   Exception(Exception&&) = default;
+   Exception& operator=(const Exception&) = default;
+   Exception& operator=(Exception&&) = default;
    // *
    // * FUNCTIONS
    // *

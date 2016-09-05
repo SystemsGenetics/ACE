@@ -18,6 +18,10 @@ public:
    History();
    History(const std::shared_ptr<NVMemory>& mem);
    History(const std::shared_ptr<NVMemory>& mem, int64_t ptr);
+   History(const History&) = default;
+   History(History&&) = default;
+   History& operator=(const History&) = default;
+   History& operator=(History&&) = default;
    using Node::mem;
    void load(int64_t ptr);
    void init(const std::string& fileName, const std::string& object, const std::string& command);
@@ -58,6 +62,10 @@ class History::Iterator
 public:
    struct OutOfRange : public Exception { using Exception::Exception; };
    friend class History;
+   Iterator(const Iterator&) = default;
+   Iterator(Iterator&&) = default;
+   Iterator& operator=(const Iterator&) = default;
+   Iterator& operator=(Iterator&&) = default;
    Iterator begin() const;
    Iterator end() const;
    const History& history() const;

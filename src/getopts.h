@@ -38,6 +38,10 @@ public:
    // * BASIC METHODS
    // *
    GetOpts(const string&);
+   GetOpts(const GetOpts&) = default;
+   GetOpts(GetOpts&&) = default;
+   GetOpts& operator=(const GetOpts&) = default;
+   GetOpts& operator=(GetOpts&&) = default;
    // *
    // * FUNCTIONS
    // *

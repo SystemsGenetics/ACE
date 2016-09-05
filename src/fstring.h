@@ -18,6 +18,10 @@ public:
    FString();
    FString(const std::shared_ptr<NVMemory>& mem);
    FString(const std::shared_ptr<NVMemory>& mem, int64_t ptr);
+   FString(const FString&) = default;
+   FString(FString&&) = default;
+   FString& operator=(const FString&) = default;
+   FString& operator=(FString&&) = default;
    using Node::mem;
    using Node::pmem;
    void load(int64_t ptr);

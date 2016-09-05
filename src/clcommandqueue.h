@@ -19,20 +19,19 @@ public:
    struct NotInitialized : public Exception { using Exception::Exception; };
    struct NullBufferUsed : public Exception { using Exception::Exception; };
    struct NullKernelUsed : public Exception { using Exception::Exception; };
-   friend class CLContext;
    CLCommandQueue() = default;
    ~CLCommandQueue();
    CLCommandQueue(const CLCommandQueue&) = delete;
    CLCommandQueue& operator=(const CLCommandQueue&) = delete;
    CLCommandQueue(CLCommandQueue&&) = delete;
    CLCommandQueue& operator=(CLCommandQueue&&) = delete;
+   void init(cl_context,cl_device_id);
 protected:
    template<class T> CLEvent read_buffer(CLBuffer<T>&);
    template<class T> CLEvent write_buffer(CLBuffer<T>&);
    CLEvent add_task(CLKernel&);
    CLEvent add_swarm(CLKernel&);
 private:
-   void init(cl_context,cl_device_id);
    bool _initd {false};
    cl_command_queue _id;
 };

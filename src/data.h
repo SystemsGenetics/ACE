@@ -11,10 +11,6 @@ namespace AccelCompEng
 class Data : public File
 {
 public:
-   Data(const Data&) = delete;
-   Data& operator=(const Data&) = delete;
-   Data(Data&&) = delete;
-   Data& operator=(Data&&) = delete;
    virtual ~Data() = default;
    const std::string type() const;
    void type(const std::string& type);
