@@ -8,9 +8,12 @@ namespace AccelCompEng
 
 
 /// Compile list of available OpenCL devices.
-CLDevList::CLDevList()
+CLDevList::CLDevList(bool isBuild)
 {
-   build();
+   if (isBuild)
+   {
+      build();
+   }
 }
 
 

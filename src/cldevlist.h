@@ -40,7 +40,11 @@ public:
    // *
    // * BASIC METHODS
    // *
-   CLDevList();
+   CLDevList(bool isBuild = false);
+   CLDevList(const CLDevList&) = default;
+   CLDevList(CLDevList&&) = default;
+   CLDevList& operator=(const CLDevList&) = default;
+   CLDevList& operator=(CLDevList&&) = default;
    // *
    // * FUNCTIONS
    // *
@@ -75,13 +79,11 @@ private:
 class CLDevList::Iterator
 {
 public:
-   // *
-   // * DECLERATIONS
-   // *
    friend class CLDevList;
-   // *
-   // * OPERATORS
-   // *
+   Iterator(const Iterator&) = default;
+   Iterator(Iterator&&) = default;
+   Iterator& operator=(const Iterator&) = default;
+   Iterator& operator=(Iterator&&) = default;
    CLDevice& operator*();
    void operator++();
    void operator--();
