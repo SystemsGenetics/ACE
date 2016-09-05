@@ -243,8 +243,8 @@ void History::final_write()
 void History::null_data()
 {
    get<Header>()._timeStamp = 0;
-   get<Header>()._next = 0;
-   get<Header>()._childHead = 0;
+   get<Header>()._next = fnullptr;
+   get<Header>()._childHead = fnullptr;
 }
 
 
