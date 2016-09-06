@@ -30,6 +30,7 @@ void File::load(const std::string& fileName)
       }
       else
       {
+         assert<InvalidFile>(rmem().size()>=sizeof(Header),f,__LINE__);
          addr(fheadptr);
          read();
          bool cond {true};
@@ -68,7 +69,7 @@ void File::load(const std::string& fileName)
 void File::clear()
 {
    static const char* f = __PRETTY_FUNCTION__;
-   assert<NullMemory>(is_null_memory(),f,__LINE__);
+   assert<NullMemory>(!is_null_memory(),f,__LINE__);
    assert<AlreadyNew>(!is_new(),f,__LINE__);
    rmem().clear();
    reset();
@@ -82,7 +83,7 @@ void File::clear()
 bool File::is_new()
 {
    static const char* f = __PRETTY_FUNCTION__;
-   assert<NullMemory>(is_null_memory(),f,__LINE__);
+   assert<NullMemory>(!is_null_memory(),f,__LINE__);
    return _new;
 }
 
@@ -91,7 +92,8 @@ bool File::is_new()
 void File::init_history()
 {
    static const char* f = __PRETTY_FUNCTION__;
-   assert<NullMemory>(is_null_memory(),f,__LINE__);
+   assert<NullMemory>(!is_null_memory(),f,__LINE__);
+   assert<AlreadySet>(!_history.get(),f,__LINE__);
    _history.reset(new History(Node::mem()));
 }
 
@@ -100,7 +102,7 @@ void File::init_history()
 History& File::history()
 {
    static const char* f = __PRETTY_FUNCTION__;
-   assert<NullMemory>(is_null_memory(),f,__LINE__);
+   assert<NullMemory>(!is_null_memory(),f,__LINE__);
    assert<NullHistory>(_history.get(),f,__LINE__);
    return *(_history.get());
 }
@@ -110,8 +112,9 @@ History& File::history()
 void File::write_history()
 {
    static const char* f = __PRETTY_FUNCTION__;
-   assert<NullMemory>(is_null_memory(),f,__LINE__);
+   assert<NullMemory>(!is_null_memory(),f,__LINE__);
    assert<NullHistory>(_history.get(),f,__LINE__);
+   assert<AlreadySet>(get<Header>()._historyHead==fnullptr,f,__LINE__);
    get<Header>()._historyHead = _history->write();
    write();
 }
@@ -121,7 +124,7 @@ void File::write_history()
 const std::string& File::ident() const
 {
    static const char* f = __PRETTY_FUNCTION__;
-   assert<NullMemory>(is_null_memory(),f,__LINE__);
+   assert<NullMemory>(!is_null_memory(),f,__LINE__);
    assert<NullIdent>(get<Header>()._identPtr!=fnullptr,f,__LINE__);
    return _ident;
 }
@@ -131,8 +134,8 @@ const std::string& File::ident() const
 void File::ident(const std::string& ident)
 {
    static const char* f = __PRETTY_FUNCTION__;
-   assert<NullMemory>(is_null_memory(),f,__LINE__);
-   assert<NullIdent>(get<Header>()._identPtr==fnullptr,f,__LINE__);
+   assert<NullMemory>(!is_null_memory(),f,__LINE__);
+   assert<AlreadySet>(get<Header>()._identPtr==fnullptr,f,__LINE__);
    try
    {
       FString fstr(Node::mem());
@@ -152,7 +155,7 @@ void File::ident(const std::string& ident)
 int64_t File::head() const
 {
    static const char* f = __PRETTY_FUNCTION__;
-   assert<NullMemory>(is_null_memory(),f,__LINE__);
+   assert<NullMemory>(!is_null_memory(),f,__LINE__);
    return get<Header>()._dataHead;
 }
 
@@ -161,7 +164,7 @@ int64_t File::head() const
 void File::head(int64_t ptr)
 {
    static const char* f = __PRETTY_FUNCTION__;
-   assert<NullMemory>(is_null_memory(),f,__LINE__);
+   assert<NullMemory>(!is_null_memory(),f,__LINE__);
    get<Header>()._dataHead = ptr;
    write();
 }
@@ -182,10 +185,6 @@ void File::null_data()
    get<Header>()._historyHead = fnullptr;
    get<Header>()._dataHead = fnullptr;
    get<Header>()._identPtr = fnullptr;
-   for (int i=0;i<_idSize;++i)
-   {
-      get<Header>()._id[i] = _idString[i];
-   }
 }
 
 
