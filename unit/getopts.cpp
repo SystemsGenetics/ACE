@@ -1,313 +1,357 @@
 #include "../src/getopts.h"
 #include "unit.h"
+namespace getopts
+{
+
+
+
 using namespace AccelCompEng;
 
 
 
-namespace unit
+const char* commStr1 = "one -test=1";
+const char* commStr2 = "-first one --second=1 TWO ---third=1.12 three ----fourth=ok -----fifth";
+const char* commStr3 = "no options";
+const char* commStr4 = "--no --comms";
+const char* invalidComm = "hello ---test=1=1";
+
+
+
+void construct1()
 {
-   namespace getopts
+   GetOpts t(commStr1);
+   if (t.com_size()!=1)
    {
-      constexpr auto commStr1 = "one -test=1";
-      constexpr auto commStr2 = "-first one --second=1 TWO ---third=1.12 three"
-                                " ----fourth=ok -----fifth";
-      constexpr auto commStr3 = "no options";
-      constexpr auto commStr4 = "--no --comms";
-      constexpr auto invalidComm = "hello ---test=1=1";
+      throw UTests::Fail();
    }
 }
 
 
 
-bool unit::getopts::main()
+void construct2()
 {
-   bool ret = false;
-   header("GetOpts");
+   bool caught {false};
    try
    {
-      ret = construct()&&
-            orig()&&
-            com_size()&&
-            com_empty()&&
-            com_get()&&
-            com_front()&&
-            com_pop()&&
-            com_empty()&&
-            size()&&
-            empty()&&
-            has_opt()&&
-            iterate()&&
-            erase()&&
-            iter_key()&&
-            iter_value()&&
-            iter_is_key()&&
-            iter_val_empty()&&
-            iter_operat_equal();
+      GetOpts t(invalidComm);
    }
-   catch (...)
+   catch (GetOpts::InvalidSyntax)
    {
-      end();
-      throw;
+      caught = true;
    }
-   end();
-   return ret;
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
 }
 
 
 
-bool unit::getopts::construct()
+void orig1()
 {
-   bool cont {true};
-   {
-      start();
-      GetOpts t(commStr1);
-      bool test = t.com_size()==1;
-      cont = cont&&finish(test,"construct1");
-   }
-   if (cont)
-   {
-      start();
-      bool test {false};
-      try
-      {
-         GetOpts t(invalidComm);
-      }
-      catch (GetOpts::InvalidSyntax)
-      {
-         test = true;
-      }
-      cont = cont&&finish(test,"construct2");
-   }
-   return cont;
-}
-
-
-
-bool unit::getopts::orig()
-{
-   start();
    GetOpts t(commStr1);
-   bool test {t.orig()==std::string(commStr1)};
-   return finish(test,"orig1");
+   if (t.orig()!=std::string(commStr1))
+   {
+      throw UTests::Fail();
+   }
 }
 
 
 
-bool unit::getopts::com_size()
+void com_size1()
 {
-   start();
    GetOpts t(commStr2);
-   bool test {t.com_size()==3};
-   return finish(test,"com_size1");
+   if (t.com_size()!=3)
+   {
+      throw UTests::Fail();
+   }
 }
 
 
 
-bool unit::getopts::com_empty()
+void com_empty1()
 {
-   start();
    GetOpts t(commStr4);
-   bool test {t.com_empty()};
-   return finish(test,"com_empty1");
+   if (!t.com_empty())
+   {
+      throw UTests::Fail();
+   }
 }
 
 
 
-bool unit::getopts::com_get()
+void com_get1()
 {
-   bool cont {true};
-   {
-      start();
-      GetOpts t(commStr1);
-      bool test = t.com_get({"wrong"})==0;
-      cont = cont&&finish(test,"get_com1");
-   }
-   if (cont)
-   {
-      start();
-      GetOpts t(commStr1);
-      bool test = t.com_get({"one"})==1;
-      cont = cont&&finish(test,"get_com2");
-   }
-   return cont;
-}
-
-
-
-bool unit::getopts::com_front()
-{
-   start();
    GetOpts t(commStr1);
-   bool test = t.com_front()==std::string("one");
-   return finish(test,"com_front1");
+   if (t.com_get({"wrong"})!=0)
+   {
+      throw UTests::Fail();
+   }
 }
 
 
 
-bool unit::getopts::com_pop()
+void com_get2()
 {
-   start();
+   GetOpts t(commStr1);
+   if (t.com_get({"one"})!=1)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void com_front1()
+{
+   GetOpts t(commStr1);
+   if (t.com_front()!=std::string("one"))
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void com_pop1()
+{
    GetOpts t(commStr2);
    t.com_pop();
-   bool test = t.com_get({"TWO"})==1;
-   return finish(test,"pop_com1");
+   if (t.com_get({"TWO"})!=1)
+   {
+      throw UTests::Fail();
+   }
 }
 
 
 
-bool unit::getopts::size()
+void size1()
 {
-   start();
    GetOpts t(commStr2);
-   bool test = t.size()==5;
-   return finish(test,"size1");
+   if (t.size()!=5)
+   {
+      throw UTests::Fail();
+   }
 }
 
 
 
-bool unit::getopts::empty()
+void empty1()
 {
-   start();
    GetOpts t(commStr3);
-   bool test = t.empty();
-   return finish(test,"empty1");
+   if (!t.empty())
+   {
+      throw UTests::Fail();
+   }
 }
 
 
 
-bool unit::getopts::has_opt()
+void has_opt1()
 {
-   bool cont {true};
+   GetOpts t(commStr2);
+   if (!t.has_opt("third"))
    {
-      start();
-      GetOpts t(commStr2);
-      bool test {t.has_opt("third")};
-      cont = cont&&finish(test,"has_opt1");
+      throw UTests::Fail();
    }
-   if (cont)
-   {
-      start();
-      GetOpts t(commStr2);
-      t.has_opt("third",true);
-      bool test {t.size()==4};
-      cont = cont&&finish(test,"has_opt2");
-   }
-   return cont;
 }
 
 
 
-bool unit::getopts::iterate()
+void has_opt2()
 {
-   start();
+   GetOpts t(commStr2);
+   t.has_opt("third",true);
+   if (t.size()!=4)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void iterate1()
+{
    GetOpts t(commStr2);
    int count {0};
    for (auto i = t.begin();i!=t.end();++i)
    {
       count++;
    }
-   bool test {count==5};
-   return finish(test,"iterate1");
+   if (count!=5)
+   {
+      throw UTests::Fail();
+   }
 }
 
 
 
-bool unit::getopts::erase()
+void erase1()
 {
-   start();
    GetOpts t(commStr1);
    t.erase(t.begin());
-   bool test {t.begin()==t.end()};
-   return finish(test,"erase1");
+   if (t.begin()!=t.end())
+   {
+      throw UTests::Fail();
+   }
 }
 
 
 
-bool unit::getopts::iter_key()
+namespace iterator
 {
-   start();
+
+
+
+void key1()
+{
    GetOpts t(commStr2);
    auto i = t.begin();
-   bool test = i.key()==std::string("first");
+   if (i.key()!=std::string("first"))
+   {
+      throw UTests::Fail();
+   }
    ++i;
-   test = test&&i.key()==std::string("second");
+   if (i.key()!=std::string("second"))
+   {
+      throw UTests::Fail();
+   }
    ++i;
-   test = test&&i.key()==std::string("third");
+   if (i.key()!=std::string("third"))
+   {
+      throw UTests::Fail();
+   }
    ++i;
-   test = test&&i.key()==std::string("fourth");
+   if (i.key()!=std::string("fourth"))
+   {
+      throw UTests::Fail();
+   }
    ++i;
-   test = test&&i.key()==std::string("fifth");
-   return finish(test,"iter_key1");
+   if (i.key()!=std::string("fifth"))
+   {
+      throw UTests::Fail();
+   }
 }
 
 
 
-bool unit::getopts::iter_value()
+void value1()
 {
-   bool cont {true};
+   GetOpts t(commStr2);
+   auto i = t.begin();
+   bool caught {false};
+   try
    {
-      start();
-      GetOpts t(commStr2);
-      auto i = t.begin();
-      bool test {false};
-      try
-      {
-         i.value<int>();
-      }
-      catch (GetOpts::InvalidType)
-      {
-         test = true;
-      }
-      cont = cont&&finish(test,"iter_value1");
+      i.value<int>();
    }
-   if (cont)
+   catch (GetOpts::InvalidType)
    {
-      start();
-      GetOpts t(commStr2);
-      auto i = t.begin();
-      ++i;
-      bool test = i.value<int>()==1;
-      ++i;
-      test = test&&i.value<float>()==1.12f;
-      ++i;
-      test = test&&i.value<std::string>()==std::string("ok");
-      cont = cont&&finish(test,"iter_value2");
+      caught = true;
    }
-   return cont;
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
 }
 
 
 
-bool unit::getopts::iter_is_key()
+void value2()
 {
-   start();
+   GetOpts t(commStr2);
+   auto i = t.begin();
+   ++i;
+   if (i.value<int>()!=1)
+   {
+      throw UTests::Fail();
+   }
+   ++i;
+   if (i.value<float>()!=1.12f)
+   {
+      throw UTests::Fail();
+   }
+   ++i;
+   if (i.value<std::string>()!=std::string("ok"))
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void is_key1()
+{
    GetOpts t(commStr1);
    auto i = t.begin();
-   bool test {i.is_key("test")};
-   return finish(test,"iter_is_key1");
+   if (!i.is_key("test"))
+   {
+      throw UTests::Fail();
+   }
 }
 
 
 
-bool unit::getopts::iter_val_empty()
+void val_empty1()
 {
-   start();
    GetOpts t(commStr2);
    auto i = t.begin();
-   bool test = i.val_empty();
+   if (!i.val_empty())
+   {
+      throw UTests::Fail();
+   }
    ++i;
-   test = test&&!i.val_empty();
-   return finish(test,"iter_val_empty1");
+   if (i.val_empty())
+   {
+      throw UTests::Fail();
+   }
 }
 
 
 
-bool unit::getopts::iter_operat_equal()
+void operator1()
 {
-   start();
    GetOpts t(commStr1);
    auto x = t.begin();
    auto y = t.begin();
-   bool test {x==y};
-   return finish(test,"iter_operat_equal");
+   if (!(x==y))
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+}
+}
+using namespace getopts;
+
+
+
+void add_getopts(UTests& tests)
+{
+   std::shared_ptr<UTests::Run> run(new UTests::Run("GetOpts",nullptr,nullptr));
+   run->add_test("construct1",construct1);
+   run->add_test("construct2",construct2);
+   run->add_test("orig1",orig1);
+   run->add_test("com_size1",com_size1);
+   run->add_test("com_empty1",com_empty1);
+   run->add_test("com_get1",com_get1);
+   run->add_test("com_get2",com_get2);
+   run->add_test("com_front1",com_front1);
+   run->add_test("com_pop1",com_pop1);
+   run->add_test("size1",size1);
+   run->add_test("empty1",empty1);
+   run->add_test("has_opt1",has_opt1);
+   run->add_test("has_opt2",has_opt2);
+   run->add_test("iterate1",iterate1);
+   run->add_test("erase1",erase1);
+   tests.attach(run);
+   run.reset(new UTests::Run("GetOpts::Iterator",nullptr,nullptr));
+   run->add_test("key1",iterator::key1);
+   run->add_test("value1",iterator::value1);
+   run->add_test("value2",iterator::value2);
+   run->add_test("is_key1",iterator::is_key1);
+   run->add_test("val_empty1",iterator::val_empty1);
+   run->add_test("operator1",iterator::operator1);
+   tests.attach(run);
 }

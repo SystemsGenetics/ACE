@@ -9,6 +9,7 @@ namespace ace = AccelCompEng;
 
 
 
+void add_getopts(UTests&);
 void add_nvmemory(UTests&);
 void add_fstring(UTests&);
 void add_history(UTests&);

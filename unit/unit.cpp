@@ -11,6 +11,7 @@ int unit::numTestsDone {0};
 int main(int argc, char* argv[])
 {
    UTests tests;
+   add_getopts(tests);
    add_nvmemory(tests);
    add_fstring(tests);
    add_history(tests);
