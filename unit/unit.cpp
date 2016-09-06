@@ -14,6 +14,7 @@ int main(int argc, char* argv[])
    add_nvmemory(tests);
    add_fstring(tests);
    add_history(tests);
+   add_file(tests);
    if (!tests.execute())
    {
       exit(1);

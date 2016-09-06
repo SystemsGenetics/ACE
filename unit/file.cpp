@@ -1,298 +1,673 @@
 #include "../src/file.h"
 #include "unit.h"
+namespace file
+{
+
+
 using namespace AccelCompEng;
 
 
-/*
-namespace unit
+
+struct FileNode : public NVMemory::Node
 {
-   namespace file
+   FileNode(const std::shared_ptr<NVMemory>& mem, bool frag):
+      Node(sizeof(Header),mem)
    {
-      constexpr static int hdrSzVal {28};
-      constexpr static int idSzVal {4};
-      constexpr static auto idStringVal = "\113\111\116\103";
-      ACE_FMEM_STATIC(Header,hdrSzVal)
-         using FPtr = FileMem::Ptr;
-         char* idString() { &get<char>(0); }
-         ACE_FMEM_VAL(histHead,FPtr,idSzVal)
-         ACE_FMEM_VAL(dataHead,FPtr,idSzVal+8)
-         ACE_FMEM_VAL(ident,FPtr,idSzVal+16)
-      ACE_FMEM_END()
-      class PublicFile : public File
+      init_data<Header>();
+      if (frag)
       {
-      public:
-         using File::File;
-         using File::ident;
-         using File::head;
-      };
-      constexpr auto tmpFile = "File.tmp";
-      constexpr auto tmpFile2 = "File2.tmp";
-      constexpr auto tmpFile3 = "File3.tmp";
-      constexpr auto invalidFile = "notFile.tmp";
-      constexpr auto invalidFile2 = "notFile2.tmp";
-      constexpr auto invalidFile3 = "notFile3.tmp";
-      constexpr const char* identStr = "1234567890123456";
-      constexpr int dataPtr = 9999;
-      constexpr int tStamp = 8888;
+         get<Header>()._id[2] = '\0';
+      }
+      allocate();
+      write();
    }
+   constexpr static int _idSize {4};
+   constexpr static const char* _idString = "\113\111\116\103";
+   struct __attribute__ ((__packed__)) Header
+   {
+      char _id[_idSize] {_idString[0],_idString[1],_idString[2],_idString[3]};
+      int64_t _historyHead {fnullptr};
+      int64_t _dataHead {fnullptr};
+      int64_t _identPtr {fnullptr};
+   };
+   void null_data() {}
+   void flip_endian()
+   {
+      flip(4,8);
+      flip(12,8);
+      flip(20,8);
+   }
+};
+class TestFile : public File
+{
+public:
+   using File::File;
+   using File::ident;
+   using File::head;
+   using File::rmem;
+};
+const char* validFile = "file.tmp";
+const char* tmpFile = "tfile.tmp";
+const char* invalidFile1 = "notfile1.tmp";
+const char* invalidFile2 = "notfile1.tmp";
+const char* testStr = "This is a really long test string to make sure it works really swell.";
+constexpr int rmDelayUS {10000};
+
+
+
+void in()
+{
+   std::shared_ptr<NVMemory> validMem {new NVMemory(validFile)};
+   std::shared_ptr<NVMemory> invalidMem1 {new NVMemory(invalidFile1)};
+   std::shared_ptr<NVMemory> invalidMem2 {new NVMemory(invalidFile2)};
+   FileNode fnode(validMem,false);
+   FileNode bfnode(invalidMem1,true);
+   invalidMem2->allocate(sizeof(FileNode::Header)-1);
 }
 
 
 
-void construct_Files()
+void out()
 {
-   {
-      FileMem tf(unit::file::tmpFile);
-      unit::file::Header header;
-      tf.allot(header);
-      History hist(tf);
-      hist.timeStamp(unit::file::tStamp);
-      hist.sync();
-      header.histHead() = hist.addr();
-      header.dataHead() = unit::file::dataPtr;
-      FString ident(&tf);
-      ident = unit::file::identStr;
-      header.ident() = ident.addr();
-      memcpy(header.idString(),unit::file::idStringVal,unit::file::idSzVal);
-      tf.sync(header,FileSync::write);
-   }
-   {
-      FileMem tf(unit::file::invalidFile);
-      unit::file::Header header;
-      tf.allot(header);
-      History hist(tf);
-      header.histHead() = hist.addr();
-      char buffer[unit::file::idSzVal] {'\0'};
-      memcpy(header.idString(),buffer,unit::file::idSzVal);
-      tf.sync(header,FileSync::write);
-   }
-   {
-      FileMem tf(unit::file::invalidFile2);
-      unit::file::Header header;
-      tf.allot(header);
-      header.histHead() = FileMem::nullPtr;
-      memcpy(header.idString(),unit::file::idStringVal,unit::file::idSzVal);
-      tf.sync(header,FileSync::write);
-   }
-   {
-      FileMem tf(unit::file::invalidFile3);
-      FString data(&tf);
-      data = "invalid";
-   }
+   system("rm -fr *.tmp");
 }
 
 
 
-bool unit::file::main()
+void construct1()
 {
-   bool ret = false;
-   header("File");
+   TestFile file;
+   bool caught {false};
    try
    {
-      construct_Files();
-      ret = construct()&&
-            history()&&
-            clear()&&
-            is_new()&&
-            ident()&&
-            head();
+      file.clear();
    }
-   catch (...)
+   catch (File::NullMemory)
    {
-      system("rm -f *.tmp");
-      unit::end();
-      throw;
+      caught = true;
    }
-   system("rm -f *.tmp");
-   unit::end();
-   return ret;
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
 }
 
 
 
-bool unit::file::construct()
+void load1()
 {
-   bool cont = true;
+   TestFile file;
+   file.load(validFile);
+   if (file.is_new())
    {
-      start();
-      File t(tmpFile2);
-      bool test = t.is_new();
-      cont = cont&&finish(test,"construct1");
+      throw UTests::Fail();
    }
-   if (cont)
-   {
-      start();
-      File t(tmpFile2);
-      bool test = !t.is_new();
-      cont = cont&&finish(test,"construct2");
-   }
-   if (cont)
-   {
-      start();
-      File t(tmpFile);
-      bool test = !t.is_new();
-      cont = cont&&finish(test,"construct3");
-   }
-   if (cont)
-   {
-      start();
-      bool test = false;
-      try
-      {
-         File t(invalidFile);
-      }
-      catch (File::InvalidFile)
-      {
-         test = true;
-      }
-      cont = cont&&finish(test,"construct4");
-   }
-   if (cont)
-   {
-      start();
-      bool test = false;
-      try
-      {
-         File t(invalidFile2);
-      }
-      catch (File::InvalidFile)
-      {
-         test = true;
-      }
-      cont = cont&&finish(test,"construct5");
-   }
-   if (cont)
-   {
-      start();
-      bool test = false;
-      try
-      {
-         File t(invalidFile3);
-      }
-      catch (File::InvalidFile)
-      {
-         test = true;
-      }
-      cont = cont&&finish(test,"construct6");
-   }
-   return cont;
 }
 
 
 
-bool unit::file::history()
+void load2()
 {
-   start();
-   File t(tmpFile);
-   bool test = t.history().timeStamp()==tStamp;
-   return finish(test,"history1");
+   TestFile file;
+   file.load(tmpFile);
+   if (!file.is_new())
+   {
+      throw UTests::Fail();
+   }
+   NVMemory mem(tmpFile);
+   mem.clear();
 }
 
 
 
-bool unit::file::clear()
+void load3()
 {
-   start();
-   File t(tmpFile2);
-   t.history().timeStamp(6666);
-   t.history().sync();
-   t.clear();
-   bool test = t.history().timeStamp()==0;
-   return finish(test,"clear1");
+   TestFile file;
+   file.load(tmpFile);
+   file.load(validFile);
+   if (file.is_new())
+   {
+      throw UTests::Fail();
+   }
 }
 
 
 
-bool unit::file::is_new()
+void load4()
 {
-   bool cont {true};
+   TestFile file;
+   bool caught {false};
+   try
    {
-      start();
-      File t(tmpFile3);
-      bool test = t.is_new();
-      cont = cont&&finish(test,"is_new1");
+      file.load(invalidFile1);
    }
-   if (cont)
+   catch (File::InvalidFile)
    {
-      start();
-      File t(tmpFile3);
-      bool test = !t.is_new();
-      cont = cont&&finish(test,"is_new2");
+      caught = true;
    }
-   if (cont)
+   if (!caught)
    {
-      start();
-      File t(tmpFile3);
-      t.clear();
-      bool test = t.is_new();
-      cont = cont&&finish(test,"is_new3");
+      throw UTests::Fail();
    }
-   return cont;
 }
 
 
 
-bool unit::file::ident()
+void load5()
 {
-   std::string ident(identStr);
-   bool cont = true;
+   TestFile file;
+   bool caught {false};
+   try
    {
-      start();
-      PublicFile t(tmpFile);
-      bool test = t.ident()==ident;
-      cont = cont&&finish(test,"ident1");
+      file.load(invalidFile2);
    }
-   if (cont)
+   catch (File::InvalidFile)
    {
-      start();
-      {
-         PublicFile t(tmpFile2);
-         t.ident(ident);
-      }
-      PublicFile t(tmpFile2);
-      bool test = t.ident()==ident;
-      cont = cont&&finish(test,"ident2");
+      caught = true;
    }
-   if (cont)
+   if (!caught)
    {
-      start();
-      PublicFile t(tmpFile2);
-      bool test = false;
-      try
-      {
-         t.ident(ident);
-      }
-      catch (File::AlreadySet)
-      {
-         test = true;
-      }
-      cont = cont&&finish(test,"ident3");
+      throw UTests::Fail();
    }
-   return cont;
 }
 
 
 
-bool unit::file::head()
+void clear1()
 {
-   bool cont = true;
+   TestFile file;
+   file.load(tmpFile);
+   file.clear();
+   if (!file.is_new())
    {
-      start();
-      PublicFile t(tmpFile);
-      bool test = t.head()==dataPtr;
-      cont = cont&&finish(test,"head1");
+      throw UTests::Fail();
    }
-   if (cont)
-   {
-      start();
-      {
-         PublicFile t(tmpFile2);
-         t.head(dataPtr);
-      }
-      PublicFile t(tmpFile2);
-      bool test = t.head()==dataPtr;
-      cont = cont&&finish(test,"head2");
-   }
-   return cont;
+   std::ostringstream buf;
+   NVMemory mem(tmpFile);
+   mem.clear();
 }
-*/
+
+
+
+void clear2()
+{
+   TestFile file;
+   bool caught {false};
+   try
+   {
+      file.clear();
+   }
+   catch (File::NullMemory)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void clear3()
+{
+   TestFile file;
+   file.load(tmpFile);
+   bool caught {false};
+   try
+   {
+      file.clear();
+   }
+   catch (File::AlreadyNew)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void is_new1()
+{
+   TestFile file;
+   file.load(tmpFile);
+   if (file.is_new())
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void is_new2()
+{
+   TestFile file;
+   bool caught {false};
+   try
+   {
+      file.is_new();
+   }
+   catch (File::NullMemory)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void init_history1()
+{
+   TestFile file;
+   file.load(tmpFile);
+   file.init_history();
+   if (file.history().has_children())
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void init_history2()
+{
+   TestFile file;
+   bool caught {false};
+   try
+   {
+      file.init_history();
+   }
+   catch (File::NullMemory)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void init_history3()
+{
+   TestFile file;
+   file.load(tmpFile);
+   file.init_history();
+   bool caught {false};
+   try
+   {
+      file.init_history();
+   }
+   catch (File::AlreadySet)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void history1()
+{
+   TestFile file;
+   file.load(tmpFile);
+   file.init_history();
+   if (file.history().has_children())
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void history2()
+{
+   TestFile file;
+   bool caught {false};
+   try
+   {
+      file.history();
+   }
+   catch (File::NullMemory)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void history3()
+{
+   TestFile file;
+   file.load(tmpFile);
+   bool caught {false};
+   try
+   {
+      file.history();
+   }
+   catch (File::NullHistory)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void write_history1()
+{
+   TestFile file;
+   file.load(tmpFile);
+   file.init_history();
+   file.write_history();
+   TestFile check;
+   check.load(tmpFile);
+   if (check.history().has_children())
+   {
+      throw UTests::Fail();
+   }
+   NVMemory mem(tmpFile);
+   mem.clear();
+}
+
+
+
+void write_history2()
+{
+   TestFile file;
+   bool caught {false};
+   try
+   {
+      file.write_history();
+   }
+   catch (File::NullMemory)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void write_history3()
+{
+   TestFile file;
+   file.load(tmpFile);
+   bool caught {false};
+   try
+   {
+      file.write_history();
+   }
+   catch (File::NullHistory)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void write_history4()
+{
+   TestFile file;
+   file.load(tmpFile);
+   file.init_history();
+   file.write_history();
+   bool caught {false};
+   try
+   {
+      file.write_history();
+   }
+   catch (File::AlreadySet)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+   NVMemory mem(tmpFile);
+   mem.clear();
+}
+
+
+
+void ident1()
+{
+   TestFile file;
+   file.load(tmpFile);
+   file.ident(testStr);
+   if (file.ident()!=std::string(testStr))
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void ident2()
+{
+   TestFile file;
+   file.load(tmpFile);
+   if (file.ident()!=std::string(testStr))
+   {
+      throw UTests::Fail();
+   }
+   NVMemory mem(tmpFile);
+   mem.clear();
+}
+
+
+
+void ident3()
+{
+   TestFile file;
+   bool caught {false};
+   try
+   {
+      file.ident();
+   }
+   catch (File::NullMemory)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void ident4()
+{
+   TestFile file;
+   bool caught {false};
+   try
+   {
+      file.ident(testStr);
+   }
+   catch (File::NullMemory)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void ident5()
+{
+   TestFile file;
+   file.load(tmpFile);
+   bool caught {false};
+   try
+   {
+      file.ident();
+   }
+   catch (File::NullIdent)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void ident6()
+{
+   TestFile file;
+   file.load(tmpFile);
+   file.ident(testStr);
+   bool caught {false};
+   try
+   {
+      file.ident(testStr);
+   }
+   catch (File::AlreadySet)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void head1()
+{
+   TestFile file;
+   file.load(tmpFile);
+   file.head(666);
+   if (file.head()!=666)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void head2()
+{
+   TestFile file;
+   file.load(tmpFile);
+   if (file.head()!=666)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void head3()
+{
+   TestFile file;
+   bool caught {false};
+   try
+   {
+      file.head();
+   }
+   catch (File::NullMemory)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void head4()
+{
+   TestFile file;
+   bool caught {false};
+   try
+   {
+      file.head(666);
+   }
+   catch (File::NullMemory)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+}
+using namespace file;
+
+
+
+void add_file(UTests& tests)
+{
+   std::shared_ptr<UTests::Run> run(new UTests::Run("File",in,out));
+   run->add_test("construct1",construct1);
+   run->add_test("load1",load1);
+   run->add_test("load2",load2);
+   run->add_test("load3",load3);
+   run->add_test("load4",load4);
+   run->add_test("load5",load5);
+   run->add_test("clear1",clear1);
+   run->add_test("clear2",clear2);
+   run->add_test("clear3",clear3);
+   run->add_test("is_new1",is_new1);
+   run->add_test("is_new2",is_new2);
+   run->add_test("init_history1",init_history1);
+   run->add_test("init_history2",init_history2);
+   run->add_test("init_history3",init_history3);
+   run->add_test("history1",history1);
+   run->add_test("history2",history2);
+   run->add_test("history3",history3);
+   run->add_test("write_history1",write_history1);
+   run->add_test("write_history2",write_history2);
+   run->add_test("write_history3",write_history3);
+   run->add_test("write_history4",write_history4);
+   run->add_test("ident1",ident1);
+   run->add_test("ident2",ident2);
+   run->add_test("ident3",ident3);
+   run->add_test("ident4",ident4);
+   run->add_test("ident5",ident5);
+   run->add_test("ident6",ident6);
+   run->add_test("head1",head1);
+   run->add_test("head2",head2);
+   run->add_test("head3",head3);
+   run->add_test("head4",head4);
+   tests.attach(run);
+}
