@@ -3,11 +3,6 @@ using namespace AccelCompEng;
 
 
 
-const char* unit::headerStr {nullptr};
-int unit::numTestsDone {0};
-
-
-
 int main(int argc, char* argv[])
 {
    UTests tests;
@@ -16,6 +11,7 @@ int main(int argc, char* argv[])
    add_fstring(tests);
    add_history(tests);
    add_file(tests);
+   add_datamap(tests);
    if (!tests.execute())
    {
       exit(1);

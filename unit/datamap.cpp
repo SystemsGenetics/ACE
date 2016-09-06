@@ -1,50 +1,43 @@
 #include "../src/ace.h"
 #include "unit.h"
+namespace datamap
+{
+
+
+
 using namespace AccelCompEng;
 
 
-/*
+
 AceTestFactory factory;
 
 
-bool unit::datamap::main()
+
+void in()
 {
-   bool ret = false;
-   header("DataMap");
    LinuxTerm::stty_raw();
-   try
-   {
-      ret = construct()&&
-            open()&&
-            close()&&
-            unselect()&&
-            load()&&
-            dump()&&
-            query()&&
-            iterate()&&
-            selected()&&
-            iter_file()&&
-            iter_type();
-   }
-   catch (...)
-   {
-      system("rm -fr *.tmp");
-      LinuxTerm::stty_cooked();
-      end();
-      throw;
-   }
-   system("rm -fr *.tmp");
-   LinuxTerm::stty_cooked();
-   end();
-   return ret;
 }
 
 
 
-bool unit::datamap::construct()
+void out1()
 {
-   start();
-   bool test = false;
+   system("rm -fr *.tmp");
+   LinuxTerm::stty_cooked();
+}
+
+
+
+void out2()
+{
+   system("rm -fr *.tmp");
+}
+
+
+
+void construct1()
+{
+   bool caught {false};
    try
    {
       DataMap t(factory);
@@ -52,246 +45,320 @@ bool unit::datamap::construct()
    }
    catch (DataMap::InvalidUse)
    {
-      test = true;
+      caught = true;
    }
-   return finish(test,"construct1");
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
 }
 
 
 
-bool unit::datamap::open()
+void open1()
 {
    DataMap t(factory);
-   bool cont = true;
+   Data* n = t.open("test.tmp","FakeData",true);
+   if (n!=t.current())
    {
-      start();
-      Data* n = t.open("test.tmp","FakeData",true);
-      bool test = n==t.current();
-      cont = cont&&finish(test,"open1");
+      throw UTests::Fail();
    }
-   if (cont)
-   {
-      start();
-      bool test = false;
-      try
-      {
-         t.open("test2.tmp","UnknownData");
-      }
-      catch (DataMap::InvalidType)
-      {
-         test = true;
-      }
-      cont = cont&&finish(test,"open2");
-   }
-   if (cont)
-   {
-      start();
-      bool test = false;
-      try
-      {
-         t.open("test.tmp","FakeData");
-      }
-      catch (DataMap::AlreadyExists)
-      {
-         test = true;
-      }
-      cont = cont&&finish(test,"open3");
-   }
-   return cont;
 }
 
 
 
-bool unit::datamap::close()
+void open2()
 {
-   bool cont {true};
    DataMap t(factory);
+   bool caught {false};
+   try
    {
-      start();
+      t.open("test2.tmp","UnknownData");
+   }
+   catch (DataMap::InvalidType)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void open3()
+{
+   DataMap t(factory);
+   t.open("test.tmp","FakeData");
+   bool caught {false};
+   try
+   {
       t.open("test.tmp","FakeData");
-      t.close("test.tmp");
-      bool test = t.find("test.tmp")==nullptr;
-      cont = cont&&finish(test,"close1");
    }
-   if (cont)
+   catch (DataMap::AlreadyExists)
    {
-      start();
-      t.open("test.tmp","FakeData",true);
-      bool test = t.close("test.tmp");
-      cont = cont&&finish(test,"close2");
+      caught = true;
    }
-   return cont;
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
 }
 
 
 
-bool unit::datamap::unselect()
+void close1()
 {
    DataMap t(factory);
-   bool cont {true};
+   t.open("test.tmp","FakeData");
+   t.close("test.tmp");
+   if (t.find("test.tmp")!=nullptr)
    {
-      start();
-      t.open("test.tmp","FakeData",true);
-      bool test = t.unselect();
-      cont = cont&&finish(test,"unselect1");
-   }
-   if (cont)
-   {
-      start();
-      bool test = !t.unselect();
-      cont = cont&&finish(test,"unselect2");
+      throw UTests::Fail();
    }
 }
 
 
 
-bool unit::datamap::load()
+void close2()
+{
+   DataMap t(factory);
+   t.open("test.tmp","FakeData",true);
+   if (!t.close("test.tmp"))
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void unselect1()
+{
+   DataMap t(factory);
+   t.open("test.tmp","FakeData",true);
+   if (!t.unselect())
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void unselect2()
+{
+   DataMap t(factory);
+   if (t.unselect())
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void load1()
 {
    LinuxTerm term;
    GetOpts got("one");
    DataMap t(factory);
    t.open("test.tmp","FakeData");
-   bool cont = true;
+   bool caught {false};
+   try
    {
-      start();
-      bool test = false;
-      try
-      {
-         t.load(got,term);
-      }
-      catch (DataMap::NoSelect)
-      {
-         test = true;
-      }
-      cont = cont&&finish(test,"load1");
-   }
-   if (cont)
-   {
-      start();
-      t.select("test.tmp");
       t.load(got,term);
-      FakeData* tmp = dynamic_cast<FakeData*>(t.find("test.tmp"));
-      bool test = tmp->touched;
-      cont = cont&&finish(test,"load2");
    }
-   if (cont)
+   catch (DataMap::NoSelect)
    {
-      start();
-      bool test = false;
-      try
-      {
-         t.load(got,term);
-      }
-      catch (int x)
-      {
-         test = x==0;
-      }
-      cont = cont&&finish(test,"load3");
+      caught = true;
    }
-   return cont;
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
 }
 
 
 
-bool unit::datamap::dump()
+void load2()
 {
    LinuxTerm term;
    GetOpts got("one");
    DataMap t(factory);
    t.open("test.tmp","FakeData");
-   bool cont = true;
+   t.select("test.tmp");
+   t.load(got,term);
+   FakeData* tmp = dynamic_cast<FakeData*>(t.find("test.tmp"));
+   if (!(tmp->touched))
    {
-      start();
-      bool test = false;
-      try
-      {
-         t.dump(got,term);
-      }
-      catch (DataMap::NoSelect)
-      {
-         test = true;
-      }
-      cont = cont&&finish(test,"dump1");
+      throw UTests::Fail();
    }
-   if (cont)
+}
+
+
+
+void load3()
+{
+   LinuxTerm term;
+   GetOpts got("one");
+   DataMap t(factory);
+   t.open("test.tmp","FakeData",true);
+   t.load(got,term);
+   bool caught {false};
+   try
    {
-      start();
-      t.select("test.tmp");
+      t.load(got,term);
+   }
+   catch (int x)
+   {
+      if (x==0)
+      {
+         caught = true;
+      }
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void dump1()
+{
+   LinuxTerm term;
+   GetOpts got("one");
+   DataMap t(factory);
+   t.open("test.tmp","FakeData");
+   bool caught {false};
+   try
+   {
       t.dump(got,term);
-      FakeData* tmp = dynamic_cast<FakeData*>(t.find("test.tmp"));
-      bool test = tmp->touched;
-      cont = cont&&finish(test,"dump2");
    }
-   if (cont)
+   catch (DataMap::NoSelect)
    {
-      start();
-      bool test = false;
-      try
-      {
-         t.dump(got,term);
-      }
-      catch (int x)
-      {
-         test = x==1;
-      }
-      cont = cont&&finish(test,"dump3");
+      caught = true;
    }
-   return cont;
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
 }
 
 
 
-bool unit::datamap::query()
+void dump2()
 {
    LinuxTerm term;
    GetOpts got("one");
    DataMap t(factory);
    t.open("test.tmp","FakeData");
-   bool cont = true;
+   t.select("test.tmp");
+   t.dump(got,term);
+   FakeData* tmp = dynamic_cast<FakeData*>(t.find("test.tmp"));
+   if (!(tmp->touched))
    {
-      start();
-      bool test = false;
-      try
-      {
-         t.query(got,term);
-      }
-      catch (DataMap::NoSelect)
-      {
-         test = true;
-      }
-      cont = cont&&finish(test,"query1");
+      throw UTests::Fail();
    }
-   if (cont)
-   {
-      start();
-      t.select("test.tmp");
-      t.query(got,term);
-      FakeData* tmp = dynamic_cast<FakeData*>(t.find("test.tmp"));
-      bool test = tmp->touched;
-      cont = cont&&finish(test,"query2");
-   }
-   if (cont)
-   {
-      start();
-      bool test = false;
-      try
-      {
-         t.query(got,term);
-      }
-      catch (int x)
-      {
-         test = x==2;
-      }
-      cont = cont&&finish(test,"query3");
-   }
-   return cont;
 }
 
 
 
-bool unit::datamap::iterate()
+void dump3()
 {
-   start();
+   LinuxTerm term;
+   GetOpts got("one");
+   DataMap t(factory);
+   t.open("test.tmp","FakeData",true);
+   t.dump(got,term);
+   bool caught {false};
+   try
+   {
+      t.dump(got,term);
+   }
+   catch (int x)
+   {
+      if (x==1)
+      {
+         caught = true;
+      }
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void query1()
+{
+   LinuxTerm term;
+   GetOpts got("one");
+   DataMap t(factory);
+   t.open("test.tmp","FakeData");
+   bool caught {false};
+   try
+   {
+      t.query(got,term);
+   }
+   catch (DataMap::NoSelect)
+   {
+      caught = true;
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void query2()
+{
+   LinuxTerm term;
+   GetOpts got("one");
+   DataMap t(factory);
+   t.open("test.tmp","FakeData");
+   t.select("test.tmp");
+   t.query(got,term);
+   FakeData* tmp = dynamic_cast<FakeData*>(t.find("test.tmp"));
+   if (!(tmp->touched))
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void query3()
+{
+   LinuxTerm term;
+   GetOpts got("one");
+   DataMap t(factory);
+   t.open("test.tmp","FakeData",true);
+   t.query(got,term);
+   bool caught {false};
+   try
+   {
+      t.query(got,term);
+   }
+   catch (int x)
+   {
+      if (x==2)
+      {
+         caught = true;
+      }
+   }
+   if (!caught)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void iterate1()
+{
    DataMap t(factory);
    t.open("test1.tmp","FakeData");
    t.open("test2.tmp","FakeData");
@@ -301,53 +368,102 @@ bool unit::datamap::iterate()
    {
       ++count;
    }
-   bool test = count==3;
-   return finish(test,"iterate1");
+   if (count!=3)
+   {
+      throw UTests::Fail();
+   }
 }
 
 
 
-bool unit::datamap::selected()
+void selected1()
 {
-   bool cont {true};
    DataMap t(factory);
+   if (t.selected()!=t.end())
    {
-      start();
-      bool test {t.selected()==t.end()};
-      cont = cont&&finish(test,"selected1");
+      throw UTests::Fail();
    }
-   {
-      start();
-      t.open("test.tmp","FakeData",true);
-      bool test {t.selected()==t.begin()};
-      cont = cont&&finish(test,"selected2");
-   }
-   return cont;
 }
 
 
 
-bool unit::datamap::iter_file()
+void selected2()
 {
-   start();
+   DataMap t(factory);
+   t.open("test.tmp","FakeData",true);
+   if (t.selected()!=t.begin())
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+namespace iterator
+{
+
+
+
+void file1()
+{
    std::string file("test.tmp");
    DataMap t(factory);
    t.open(file,"FakeData");
    auto i = t.begin();
-   bool test = i.file()==file;
-   return finish(test,"iter_file1");
+   if (i.file()!=file)
+   {
+      throw UTests::Fail();
+   }
 }
 
 
 
-bool unit::datamap::iter_type()
+void type1()
 {
-   start();
    std::string type("FakeData");
    DataMap t(factory);
    t.open("test.tmp",type);
    auto i = t.begin();
-   bool test = i.type()==type;
-   return finish(test,"iter_type1");
+   if (i.type()!=type)
+   {
+      throw UTests::Fail();
+   }
 }
-*/
+
+
+
+}
+}
+using namespace datamap;
+
+
+
+void add_datamap(UTests& tests)
+{
+   std::shared_ptr<UTests::Run> run(new UTests::Run("Datamap",in,out1));
+   run->add_test("construct1",construct1);
+   run->add_test("open1",open1);
+   run->add_test("open2",open2);
+   run->add_test("open3",open3);
+   run->add_test("close1",close1);
+   run->add_test("close2",close2);
+   run->add_test("unselect1",unselect1);
+   run->add_test("unselect2",unselect2);
+   run->add_test("load1",load1);
+   run->add_test("load2",load2);
+   run->add_test("load3",load3);
+   run->add_test("dump1",dump1);
+   run->add_test("dump2",dump2);
+   run->add_test("dump3",dump3);
+   run->add_test("query1",query1);
+   run->add_test("query2",query2);
+   run->add_test("query3",query3);
+   run->add_test("iterate1",iterate1);
+   run->add_test("selected1",selected1);
+   run->add_test("selected2",selected2);
+   tests.attach(run);
+   run.reset(new UTests::Run("Datamap::Iterator",nullptr,out2));
+   run->add_test("file1",iterator::file1);
+   run->add_test("type1",iterator::type1);
+   tests.attach(run);
+}
