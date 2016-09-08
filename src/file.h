@@ -35,6 +35,7 @@ protected:
    void ident(const std::string& ident);
    int64_t head() const;
    void head(int64_t ptr);
+   const std::shared_ptr<NVMemory>& mem() { return Node::mem(); }
    using NVMemory::Node::rmem;
 private:
    constexpr static int _idSize {4};

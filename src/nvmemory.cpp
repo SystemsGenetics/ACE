@@ -301,7 +301,7 @@ bool NVMemory::Node::is_null_memory() const
 
 
 
-std::shared_ptr<NVMemory> NVMemory::Node::mem() const
+const std::shared_ptr<NVMemory>& NVMemory::Node::mem() const
 {
    return _mem;
 }

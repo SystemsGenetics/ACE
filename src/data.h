@@ -14,6 +14,7 @@ public:
    virtual ~Data() = default;
    const std::string type() const;
    void type(const std::string& type);
+   virtual void init() = 0;
    virtual void load(GetOpts& ops, Terminal& tm) = 0;
    virtual void dump(GetOpts& ops, Terminal& tm) = 0;
    virtual void query(GetOpts& ops, Terminal& tm) = 0;

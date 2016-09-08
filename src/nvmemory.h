@@ -72,7 +72,7 @@ public:
    Node& operator=(const Node&);
    Node& operator=(Node&&);
    bool is_null_memory() const;
-   std::shared_ptr<NVMemory> mem() const;
+   const std::shared_ptr<NVMemory>& mem() const;
    NVMemory& rmem() const;
    NVMemory* pmem() const;
    void mem(const std::shared_ptr<NVMemory>& mem);

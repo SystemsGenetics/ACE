@@ -53,6 +53,7 @@ Data* DataMap::open(const string& file, const string& type, bool select)
    assert<InvalidType>(bool(nd),f,__LINE__);
    nd->type(type);
    nd->File::load(file);
+   nd->init();
    auto x = _map.emplace(file,std::move(nd));
    auto i = x.first;
    if (select)

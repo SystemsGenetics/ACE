@@ -22,8 +22,8 @@ void add_datamap(UTests&);
 class FakeData : public ace::Data
 {
 public:
-   using string = std::string;
    FakeData() = default;
+   void init() override final {}
    void load(ace::GetOpts&,ace::Terminal&) override final
    {
       if (touched)
