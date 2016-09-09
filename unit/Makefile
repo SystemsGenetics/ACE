@@ -1,7 +1,7 @@
 .RECIPEPREFIX := +
 MAKEFLAGS := $(MAKEFLAGS) --no-print-directory
 CXX := g++
-AR := ar
+GDB := gdb
 NAME := unit
 FILES := ACE_unit.files
 
@@ -22,14 +22,16 @@ src := $(filter %.cpp,$(shell cat $(FILES)))
 dpds := $(addprefix $(build),$(src:%.cpp=%.d))
 objs := $(addprefix $(build),$(src:%.cpp=%.o))
 
-.PHONY: clean depclean all unit test check
+.PHONY: clean depclean all unit check debug base
 
 
 
 all: unit
 unit: $(unitf)
 
+ifndef DIGNORE
 include $(dpds)
+endif
 
 $(unitf): $(objs) $(dpds) $(libf)
 +@echo "Building unit test."
@@ -39,16 +41,22 @@ depend: $(dpds)
 +@echo Done.
 
 $(build)%.o : %.cpp
-+@echo "Building object $@"
++@echo "Building object $(*F)."
 +@$(CXX) $(acxxflags) -c $< -o $@
 
 $(build)%.d: %.cpp
-+@echo "Building depend $@"
++@echo "Building depend $(*F)."
 +@echo -n "$@ $(build)" > $@
 +@$(CXX) $(acxxflags) -MM $< >> $@
 
 check: unit
 +@cd $(run)/tmp && ../unit
+
+debug: unit
++@cd $(run)/tmp && $(GDB) ../unit
+
+base:
++@cd ../src && $(MAKE)
 
 clean:
 +@echo "Cleaning all."

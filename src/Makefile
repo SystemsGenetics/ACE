@@ -28,7 +28,9 @@ objs := $(addprefix $(build),$(src:%.cpp=%.o))
 all: library
 library: $(libf)
 
+ifndef DIGNORE
 include $(dpds)
+endif
 
 $(libf): $(objs) $(dpds)
 +@echo "Building library."
@@ -38,11 +40,11 @@ depend: $(dpds)
 +@echo Done.
 
 $(build)%.o : %.cpp
-+@echo "Building object $@"
++@echo "Building object $(*F)."
 +@$(CXX) $(acxxflags) -c $< -o $@
 
 $(build)%.d: %.cpp
-+@echo "Building depend $@"
++@echo "Building depend $(*F)."
 +@echo -n "$@ $(build)" > $@
 +@$(CXX) $(acxxflags) -MM $< >> $@
 
