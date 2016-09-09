@@ -44,6 +44,7 @@ public:
    using File::File;
    using File::ident;
    using File::head;
+   using File::mem;
    using File::rmem;
 };
 const char* validFile = "file.tmp";
@@ -630,6 +631,30 @@ void head4()
 
 
 
+void mem1()
+{
+   TestFile file;
+   file.load(tmpFile);
+   if (file.mem().get()==nullptr)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
+void rmem1()
+{
+   TestFile file;
+   file.load(tmpFile);
+   if (file.rmem().size()<0)
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
 }
 using namespace file;
 
@@ -669,5 +694,7 @@ void add_file(UTests& tests)
    run->add_test("head2",head2);
    run->add_test("head3",head3);
    run->add_test("head4",head4);
+   run->add_test("mem1",mem1);
+   run->add_test("rmem1",rmem1);
    tests.attach(run);
 }
