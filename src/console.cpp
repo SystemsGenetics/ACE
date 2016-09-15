@@ -71,7 +71,6 @@ Console::~Console()
 
 
 
-/// Prints welcome message and goes directly to terminal loop.
 void Console::run()
 {
    terminal_loop();
@@ -79,13 +78,59 @@ void Console::run()
 
 
 
-/// @brief Main program terminal loop.
-///
-/// This is the main function loop of the program. This loop will continue to
-/// grab one input from the Terminal interface until the quit command has been
-/// processed. Each user line is processed by calling process. Any exception
-/// thrown is also caught here and caught to prevent the program from crashing;
-/// printing output to the user about what type of exception.
+bool Console::command(const std::string& line)
+{
+   bool ret {true};
+   if (!line.empty())
+   {
+      GetOpts ops(line);
+      try
+      {
+         process(ops);
+      }
+      catch (CommandError e)
+      {
+         _tm << Terminal::warning;
+         e.print(_tm);
+         _tm << Terminal::general;
+      }
+      catch (CommandQuit)
+      {
+         ret = false;
+      }
+      catch (Exception e)
+      {
+         _tm << Terminal::error;
+         _tm << "ACE Exception Caught!\n";
+         _tm << "What: " << e.what() << "\n";
+         _tm << "Location: " << e.function() << ":" << e.line() << "\n";
+         if (e.detail())
+         {
+            _tm << "Details:" << e.detail() << "\n";
+         }
+         _tm << Terminal::general;
+      }
+      catch (std::exception& stde)
+      {
+         _tm << Terminal::error;
+         _tm << "Standard Library Exception Caught!\n";
+         _tm << "What: " << stde.what() << "\n";
+         _tm << "It is HIGHLY recommended you immediately close this program.\n";
+         _tm << Terminal::general;
+      }
+      catch (...)
+      {
+         _tm << Terminal::error;
+         _tm << "UNKNOWN EXCEPTION CAUGHT!\n";
+         _tm << "It is HIGHLY recommended you immediately close this program.\n";
+         _tm << Terminal::general;
+      }
+   }
+   return ret;
+}
+
+
+
 void Console::terminal_loop()
 {
    bool alive = true;
@@ -103,51 +148,7 @@ void Console::terminal_loop()
       _tm.header(header);
       _tm >> line;
       _tm << "\n";
-      if (!line.empty())
-      {
-         GetOpts ops(line);
-         try
-         {
-            process(ops);
-         }
-         catch (CommandError e)
-         {
-            _tm << Terminal::warning;
-            e.print(_tm);
-            _tm << Terminal::general;
-         }
-         catch (CommandQuit)
-         {
-            alive = false;
-         }
-         catch (Exception e)
-         {
-            _tm << Terminal::error;
-            _tm << "ACE Exception Caught!\n";
-            _tm << "What: " << e.what() << "\n";
-            _tm << "Location: " << e.function() << ":" << e.line() << "\n";
-            if (e.detail())
-            {
-               _tm << "Details:" << e.detail() << "\n";
-            }
-            _tm << Terminal::general;
-         }
-         catch (std::exception& stde)
-         {
-            _tm << Terminal::error;
-            _tm << "Standard Library Exception Caught!\n";
-            _tm << "What: " << stde.what() << "\n";
-            _tm << "It is HIGHLY recommended you immediately close this program.\n";
-            _tm << Terminal::general;
-         }
-         catch (...)
-         {
-            _tm << Terminal::error;
-            _tm << "UNKNOWN EXCEPTION CAUGHT!\n";
-            _tm << "It is HIGHLY recommended you immediately close this program.\n";
-            _tm << Terminal::general;
-         }
-      }
+      alive = command(line);
       _tm << Terminal::flush;
    }
 }

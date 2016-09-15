@@ -62,6 +62,7 @@ public:
    // * FUNCTIONS
    // *
    void run();
+   bool command(const std::string&);
 private:
    using string = std::string;
    using hiter = History::Iterator;
