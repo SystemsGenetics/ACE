@@ -5,7 +5,7 @@ namespace AccelCompEng
 
 
 
-int run(const char* header, Factory& factory, int argc, char* argv[])
+int run(const char* header, Factory& factory, int argc, char* argv[], void (*callBack)(Console&))
 {
    try
    {
@@ -13,13 +13,20 @@ int run(const char* header, Factory& factory, int argc, char* argv[])
       LinuxTerm::stty_raw();
       LinuxTerm terminal;
       Console console(argc,argv,terminal,factory,dataMap,header);
-      console.run();
+      if ( callBack )
+      {
+         callBack(console);
+      }
+      else
+      {
+         console.run();
+      }
    }
    catch(Exception e)
    {
       std::cout << "Fatal Exception Caught!\n";
       std::cout << e.what() << "(" << e.function() << ":" << e.line() <<  ")";
-      if (e.detail())
+      if ( e.detail() )
       {
          std::cout << ": " << e.detail();
       }

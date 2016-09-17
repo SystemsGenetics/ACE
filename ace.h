@@ -19,7 +19,8 @@ namespace AccelCompEng
 
 
 
-int run(const char*,Factory&,int,char*[]);
+int run(const char* header, Factory& factory, int argc, char* argv[],
+        void (*callBack)(Console&) = nullptr);
 
 
 
