@@ -24,7 +24,6 @@ bool CLContext::is_initd()
 void CLContext::init_cl(CLDevice& dev)
 {
    static const char* f = __PRETTY_FUNCTION__;
-   assert<NotInitialized>(_initd,f,__LINE__);
    cl_context_properties props[] = {
       CL_CONTEXT_PLATFORM, (cl_context_properties)dev.platform(), 0 };
    cl_device_id device {dev.device()};
