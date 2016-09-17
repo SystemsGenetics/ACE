@@ -5,8 +5,6 @@
 #include <memory>
 #include "data.h"
 #include "terminal.h"
-//#include "cldevice.h"
-//#include "clprogram.h"
 #include "clcontext.h"
 namespace AccelCompEng
 {
@@ -18,32 +16,35 @@ namespace AccelCompEng
 /// Defines the interface between the program and any analytic plugin class.
 /// This virtual class is instantiated for running a specific analytic command
 /// and destroyed once the command has executed.
-///
-/// @author Josh Burns
-/// @date 17 March 2016
 class Analytic : public CLContext
 {
 public:
    virtual ~Analytic() = default;
-   void execute(GetOpts& ops, Terminal& tm);
-   /// @brief Input data object.
+   /// Begin execution of the analytic.
    ///
-   /// Must take a single input data object that will be used in execution. All
-   /// inputs will be given through this function before execution is called.
-   /// The pointer will not be deleted by the analytic object.
+   /// @param ops Arguments and options from the user.
+   /// @param tm Terminal interface for the user console.
+   void execute(GetOpts& ops, Terminal& tm);
+   /// Adds a single input data object that will be used in execution.
    ///
    /// @param in Pointer to the data object to be used as input.
    virtual void input(Data* in) = 0;
    /// @brief Output data object.
    ///
-   /// Must take a single output data object that will be used in execution. All
-   /// outputs will be given through this function before execution is called.
-   /// The pointer will not be deleted by the analytic object.
+   /// Adds a single output data object that will be used in execution.
    ///
    /// @param out Pointer to the data object to be used as output.
    virtual void output(Data* out) = 0;
 protected:
+   /// Runs OpenCL accelerated execution of analytic on all input and output data object.
+   ///
+   /// @param ops Arguments and options from the user.
+   /// @param tm Terminal interface for the user console.
    virtual void execute_cl(GetOpts& ops, Terminal& tm) = 0;
+   /// Runs non-accelerated execution of analytic on all input and output data object.
+   ///
+   /// @param ops Arguments and options from the user.
+   /// @param tm Terminal interface for the user console.
    virtual void execute_pn(GetOpts& ops, Terminal& tm) = 0;
 };
 
