@@ -473,6 +473,10 @@ void bump2()
    str.reset();
    str.write(altTestStr);
    str.load(startAddr);
+   if (str.str()!=std::string(testStr))
+   {
+      throw UTests::Fail();
+   }
    str.bump();
    if (str.str()!=std::string(altTestStr))
    {
@@ -492,8 +496,31 @@ void bump2()
 
 
 
+void fetch_list1()
+{
+   std::shared_ptr<NVMemory> mem {new NVMemory(tmpFile)};
+   FString str(mem);
+   std::vector<std::string> list;
+   int64_t startAddr = str.write(testStr);
+   str.reset();
+   str.write(altTestStr);
+   str.reset();
+   str.write(testStr);
+   str.reset();
+   str.write(altTestStr);
+   FString::fetch_list(str,startAddr,4,list);
+   if ( list[0] != std::string(testStr) || list[1] != std::string(altTestStr) ||
+        list[2] != std::string(testStr) || list[3] != std::string(altTestStr) )
+   {
+      throw UTests::Fail();
+   }
+}
+
+
+
 }
 using namespace fstring;
+
 
 
 void add_fstring(UTests& tests)
@@ -522,5 +549,6 @@ void add_fstring(UTests& tests)
    run->add_test("clear_buffer1",clear_buffer1);
    run->add_test("bump1",bump1);
    run->add_test("bump2",bump2);
+   run->add_test("fetch_list1",fetch_list1);
    tests.attach(run);
 }
