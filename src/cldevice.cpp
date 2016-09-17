@@ -43,7 +43,7 @@ std::string CLDevice::info(CLInfo which) const
       buffer << _pinc << ":" << _dinc;
       break;
    case CLInfo::name:
-      buffer << get_info<string>(CL_DEVICE_NAME);
+      buffer << get_info<std::string>(CL_DEVICE_NAME);
       break;
    case CLInfo::pname:
       break;
@@ -93,7 +93,7 @@ std::string CLDevice::info(CLInfo which) const
       size_it(buffer,get_info<cl_ulong>(CL_DEVICE_LOCAL_MEM_SIZE));
       break;
    case CLInfo::extensions:
-      buffer << get_info<string>(CL_DEVICE_EXTENSIONS);
+      buffer << get_info<std::string>(CL_DEVICE_EXTENSIONS);
       break;
    }
    return buffer.str();
