@@ -11,19 +11,6 @@ namespace AccelCompEng
 
 
 
-/// @brief Constructs new CLDevice based off info given.
-///
-/// This is the only constructor for this class which is private and should only
-/// be used by the CLDevList class. The parameters given for the device are NOT
-/// checked for validity.
-///
-/// @param p The increment into list of platforms.
-/// @param d The increment into list of devices for given platform.
-/// @param pl The OpenCL platform object for the device.
-/// @param de The OpenCL device object for the device.
-///
-/// @pre p must not exceed the last platform.
-/// @pre d must not exceed the last device in given platform.
 CLDevice::CLDevice(int pinc, int dinc, cl_platform_id pid, cl_device_id did):
    _pinc(pinc),
    _dinc(dinc),
@@ -33,9 +20,6 @@ CLDevice::CLDevice(int pinc, int dinc, cl_platform_id pid, cl_device_id did):
 
 
 
-/// Return OpenCL platform of device.
-///
-/// @return OpenCL platform.
 cl_platform_id CLDevice::platform()
 {
    return _pid;
@@ -43,9 +27,6 @@ cl_platform_id CLDevice::platform()
 
 
 
-/// Return OpenCL device of CLDevice object.
-///
-/// @return OpenCL device.
 cl_device_id CLDevice::device()
 {
    return _did;
@@ -53,13 +34,6 @@ cl_device_id CLDevice::device()
 
 
 
-/// @brief Returns information about OpenCL device.
-///
-/// Returns string with requested information about OpenCL device. The different
-/// types of information to be queired is defined as a class enumeration.
-///
-/// @param which Enumerated type specifying what type of information to query.
-/// @return Requesting information.
 std::string CLDevice::info(CLInfo which) const
 {
    std::ostringstream buffer;
@@ -129,7 +103,7 @@ std::string CLDevice::info(CLInfo which) const
 
 bool CLDevice::operator==(const CLDevice& cmp)
 {
-   return (_pid==cmp._pid&&_did==cmp._did);
+   return ( _pid == cmp._pid && _did == cmp._did );
 }
 
 
@@ -144,7 +118,7 @@ bool CLDevice::operator==(const CLDevice& cmp)
 void CLDevice::yes_no(std::ostringstream& buffer, bool test) const
 {
    const char* ans[] = {"yes","no"};
-   buffer << ans[(test?0:1)];
+   buffer << ans[(test ? 0 : 1)];
 }
 
 
@@ -155,7 +129,7 @@ void CLDevice::yes_no(std::ostringstream& buffer, bool test) const
 /// appropriate label. Maximum size is 1024 terrabytes.
 ///
 /// @param buffer Where formatted output is written.
-/// @param size Size to be reported in bytes.
+/// @param size Sizein bytes to be reported.
 void CLDevice::size_it(std::ostringstream& buffer, long size) const
 {
    constexpr double kilobit = 1024.0f;
@@ -163,11 +137,13 @@ void CLDevice::size_it(std::ostringstream& buffer, long size) const
    const char* sizes[] = {"B","KB","MB","GB","TB"};
    int count = 0;
    double fsize = size;
-   while (fsize>kilobit&&count<max)
+   // Keep dividing size until it is less than 1024, keeping track of how many dividions occured.
+   while ( fsize > kilobit && count < max )
    {
       fsize /= kilobit;
       count++;
    }
+   // Write number with specific precision along with size prefix.
    buffer.setf(std::ios::fixed,std::ios::floatfield);
    buffer.precision(_fPrecision);
    buffer << fsize << sizes[count];
