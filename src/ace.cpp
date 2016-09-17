@@ -9,6 +9,8 @@ int run(const char* header, Factory& factory, int argc, char* argv[], void (*cal
 {
    try
    {
+      // Initialize data manager and set terminal to raw mode, then initialize terminal, and lastly
+      // initialize the main console class. If there is a callback call it, else step into console.
       DataMap dataMap(factory);
       LinuxTerm::stty_raw();
       LinuxTerm terminal;
@@ -22,6 +24,8 @@ int run(const char* header, Factory& factory, int argc, char* argv[], void (*cal
          console.run();
       }
    }
+   // Catch any possible exception, report on it if it is known, and most importantly put the
+   // terminal back into cooked mode.
    catch(Exception e)
    {
       std::cout << "Fatal Exception Caught!\n";
