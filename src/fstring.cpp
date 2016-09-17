@@ -120,6 +120,23 @@ void FString::bump()
 
 
 
+void FString::fetch_list(FString& fstr, int64_t startAddr, int size, std::vector<std::string>& list)
+{
+   // Read in fstring after fstring, starting at the start address, bumping each time, reading in
+   // total size strings.
+   fstr.load(startAddr);
+   list.push_back(fstr.str());
+   --size;
+   while (size>0)
+   {
+      fstr.bump();
+      list.push_back(fstr.str());
+      --size;
+   }
+}
+
+
+
 void FString::load()
 {
    static const char* f = __PRETTY_FUNCTION__;
