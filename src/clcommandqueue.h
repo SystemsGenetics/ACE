@@ -10,6 +10,11 @@ namespace AccelCompEng
 
 
 
+/// @brief Wrapper for OpenCL command queue.
+///
+/// Wrapper for OpenCL command queue connected to device selected by user. This command queue is
+/// set to execute commands out of order, so order of execution without using events is not
+/// deterministic.
 class CLCommandQueue
 {
 public:
@@ -20,18 +25,35 @@ public:
    struct NotInitialized : public Exception { using Exception::Exception; };
    struct NullBufferUsed : public Exception { using Exception::Exception; };
    struct NullKernelUsed : public Exception { using Exception::Exception; };
+   /// Creates an empty wrapper that has no command queue setup yet.
    CLCommandQueue() = default;
    ~CLCommandQueue();
    CLCommandQueue(const CLCommandQueue&) = delete;
    CLCommandQueue& operator=(const CLCommandQueue&) = delete;
    CLCommandQueue(CLCommandQueue&&) = delete;
    CLCommandQueue& operator=(CLCommandQueue&&) = delete;
-   void init(cl_context,cl_device_id);
+   /// Initializes the wrapper with a new OpenCL command queue using the given context and devicce.
+   ///
+   /// @param cid OpenCL context id used to create the command queue.
+   /// @param did OpenCL device id used to create the command queue.
+   void init(cl_context cid, cl_device_id did);
 protected:
-   template<class T> CLEvent read_buffer(CLBuffer<T>&);
-   template<class T> CLEvent write_buffer(CLBuffer<T>&);
-   CLEvent add_task(CLKernel&);
-   CLEvent add_swarm(CLKernel&);
+   /// Adds a read buffer command to the queue.
+   ///
+   /// @param buffer Object to read from.
+   template<class T> CLEvent read_buffer(CLBuffer<T>& buffer);
+   /// Adds a write buffer command to the queue.
+   ///
+   /// @param buffer Object to write to.
+   template<class T> CLEvent write_buffer(CLBuffer<T>& buffer);
+   /// Adds single task to the queue.
+   ///
+   /// @param kernel Object to execute on device.
+   CLEvent add_task(CLKernel& kernel);
+   /// Adds parallel range of tasks to the queue.
+   ///
+   /// @param kernel Object to parallel execute on device.
+   CLEvent add_swarm(CLKernel& kernel);
 private:
    bool _initd {false};
    cl_command_queue _id;
