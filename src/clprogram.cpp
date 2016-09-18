@@ -25,7 +25,7 @@ void CLProgram::init(cl_context cid, cl_device_id did)
 
 
 
-void CLProgram::add_source(const string& input, bool file)
+void CLProgram::add_source(const std::string& input, bool file)
 {
    static const char* f = __PRETTY_FUNCTION__;
    assert<NotInitialized>(_initd,f,__LINE__);
@@ -45,7 +45,7 @@ void CLProgram::add_source(const string& input, bool file)
 
 
 
-bool CLProgram::compile(const string& options)
+bool CLProgram::compile(const std::string& options)
 {
    static const char* f = __PRETTY_FUNCTION__;
    assert<NotInitialized>(_initd,f,__LINE__);
@@ -75,7 +75,7 @@ bool CLProgram::compile(const string& options)
 
 
 
-CLProgram::string CLProgram::log()
+std::string CLProgram::log()
 {
    static const char* f = __PRETTY_FUNCTION__;
    assert<NotInitialized>(_initd,f,__LINE__);
@@ -97,7 +97,7 @@ CLProgram::string CLProgram::log()
 
 
 
-CLKernel CLProgram::mkernel(const string& name)
+CLKernel CLProgram::mkernel(const std::string& name)
 {
    static const char* f = __PRETTY_FUNCTION__;
    assert<NotInitialized>(_initd,f,__LINE__);
