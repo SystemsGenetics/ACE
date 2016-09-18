@@ -55,15 +55,14 @@ Console::Console(int argc, char* argv[], Terminal& tm, Factory& factory, DataMap
 
 
 
-/// Deletes OpenCL device if one is set and unsets lock to console.
 Console::~Console()
 {
    _lock = false;
-   if (_device)
+   if ( _device )
    {
       delete _device;
    }
-   if (_devList)
+   if ( _devList )
    {
       delete _devList;
    }
@@ -73,7 +72,24 @@ Console::~Console()
 
 void Console::run()
 {
-   terminal_loop();
+   bool alive = true;
+   while ( alive )
+   {
+      std::string header {_header};
+      std::string line;
+      if ( _dataMap.selected() != _dataMap.end() )
+      {
+         header += "[";
+         header += _dataMap.selected().file();
+         header += "]";
+      }
+      header += ":>";
+      _tm.header(header);
+      _tm >> line;
+      _tm << "\n";
+      alive = command(line);
+      _tm << Terminal::flush;
+   }
 }
 
 
@@ -81,7 +97,7 @@ void Console::run()
 bool Console::command(const std::string& line)
 {
    bool ret {true};
-   if (!line.empty())
+   if ( !line.empty() )
    {
       GetOpts ops(line);
       try
@@ -104,7 +120,7 @@ bool Console::command(const std::string& line)
          _tm << "ACE Exception Caught!\n";
          _tm << "What: " << e.what() << "\n";
          _tm << "Location: " << e.function() << ":" << e.line() << "\n";
-         if (e.detail())
+         if ( e.detail() )
          {
             _tm << "Details:" << e.detail() << "\n";
          }
@@ -131,36 +147,11 @@ bool Console::command(const std::string& line)
 
 
 
-void Console::terminal_loop()
-{
-   bool alive = true;
-   while (alive)
-   {
-      string header {_header};
-      string line;
-      if (_dataMap.selected()!=_dataMap.end())
-      {
-         header += "[";
-         header += _dataMap.selected().file();
-         header += "]";
-      }
-      header += ":>";
-      _tm.header(header);
-      _tm >> line;
-      _tm << "\n";
-      alive = command(line);
-      _tm << Terminal::flush;
-   }
-}
-
-
-
+/// @brief Process single command.
+///
 /// Processes user command and routes to specific command.
 ///
 /// @param ops Command line object with options.
-///
-/// @exception CommandQuit Signals the user has inputed the quit command to exit
-/// the program.
 void Console::process(GetOpts& ops)
 {
    enum {Analytic=0,GPU,Open,Load,Select,Dump,Query,Close,List,Clear,History,
@@ -216,14 +207,14 @@ void Console::process(GetOpts& ops)
 
 
 
+/// @brief Process OpenCL command.
+///
 /// Processes OpenCL command and routes to specific command given.
 ///
 /// @param ops Command line object with options.
-///
-/// @exception CommandError OpenCL subcommand given not found.
 void Console::gpu_process(GetOpts& ops)
 {
-   if (ops.com_empty())
+   if ( ops.com_empty() )
    {
       throw CommandError("gpu","subcommand not provided.");
    }
@@ -254,6 +245,8 @@ void Console::gpu_process(GetOpts& ops)
 
 
 
+/// @brief List OpenCL devices.
+///
 /// Executes command to list all available OpenCL devices.
 void Console::gpu_list()
 {
@@ -261,7 +254,7 @@ void Console::gpu_list()
    {
       _tm << d.info(CLDevice::ident) << " ";
       _tm << d.info(CLDevice::name);
-      if (_device&&d==*_device)
+      if ( _device && d == *_device )
       {
          _tm << " ***";
       }
@@ -272,21 +265,21 @@ void Console::gpu_list()
 
 
 
+/// @brief Print OpenCL device info.
+///
 /// Executes command to print basic info of of given OpenCL device.
 ///
 /// @param ops Command line object with options.
-///
-/// @exception CommandError Syntax error in command detected.
 void Console::gpu_info(GetOpts& ops)
 {
-   if (ops.com_empty())
+   if ( ops.com_empty() )
    {
       throw CommandError("gpu info","command requires 1 argument.");
    }
    int p,d;
    char sep;
    std::istringstream str(ops.com_front());
-   if ((str >> p >> sep >> d)&&sep==':'&&_devList->exist(p,d))
+   if ( (str >> p >> sep >> d) && sep == ':' && _devList->exist(p,d) )
    {
       CLDevice& dev {_devList->at(p,d)};
       _tm << "===== " << dev.info(CLDevice::name) << " ("
@@ -310,23 +303,23 @@ void Console::gpu_info(GetOpts& ops)
 
 
 
+/// @brief Set OpenCL device.
+///
 /// Executes command that sets OpenCL device for analytic computation.
 ///
 /// @param ops Command line object with options.
-///
-/// @exception CommandError Syntax error in command detected.
 void Console::gpu_set(GetOpts& ops)
 {
-   if (ops.com_empty())
+   if ( ops.com_empty() )
    {
       throw CommandError("gpu info","command requires 1 argument.");
    }
    int p,d;
    char sep;
    std::istringstream str(ops.com_front());
-   if ((str >> p >> sep >> d)&&sep==':'&&_devList->exist(p,d))
+   if ( (str >> p >> sep >> d) && sep==':' && _devList->exist(p,d) )
    {
-      if (_device)
+      if ( _device )
       {
          delete _device;
       }
@@ -344,10 +337,12 @@ void Console::gpu_set(GetOpts& ops)
 
 
 
+/// @brief CLear OpenCL device.
+///
 /// Executes command that clears any OpenCL device set for computation.
 void Console::gpu_clear()
 {
-   if (_device)
+   if ( _device )
    {
       delete _device;
       _device = nullptr;
@@ -361,23 +356,21 @@ void Console::gpu_clear()
 
 
 
+/// @brief Open data object.
+///
 /// Executes command to open a data object.
 ///
 /// @param ops Command line object with options.
-///
-/// @exception CommandError Syntax error in command detected, data object is
-/// already loaded, or data type given in invalid. Exception specifying which
-/// error occured.
 void Console::data_open(GetOpts& ops)
 {
-   if (ops.com_empty())
+   if ( ops.com_empty() )
    {
       throw CommandError("open","command requires 1 argument.");
    }
-   string file;
-   string type;
+   std::string file;
+   std::string type;
    seperate("open",ops.com_front(),file,type);
-   if (file.empty()||type.empty())
+   if ( file.empty() || type.empty() )
    {
       throw CommandError("open","syntax error detected in first argument.");
    }
@@ -399,7 +392,7 @@ void Console::data_open(GetOpts& ops)
       buffer << "error: '" << type << "' is not valid data type.";
       throw CommandError("open",buffer.str());
    }
-   if (np->is_new())
+   if ( np->is_new() )
    {
       np->init_history();
       np->history().init(file,"__NEW__",ops.orig());
@@ -414,15 +407,14 @@ void Console::data_open(GetOpts& ops)
 
 
 
+/// @brief Close data object.
+///
 /// Executes command to close data object.
 ///
 /// @param ops Command line object with options.
-///
-/// @exception CommandError Syntax error in command detected or data object
-/// cannot be find, exception specifying which one.
 void Console::data_close(GetOpts& ops)
 {
-   if (ops.com_empty())
+   if ( ops.com_empty() )
    {
       throw CommandError("close","command requires 1 argument.");
    }
@@ -442,15 +434,14 @@ void Console::data_close(GetOpts& ops)
 
 
 
+/// @brief Select data object.
+///
 /// Executes command to select a loaded data object.
 ///
 /// @param ops Command line object with options.
-///
-/// @exception CommandError Syntax error in command detected or data object
-/// cannot be find, exception specifying which one.
 void Console::data_select(GetOpts& ops)
 {
-   if (ops.com_empty())
+   if ( ops.com_empty() )
    {
       throw CommandError("select","command requires 1 argument.");
    }
@@ -469,10 +460,12 @@ void Console::data_select(GetOpts& ops)
 
 
 
+/// @brief Clear data object.
+///
 /// Executes command to clear any selected data object.
 void Console::data_clear()
 {
-   if (_dataMap.unselect())
+   if ( _dataMap.unselect() )
    {
       _tm << "data selection cleared.\n";
    }
@@ -484,13 +477,15 @@ void Console::data_clear()
 
 
 
+/// @brief List data objects.
+///
 /// Executes command to list all loaded data objects.
 void Console::data_list()
 {
-   for (auto i=_dataMap.begin();i!=_dataMap.end();++i)
+   for (auto i = _dataMap.begin(); i != _dataMap.end() ;++i)
    {
       _tm << i.file() << " [" << i.type() << "]";
-      if (i==_dataMap.selected())
+      if ( i == _dataMap.selected() )
       {
          _tm << " ***";
       }
@@ -500,20 +495,19 @@ void Console::data_list()
 
 
 
+/// @brief Print data object history.
+///
 /// Executes command to print the history of a data object.
 ///
 /// @param ops Command line object with options.
-///
-/// @exception CommandError Syntax error in command detected or data object
-/// cannot be find, exception specifying which one.
 void Console::data_history(GetOpts& ops)
 {
-   if (ops.com_empty())
+   if ( ops.com_empty() )
    {
       throw CommandError("history","command requires 1 argument.");
    }
    File* kp = dynamic_cast<File*>(_dataMap.find(ops.com_front()));
-   if (!kp)
+   if ( !kp )
    {
       std::ostringstream buffer;
       buffer << ops.com_front() << " cannot be found.";
@@ -528,7 +522,7 @@ void Console::data_history(GetOpts& ops)
    _tm << "File Name: " << h.file_name() << "\n";
    _tm << "Object: " << h.object() << "\n";
    _tm << "Command: " << h.command() << "\n";
-   if (h.has_children())
+   if ( h.has_children() )
    {
       _tm << "{\n";
       rec_history(h.begin(),h.end(),1);
@@ -538,20 +532,18 @@ void Console::data_history(GetOpts& ops)
 
 
 
+/// @brief Call data object load.
+///
 /// Executes command to call the load function of a data object.
 ///
 /// @param ops Command line object with options.
-///
-/// @exception CommandError No data object is currently selected or attempting
-/// to overwrite existing data object with force option, exception specifying
-/// which one.
 void Console::data_load(GetOpts& ops)
 {
    try
    {
       Data& k = *(_dataMap.current());
       bool willForce {ops.has_opt("force",true)};
-      if (!k.empty()&&!willForce)
+      if ( !k.empty() && !willForce )
       {
          throw CommandError("load","cannot overwrite non-empty data object.");
       }
@@ -569,11 +561,11 @@ void Console::data_load(GetOpts& ops)
 
 
 
+/// @brief Call data object dump.
+///
 /// Executes command to call the dump function of a data object.
 ///
 /// @param ops Command line object with options.
-///
-/// @exception CommandError No data object is currently selected.
 void Console::data_dump(GetOpts& ops)
 {
    try
@@ -588,11 +580,11 @@ void Console::data_dump(GetOpts& ops)
 
 
 
+/// @brief Call data object query.
+///
 /// Executes command to call the query function of a data object.
 ///
 /// @param ops Command line object with options.
-///
-/// @exception CommandError No data object is currently selected.
 void Console::data_query(GetOpts& ops)
 {
    try
@@ -609,44 +601,38 @@ void Console::data_query(GetOpts& ops)
 
 /// @brief Executes analytic.
 ///
-/// Executes the catch all analytic command, using the first argument as the
-/// name of the analytic.
+/// Executes the catch all analytic command, using the first argument as the name of the analytic.
 ///
 /// @param ops Command line object with options.
-///
-/// @exception CommandError Something has happened which prevents completion of
-/// the analytic, such as a parsing error. Exception specifies error detected.
 void Console::analytic(GetOpts& ops)
 {
-   using aptr = std::unique_ptr<Analytic>;
-   using ilist = std::forward_list<Data*>;
-   aptr a(_factory.build_analytic(ops.com_front()));
-   if (!a)
+   std::unique_ptr<Analytic> a(_factory.build_analytic(ops.com_front()));
+   if ( !a )
    {
       std::ostringstream buffer;
       buffer << "cannot find analytic type '" << ops.com_front() << "'.";
       throw CommandError("analytic",buffer.str());
    }
    bool willForce {ops.has_opt("force",true)};
-   ilist ins;
-   for (auto i = ops.begin();i!=ops.end();)
+   std::forward_list<Data*> ins;
+   for (auto i = ops.begin(); i != ops.end() ;)
    {
-      if (i.is_key("in"))
+      if ( i.is_key("in") )
       {
-         string raw;
+         std::string raw;
          try
          {
-            raw = i.value<string>();
+            raw = i.value<std::string>();
          }
          catch (GetOpts::InvalidType)
          {
             throw CommandError("analytic","syntax error in --in parameter.");
          }
-         string file;
-         string type;
+         std::string file;
+         std::string type;
          seperate("analytic",raw,file,type);
          Data* d = _dataMap.find(file);
-         if (d==nullptr)
+         if ( d == nullptr )
          {
             try
             {
@@ -658,7 +644,7 @@ void Console::analytic(GetOpts& ops)
                buffer << "error: '" << type << "' is not valid data type.";
                throw CommandError("analytic",buffer.str());
             }
-            if (d->is_new())
+            if ( d->is_new() )
             {
                CommandError("analytic","cannot set new data object as input.");
             }
@@ -672,24 +658,24 @@ void Console::analytic(GetOpts& ops)
          ++i;
       }
    }
-   for (auto i = ops.begin();i!=ops.end();)
+   for (auto i = ops.begin(); i != ops.end() ;)
    {
-      if (i.is_key("out"))
+      if ( i.is_key("out") )
       {
-         string raw;
+         std::string raw;
          try
          {
-            raw = i.value<string>();
+            raw = i.value<std::string>();
          }
          catch (GetOpts::InvalidType)
          {
             throw CommandError("analytic","syntax error in --out parameter.");
          }
-         string file;
-         string type;
+         std::string file;
+         std::string type;
          seperate("analytic",raw,file,type);
          Data* d = _dataMap.find(file);
-         if (d==nullptr)
+         if ( d == nullptr )
          {
             try
             {
@@ -702,10 +688,9 @@ void Console::analytic(GetOpts& ops)
                throw CommandError("analytic",buffer.str());
             }
          }
-         if (!d->empty()&&!willForce)
+         if ( !d->empty() && !willForce )
          {
-            throw CommandError("analytic",
-                               "cannot overwrite non-empty data object.");
+            throw CommandError("analytic","cannot overwrite non-empty data object.");
          }
          File& k = *dynamic_cast<File*>(d);
          k.clear();
@@ -724,7 +709,7 @@ void Console::analytic(GetOpts& ops)
          ++i;
       }
    }
-   if (_device)
+   if ( _device )
    {
       a->init_cl(*_device);
    }
@@ -734,6 +719,8 @@ void Console::analytic(GetOpts& ops)
 
 
 
+/// @brief Explode string into 2 substrings.
+///
 /// Takes a single input string and seperates it into two substrings using :
 /// as the delimiter. Will also work with no delimiter, setting the first
 /// substring as the whole input string and the second as empty.
@@ -743,20 +730,17 @@ void Console::analytic(GetOpts& ops)
 /// @param raw Input string that will be seperated.
 /// @param file Output string that will have first substring set to it.
 /// @param type Output string that will have second substring set to it.
-///
-/// @exception CommandError There is more than one delimiter character in the
-/// raw string.
-void Console::seperate(const string& who, const string& raw, string& file,
-                       string& type)
+void Console::seperate(const std::string& who, const std::string& raw, std::string& file,
+                       std::string& type)
 {
    auto n = raw.find(':');
-   if (n!=raw.rfind(':'))
+   if ( n != raw.rfind(':') )
    {
       throw CommandError(who.c_str(),"syntax error detected.");
    }
    file = raw.substr(0,n);
    type.clear();
-   if (n!=string::npos)
+   if ( n != std::string::npos )
    {
       type = raw.substr(++n);
    }
@@ -773,14 +757,14 @@ void Console::seperate(const string& who, const string& raw, string& file,
 /// @param begin First iterator that will be listed.
 /// @param end End of list iterator that marks end of iterator list.
 /// @param d Recursive depth of current list being printed.
-inline void Console::rec_history(hiter begin, hiter end, int d)
+inline void Console::rec_history(History::Iterator begin, History::Iterator end, int d)
 {
-   for (auto i = begin;i!=end;++i)
+   for (auto i = begin; i != end ;++i)
    {
       const History& h {*i};
       time_t t = h.time_stamp();
       struct tm* bt = localtime(&t);
-      if (i!=begin)
+      if ( i != begin )
       {
          print_pad(d);
          _tm << "\n";
@@ -795,7 +779,7 @@ inline void Console::rec_history(hiter begin, hiter end, int d)
       _tm << "Object: " << h.object() << "\n";
       print_pad(d);
       _tm << "Command: " << h.command() << "\n";
-      if (h.has_children())
+      if ( h.has_children() )
       {
          print_pad(d);
          _tm << "{\n";
@@ -808,6 +792,8 @@ inline void Console::rec_history(hiter begin, hiter end, int d)
 
 
 
+/// @brief Print padding.
+///
 /// Prints a certain number of spaces as padding for a line of text.
 ///
 /// @param d How many levels of padding that will be printed.
@@ -821,20 +807,13 @@ inline void Console::print_pad(int d)
 
 
 
-/// Initializes a new command error and sets who threw it and its message.
-///
-/// @param who Identifies who threw the error message.
-/// @param msg The message describing the error that occured.
-Console::CommandError::CommandError(const string& who, const string& msg):
+Console::CommandError::CommandError(const std::string& who, const std::string& msg):
    _who(who),
    _msg(msg)
 {}
 
 
 
-/// Prints the error message to the terminal.
-///
-/// @param tm The program's terminal that will be printed to.
 void Console::CommandError::print(Terminal& tm)
 {
    tm << _who << ": " << _msg << "\n";
