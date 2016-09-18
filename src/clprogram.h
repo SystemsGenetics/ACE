@@ -10,6 +10,8 @@ namespace AccelCompEng
 
 
 
+/// @brief OpenCL program.
+///
 /// Wrapper for OpenCL program.
 class CLProgram
 {
@@ -20,6 +22,8 @@ public:
    struct CannotBind : public Exception { using Exception::Exception; };
    struct BuildInfoFail : public Exception { using Exception::Exception; };
    struct CannotFindKern : public Exception { using Exception::Exception; };
+   /// @brief Create uninitialized object.
+   ///
    /// Create empty or null object that is not initialized.
    CLProgram() = default;
    ~CLProgram();
@@ -27,27 +31,37 @@ public:
    CLProgram& operator=(const CLProgram&) = delete;
    CLProgram(CLProgram&&) = delete;
    CLProgram& operator=(CLProgram&&) = delete;
+   /// @brief Initialize object.
+   ///
    /// Initialize object with given OpenCL context and device.
    ///
    /// @param cid OpenCL context id.
    /// @param did OpenCL device id.
    void init(cl_context cid, cl_device_id did);
 protected:
+   /// @brief Add kernel source.
+   ///
    /// Add OpenCL kernel source code from direct input or a file.
    ///
    /// @param input Contains either string of source code itself or name of file where source code
    /// exists, depending on second argument.
    /// @param file Is the input string a filename? If not input is raw source code.
    void add_source(const std::string& input, bool file = false);
+   /// @brief Compile all source code.
+   ///
    /// Compile OpenCL source code contained in object with given options.
    ///
    /// @param options Additional options to pass to the compiler.
    /// @return Was the compilation of source code successful?
    bool compile(const std::string& options);
+   /// @brief Get compile log.
+   ///
    /// Return compilation log from last compile command.
    ///
    /// @return Compile log.
    std::string log();
+   /// @brief Create new kernel.
+   ///
    /// Create a new OpenCL kernel from the compiled kernels of the object.
    ///
    /// @param name Name of the kernel in source.

@@ -137,13 +137,11 @@ void CLDevice::size_it(std::ostringstream& buffer, long size) const
    const char* sizes[] = {"B","KB","MB","GB","TB"};
    int count = 0;
    double fsize = size;
-   // Keep dividing size until it is less than 1024, keeping track of how many dividions occured.
    while ( fsize > kilobit && count < max )
    {
       fsize /= kilobit;
       count++;
    }
-   // Write number with specific precision along with size prefix.
    buffer.setf(std::ios::fixed,std::ios::floatfield);
    buffer.precision(_fPrecision);
    buffer << fsize << sizes[count];

@@ -19,6 +19,8 @@ namespace AccelCompEng
 
 
 
+/// @brief Start ACE.
+///
 /// Primary function called to step into the ACE platform.
 ///
 /// @param header The header that will be printed on the command prompt.

@@ -27,6 +27,8 @@ public:
    struct PlatformErr : public Exception { using Exception::Exception; };
    struct DeviceErr : public Exception { using Exception::Exception; };
    class Iterator;
+   /// @brief Create device list.
+   ///
    /// Compile list of available OpenCL devices unless told not to.
    ///
    /// @param isBuild Should the list be compiled or left empty?
@@ -37,8 +39,12 @@ public:
    CLDevList& operator=(CLDevList&&) = default;
    Iterator begin();
    Iterator end();
+   /// @brief Refresh device list.
+   ///
    /// Clears vector list of previously built devices and builds new list of OpenCL devices.
    void refresh();
+   /// @brief Does given device exist?
+   ///
    /// Returns if specified OpenCL device exists.
    ///
    /// @param p The increment into list of platforms.
@@ -57,6 +63,8 @@ private:
 
 
 
+/// @brief Device iterator.
+///
 /// Iterater for OpenCL device list.
 class CLDevList::Iterator
 {
@@ -71,6 +79,8 @@ public:
    void operator--();
    bool operator!=(const Iterator&);
 private:
+   /// @brief Create new iterator.
+   ///
    /// Initializes iterator with given parameters.
    ///
    /// @param p The increment into list of platforms.

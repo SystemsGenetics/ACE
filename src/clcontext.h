@@ -12,6 +12,8 @@ namespace AccelCompEng
 
 
 
+/// @brief ACE OpenCL system.
+///
 /// Wrapper for OpenCL context. Also contains wrappers for OpenCL program and commandqueue.
 class CLContext: public CLProgram, public CLCommandQueue
 {
@@ -19,14 +21,20 @@ public:
    struct CannotCreate : public Exception { using Exception::Exception; };
    struct NotInitialized : public Exception { using Exception::Exception; };
    friend class Console;
+   /// @brief Creates empty object.
+   ///
    /// Creates an empty wrapper with no OpenCL context.
    CLContext() = default;
    ~CLContext();
+   /// @brief Is object initialized?
+   ///
    /// Tests if object is initialized and contains a valid OpenCL context.
    ///
    /// @return Does this object have an OpenCL context?
    bool is_initd();
 protected:
+   /// @brief Create new buffer.
+   ///
    /// Creates a new OpenCL buffer object.
    ///
    /// @tparam T The basic type of the new buffer object.

@@ -7,6 +7,8 @@ namespace AccelCompEng
 
 
 
+/// @brief OpenCL buffer object.
+///
 /// Wrapper for a single OpenCL buffer object.
 ///
 /// @tparam T Basic type that this buffer object holds.
@@ -19,6 +21,8 @@ public:
    friend class CLContext;
    friend class CLCommandQueue;
    friend class CLKernel;
+   /// @brief Initialize empty object.
+   ///
    /// Creates an empty, or null, buffer object.
    CLBuffer() = default;
    ~CLBuffer();
@@ -31,10 +35,6 @@ public:
    T& at(int);
    const T& at(int) const;
 private:
-   /// Creates a new OpenCL buffer with the given size.
-   ///
-   /// @param cid OpenCL context id to use in creation of the buffer object.
-   /// @param size The size of the buffer array to create.
    CLBuffer(cl_context cid, int size);
    cl_mem _id;
    int _size {0};
@@ -119,11 +119,15 @@ template<class T> const T& CLBuffer<T>::at(int i) const
 
 
 
+/// @brief Create buffer object.
+///
+/// Creates a new OpenCL buffer with the given size.
+///
+/// @param cid OpenCL context id to use in creation of the buffer object.
+/// @param size The size of the buffer array to create.
 template<class T> CLBuffer<T>::CLBuffer(cl_context cid, int size):
    _size(size)
 {
-   /// Create new OpenCL buffer from context provided, make sure it succedes and if it fails
-   /// set this object as a null buffer.
    static const char* f = __PRETTY_FUNCTION__;
    _hostPtr = new T[size];
    try

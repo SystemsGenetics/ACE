@@ -62,10 +62,14 @@ public:
    CLDevice(CLDevice&&) = default;
    CLDevice& operator=(const CLDevice&) = default;
    CLDevice& operator=(CLDevice&&) = default;
+   /// @brief Platform id.
+   ///
    /// Return OpenCL platform id of device.
    ///
    /// @return OpenCL platform id.
    cl_platform_id platform();
+   /// @brief Device id.
+   ///
    /// Return OpenCL device id of CLDevice object.
    ///
    /// @return OpenCL device id.
@@ -92,6 +96,8 @@ private:
 
 
 
+/// @brief Get device info.
+///
 /// Get specific info from OpenCL device.
 ///
 /// @tparam T Data type needed for requested information.
@@ -109,6 +115,8 @@ template<class T> T CLDevice::get_info(cl_device_info infoType) const
 
 
 
+/// @brief Get device info.
+///
 /// Get specific info from OpenCL device that returns a string as its value.
 ///
 /// @param infoType Type of information requested.
