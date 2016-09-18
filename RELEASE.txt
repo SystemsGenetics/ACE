@@ -1,0 +1,3 @@
+* Added new argument at end of run function that allows for a callback
+  function that is called after the console is initialized if it is set, else
+  the console run function is called like normal.
