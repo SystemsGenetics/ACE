@@ -113,7 +113,7 @@ template<class T> T CLDevice::get_info(cl_device_info infoType) const
 ///
 /// @param infoType Type of information requested.
 /// @return Requested information.
-template<> std::string CLDevice::get_info(cl_device_info infoType) const
+template<> inline std::string CLDevice::get_info(cl_device_info infoType) const
 {
    static const char* f = __PRETTY_FUNCTION__;
    size_t strSize;
