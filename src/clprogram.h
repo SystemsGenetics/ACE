@@ -10,6 +10,7 @@ namespace AccelCompEng
 
 
 
+/// Wrapper for OpenCL program.
 class CLProgram
 {
 public:
@@ -19,19 +20,39 @@ public:
    struct CannotBind : public Exception { using Exception::Exception; };
    struct BuildInfoFail : public Exception { using Exception::Exception; };
    struct CannotFindKern : public Exception { using Exception::Exception; };
+   /// Create empty or null object that is not initialized.
    CLProgram() = default;
    ~CLProgram();
    CLProgram(const CLProgram&) = delete;
    CLProgram& operator=(const CLProgram&) = delete;
    CLProgram(CLProgram&&) = delete;
    CLProgram& operator=(CLProgram&&) = delete;
-   void init(cl_context,cl_device_id);
-   using string = std::string;
+   /// Initialize object with given OpenCL context and device.
+   ///
+   /// @param cid OpenCL context id.
+   /// @param did OpenCL device id.
+   void init(cl_context cid, cl_device_id did);
 protected:
-   void add_source(const string& input, bool file = false);
-   bool compile(const string&);
-   string log();
-   CLKernel mkernel(const string& name);
+   /// Add OpenCL kernel source code from direct input or a file.
+   ///
+   /// @param input Contains either string of source code itself or name of file where source code
+   /// exists, depending on second argument.
+   /// @param file Is the input string a filename? If not input is raw source code.
+   void add_source(const std::string& input, bool file = false);
+   /// Compile OpenCL source code contained in object with given options.
+   ///
+   /// @param options Additional options to pass to the compiler.
+   /// @return Was the compilation of source code successful?
+   bool compile(const std::string& options);
+   /// Return compilation log from last compile command.
+   ///
+   /// @return Compile log.
+   std::string log();
+   /// Create a new OpenCL kernel from the compiled kernels of the object.
+   ///
+   /// @param name Name of the kernel in source.
+   /// @return New OpenCL kernel.
+   CLKernel mkernel(const std::string& name);
 private:
    bool _initd {false};
    bool _binded {false};
@@ -39,7 +60,7 @@ private:
    cl_program _id;
    cl_device_id _did;
    cl_context _cid;
-   std::vector<string> _src;
+   std::vector<std::string> _src;
 };
 
 
