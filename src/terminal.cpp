@@ -4,7 +4,6 @@ namespace AccelCompEng
 
 
 
-/// Sets a newline operator to Terminal output.
 Terminal& Terminal::newline(Terminal& term)
 {
    term.set_ops(Ops::newline);
@@ -13,7 +12,6 @@ Terminal& Terminal::newline(Terminal& term)
 
 
 
-/// Sets a newline operator then a flush operator to Terminal output.
 Terminal& Terminal::endl(Terminal& term)
 {
    term.set_ops(Ops::newline);
@@ -23,7 +21,6 @@ Terminal& Terminal::endl(Terminal& term)
 
 
 
-/// Sets a flush operator to Terminal output.
 Terminal& Terminal::flush(Terminal& term)
 {
    term.set_ops(Ops::flush);
@@ -32,7 +29,6 @@ Terminal& Terminal::flush(Terminal& term)
 
 
 
-/// Sets a general message state operator to Terminal output.
 Terminal& Terminal::general(Terminal& term)
 {
    term.set_ops(Ops::general);
@@ -41,7 +37,6 @@ Terminal& Terminal::general(Terminal& term)
 
 
 
-/// Sets a warning message state operator to Terminal output.
 Terminal& Terminal::warning(Terminal& term)
 {
    term.set_ops(Ops::warning);
@@ -50,7 +45,6 @@ Terminal& Terminal::warning(Terminal& term)
 
 
 
-/// Sets a error message state operator to Terminal output.
 Terminal& Terminal::error(Terminal& term)
 {
    term.set_ops(Ops::error);
@@ -59,7 +53,6 @@ Terminal& Terminal::error(Terminal& term)
 
 
 
-// Self-referencing print functions that redirect to output operators.
 Terminal& Terminal::print(short n)
 {
    return *this << n;
@@ -103,7 +96,6 @@ Terminal& Terminal::print(const std::string& n)
 
 
 
-/// Takes pointers to functions that can manipulate Terminal operators.
 Terminal& Terminal::operator<<(Terminal& (*pf)(Terminal&))
 {
    return pf(*this);

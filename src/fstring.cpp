@@ -66,7 +66,7 @@ int64_t FString::write(const std::string& str)
       int len = str.size()+1;
       _str = str;
       CString c_str(len,mem());
-      if (_buffer.get())
+      if ( _buffer.get() )
       {
          assert<BufferOverrun>(len<=_bSize,f,__LINE__);
          c_str.give_data(_buffer.get());
@@ -122,12 +122,10 @@ void FString::bump()
 
 void FString::fetch_list(FString& fstr, int64_t startAddr, int size, std::vector<std::string>& list)
 {
-   // Read in fstring after fstring, starting at the start address, bumping each time, reading in
-   // total size strings.
    fstr.load(startAddr);
    list.push_back(fstr.str());
    --size;
-   while (size>0)
+   while ( size > 0 )
    {
       fstr.bump();
       list.push_back(fstr.str());
@@ -145,7 +143,7 @@ void FString::load()
       read();
       assert<InvalidPtr>(get<Header>()._strip==_strip,f,__LINE__);
       CString c_str(get<Header>()._size,Node::mem(),addr()+3);
-      if (_buffer.get())
+      if ( _buffer.get() )
       {
          assert<BufferOverrun>(get<Header>()._size<=_bSize,f,__LINE__);
          c_str.give_data(_buffer.get());

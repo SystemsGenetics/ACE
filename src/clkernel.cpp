@@ -6,7 +6,7 @@ namespace AccelCompEng
 
 CLKernel::~CLKernel()
 {
-   if (_isAlive)
+   if ( _isAlive )
    {
       clReleaseKernel(_id);
    }
@@ -20,7 +20,7 @@ CLKernel::CLKernel(const CLKernel& copy):
    _did(copy._did),
    _dims(copy._dims)
 {
-   for (int i=0;i<_dims;++i)
+   for (int i = 0; i < _dims ;++i)
    {
       _gSizes[i] = copy._gSizes[i];
       _lSizes[i] = copy._lSizes[i];
@@ -31,7 +31,7 @@ CLKernel::CLKernel(const CLKernel& copy):
 
 CLKernel& CLKernel::operator=(const CLKernel& copy)
 {
-   if (_isAlive)
+   if ( _isAlive )
    {
       clReleaseKernel(_id);
    }
@@ -54,7 +54,7 @@ CLKernel::CLKernel(CLKernel&& move):
    _did(move._did),
    _dims(move._dims)
 {
-   for (int i=0;i<_dims;++i)
+   for (int i = 0 ; i < _dims ;++i)
    {
       _gSizes[i] = move._gSizes[i];
       _lSizes[i] = move._lSizes[i];
@@ -66,7 +66,7 @@ CLKernel::CLKernel(CLKernel&& move):
 
 CLKernel& CLKernel::operator=(CLKernel&& move)
 {
-   if (_isAlive)
+   if ( _isAlive )
    {
       clReleaseKernel(_id);
    }
@@ -74,7 +74,7 @@ CLKernel& CLKernel::operator=(CLKernel&& move)
    _id = move._id;
    _did = move._did;
    _dims = move._dims;
-   for (int i=0;i<_dims;++i)
+   for (int i = 0 ; i < _dims ;++i)
    {
       _gSizes[i] = move._gSizes[i];
       _lSizes[i] = move._lSizes[i];

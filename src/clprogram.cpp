@@ -25,11 +25,11 @@ void CLProgram::init(cl_context cid, cl_device_id did)
 
 
 
-void CLProgram::add_source(const string& input, bool file)
+void CLProgram::add_source(const std::string& input, bool file)
 {
    static const char* f = __PRETTY_FUNCTION__;
    assert<NotInitialized>(_initd,f,__LINE__);
-   if (file)
+   if ( file )
    {
       std::ifstream sourceFile(input.c_str());
       assert<NoSuchFile>(sourceFile.is_open(),f,__LINE__);
@@ -45,7 +45,7 @@ void CLProgram::add_source(const string& input, bool file)
 
 
 
-bool CLProgram::compile(const string& options)
+bool CLProgram::compile(const std::string& options)
 {
    static const char* f = __PRETTY_FUNCTION__;
    assert<NotInitialized>(_initd,f,__LINE__);
@@ -53,19 +53,19 @@ bool CLProgram::compile(const string& options)
    cl_uint s = _src.size();
    const char *codes[s];
    size_t codeSzs[s];
-   for (int i=0;i<s;i++)
+   for (int i = 0; i < s ;i++)
    {
       codeSzs[i] = _src[i].size()+1;
       codes[i] = _src[i].c_str();
    }
-   if (!_binded)
+   if ( !_binded )
    {
       cl_int err;
       _id = clCreateProgramWithSource(_cid,s,codes,codeSzs,&err);
       classert<CannotBind>(err,f,__LINE__);
       _binded = true;
    }
-   if (clBuildProgram(_id,0,NULL,options.c_str(),NULL,NULL)>=0)
+   if ( clBuildProgram(_id,0,NULL,options.c_str(),NULL,NULL) >= 0 )
    {
       _compiled = true;
       ret = true;
@@ -75,12 +75,12 @@ bool CLProgram::compile(const string& options)
 
 
 
-CLProgram::string CLProgram::log()
+std::string CLProgram::log()
 {
    static const char* f = __PRETTY_FUNCTION__;
    assert<NotInitialized>(_initd,f,__LINE__);
    std::string ret {"OpenCL program not yet binded!"};
-   if (_binded)
+   if ( _binded )
    {
       size_t strSize = 0;
       cl_int err = clGetProgramBuildInfo(_id,_did,CL_PROGRAM_BUILD_LOG,0,NULL,
@@ -97,7 +97,7 @@ CLProgram::string CLProgram::log()
 
 
 
-CLKernel CLProgram::mkernel(const string& name)
+CLKernel CLProgram::mkernel(const std::string& name)
 {
    static const char* f = __PRETTY_FUNCTION__;
    assert<NotInitialized>(_initd,f,__LINE__);

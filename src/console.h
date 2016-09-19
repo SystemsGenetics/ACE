@@ -27,50 +27,32 @@ class CLDevice;
 /// Designed to take over execution of the program and manage commands supplied
 /// by the user for all data and analytic objects. Also manages and displays
 /// information about all OpenCL devices attached to the program's machine.
-///
-/// @warning Only one instance of this class can exist at any one time.
-///
-/// @author Josh Burns
-/// @date 18 March 2016
 class Console
 {
 public:
-   // *
-   // * EXCEPTIONS
-   // *
    struct InvalidUse : public Exception { using Exception::Exception; };
-   // *
-   // * DECLERATIONS
-   // *
    class CommandError;
-   // *
-   // * BASIC METHODS
-   // *
-   Console(int,char*[],Terminal&,Factory&,DataMap&,const char*);
+   /// Initialize the console object, keeping in mind there can be only one console object.
+   /// @param argc Argument from main.
+   /// @param argv Argument from main.
+   /// @param tm Terminal object for ACE.
+   /// @param factory Plugin factory for ACE.
+   /// @param dmap Data manager for ACE.
+   /// @param header String that will be printed with command prompt.
+   Console(int argc, char* argv[], Terminal& tm, Factory& factory, DataMap& dmap,
+           const char* header);
    ~Console();
-   // *
-   // * COPY METHODS
-   // *
    Console(const Console&) = delete;
    Console& operator=(const Console&) = delete;
-   // *
-   // * MOVE METHODS
-   // *
    Console(Console&&) = delete;
    Console& operator=(Console&&) = delete;
-   // *
-   // * FUNCTIONS
-   // *
+   /// Give control to console and initiate command prompt for user.
    void run();
-   bool command(const std::string&);
+   /// Run a single command in the console that is non-blocking and returns control once the command
+   /// is complete.
+   bool command(const std::string& line);
 private:
-   using string = std::string;
-   using hiter = History::Iterator;
    struct CommandQuit {};
-   // *
-   // * FUNCTIONS
-   // *
-   void terminal_loop();
    void process(GetOpts&);
    void gpu_process(GetOpts&);
    void gpu_list();
@@ -87,27 +69,15 @@ private:
    void data_dump(GetOpts&);
    void data_query(GetOpts&);
    void analytic(GetOpts&);
-   void seperate(const string&,const string&,string&,string&);
-   void rec_history(hiter,hiter,int);
+   void seperate(const std::string&,const std::string&,std::string&,std::string&);
+   void rec_history(History::Iterator,History::Iterator,int);
    void print_pad(int);
-   // *
-   // * STATIC VARIABLES
-   // *
-   /// Used to determine if an instance of this class exists or not.
    static bool _lock;
-   // *
-   // * VARIABLES
-   // *
-   /// Reference to program's main Terminal interface.
    Terminal& _tm;
-   /// Reference to program's data list manager.
    DataMap& _dataMap;
-   /// Pointer to OpenCL device that is set for computation acceleration. Set to
-   /// nullptr if no device is selected.
    CLDevice* _device;
-   /// List of all possible OpenCL devices on program's machine.
    CLDevList* _devList;
-   string _header;
+   std::string _header;
    Factory& _factory;
 };
 
@@ -118,20 +88,19 @@ private:
 /// This holds a single error that occured and is thrown from somewhere outside
 /// of the console class which the console class is designed to catch and
 /// report to the user.
-///
-/// @author Josh Burns
-/// @date 18 March 2016
 class Console::CommandError
 {
 public:
-   using string = std::string;
-   CommandError(const string&,const string&);
+   /// Initializes a new command error and sets who threw it and its message.
+   /// @param who Identifies who threw the error message.
+   /// @param msg The message describing the error that occured.
+   CommandError(const std::string&,const std::string&);
+   /// Prints the error message to the terminal.
+   /// @param tm The program's terminal that will be printed to.
    void print(Terminal&);
 private:
-   /// Holds who threw the command error.
-   string _who;
-   /// Holds the message of the command error.
-   string _msg;
+   std::string _who;
+   std::string _msg;
 };
 
 

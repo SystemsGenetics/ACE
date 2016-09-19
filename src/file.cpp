@@ -8,14 +8,14 @@ namespace AccelCompEng
 void File::load(const std::string& fileName)
 {
    static const char* f = __PRETTY_FUNCTION__;
-   if (!_header.is_null_memory())
+   if ( !_header.is_null_memory() )
    {
       reset();
    }
    _header.init_mem(new NVMemory(fileName));
    try
    {
-      if (_header.rmem().size()==0)
+      if ( _header.rmem().size() == 0 )
       {
          _header.allocate();
          _header.write();
@@ -26,21 +26,21 @@ void File::load(const std::string& fileName)
          _header.addr(fheadptr);
          _header.read();
          bool cond {true};
-         for (int i=0;i<Data::_idSize;++i)
+         for (int i = 0; i < Data::_idSize ;++i)
          {
-            if (_header.data()._id[i]!=Data::_idString[i])
+            if ( _header.data()._id[i] != Data::_idString[i] )
             {
                cond = false;
                break;
             }
          }
          assert<InvalidFile>(cond,f,__LINE__);
-         if (_header.data()._identPtr!=fnullptr)
+         if ( _header.data()._identPtr != fnullptr )
          {
             FString fstr(_header.mem(),_header.data()._identPtr);
             _ident = fstr.str();
          }
-         if (_header.data()._historyHead!=fnullptr)
+         if ( _header.data()._historyHead != fnullptr )
          {
             _history.reset(new History(_header.mem(),_header.data()._historyHead));
          }
@@ -177,15 +177,6 @@ NVMemory& File::rmem()
 
 
 
-void File::reset()
-{
-   _ident.clear();
-   _history.reset();
-   _header.null_data();
-}
-
-
-
 File::Data::Data():
    Node(sizeof(Header))
 {
@@ -238,6 +229,15 @@ void File::Data::flip_endian()
    flip(4,8);
    flip(12,8);
    flip(20,8);
+}
+
+
+
+void File::reset()
+{
+   _ident.clear();
+   _history.reset();
+   _header.null_data();
 }
 
 

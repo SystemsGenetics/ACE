@@ -7,6 +7,11 @@ namespace AccelCompEng
 
 
 
+/// @brief OpenCL buffer object.
+///
+/// Wrapper for a single OpenCL buffer object.
+///
+/// @tparam T Basic type that this buffer object holds.
 template<class T> class CLBuffer
 {
 public:
@@ -16,6 +21,7 @@ public:
    friend class CLContext;
    friend class CLCommandQueue;
    friend class CLKernel;
+   /// Creates an empty, or null, buffer object.
    CLBuffer() = default;
    ~CLBuffer();
    CLBuffer(const CLBuffer<T>&) = delete;
@@ -27,7 +33,7 @@ public:
    T& at(int);
    const T& at(int) const;
 private:
-   CLBuffer(cl_context,int);
+   CLBuffer(cl_context cid, int size);
    cl_mem _id;
    int _size {0};
    T* _hostPtr {nullptr};

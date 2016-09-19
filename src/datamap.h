@@ -13,125 +13,99 @@ namespace AccelCompEng
 
 /// @brief Manages all data objects.
 ///
-/// Manages list of all open data objects the program has loaded. Handles
-/// passing user commands to individual data obejcts, along with selecting an
-/// active data object, opening and closing data objects, and listing all loaded
-/// data objects.
-///
-/// @warning There can only be one instance of this class in the program.
-///
-/// @author Josh Burns
-/// @date 21 March 2016
+/// Manages list of all open data objects the program has loaded. Handles passing user commands to
+/// individual data obejcts, along with selecting an active data object, opening and closing data
+/// objects, and listing all loaded data objects.
 class DataMap
 {
 public:
-   // *
-   // * EXCEPTIONS
-   // *
    struct InvalidUse : public Exception { using Exception::Exception; };
    struct AlreadyExists : public Exception { using Exception::Exception; };
    struct DoesNotExist : public Exception { using Exception::Exception; };
    struct NoSelect : public Exception { using Exception::Exception; };
    struct InvalidType : public Exception { using Exception::Exception; };
-   // *
-   // * DECLERATIONS
-   // *
    class Iterator;
-   using string = std::string;
-   // *
-   // * BASIC METHODS
-   // *
-   DataMap(Factory&);
+   /// Initializes object manager instance and makes sure there isn't already an instance of this
+   /// class in existence.
+   /// @param factory Plugin factory object.
+   DataMap(Factory& factory);
    ~DataMap();
-   // *
-   // * COPY METHODS
-   // *
    DataMap(const DataMap&) = delete;
    DataMap& operator=(const DataMap&) = delete;
-   // *
-   // * MOVE METHODS
-   // *
    DataMap(DataMap&&) = delete;
    DataMap& operator=(DataMap&&) = delete;
-   // *
-   // * FUNCTIONS
-   // *
-   Data* open(const string&,const string&,bool = false);
-   bool close(const string&);
-   void select(const string&);
+   /// Opens a data object file, optionally selected opened object.
+   /// @param file Name of file to be opened as data object.
+   /// @param type Object file's data type.
+   /// @param select True if newly opened data object will be selected, else false.
+   Data* open(const std::string& file, const std::string& type, bool select = false);
+   /// Close an open data object, if data object is currently selected it is cleared to none.
+   /// @param file File name of opened data object to close.
+   /// @return True if the closed data object was selected and cleared, else false.
+   bool close(const std::string& file);
+   /// Select a data object ot have focus.
+   /// @param file Name of loaded data object to select.
+   void select(const std::string& file);
+   /// Clear any selected data object to none.
+   /// @return True if there was a selected data object and it was cleared, else
+   /// false.
    bool unselect();
-   void load(GetOpts&,Terminal&);
-   void dump(GetOpts&,Terminal&);
-   void query(GetOpts&,Terminal&);
-   Data* find(const string&);
+   /// Passes load command to selected data object.
+   /// @param ops User command line.
+   /// @param tm Program's terminal interface.
+   void load(GetOpts& ops, Terminal& tm);
+   /// Passes dump command to selected data object.
+   /// @param ops User command line.
+   /// @param tm Program's terminal interface.
+   void dump(GetOpts& ops, Terminal& tm);
+   /// Passes query command to selected data object.
+   /// @param ops User command line.
+   /// @param tm Program's terminal interface.
+   void query(GetOpts& ops, Terminal& tm);
+   /// Searches list of loaded data object and returns pointer to data object that matches the file
+   /// name given, if any.
+   /// @param file File name of data object to find.
+   /// @return Pointer to data object that is found, else nullptr if not found.
+   Data* find(const std::string& file);
+   /// Returns pointer to data object that is currently selected, if any.
+   /// @return Pointer to data object that is selected, else if no object is
+   /// selected nullptr is returned.
    Data* current();
    Iterator begin();
    Iterator end();
+   /// Return iterator of currently selected data object, if any.
+   /// @return Iterator of currently selected object, end of list iterator if no
+   /// object is selected.
    Iterator selected();
 private:
-   // *
-   // * DECLERATIONS
-   // *
-   using Map = std::map<std::string,std::unique_ptr<Data>>;
-   // *
-   // * FUNCTIONS
-   // *
-   Map::iterator get(const string&);
-   // *
-   // * STATIC VARIABLES
-   // *
-   /// Used to determine if an instance of this class exists or not.
+   std::map<std::string,std::unique_ptr<Data>>::iterator get(const std::string&);
    static bool _lock;
-   // *
-   // * VARIABLES
-   // *
-   /// Contains all loaded data objects.
-   Map _map;
-   /// Iterator that points to selected data object, or end of list iterator if
-   /// no object is selected.
-   Map::iterator _i;
+   std::map<std::string,std::unique_ptr<Data>> _map;
+   std::map<std::string,std::unique_ptr<Data>>::iterator _i;
    Factory& _factory;
 };
 
 
 
-/// Forward only iterator for listing all data objects in the DataMap class.
+/// @brief Forward only datamap iterator.
 ///
-/// @author Josh Burns
-/// @date 21 March 2016
+/// Forward only iterator for listing all data objects in the DataMap class.
 class DataMap::Iterator
 {
 public:
-   // *
-   // * DECLERATIONS
-   // *
    friend class DataMap;
-   using string = DataMap::string;
-   // *
-   // * FUNCTIONS
-   // *
-   string file();
-   string type();
-   // *
-   // * OPERATORS
-   // *
+   /// Get file name of iterator's data object.
+   /// @return File name of data object.
+   std::string file();
+   /// Get iterator's data object type.
+   /// @return Data object type.
+   std::string type();
    void operator++();
    bool operator!=(const Iterator&);
    bool operator==(const Iterator&);
 private:
-   // *
-   // * DECLERATIONS
-   // *
-   using Map = DataMap::Map;
-   // *
-   // * BASIC METHODS
-   // *
-   Iterator(Map::iterator);
-   // *
-   // * VARIABLES
-   // *
-   /// Points to current data object this iterator points to or end of list.
-   Map::iterator _i;
+   Iterator(std::map<std::string,std::unique_ptr<Data>>::iterator);
+   std::map<std::string,std::unique_ptr<Data>>::iterator _i;
 };
 
 

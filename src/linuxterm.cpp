@@ -16,12 +16,6 @@ bool LinuxTerm::_cooked {true};
 
 
 
-/// @brief Sets terminal attributes to raw.
-///
-/// Grabs the terminal attributes and sets them to not echo and not be
-/// canonical. Changes terminal status to raw mode.
-///
-/// @pre Terminal status is in cooked mode.
 void LinuxTerm::stty_raw()
 {
    static const char* f = __PRETTY_FUNCTION__;
@@ -41,13 +35,6 @@ void LinuxTerm::stty_raw()
 
 
 
-/// @brief Sets terminal attributes to cooked.
-///
-/// Grabs the terminal attributes and sets them to echo and canoncial. Changes
-/// terminal status to cooked mode.
-///
-/// @pre Terminal status is in raw mode.
-/// @pre There can be no current instance of this function's class.
 void LinuxTerm::stty_cooked()
 {
    static const char* f = __PRETTY_FUNCTION__;
@@ -66,13 +53,6 @@ void LinuxTerm::stty_cooked()
 
 
 
-/// @brief Initializes terminal.
-///
-/// Grabs the width of the program's terminal in characters and locks terminal
-/// for exclusive use.
-///
-/// @pre There can be no current instance of this constructor's class.
-/// @pre The terminal must be in raw mode.
 LinuxTerm::LinuxTerm():
    _i {_line.end()},
    _chCount {0}
@@ -94,7 +74,6 @@ LinuxTerm::LinuxTerm():
 
 
 
-/// Release lock on terminal.
 LinuxTerm::~LinuxTerm()
 {
    _lock = false;
@@ -102,7 +81,6 @@ LinuxTerm::~LinuxTerm()
 
 
 
-/// Set new header for terminal input.
 void LinuxTerm::header(const std::string& header)
 {
    _header = header;
@@ -110,15 +88,11 @@ void LinuxTerm::header(const std::string& header)
 
 
 
-/// Set floating point precision.
-///
-/// @todo Need to finish this function.
 void LinuxTerm::precision(int)
 {}
 
 
 
-// Output operators, self-explanatory.
 LinuxTerm& LinuxTerm::operator<<(short n)
 {
    std::cout << n;
@@ -172,15 +146,6 @@ LinuxTerm& LinuxTerm::operator<<(const std::string& n)
 
 
 
-/// @brief Read single line of input from user.
-///
-/// Reads a single line from the user on the terminal, blocking execution of the
-/// program until the line has finished being read from the user.
-///
-/// @param buffer String that the line of new input will be written to.
-///
-/// @pre The terminal must be in raw mode and the cursor must be on a new and
-/// blank line.
 void LinuxTerm::operator>>(std::string& buffer)
 {
    static const char* f = __PRETTY_FUNCTION__;
@@ -190,9 +155,9 @@ void LinuxTerm::operator>>(std::string& buffer)
    _i = _line.end();
    reprint(false);
    char input;
-   while ((input = getchar())!='\n')
+   while ( (input = getchar()) != '\n' )
    {
-      if (input>=' '&&input<='~')
+      if ( input >= ' ' && input <= '~' )
       {
          _i = _line.insert(_i,input);
          _i++;
@@ -208,7 +173,7 @@ void LinuxTerm::operator>>(std::string& buffer)
             }
             break;
          case _escapeCh:
-            if (getchar()=='[')
+            if ( getchar() == '[' )
             {
                switch(getchar())
                {
@@ -245,12 +210,6 @@ void LinuxTerm::operator>>(std::string& buffer)
 
 
 
-/// @brief Setting special control types.
-///
-/// Internal callback function for handling special control types enumerated by
-/// Terminal interface class.
-///
-/// @todo Still need to finish this function.
 void LinuxTerm::set_ops(Ops op)
 {
    switch (op)
@@ -266,15 +225,9 @@ void LinuxTerm::set_ops(Ops op)
 
 
 
-/// @brief Move cursor up.
-///
-/// Move cursor up as many lines needed to get back to origional line from
-/// number of characters that has been typed.
-///
-/// @param chCount Number of characters that has been typed.
 void LinuxTerm::reset_cursor(int chCount)
 {
-   for (int i=0;i<(chCount/_cols);i++)
+   for (int i = 0; i < (chCount/_cols) ;i++)
    {
       std::cout << _cursorUpStr;
    }
@@ -283,17 +236,9 @@ void LinuxTerm::reset_cursor(int chCount)
 
 
 
-/// @brief Prints current user input line.
-///
-/// If specified, moves cursor back to beginning of current input line and
-/// header. Either way prints out header and input line along with one extra
-/// white space. If the cursor resets itself, this effectively overwrites the
-/// previous input line printed.
-///
-/// @param rewind Specifies if cursor will be reset to beginning of line.
 void LinuxTerm::reprint(bool rewind)
 {
-   if (rewind)
+   if ( rewind )
    {
       reset_cursor(_chCount-1);
    }
@@ -308,7 +253,7 @@ void LinuxTerm::reprint(bool rewind)
    std::cout << _boldTextStr;
    std::cout << _header;
    std::cout << _normTextStr;
-   for (auto i=_line.begin();i!=_i;i++)
+   for (auto i = _line.begin(); i != _i ;i++)
    {
       std::cout << *i;
       _chCount++;

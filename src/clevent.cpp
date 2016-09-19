@@ -6,7 +6,7 @@ namespace AccelCompEng
 
 CLEvent::~CLEvent()
 {
-   if (_hasEvent)
+   if ( _hasEvent )
    {
       clReleaseEvent(_id);
    }
@@ -25,7 +25,7 @@ CLEvent::CLEvent(CLEvent&& move):
 
 CLEvent& CLEvent::operator=(CLEvent&& move)
 {
-   if (_hasEvent)
+   if ( _hasEvent )
    {
       clReleaseEvent(_id);
    }
@@ -39,7 +39,7 @@ CLEvent& CLEvent::operator=(CLEvent&& move)
 void CLEvent::wait()
 {
    static const char* f = __PRETTY_FUNCTION__;
-   if (_hasEvent)
+   if ( _hasEvent )
    {
       cl_int err;
       err = clWaitForEvents(1,&_id);
@@ -53,7 +53,7 @@ bool CLEvent::is_done()
 {
    static const char* f = __PRETTY_FUNCTION__;
    bool ret {true};
-   if (_hasEvent)
+   if ( _hasEvent )
    {
       cl_int status;
       cl_int err;
