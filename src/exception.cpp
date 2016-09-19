@@ -16,7 +16,7 @@ Exception::Exception(const char* what, const char* detail, const char* function,
 
 Exception::~Exception() noexcept
 {
-   if (_demangle)
+   if ( _demangle )
    {
       free(_demangle);
    }
@@ -40,7 +40,7 @@ int Exception::line() const noexcept
 
 const char* Exception::what() const noexcept
 {
-   if (!_demangle)
+   if ( !_demangle )
    {
       int stat;
       _demangle = abi::__cxa_demangle(_what,0,0,&stat);

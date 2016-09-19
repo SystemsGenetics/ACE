@@ -13,10 +13,20 @@ namespace AccelCompEng
 
 
 
+/// @brief Call assertion check.
+///
+/// Call assertion check one some condition that must be true, and if it is not true than a custom
+/// exception structure is thrown.
+///
+/// @tparam T The custom exception class to possibly throw.
+/// @param cond The condition that must be true for no exception to be thrown.
+/// @param function Name of the function where the assertion is checked.
+/// @param line Line number in file where assertion is checked.
+/// @param detail Any additional details that describes the assertion check.
 template<class T> inline void assert(bool cond, const char* function, int line,
                                      const char* detail = nullptr)
 {
-   if (!cond)
+   if ( !cond )
    {
       throw T(typeid(T).name(),detail,function,line);
    }
@@ -24,6 +34,15 @@ template<class T> inline void assert(bool cond, const char* function, int line,
 
 
 
+/// @brief Call OpenCL assertion check.
+///
+/// Check the return status of an already called OpenCL function. If the return status is anything
+/// except CL_SUCCESS than a custom exception is thrown.
+///
+/// @tparam T The custom exception class to possibly throw.
+/// @param code The OpenCL return status of a called function.
+/// @param function Name of the function where the assertion is checked.
+/// @param line Line number in file where assertion is checked.
 template<class T> inline void classert(cl_int code, const char* function, int line)
 {
    static const char* clDescErrors[] = {
@@ -93,10 +112,10 @@ template<class T> inline void classert(cl_int code, const char* function, int li
       "CL_INVALID_GLOBAL_WORK_SIZE",
       "CL_INVALID_PROPERTY"
    };
-   if (code!=CL_SUCCESS)
+   if ( code != CL_SUCCESS )
    {
       const char* tmp;
-      if (code<=0&&code>=-64)
+      if ( code <= 0 && code >= -64 )
       {
          tmp = clDescErrors[-code];
       }
@@ -110,29 +129,48 @@ template<class T> inline void classert(cl_int code, const char* function, int li
 
 
 
+/// @brief Exception class for ACE.
+///
+/// This is the primary exception class for the entire ACE program. Any custom exception structure
+/// should inherit from this class as its primary parent class.
 class Exception
 {
 public:
-   // *
-   // * BASIC METHODS
-   // *
-   Exception(const char*,const char*,const char*,int) noexcept;
+   /// @brief Create new exception.
+   ///
+   /// Makes a new exception object with the given input values.
+   ///
+   /// @param what Name of the custom exception class being thrown.
+   /// @param detail Specific details about the exception being thrown.
+   /// @param function Function name where this exception is thrown.
+   /// @param line File line number where this exception is thrown.
+   Exception(const char* what, const char* detail, const char* function, int line) noexcept;
    ~Exception();
    Exception(const Exception&) = default;
    Exception(Exception&&) = default;
    Exception& operator=(const Exception&) = default;
    Exception& operator=(Exception&&) = default;
-   // *
-   // * FUNCTIONS
-   // *
+   /// @brief Get function name.
+   ///
+   /// Get function name where exception was thrown.
+   /// @return Name of function.
    const char* function() const noexcept;
+   /// @brief Get line number.
+   ///
+   /// Get line number where exception was thrown.
+   /// @return Line number.
    int line() const noexcept;
+   /// @brief Get custom exception name.
+   ///
+   /// Get name of the specific exception type that was thrown.
+   /// @return Type of exception thrown.
    const char* what() const noexcept;
+   /// @brief Get details.
+   ///
+   /// Get details about the specific exception that was thrown, if any.
+   /// @return String to details about exception or nullptr if no details.
    const char* detail() const noexcept;
 private:
-   // *
-   // * VARIABLES
-   // *
    const char* _function;
    int _line;
    const char* _what;
