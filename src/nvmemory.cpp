@@ -22,7 +22,7 @@ NVMemory::NVMemory(const std::string& fileName)
 
 NVMemory::~NVMemory()
 {
-   if (is_open())
+   if ( is_open() )
    {
       close();
    }
@@ -39,7 +39,7 @@ void NVMemory::open(const std::string& fileName)
    _fd = ::open(fileName.c_str(),flags,modes);
    assert<SystemError>(_fd!=-1,f,__LINE__);
    bool cond;
-   if (lseek64(_fd,0,SEEK_END)==0)
+   if ( lseek64(_fd,0,SEEK_END) == 0 )
    {
       cond = ::write(_fd,_idStr,_idLen)==_idLen&&
              ::write(_fd,&_next,sizeof(int64_t))==sizeof(int64_t);
@@ -55,9 +55,9 @@ void NVMemory::open(const std::string& fileName)
       cond = ::read(_fd,buf,_idLen)!=-1;
       assert<SystemError>(cond,f,__LINE__);
       cond = true;
-      for (int i=0;i<_idLen;++i)
+      for (int i = 0; i < _idLen ;++i)
       {
-         if (buf[i]!=_idStr[i])
+         if ( buf[i] != _idStr[i] )
          {
             cond = false;
          }
@@ -110,7 +110,7 @@ bool NVMemory::reserve(int64_t numBytes)
    assert<NotOpen>(is_open(),f,__LINE__);
    assert<InvalidInput>(numBytes>0,f,__LINE__);
    bool ret = false;
-   if (posix_fallocate64(_fd,lseek64(_fd,0,SEEK_END),numBytes)==0)
+   if ( posix_fallocate64(_fd,lseek64(_fd,0,SEEK_END),numBytes) == 0)
    {
       ret = true;
       _capacity += numBytes;
@@ -127,7 +127,7 @@ int64_t NVMemory::allocate(int64_t numBytes)
    assert<NotOpen>(is_open(),f,__LINE__);
    assert<InvalidInput>(numBytes>0,f,__LINE__);
    int64_t ret {fnullptr};
-   if (numBytes<=_avail)
+   if ( numBytes <= _avail )
    {
       ret = _next;
       _next += numBytes;
@@ -204,7 +204,7 @@ NVMemory::Node::Node(int size):
    _size(size)
 {
    static const char* f = __PRETTY_FUNCTION__;
-   if (size<=0)
+   if ( size <= 0 )
    {
       _size = 0;
       assert<InvalidInput>(false,f,__LINE__);
@@ -219,7 +219,7 @@ NVMemory::Node::Node(int size, const std::shared_ptr<NVMemory>& mem, int64_t ptr
    _ptr(ptr)
 {
    static const char* f = __PRETTY_FUNCTION__;
-   if (size<=0)
+   if ( size <= 0 )
    {
       _size = 0;
       assert<InvalidInput>(false,f,__LINE__);
@@ -233,7 +233,7 @@ NVMemory::Node::Node(const Node& copy):
    _ptr(copy._ptr),
    _size(copy._size)
 {
-   if (copy._data)
+   if ( copy._data )
    {
       _own.reset(new char[_size]);
       _data = _own.get();
@@ -250,7 +250,7 @@ NVMemory::Node::Node(Node&& move):
 {
    move._mem.reset();
    move._ptr = fnullptr;
-   if (move._data)
+   if ( move._data )
    {
       _own.reset(new char[_size]);
       _data = _own.get();
@@ -266,7 +266,7 @@ NVMemory::Node& NVMemory::Node::operator=(const Node& copy)
    _mem = copy._mem;
    _ptr = copy._ptr;
    _size = copy._size;
-   if (copy._data)
+   if ( copy._data )
    {
       _own.reset(new char[_size]);
       _data = _own.get();
@@ -283,7 +283,7 @@ NVMemory::Node& NVMemory::Node::operator=(Node&& move)
    _size = move._size;
    move._mem.reset();
    move._ptr = fnullptr;
-   if (move._data)
+   if ( move._data )
    {
       _own.reset(new char[_size]);
       _data = _own.get();
@@ -358,7 +358,7 @@ void NVMemory::Node::allocate(int64_t numNodes)
    assert<InvalidInput>(numNodes>0,f,__LINE__);
    assert<NullMemory>(_mem.get(),f,__LINE__);
    int64_t realSize = _size*numNodes;
-   if (_mem->available()<realSize)
+   if ( _mem->available() < realSize )
    {
       bool cond {_mem->reserve(realSize-_mem->available())};
       assert<AllotFail>(cond,f,__LINE__);
@@ -377,7 +377,7 @@ void NVMemory::Node::read(int64_t i)
    assert<NullMemory>(_mem.get(),f,__LINE__);
    assert<NullPtr>(_ptr!=fnullptr,f,__LINE__);
    _mem->read(_data,_ptr+i*_size,_size);
-   if (!NVMemory::is_network_endian())
+   if ( !NVMemory::is_network_endian() )
    {
       flip_endian();
    }
@@ -392,12 +392,12 @@ void NVMemory::Node::write(int64_t i)
    assert<NullData>(_data,f,__LINE__);
    assert<NullMemory>(_mem.get(),f,__LINE__);
    assert<NullPtr>(_ptr!=fnullptr,f,__LINE__);
-   if (!NVMemory::is_network_endian())
+   if ( !NVMemory::is_network_endian() )
    {
       flip_endian();
    }
    _mem->write(_data,_ptr+i*_size,_size);
-   if (!NVMemory::is_network_endian())
+   if ( !NVMemory::is_network_endian() )
    {
       flip_endian();
    }
@@ -407,14 +407,14 @@ void NVMemory::Node::write(int64_t i)
 
 bool NVMemory::Node::operator==(const Node& cmp)
 {
-   return _mem.get()==cmp._mem.get()&&_ptr==cmp._ptr;
+   return ( _mem.get() == cmp._mem.get() && _ptr == cmp._ptr );
 }
 
 
 
 bool NVMemory::Node::operator!=(const Node& cmp)
 {
-   return _mem.get()!=cmp._mem.get()||_ptr!=cmp._ptr;
+   return ( _mem.get() != cmp._mem.get() || _ptr != cmp._ptr );
 }
 
 
