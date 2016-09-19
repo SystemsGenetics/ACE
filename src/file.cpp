@@ -233,9 +233,6 @@ void File::Data::flip_endian()
 
 
 
-/// @brief partially reset object.
-///
-/// Resets all data for object in system memory but not file memory.
 void File::reset()
 {
    _ident.clear();

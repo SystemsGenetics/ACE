@@ -21,22 +21,14 @@ public:
    struct CannotCreate : public Exception { using Exception::Exception; };
    struct NotInitialized : public Exception { using Exception::Exception; };
    friend class Console;
-   /// @brief Creates empty object.
-   ///
    /// Creates an empty wrapper with no OpenCL context.
    CLContext() = default;
    ~CLContext();
-   /// @brief Is object initialized?
-   ///
    /// Tests if object is initialized and contains a valid OpenCL context.
-   ///
    /// @return Does this object have an OpenCL context?
    bool is_initd();
 protected:
-   /// @brief Create new buffer.
-   ///
    /// Creates a new OpenCL buffer object.
-   ///
    /// @tparam T The basic type of the new buffer object.
    /// @param size Size of array for the new buffer object.
    template<class T> CLBuffer<T> buffer(int size);

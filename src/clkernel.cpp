@@ -132,12 +132,6 @@ size_t CLKernel::get_wg_multiple()
 
 
 
-/// @brief Create new kernel.
-///
-/// Create new wrapper with attached OpenCL kernel and device.
-///
-/// @param id OpenCL kernel id.
-/// @param did OpenCL device id.
 CLKernel::CLKernel(cl_kernel id, cl_device_id did):
    _isAlive(true),
    _id(id),

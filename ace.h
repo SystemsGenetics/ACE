@@ -19,10 +19,7 @@ namespace AccelCompEng
 
 
 
-/// @brief Start ACE.
-///
 /// Primary function called to step into the ACE platform.
-///
 /// @param header The header that will be printed on the command prompt.
 /// @param factory The plugin object factory which ACE will use to find data and analytic plugins.
 /// @param argc Argument from main.

@@ -23,80 +23,47 @@ public:
    struct NullIdent : public Exception { using Exception::Exception; };
    struct AlreadySet : public Exception { using Exception::Exception; };
    struct NullHistory : public Exception { using Exception::Exception; };
-   /// @brief Create uninitialized object.
-   ///
    /// Create an empty file object that is not initialized.
    File() = default;
    File(const File&) = delete;
    File(File&&) = delete;
    File& operator=(const File&) = delete;
    File& operator=(File&&) = delete;
-   /// @brief Load data file.
-   ///
    /// Loads a data from from the given file name. This is meant for ACE internally and should not
    /// be used by a data plugin.
-   ///
    /// @param fileName File name.
    void load(const std::string& fileName);
-   /// @brief Clear data file.
-   ///
    /// Clear the loaded data file, emptying it of all data and reseting all pointers to null. This
    /// is meant for ACE internally and should not be used by a data plugin.
    void clear();
-   /// @brief Is this a new file object.
-   ///
    /// Returns true if the file that was loaded did not exist and was just created.
-   ///
    /// @return Is this a new file?
    bool is_new();
-   /// @brief Initializes file object history.
-   ///
    /// Creates a new history object that is associated with this file object. This is meant for ACE
    /// internally and should not be used by a data plugin.
    void init_history();
-   /// @brief Get history reference.
-   ///
    /// Provides a reference to the history object of this file object. This is meant for ACE
    /// internally and should not be used by a data plugin.
-   ///
    /// @return History reference.
    History& history();
-   /// @brief Write history to file.
-   ///
    /// If this is a new file and history is only in system memory, this writes all that information
    /// permanently to the file object.
    void write_history();
 protected:
-   /// @brief Get ident string.
-   ///
    /// Get the ident string of the file object. The default is empty.
-   ///
    /// @return Identification.
    const std::string& ident() const;
-   /// @brief Set ident string.
-   ///
    /// Set the ident string of the file object. This can only be done once.
    void ident(const std::string& ident);
-   /// @brief Get head file pointer.
-   ///
    /// Get the head file pointer of the file object. The default is a null pointer.
-   ///
    /// @return Head pointer.
    int64_t head() const;
-   /// @brief Set head file pointer.
-   ///
    /// Set the head file pointer of the file object.
    void head(int64_t ptr);
-   /// @brief Get pointer to nvmemory object.
-   ///
    /// Get the pointer to the nvmemory object used to access the memory in the file object.
-   ///
    /// @return Nvmemory pointer.
    const std::shared_ptr<NVMemory>& mem();
-   /// @brief Get reference to nvmemory object.
-   ///
    /// Get a reference to the nvmemory object used to access the memory in the file object.
-   ///
    /// @return Nvmemory rerefence.
    NVMemory& rmem();
 private:

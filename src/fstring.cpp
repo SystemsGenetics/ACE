@@ -135,9 +135,6 @@ void FString::fetch_list(FString& fstr, int64_t startAddr, int size, std::vector
 
 
 
-/// @brief Load file string.
-///
-/// Loads a file string into objects system memory.
 void FString::load()
 {
    static const char* f = __PRETTY_FUNCTION__;

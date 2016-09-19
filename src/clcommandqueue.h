@@ -25,8 +25,6 @@ public:
    struct NotInitialized : public Exception { using Exception::Exception; };
    struct NullBufferUsed : public Exception { using Exception::Exception; };
    struct NullKernelUsed : public Exception { using Exception::Exception; };
-   /// @brief Create empty object.
-   ///
    /// Creates an empty wrapper that has no command queue setup yet.
    CLCommandQueue() = default;
    ~CLCommandQueue();
@@ -34,36 +32,21 @@ public:
    CLCommandQueue& operator=(const CLCommandQueue&) = delete;
    CLCommandQueue(CLCommandQueue&&) = delete;
    CLCommandQueue& operator=(CLCommandQueue&&) = delete;
-   /// @brief Initialize new command queue.
-   ///
    /// Initializes the wrapper with a new OpenCL command queue using the given context and devicce.
-   ///
    /// @param cid OpenCL context id used to create the command queue.
    /// @param did OpenCL device id used to create the command queue.
    void init(cl_context cid, cl_device_id did);
 protected:
-   /// @brief Read buffer.
-   ///
    /// Adds a read buffer command to the queue.
-   ///
    /// @param buffer Object to read from.
    template<class T> CLEvent read_buffer(CLBuffer<T>& buffer);
-   /// @brief Write buffer.
-   ///
    /// Adds a write buffer command to the queue.
-   ///
    /// @param buffer Object to write to.
    template<class T> CLEvent write_buffer(CLBuffer<T>& buffer);
-   /// @brief Add single task.
-   ///
    /// Adds single task to the queue.
-   ///
    /// @param kernel Object to execute on device.
    CLEvent add_task(CLKernel& kernel);
-   /// @brief Add parallel swarm.
-   ///
    /// Adds parallel range of tasks to the queue.
-   ///
    /// @param kernel Object to parallel execute on device.
    CLEvent add_swarm(CLKernel& kernel);
 private:

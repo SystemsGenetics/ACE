@@ -108,13 +108,6 @@ bool CLDevice::operator==(const CLDevice& cmp)
 
 
 
-/// @brief Converts boolean value into string representation.
-///
-/// Takes boolean value and outputs textual yes if boolean is true and no if
-/// boolean is false.
-///
-/// @param buffer Where textual yes/no will be written to.
-/// @param test Value that will be read.
 void CLDevice::yes_no(std::ostringstream& buffer, bool test) const
 {
    const char* ans[] = {"yes","no"};
@@ -123,13 +116,6 @@ void CLDevice::yes_no(std::ostringstream& buffer, bool test) const
 
 
 
-/// @brief Converts integer to memory size.
-///
-/// Takes integer value as bytes and outputs formatted output to buffer with the
-/// appropriate label. Maximum size is 1024 terrabytes.
-///
-/// @param buffer Where formatted output is written.
-/// @param size Sizein bytes to be reported.
 void CLDevice::size_it(std::ostringstream& buffer, long size) const
 {
    constexpr double kilobit = 1024.0f;

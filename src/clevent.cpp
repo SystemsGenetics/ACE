@@ -71,11 +71,6 @@ bool CLEvent::is_done()
 
 
 
-/// @brief Create new event.
-///
-/// Creates a new object with the given OpenCL event.
-///
-/// @param id OpenCL event id.
 CLEvent::CLEvent(cl_event id):
    _hasEvent(true),
    _id(id)

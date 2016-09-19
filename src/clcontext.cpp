@@ -21,12 +21,6 @@ bool CLContext::is_initd()
 
 
 
-/// @brief Initialize object.
-///
-/// Initialize OpenCL context and subsystems, program and command queue, with the given OpenCL
-/// device.
-///
-/// @param dev OpenCL device to use for OpenCL system.
 void CLContext::init_cl(CLDevice& dev)
 {
    static const char* f = __PRETTY_FUNCTION__;

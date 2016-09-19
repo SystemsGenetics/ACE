@@ -32,10 +32,7 @@ class Console
 public:
    struct InvalidUse : public Exception { using Exception::Exception; };
    class CommandError;
-   /// @brief Initialize console.
-   ///
    /// Initialize the console object, keeping in mind there can be only one console object.
-   ///
    /// @param argc Argument from main.
    /// @param argv Argument from main.
    /// @param tm Terminal object for ACE.
@@ -49,12 +46,8 @@ public:
    Console& operator=(const Console&) = delete;
    Console(Console&&) = delete;
    Console& operator=(Console&&) = delete;
-   /// @brief Run command prompt.
-   ///
    /// Give control to console and initiate command prompt for user.
    void run();
-   /// @brief Run a single command.
-   ///
    /// Run a single command in the console that is non-blocking and returns control once the command
    /// is complete.
    bool command(const std::string& line);
@@ -98,17 +91,11 @@ private:
 class Console::CommandError
 {
 public:
-   /// @brief Initialize command error.
-   ///
    /// Initializes a new command error and sets who threw it and its message.
-   ///
    /// @param who Identifies who threw the error message.
    /// @param msg The message describing the error that occured.
    CommandError(const std::string&,const std::string&);
-   /// @brief Print error.
-   ///
    /// Prints the error message to the terminal.
-   ///
    /// @param tm The program's terminal that will be printed to.
    void print(Terminal&);
 private:

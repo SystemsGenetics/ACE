@@ -147,11 +147,6 @@ bool Console::command(const std::string& line)
 
 
 
-/// @brief Process single command.
-///
-/// Processes user command and routes to specific command.
-///
-/// @param ops Command line object with options.
 void Console::process(GetOpts& ops)
 {
    enum {Analytic=0,GPU,Open,Load,Select,Dump,Query,Close,List,Clear,History,
@@ -207,11 +202,6 @@ void Console::process(GetOpts& ops)
 
 
 
-/// @brief Process OpenCL command.
-///
-/// Processes OpenCL command and routes to specific command given.
-///
-/// @param ops Command line object with options.
 void Console::gpu_process(GetOpts& ops)
 {
    if ( ops.com_empty() )
@@ -245,9 +235,6 @@ void Console::gpu_process(GetOpts& ops)
 
 
 
-/// @brief List OpenCL devices.
-///
-/// Executes command to list all available OpenCL devices.
 void Console::gpu_list()
 {
    for (auto d:*_devList)
@@ -265,11 +252,6 @@ void Console::gpu_list()
 
 
 
-/// @brief Print OpenCL device info.
-///
-/// Executes command to print basic info of of given OpenCL device.
-///
-/// @param ops Command line object with options.
 void Console::gpu_info(GetOpts& ops)
 {
    if ( ops.com_empty() )
@@ -303,11 +285,6 @@ void Console::gpu_info(GetOpts& ops)
 
 
 
-/// @brief Set OpenCL device.
-///
-/// Executes command that sets OpenCL device for analytic computation.
-///
-/// @param ops Command line object with options.
 void Console::gpu_set(GetOpts& ops)
 {
    if ( ops.com_empty() )
@@ -337,9 +314,6 @@ void Console::gpu_set(GetOpts& ops)
 
 
 
-/// @brief CLear OpenCL device.
-///
-/// Executes command that clears any OpenCL device set for computation.
 void Console::gpu_clear()
 {
    if ( _device )
@@ -356,11 +330,6 @@ void Console::gpu_clear()
 
 
 
-/// @brief Open data object.
-///
-/// Executes command to open a data object.
-///
-/// @param ops Command line object with options.
 void Console::data_open(GetOpts& ops)
 {
    if ( ops.com_empty() )
@@ -407,11 +376,6 @@ void Console::data_open(GetOpts& ops)
 
 
 
-/// @brief Close data object.
-///
-/// Executes command to close data object.
-///
-/// @param ops Command line object with options.
 void Console::data_close(GetOpts& ops)
 {
    if ( ops.com_empty() )
@@ -434,11 +398,6 @@ void Console::data_close(GetOpts& ops)
 
 
 
-/// @brief Select data object.
-///
-/// Executes command to select a loaded data object.
-///
-/// @param ops Command line object with options.
 void Console::data_select(GetOpts& ops)
 {
    if ( ops.com_empty() )
@@ -460,9 +419,6 @@ void Console::data_select(GetOpts& ops)
 
 
 
-/// @brief Clear data object.
-///
-/// Executes command to clear any selected data object.
 void Console::data_clear()
 {
    if ( _dataMap.unselect() )
@@ -477,9 +433,6 @@ void Console::data_clear()
 
 
 
-/// @brief List data objects.
-///
-/// Executes command to list all loaded data objects.
 void Console::data_list()
 {
    for (auto i = _dataMap.begin(); i != _dataMap.end() ;++i)
@@ -495,11 +448,6 @@ void Console::data_list()
 
 
 
-/// @brief Print data object history.
-///
-/// Executes command to print the history of a data object.
-///
-/// @param ops Command line object with options.
 void Console::data_history(GetOpts& ops)
 {
    if ( ops.com_empty() )
@@ -532,11 +480,6 @@ void Console::data_history(GetOpts& ops)
 
 
 
-/// @brief Call data object load.
-///
-/// Executes command to call the load function of a data object.
-///
-/// @param ops Command line object with options.
 void Console::data_load(GetOpts& ops)
 {
    try
@@ -561,11 +504,6 @@ void Console::data_load(GetOpts& ops)
 
 
 
-/// @brief Call data object dump.
-///
-/// Executes command to call the dump function of a data object.
-///
-/// @param ops Command line object with options.
 void Console::data_dump(GetOpts& ops)
 {
    try
@@ -580,11 +518,6 @@ void Console::data_dump(GetOpts& ops)
 
 
 
-/// @brief Call data object query.
-///
-/// Executes command to call the query function of a data object.
-///
-/// @param ops Command line object with options.
 void Console::data_query(GetOpts& ops)
 {
    try
@@ -599,11 +532,6 @@ void Console::data_query(GetOpts& ops)
 
 
 
-/// @brief Executes analytic.
-///
-/// Executes the catch all analytic command, using the first argument as the name of the analytic.
-///
-/// @param ops Command line object with options.
 void Console::analytic(GetOpts& ops)
 {
    std::unique_ptr<Analytic> a(_factory.build_analytic(ops.com_front()));
@@ -719,17 +647,6 @@ void Console::analytic(GetOpts& ops)
 
 
 
-/// @brief Explode string into 2 substrings.
-///
-/// Takes a single input string and seperates it into two substrings using :
-/// as the delimiter. Will also work with no delimiter, setting the first
-/// substring as the whole input string and the second as empty.
-///
-/// @param who Name of what is using this function for if it throws a command
-/// error.
-/// @param raw Input string that will be seperated.
-/// @param file Output string that will have first substring set to it.
-/// @param type Output string that will have second substring set to it.
 void Console::seperate(const std::string& who, const std::string& raw, std::string& file,
                        std::string& type)
 {
@@ -748,15 +665,6 @@ void Console::seperate(const std::string& who, const std::string& raw, std::stri
 
 
 
-/// @brief Recursively prints history list.
-///
-/// Recursively lists the history of the given history list iterators, starting
-/// with begin and ending with end. Will also recusively call itself for each
-/// iterator if that iterator has a child iterator.
-///
-/// @param begin First iterator that will be listed.
-/// @param end End of list iterator that marks end of iterator list.
-/// @param d Recursive depth of current list being printed.
 inline void Console::rec_history(History::Iterator begin, History::Iterator end, int d)
 {
    for (auto i = begin; i != end ;++i)
@@ -792,11 +700,6 @@ inline void Console::rec_history(History::Iterator begin, History::Iterator end,
 
 
 
-/// @brief Print padding.
-///
-/// Prints a certain number of spaces as padding for a line of text.
-///
-/// @param d How many levels of padding that will be printed.
 inline void Console::print_pad(int d)
 {
    while (d--)

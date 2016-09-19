@@ -14,16 +14,10 @@ namespace AccelCompEng
 class Factory
 {
 public:
-   /// @brief Builds data objects.
-   ///
    /// Builds new data objects from the given type.
-   ///
    /// @param Data type to produce.
    virtual Data* build_data(const std::string& type) = 0;
-   /// @brief Builds analytic objects.
-   ///
    /// Builds new analytic objects from the given type.
-   ///
    /// @param Analytic type to produce.
    virtual Analytic* build_analytic(const std::string& type) = 0;
 };

@@ -17,10 +17,6 @@ CLDevList::CLDevList(bool isBuild)
 
 
 
-/// @brief Builds list of OpenCL devices for object.
-///
-/// This internal function constructs all available OpenCL devices by querying OpenCL and
-/// constructing a 2 dimensional vector storing all devices.
 void CLDevList::build()
 {
    static const char* f = __PRETTY_FUNCTION__;
@@ -153,13 +149,6 @@ bool CLDevList::Iterator::operator!=(const Iterator& cmp)
 
 
 
-/// @brief Create new iterator.
-///
-/// Initializes iterator with given parameters.
-///
-/// @param p The increment into list of platforms.
-/// @param d The increment into list of devices of given platform.
-/// @param devList Pointer to CLDevList object which instantiated iterator.
 CLDevList::Iterator::Iterator(int p, int d, CLDevList* devList):
    _pi(p),
    _di(d),

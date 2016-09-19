@@ -16,18 +16,16 @@ namespace AccelCompEng
 
 /// @brief Represents a single OpenCL device.
 ///
-/// Represents a single OpenCL device that can be queried for information about
-/// the device along with pointers to the OpenCL platform and device interface.
-/// The "address" of these devices are represented by two numbers, the first
-/// being the platform the device is part of and the second being which device
-/// in the platform.
+/// Represents a single OpenCL device that can be queried for information about the device along
+/// with pointers to the OpenCL platform and device interface. The "address" of these devices are
+/// represented by two numbers, the first being the platform the device is part of and the second
+/// being which device in the platform.
 class CLDevice
 {
 public:
    struct InfoErr : public Exception { using Exception::Exception; };
    friend class CLDevList;
-   /// Defines all possible types of information that can be queried about an
-   /// OpenCL device.
+   /// Defines all possible types of information that can be queried about an OpenCL device.
    enum CLInfo
    {
       ident, ///< The two identifying numbers of device.
@@ -47,12 +45,8 @@ public:
       float_sp, ///< Floating point operations supported for single precision.
       float_dp ///< Floating point operations supported for double precision.
    };
-   /// @brief Constructs new CLDevice based off info given.
-   ///
-   /// This is the only constructor for this class which is private and should only
-   /// be used by the CLDevList class. The parameters given for the device are NOT
-   /// checked for validity.
-   ///
+   /// This is the only constructor for this class which is private and should only be used by the
+   /// CLDevList class. The parameters given for the device are NOT checked for validity.
    /// @param pinc The increment into list of platforms.
    /// @param dinc The increment into list of devices for given platform.
    /// @param pid The OpenCL platform id for the device.
@@ -62,23 +56,14 @@ public:
    CLDevice(CLDevice&&) = default;
    CLDevice& operator=(const CLDevice&) = default;
    CLDevice& operator=(CLDevice&&) = default;
-   /// @brief Platform id.
-   ///
    /// Return OpenCL platform id of device.
-   ///
    /// @return OpenCL platform id.
    cl_platform_id platform();
-   /// @brief Device id.
-   ///
    /// Return OpenCL device id of CLDevice object.
-   ///
    /// @return OpenCL device id.
    cl_device_id device();
-   /// @brief Returns information about OpenCL device.
-   ///
-   /// Returns string with requested information about OpenCL device. The different
-   /// types of information to be queired is defined in clinfo.
-   ///
+   /// Returns string with requested information about OpenCL device. The different types of
+   /// information to be queired is defined in clinfo.
    /// @param which Enumerated type specifying what type of information to query.
    /// @return Requested information.
    std::string info(CLInfo) const;
@@ -96,13 +81,6 @@ private:
 
 
 
-/// @brief Get device info.
-///
-/// Get specific info from OpenCL device.
-///
-/// @tparam T Data type needed for requested information.
-/// @param infoType Type of information requested.
-/// @return Requested information.
 template<class T> T CLDevice::get_info(cl_device_info infoType) const
 {
    static const char* f = __PRETTY_FUNCTION__;
@@ -115,12 +93,6 @@ template<class T> T CLDevice::get_info(cl_device_info infoType) const
 
 
 
-/// @brief Get device info.
-///
-/// Get specific info from OpenCL device that returns a string as its value.
-///
-/// @param infoType Type of information requested.
-/// @return Requested information.
 template<> inline std::string CLDevice::get_info(cl_device_info infoType) const
 {
    static const char* f = __PRETTY_FUNCTION__;

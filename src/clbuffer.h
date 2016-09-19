@@ -21,8 +21,6 @@ public:
    friend class CLContext;
    friend class CLCommandQueue;
    friend class CLKernel;
-   /// @brief Initialize empty object.
-   ///
    /// Creates an empty, or null, buffer object.
    CLBuffer() = default;
    ~CLBuffer();
@@ -119,12 +117,6 @@ template<class T> const T& CLBuffer<T>::at(int i) const
 
 
 
-/// @brief Create buffer object.
-///
-/// Creates a new OpenCL buffer with the given size.
-///
-/// @param cid OpenCL context id to use in creation of the buffer object.
-/// @param size The size of the buffer array to create.
 template<class T> CLBuffer<T>::CLBuffer(cl_context cid, int size):
    _size(size)
 {

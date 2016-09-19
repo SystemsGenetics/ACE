@@ -13,11 +13,8 @@ namespace AccelCompEng
 
 
 
-/// @brief Call assertion check.
-///
 /// Call assertion check one some condition that must be true, and if it is not true than a custom
 /// exception structure is thrown.
-///
 /// @tparam T The custom exception class to possibly throw.
 /// @param cond The condition that must be true for no exception to be thrown.
 /// @param function Name of the function where the assertion is checked.
@@ -34,11 +31,8 @@ template<class T> inline void assert(bool cond, const char* function, int line,
 
 
 
-/// @brief Call OpenCL assertion check.
-///
 /// Check the return status of an already called OpenCL function. If the return status is anything
 /// except CL_SUCCESS than a custom exception is thrown.
-///
 /// @tparam T The custom exception class to possibly throw.
 /// @param code The OpenCL return status of a called function.
 /// @param function Name of the function where the assertion is checked.
@@ -136,10 +130,7 @@ template<class T> inline void classert(cl_int code, const char* function, int li
 class Exception
 {
 public:
-   /// @brief Create new exception.
-   ///
    /// Makes a new exception object with the given input values.
-   ///
    /// @param what Name of the custom exception class being thrown.
    /// @param detail Specific details about the exception being thrown.
    /// @param function Function name where this exception is thrown.
@@ -150,23 +141,15 @@ public:
    Exception(Exception&&) = default;
    Exception& operator=(const Exception&) = default;
    Exception& operator=(Exception&&) = default;
-   /// @brief Get function name.
-   ///
    /// Get function name where exception was thrown.
    /// @return Name of function.
    const char* function() const noexcept;
-   /// @brief Get line number.
-   ///
    /// Get line number where exception was thrown.
    /// @return Line number.
    int line() const noexcept;
-   /// @brief Get custom exception name.
-   ///
    /// Get name of the specific exception type that was thrown.
    /// @return Type of exception thrown.
    const char* what() const noexcept;
-   /// @brief Get details.
-   ///
    /// Get details about the specific exception that was thrown, if any.
    /// @return String to details about exception or nullptr if no details.
    const char* detail() const noexcept;

@@ -19,20 +19,12 @@ public:
    struct NullMemory : public Exception { using Exception::Exception; };
    struct BufferOverrun : public Exception { using Exception::Exception; };
    struct InvalidInput : public Exception { using Exception::Exception; };
-   /// @brief Creates empty object.
-   ///
    /// Creates an empty object not associated to any nvmemory or address.
    FString();
-   /// @brief Creates object with nvmemory.
-   ///
    /// Creates a new object with no string data associated with the given nvmemory object.
-   ///
    /// @param mem The file memory object associated with object.
    FString(const std::shared_ptr<NVMemory>& mem);
-   /// @brief Creates object with data.
-   ///
    /// Creates a new object with string data from specified address and nvmemory file object.
-   ///
    /// @param mem The file memory object.
    /// @param ptr The file address where the string is located.
    FString(const std::shared_ptr<NVMemory>& mem, int64_t ptr);
@@ -42,52 +34,31 @@ public:
    FString& operator=(FString&&) = default;
    using Node::mem;
    using Node::pmem;
-   /// @brief loads a new file string.
-   ///
    /// Loads a new string from file memory from the address given.
-   ///
    /// @param ptr File address of string to load.
    void load(int64_t ptr);
-   /// @brief Clears any loaded string.
-   ///
    /// This clears any loaded string and resets the file pointer to null.
    void reset();
-   /// @brief Get file string.
-   ///
    /// Get the string data that has been loaded from file memory.
-   ///
    /// @return String data.
    const std::string& str() const;
-   /// @brief Write new string to file memory.
-   ///
    /// Writes a new string to file memory, returning the address of the new file string.
-   ///
    /// @param str String data to write.
    /// @return File address where the new file string is located.
    int64_t write(const std::string& str);
-   /// @brief Allocate static buffer.
-   ///
    /// Allocate a static string buffer in memory for increased speed in constantly loading or
    /// writing a multiple of strings to or from file memory. The con is that you cannot write a
    /// string that exceeds the size of the bufer.
-   ///
    /// @param size The size of the buffer in bytes.
    void static_buffer(int size);
-   /// @brief Clear static buffer.
-   ///
    /// This clears any static buffer set, which causes the object to dynamically allocate a string
    /// buffer for each read or write to or from file memory.
    void clear_buffer();
-   /// @brief Load next file string.
-   ///
    /// This assumes there is a file string directly proceeding the current file string loaded,
    /// bumping to that address and loading the next file string.
    void bump();
-   /// @brief Generates list of strings from memory.
-   ///
    /// Grabs list of file strings from memory, assuming that each string directly proceeds the
    /// previous one in memory. The provided fstring must already point to a valid nvmemory object.
-   ///
    /// @param fstr Initialized and empty fstring that points to valid nvmemory object.
    /// @param startAddr The address of the first string in memory in list of strings.
    /// @param size The total number of strings that should be grabbed from memory.

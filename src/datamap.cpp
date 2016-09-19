@@ -185,13 +185,6 @@ DataMap::Iterator DataMap::selected()
 
 
 
-/// @brief Find specific data object.
-///
-/// Searches list of loaded data object and returns iterator of data object that
-/// matches the file name given.
-///
-/// @param file File name of data object to find.
-/// @return Iterator to data object that is found.
 inline std::map<std::string,std::unique_ptr<Data>>::iterator DataMap::get(const std::string& file)
 {
    static const char* f = __PRETTY_FUNCTION__;
@@ -238,11 +231,6 @@ bool DataMap::Iterator::operator==(const Iterator& cmp)
 
 
 
-/// @brief Create new datamap iterator.
-///
-/// Initializes data object iterator from internal container iterator.
-///
-/// @param i Internal container iterator.
 DataMap::Iterator::Iterator(std::map<std::string,std::unique_ptr<Data>>::iterator i):
    _i(i)
 {}
