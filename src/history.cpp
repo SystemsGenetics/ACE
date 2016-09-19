@@ -33,7 +33,7 @@ History::History(const std::shared_ptr<NVMemory>& mem, int64_t ptr):
 
 void History::load(int64_t ptr)
 {
-   if (addr()!=fnullptr)
+   if ( addr()!=fnullptr )
    {
       _children.clear();
    }
@@ -155,7 +155,7 @@ void History::load()
       fstr.bump();
       _command = fstr.str();
       int64_t ptr {get<Header>()._childHead};
-      while (ptr!=fnullptr)
+      while ( ptr != fnullptr )
       {
          std::unique_ptr<History> child {new History(mem(),ptr)};
          ptr = child->get<Header>()._next;
@@ -177,7 +177,7 @@ void History::load()
 
 void History::copy_children(const History& src)
 {
-   for (auto i = src._children.begin();i!=src._children.end();++i)
+   for (auto i = src._children.begin() ; i != src._children.end() ;++i)
    {
       const std::unique_ptr<History>& child {*i};
       std::unique_ptr<History> nchild {new History(mem())};
@@ -210,10 +210,10 @@ int64_t History::init_write()
    fstr.reset();
    fstr.write(_command);
    History* last {nullptr};
-   for (auto i = _children.begin();i!=_children.end();++i)
+   for (auto i = _children.begin(); i != _children.end() ;++i)
    {
       std::unique_ptr<History>& ptr {*i};
-      if (!last)
+      if ( !last )
       {
          get<Header>()._childHead = ptr->init_write();
       }
@@ -231,7 +231,7 @@ int64_t History::init_write()
 void History::final_write()
 {
    Node::write();
-   for (auto i = _children.begin();i!=_children.end();++i)
+   for (auto i = _children.begin(); i != _children.end() ;++i)
    {
       std::unique_ptr<History>& ptr {*i};
       ptr->final_write();
@@ -301,21 +301,21 @@ const History* History::Iterator::operator->() const
 
 bool History::Iterator::operator==(const Iterator& cmp) const
 {
-   return _p==cmp._p&&_i==cmp._i;
+   return ( _p == cmp._p && _i == cmp._i );
 }
 
 
 
 bool History::Iterator::operator!=(const Iterator& cmp) const
 {
-   return _p!=cmp._p||_i!=cmp._i;
+   return ( _p != cmp._p || _i != cmp._i );
 }
 
 
 
 void History::Iterator::operator++()
 {
-   if (_i<(_p->_children.size()))
+   if ( _i < _p->_children.size() )
    {
       ++_i;
    }
