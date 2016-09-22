@@ -87,6 +87,7 @@ void File::init_history()
    assert<NullMemory>(!_header.is_null_memory(),f,__LINE__);
    assert<AlreadySet>(!_history.get(),f,__LINE__);
    _history.reset(new History(_header.mem()));
+   _new = false;
 }
 
 

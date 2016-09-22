@@ -370,7 +370,7 @@ void Console::data_open(GetOpts& ops)
    }
    else
    {
-      _tm << "Old file " << file << " opened.";
+      _tm << "Old file " << file << " opened.\n";
    }
 }
 
