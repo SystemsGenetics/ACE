@@ -621,7 +621,10 @@ void Console::analytic(GetOpts& ops)
             throw CommandError("analytic","cannot overwrite non-empty data object.");
          }
          File& k = *dynamic_cast<File*>(d);
-         k.clear();
+         if ( !k.is_new() )
+         {
+            k.clear();
+         }
          k.init_history();
          k.history().init(file,ops.com_front(),ops.orig());
          for (auto i:ins)
