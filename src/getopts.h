@@ -121,5 +121,12 @@ template<class T> T GetOpts::Iterator::value() const
 
 
 
+template<> inline std::string GetOpts::Iterator::value() const
+{
+   return _i->second;
+}
+
+
+
 }
 #endif
