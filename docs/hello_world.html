@@ -1,0 +1,344 @@
+<html>
+<head>
+<style>
+body
+{
+  font-family: Sans-serif, Arial, Verdana;
+  font-size: 12px;
+  background-color: #00005c;
+}
+div.page
+{
+  color: black;
+  background-color: #e0e0ff;
+  border: 1px solid black;
+  padding: 16px;
+  width: 800px;
+  margin: 16px auto 16px;
+}
+div.code
+{
+  display: table;
+  margin: 20px auto 20px;
+  padding: 8px;
+  background-color: white;
+  border: 1px solid black;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+</style>
+<title>ACE Hello World</title>
+</head>
+<body>
+<div class="page">
+<center>
+<h1>Hello World for ACE.</h1>
+<p>An introduction to the ACE framework.<p>
+</center>
+<hr/>
+<h2>1. Summary</h2>
+<p>This document introduces the framework of the ACE library by providing a
+basic tutorial mimicking the classic hello world of programming introductions.
+It starts by creating a hello world data class, followed by a hello world
+analytic class, and finishing by wrapping it all together and including it in
+the ACE plugin factory object.</p>
+<h2>2. Data Class</h2>
+<p>Creating a data class is the first thing you should do
+when implementing a new idea when using the ACE library since analytic objects
+depend on and create new data objects. Our HelloWorld data object will be responsible with
+holding the value of a 32 bit integer.</p>
+<p>First we will create a skeleton class which will compile, but does
+absolutely nothing useful.</p>
+<div class="code">
+#include &lt;ace.h&gt;<br>
+<br>
+namespace Ace = AccelCompEng;<br>
+<br>
+class HelloWorld : public Ace::Data, public NVMemory::Node<br>
+{<br>
+public:<br>
+&nbsp;&nbsp;HelloWorld();<br>
+&nbsp;&nbsp;void init() override final;<br>
+&nbsp;&nbsp;void load(Ace::GetOpts&amp;, Ace::Terminal&amp;) override final;<br>
+&nbsp;&nbsp;void dump(Ace::GetOpts&amp;, Ace::Terminal&amp;) override final;<br>
+&nbsp;&nbsp;void query(Ace::GetOpts&amp;, Ace::Terminal&amp;) override final;<br>
+&nbsp;&nbsp;void empty() override final;<br>
+&nbsp;&nbsp;int get();<br>
+&nbsp;&nbsp;void set(int);<br>
+&nbsp;&nbsp;void write();<br>
+private:<br>
+&nbsp;&nbsp;void null_data() override final;<br>
+&nbsp;&nbsp;void flip_endian() override final;<br>
+};
+</div>
+<p>This skeleton inherits the required Data class from ACE which is the
+abstract class that defines a data object. The virtual functions that must be
+implemented from this class are init, load, dump, query, and empty. An optional
+class is also inherited, NVMemory::Node, which will be used for accessing the
+associated file of a data object.</p>
+<p>The init function is called once everything below this class has been
+initialized for it to use and allows it to initialize itself. The load function
+is called when the user calls a load command to the object. The same is true
+for the dump and query functions. The empty function should return true if
+this data object holds no actual data.</p>
+<p>The inherited Node class is also abstract, and requires null_data and
+flip_endian to be defined. The null_data function is called when the associated
+data of the node must be set to a null state. The flip_endian function is
+called when the endianness of the node data must be reversed. More on these
+concepts are discussed in detail later. The default constructor for this
+class is also used to initialize its node object.</p>
+<p>The functions get, set, and write are also discussed later on.</p>
+<h3>2.1 Init Function</h3>
+<p>Now we will implement the initialization function. This function is responsible for
+initializing your data object.</p>
+<div class="code">
+void HelloWorld::init()<br>
+{<br>
+&nbsp;&nbsp;if ( File::head() == fnullptr )<br>
+&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Node::allocate();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Node::get() = 0;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Node::write();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;File::head(Node::addr());<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Node::addr(File::head());<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Node::read();<br>
+&nbsp;&nbsp;}<br>
+}
+</div>
+<p>The File::head function can be used to get the file pointer to the beginning of your object's
+data, along with setting it to a new value. This simple program checks to see if there is a pointer, if there is the data is read, if not new data is made and a new header saved.</p>
+<p>You use allocate to get more space from file memory, get to get a pointer to the data in system
+memory, and write to save the value in system memory to file memory.</p>
+<h3>2.2 Load Function</h3>
+<p>Next we will implement the load function. There is a very important gotcha with this function; ACE will clear all memory, including the head pointer, to your data object before calling this function. That means you must reallocate file memory this object uses and reset the head pointer, since these things will be wiped before calling this function.</p>
+<div class="code">
+void HelloWorld::load(Ace::GetOpts&amp; ops, Ace::Terminal&amp; tm)<br>
+{<br>
+&nbsp;&nbsp;Node::allocate();<br>
+&nbsp;&nbsp;File::head(Node::addr());<br>
+&nbsp;&nbsp;std::ifstream file(ops.com_front());<br>
+&nbsp;&nbsp;file >> Node::get();<br>
+&nbsp;&nbsp;Node::write();<br>
+&nbsp;&nbsp;tm &lt;&lt; "Value set to " &lt;&lt; Node::get() &lt;&lt; "\n";<br>
+}
+</div>
+<p>We also use the GetOpts ACE class for the first time here, along with the Terminal ACE class. The
+first class is used to parse user input, and the second is used to print output to the user
+terminal. Here we use GetOpts to get the input file to load from.</p>
+<h3>2.3 Dump Function</h3>
+The dump function will now be implemented. Think of it as a reverse load. This function is called
+when the user wants to dump the data of this object, or part of it, to a new file.</p>
+<div class="code">
+void HelloWorld::dump(Ace::GetOpts&amp; ops, Ace::Terminal&amp; tm)<br>
+{<br>
+&nbsp;&nbsp;std::ofstream file(ops.com_front());<br>
+&nbsp;&nbsp;file &lt;&lt; Node::get();<br>
+&nbsp;&nbsp;tm &lt;&lt; "Value dumped to " &lt;&lt; ops.com_front() &lt;&lt; "\n";<br>
+}
+</div>
+<p>As you can see this function is very simple, you simply have to dump the data of the object to
+the output file.</p>
+<h3>2.4 Query Function</h3>
+<p>Now we move on to implementing the query function. In our case, we are making an extremely
+simple implementation which simply outputs the integer value of the data object.</p>
+<div class="code">
+void HelloWorld::query(Ace::GetOpts&amp; ops, Ace::Terminal&amp; tm)<br>
+{<br>
+&nbsp;&nbsp;tm &lt;&lt; "Value is " &lt;&lt; Node::get() &lt;&lt; "\n";<br>
+}
+</div>
+<h3>2.5 Empty Function</h3>
+<p>Our implementation of the empty function is even simpler. For sake of simplicity we will simply
+always return true to our data object being empty.</p>
+<div class="code">
+void HelloWorld::empty()<br>
+{<br>
+&nbsp;&nbsp;return true;<br>
+}
+</div>
+<p>As stated earlier, this should only return true if there is no data contained within a data
+object.<p>
+<h3>2.6 NVMemory Node Functions</h3>
+Now we get back to implementing the functions needed for ACE's NVmemory::Node class. We also need
+to call the constructor for it in our constructor, along with calling a very critical function
+within our constructor.</p>
+<div class="code">
+void HelloWorld::HelloWorld():<br>
+&nbsp;&nbsp;Node(sizeof(int32_t))<br>
+{<br>
+&nbsp;&nbsp;Node::init_data&lt;int32_t>();<br>
+}
+</div>
+<p>In the Node's constructor we must give it the size of the data this node represents in bytes.
+Then in the constructor itself, we must actually initialize this data in system memory. It is
+critical you initialize the data within the constructor, if you do not do this it leads to undefined
+behavior!</p>
+<p>Now we implement the two virtual functions required by the NVMemory::Node abstract class.</p>
+<div class="code">
+void HelloWorld::null_data()<br>
+{<br>
+&nbsp;&nbsp;Node::get() = 0;<br>
+}<br>
+<br>
+void HelloWorld::flip_endian()<br>
+{<br>
+&nbsp;&nbsp;Node::flip(0,4);<br>
+}
+</div>
+<p>The first, null_data, is called whenever the data in the node's system memory must be reset to
+a null value. This is only called when a node object is moved. In this case we will simply set the
+integer value to zero.</p>
+<p>The second value is called whenever the endianness of the data must be reversed. This is called
+if your host computer is not network endian, because ACE stores all of its binary data in network
+endianness. Within this function we use another Node function which is a handy tool for flipping
+the endianness of a 2, 4, or 8 byte value. The first argument is the indent into the data in bytes
+and the second is the size of the value to be flipped.</p>
+<h3>2.7 Putting it All Together</h3>
+<p>We are almost done making our data class. The last thing we need to do is implement the regular
+functions used to access and save the data of our data object class. This is required because the
+analytic class that is coming next directly uses these functions to read from and write to this
+data object so it can create new objects of this type.</p>
+<div class="code">
+int HelloWorld::get()<br>
+{<br>
+&nbsp;&nbsp;return Node::get();<br>
+}<br>
+<br>
+void HelloWorld::set(int n)<br>
+{<br>
+&nbsp;&nbsp;Node::get() = n;<br>
+}<br>
+<br>
+void HellowWorld::write()<br>
+{<br>
+&nbsp;&nbsp;Node::write();<br>
+}
+</div>
+<p>These functions are fairly self-explanatory except the last. The last is to save any changes
+made to file memory. Remember that data objects represent file memory objects where you save large
+amounts of information to file, so to do this you must actually write the changed system memory to
+file memory.</p>
+<p>That's it! We have now implemented a fully functional battlestat... I mean data object that can
+hold a single integer!</p>
+<h2>3. Analytic Class</h2>
+<p>Now we enter the exciting world of analytics, which in this case involves taking data and making
+more data from it! Our analytic, UpWorld, will take a HelloWorld data object and make a new
+HellowWorld data object with a new integer value one higher than the old object.</p>
+<p>Like the data class, we will begin with a skeleton for the analytic class, showing all the
+functions that need to be implemented.<p>
+<div class="code">
+#include &lt;ace.h&gt;<br>
+<br>
+namespace Ace = AccelCompEng;<br>
+<br>
+class UpWorld : public Ace::Analytic<br>
+{<br>
+public:<br>
+&nbsp;&nbsp;void input(Ace::Data*) override final;<br>
+&nbsp;&nbsp;void output(Ace::Data*) override final;<br>
+&nbsp;&nbsp;void execute_cl(Ace::GetOpts&amp;, Ace::Terminal&amp;) override final;<br>
+&nbsp;&nbsp;void execute_pn(Ace::GetOpts&amp;, Ace::Terminal&amp;) override final;<br>
+private:<br>
+&nbsp;&nbsp;HelloWorld* _in {nullptr};<br>
+&nbsp;&nbsp;HelloWorld* _out {nullptr};<br>
+};
+</div>
+<p>This class inherits from the ACE Analytic abstract class which defines the interface for all
+analytic classes. The virtual functions to be implemented are input, output, execute_cl, and
+execute_pn.</p>
+<p>The input function adds a data object input to the analytic, and the output function adds a data
+object output to the analytic. These functions are called before the execute functions and not
+after.</p>
+<p>One of the execute functions is called once, and directly after returning the analytic object is
+destroyed. The execute_cl function is called if OpenCL is enabled with a selected device. The
+execute_pn function is called if OpenCL is disabled.</p>
+<h3>3.1 Input and Output</h3>
+<p>First we will implement the input and output functions. These are fairly simple, adding input
+or output data objects.</p>
+<div class="code">
+void UpWorld::input(Ace::Data* input)<br>
+{<br>
+&nbsp;&nbsp;_input = dynamic_cast&lt;HelloWorld*>(input);<br>
+}<br>
+<br>
+void UpWorld::output(Ace::Data* output)<br>
+{<br>
+&nbsp;&nbsp;_output = dynamic_cast&lt;HelloWorld*>(output);<br>
+}
+</div>
+<h3>3.2 Execution</h3>
+<p>Lastly we implement the execution functions. For simplicity of this tutorial, the OpenCL
+execution function will simply call the normal serial execution function.</p>
+<div class="code">
+void UpWorld::execute_cl(Ace::GetOpts&amp; ops, Ace::Terminal&amp; tm)<br>
+{<br>
+&nbsp;&nbsp;execute_pn(ops,tm);<br>
+}<br>
+<br>
+void UpWorld::execute_cl(Ace::GetOpts&amp;, Ace::Terminal&amp; tm)<br>
+{<br>
+&nbsp;&nbsp;_in->set(_out->get()+1);<br>
+&nbsp;&nbsp;_in->write();<br>
+&nbsp;&nbsp;tm &lt;&lt; "Done.\n";<br>
+}
+</div>
+<p>As you can see, the execution is heavily dependent on the functionality of the data objects
+it interacts with. In this simple example the only addition the analytic does is add one to the
+return value of the data object's get function.</p>
+<h2>4. Plugin Factory</h2>
+<p>We are now finished with the data object and the analytic which uses the data object! Lastly we need to define the object factory which will create these objects.</p>
+<div class="code">
+#include &lt;ace.h><br>
+<br>
+namespace Ace = AccelCompEng;<br>
+<br>
+class WorldFactory : public Ace::Factory<br>
+{<br>
+&nbsp;&nbsp;Ace::Analytic* build_analytic(const std::string&amp; type) override final<br>
+&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Ace::Analytic* ret {nullptr};<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if (type==std::string("up"))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ret = new UpWorld;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return ret;<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;Ace::Data* build_data(const std::string&amp; type) override final<br>
+&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Ace::Data* ret {nullptr};<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if (type==std::string("hello"))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ret = new HelloWorld;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return ret;<br>
+&nbsp;&nbsp;}<br>
+};
+</div>
+<p>Most of this is generic object factory code. The input for both build functions is a string
+which names the type of the object. This name does NOT have to be the same as the name of the class,
+and I would encourage people to not have the same name as the class.</p>
+<h2>5. Conclusion</h2>
+<p>The very last thing we must do is implement the main function and give control over to the ACE
+platform.</p>
+<div class="code">
+#include &lt;ace.h><br>
+<br>
+namespace Ace = AccelCompEng;<br>
+<br>
+void main(int argc, char *argv[])<br>
+{<br>
+&nbsp;&nbsp;HelloFactory factory;<br>
+&nbsp;&nbsp;return Ace::run("HELLO",factory,argc,argv);<br>
+}
+</div>
+<p>Notice an object factory defined earlier is created and passed to the run function of ACE.</p>
+<p>We are now done making our hello world data and analytic implemenation. Notice the extremely
+close relationship between data objects and analytic objects, especially how analytic objects
+directly depend on data objects for getting and saving data that it manipulates.</p>
+</div>
+</body>
+</html>
+
