@@ -54,11 +54,11 @@ public:
 private:
    struct CommandQuit {};
    void process(GetOpts&);
-   void gpu_process(GetOpts&);
-   void gpu_list();
-   void gpu_info(GetOpts&);
-   void gpu_set(GetOpts&);
-   void gpu_clear();
+   void cl_process(GetOpts&);
+   void cl_list();
+   void cl_info(GetOpts&);
+   void cl_set(GetOpts&);
+   void cl_clear();
    void data_open(GetOpts&);
    void data_close(GetOpts&);
    void data_select(GetOpts&);
