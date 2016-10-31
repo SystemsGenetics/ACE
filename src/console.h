@@ -91,6 +91,10 @@ private:
 class Console::CommandError
 {
 public:
+   CommandError(const CommandError&) = default;
+   CommandError& operator=(const CommandError&) = default;
+   CommandError(CommandError&&) = default;
+   CommandError& operator=(CommandError&&) = default;
    /// Initializes a new command error and sets who threw it and its message.
    /// @param who Identifies who threw the error message.
    /// @param msg The message describing the error that occured.

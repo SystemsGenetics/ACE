@@ -14,6 +14,11 @@ namespace AccelCompEng
 class Factory
 {
 public:
+   Factory() = default;
+   Factory(const Factory&) = delete;
+   Factory& operator=(const Factory&) = delete;
+   Factory(Factory&&) = delete;
+   Factory& operator=(Factory&&) = delete;
    /// Builds new data objects from the given type.
    /// @param Data type to produce.
    virtual Data* build_data(const std::string& type) = 0;

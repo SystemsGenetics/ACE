@@ -85,6 +85,10 @@ class GetOpts::Iterator
 {
 public:
    friend class GetOpts;
+   Iterator(const Iterator&) = default;
+   Iterator(Iterator&&) = default;
+   Iterator& operator=(const Iterator&) = default;
+   Iterator& operator=(Iterator&&) = default;
    /// Get key value of this option.
    /// @return Key value.
    const std::string& key() const;

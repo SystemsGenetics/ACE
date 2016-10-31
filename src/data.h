@@ -15,6 +15,10 @@ namespace AccelCompEng
 class Data : public File
 {
 public:
+   Data(const Data&) = delete;
+   Data& operator=(const Data&) = delete;
+   Data(Data&&) = delete;
+   Data& operator=(Data&&) = delete;
    virtual ~Data() = default;
    /// Get the specific type of this data plugin object.
    /// @return Object type.
