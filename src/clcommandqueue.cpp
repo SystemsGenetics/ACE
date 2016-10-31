@@ -32,7 +32,7 @@ CLEvent CLCommandQueue::add_task(CLKernel& kernel)
    assert<NullKernelUsed>(kernel._isAlive,f,__LINE__);
    cl_event ret;
    cl_int err;
-   err = clEnqueueTask(_id,kernel._id,0,NULL,&ret);
+   err = clEnqueueTask(_id,kernel._id,CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE,NULL,&ret);
    classert<CannotAddTask>(err,f,__LINE__);
    return CLEvent(ret);
 }
