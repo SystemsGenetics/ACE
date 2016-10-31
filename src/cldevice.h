@@ -45,13 +45,6 @@ public:
       float_sp, ///< Floating point operations supported for single precision.
       float_dp ///< Floating point operations supported for double precision.
    };
-   /// This is the only constructor for this class which is private and should only be used by the
-   /// CLDevList class. The parameters given for the device are NOT checked for validity.
-   /// @param pinc The increment into list of platforms.
-   /// @param dinc The increment into list of devices for given platform.
-   /// @param pid The OpenCL platform id for the device.
-   /// @param did The OpenCL device id for the device.
-   CLDevice(int pinc, int dinc, cl_platform_id pid, cl_device_id did);
    CLDevice(const CLDevice&) = default;
    CLDevice(CLDevice&&) = default;
    CLDevice& operator=(const CLDevice&) = default;
@@ -69,6 +62,13 @@ public:
    std::string info(CLInfo) const;
    bool operator==(const CLDevice&);
 private:
+   /// This is the only constructor for this class which is private and should only be used by the
+   /// CLDevList class. The parameters given for the device are NOT checked for validity.
+   /// @param pinc The increment into list of platforms.
+   /// @param dinc The increment into list of devices for given platform.
+   /// @param pid The OpenCL platform id for the device.
+   /// @param did The OpenCL device id for the device.
+   CLDevice(int pinc, int dinc, cl_platform_id pid, cl_device_id did);
    void yes_no(std::ostringstream&,bool) const;
    void size_it(std::ostringstream&,long) const;
    template<class T> T get_info(cl_device_info) const;
