@@ -35,8 +35,7 @@ void CLDevList::build()
          err = clGetDeviceIDs(platforms[i],CL_DEVICE_TYPE_ALL,0,NULL,&dtotal);
          classert<DeviceErr>(err,f,__LINE__);
          devices = new cl_device_id[dtotal];
-         err = clGetDeviceIDs(platforms[i],CL_DEVICE_TYPE_ALL,dtotal,devices,
-                              NULL);
+         err = clGetDeviceIDs(platforms[i],CL_DEVICE_TYPE_ALL,dtotal,devices,NULL);
          classert<DeviceErr>(err,f,__LINE__);
          _list.push_back({});
          for (int j = 0; j < dtotal ;++j)

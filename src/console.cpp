@@ -37,17 +37,19 @@ Console::Console(int argc, char* argv[], Terminal& tm, Factory& factory, DataMap
    {
       _devList = new CLDevList(true);
    }
-   catch (CLDevList::PlatformErr)
+   catch (CLDevList::PlatformErr e)
    {
       tm << Terminal::warning;
-      tm << "OpenCL error while attempting to enumerate platforms, OpenCL is now DISABLED.\n";
+      tm << "OpenCL: Failed to enumerate devices: " << e.detail() << "\n";
+      tm << "OpenCL is now DISABLED.\n";
       tm << Terminal::general;
       _devList = new CLDevList;
    }
-   catch (CLDevList::DeviceErr)
+   catch (CLDevList::DeviceErr e)
    {
       tm << Terminal::warning;
-      tm << "OpenCL error while attempting to enumerate devices, OpenCL is now DISABLED.\n";
+      tm << "OpenCL: Failed to enumerate devices: " << e.detail() << "\n";
+      tm << "OpenCL is now DISABLED.\n";
       tm << Terminal::general;
       _devList = new CLDevList;
    }
