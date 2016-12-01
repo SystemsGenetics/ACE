@@ -94,6 +94,10 @@ class DataMap::Iterator
 {
 public:
    friend class DataMap;
+   Iterator(const Iterator&) = default;
+   Iterator(Iterator&&) = default;
+   Iterator& operator=(const Iterator&) = default;
+   Iterator& operator=(Iterator&&) = default;
    /// Get file name of iterator's data object.
    /// @return File name of data object.
    std::string file();

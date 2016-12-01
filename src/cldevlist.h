@@ -7,6 +7,7 @@
 #ifndef ACCELCOMPENG_CLDEVLIST_H
 #define ACCELCOMPENG_CLDEVLIST_H
 #include <vector>
+#include <memory>
 #include "exception.h"
 namespace AccelCompEng
 {
@@ -46,7 +47,7 @@ public:
    CLDevice& at(int,int);
 private:
    void build();
-   std::vector<std::vector<CLDevice>> _list;
+   std::vector<std::vector<std::unique_ptr<CLDevice>>> _list;
 };
 
 

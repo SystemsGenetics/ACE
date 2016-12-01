@@ -19,6 +19,10 @@ namespace AccelCompEng
 class Analytic : public CLContext
 {
 public:
+   Analytic(const Analytic&) = delete;
+   Analytic& operator=(const Analytic&) = delete;
+   Analytic(Analytic&&) = delete;
+   Analytic& operator=(Analytic&&) = delete;
    virtual ~Analytic() = default;
    /// Begin execution of the analytic.
    /// @param ops Arguments and options from the user.
@@ -31,6 +35,7 @@ public:
    /// @param out Pointer to the data object to be used as output.
    virtual void output(Data* out) = 0;
 protected:
+   Analytic() = default;
    /// Runs OpenCL accelerated execution of analytic on all input and output data object.
    /// @param ops Arguments and options from the user.
    /// @param tm Terminal interface for the user console.

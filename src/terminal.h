@@ -17,6 +17,11 @@ class Terminal
 public:
    struct SystemError : public Exception { using Exception::Exception; };
    struct InvalidUse : public Exception { using Exception::Exception; };
+   Terminal() = default;
+   Terminal(const Terminal&) = delete;
+   Terminal& operator=(const Terminal&) = delete;
+   Terminal(Terminal&&) = delete;
+   Terminal& operator=(Terminal&&) = delete;
    virtual ~Terminal() = default;
    static Terminal& newline(Terminal&);
    static Terminal& endl(Terminal&);

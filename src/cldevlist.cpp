@@ -1,5 +1,4 @@
 #include <CL/cl.h>
-#include <memory>
 #include "cldevlist.h"
 #include "cldevice.h"
 namespace AccelCompEng
@@ -36,13 +35,13 @@ void CLDevList::build()
          err = clGetDeviceIDs(platforms[i],CL_DEVICE_TYPE_ALL,0,NULL,&dtotal);
          classert<DeviceErr>(err,f,__LINE__);
          devices = new cl_device_id[dtotal];
-         err = clGetDeviceIDs(platforms[i],CL_DEVICE_TYPE_ALL,dtotal,devices,
-                              NULL);
+         err = clGetDeviceIDs(platforms[i],CL_DEVICE_TYPE_ALL,dtotal,devices,NULL);
          classert<DeviceErr>(err,f,__LINE__);
          _list.push_back({});
          for (int j = 0; j < dtotal ;++j)
          {
-            _list.back().emplace_back(i,j,platforms[i],devices[j]);
+            _list.back().push_back(std::unique_ptr<CLDevice>(new CLDevice(i,j,platforms[i],
+                                                                          devices[j])));
          }
          delete[] devices;
          devices = nullptr;
@@ -98,14 +97,14 @@ bool CLDevList::exist(int p, int d)
 
 CLDevice& CLDevList::at(int p, int d)
 {
-   return _list.at(p).at(d);
+   return *(_list.at(p).at(d).get());
 }
 
 
 
 CLDevice& CLDevList::Iterator::operator*()
 {
-   return _devList->_list[_pi][_di];
+   return *(_devList->_list[_pi][_di].get());
 }
 
 

@@ -37,17 +37,19 @@ Console::Console(int argc, char* argv[], Terminal& tm, Factory& factory, DataMap
    {
       _devList = new CLDevList(true);
    }
-   catch (CLDevList::PlatformErr)
+   catch (CLDevList::PlatformErr e)
    {
       tm << Terminal::warning;
-      tm << "OpenCL error while attempting to enumerate platforms, OpenCL is now DISABLED.\n";
+      tm << "OpenCL: Failed to enumerate devices: " << e.detail() << "\n";
+      tm << "OpenCL is now DISABLED.\n";
       tm << Terminal::general;
       _devList = new CLDevList;
    }
-   catch (CLDevList::DeviceErr)
+   catch (CLDevList::DeviceErr e)
    {
       tm << Terminal::warning;
-      tm << "OpenCL error while attempting to enumerate devices, OpenCL is now DISABLED.\n";
+      tm << "OpenCL: Failed to enumerate devices: " << e.detail() << "\n";
+      tm << "OpenCL is now DISABLED.\n";
       tm << Terminal::general;
       _devList = new CLDevList;
    }
@@ -151,12 +153,12 @@ void Console::process(GetOpts& ops)
 {
    enum {Analytic=0,GPU,Open,Load,Select,Dump,Query,Close,List,Clear,History,
          Quit};
-   switch (ops.com_get({"gpu","open","load","select","dump","query","close",
+   switch (ops.com_get({"cl","open","load","select","dump","query","close",
                         "list","clear","history","quit"}))
    {
    case GPU:
       ops.com_pop();
-      gpu_process(ops);
+      cl_process(ops);
       break;
    case Open:
       ops.com_pop();
@@ -202,40 +204,40 @@ void Console::process(GetOpts& ops)
 
 
 
-void Console::gpu_process(GetOpts& ops)
+void Console::cl_process(GetOpts& ops)
 {
    if ( ops.com_empty() )
    {
-      throw CommandError("gpu","subcommand not provided.");
+      throw CommandError("cl","subcommand not provided.");
    }
    enum {Error=0,List,Info,Set,Clear};
    switch (ops.com_get({"list","info","set","clear"}))
    {
    case List:
-      gpu_list();
+      cl_list();
       break;
    case Info:
       ops.com_pop();
-      gpu_info(ops);
+      cl_info(ops);
       break;
    case Set:
       ops.com_pop();
-      gpu_set(ops);
+      cl_set(ops);
       break;
    case Clear:
-      gpu_clear();
+      cl_clear();
       break;
    case Error:
       std::ostringstream buffer;
       buffer << "command " << ops.com_front() << " not recognized.";
-      throw CommandError("gpu",buffer.str());
+      throw CommandError("cl",buffer.str());
       break;
    }
 }
 
 
 
-void Console::gpu_list()
+void Console::cl_list()
 {
    for (auto d:*_devList)
    {
@@ -252,11 +254,11 @@ void Console::gpu_list()
 
 
 
-void Console::gpu_info(GetOpts& ops)
+void Console::cl_info(GetOpts& ops)
 {
    if ( ops.com_empty() )
    {
-      throw CommandError("gpu info","command requires 1 argument.");
+      throw CommandError("cl","command requires 1 argument.");
    }
    int p,d;
    char sep;
@@ -279,17 +281,17 @@ void Console::gpu_info(GetOpts& ops)
    {
       std::ostringstream buffer;
       buffer << "cannot find OpenCL device \"" << ops.com_front() << "\".";
-      throw CommandError("gpu info",buffer.str());
+      throw CommandError("cl",buffer.str());
    }
 }
 
 
 
-void Console::gpu_set(GetOpts& ops)
+void Console::cl_set(GetOpts& ops)
 {
    if ( ops.com_empty() )
    {
-      throw CommandError("gpu info","command requires 1 argument.");
+      throw CommandError("cl","command requires 1 argument.");
    }
    int p,d;
    char sep;
@@ -308,13 +310,13 @@ void Console::gpu_set(GetOpts& ops)
    {
       std::ostringstream buffer;
       buffer << "cannot find OpenCL device \"" << ops.com_front() << "\".";
-      throw CommandError("gpu info",buffer.str());
+      throw CommandError("cl",buffer.str());
    }
 }
 
 
 
-void Console::gpu_clear()
+void Console::cl_clear()
 {
    if ( _device )
    {

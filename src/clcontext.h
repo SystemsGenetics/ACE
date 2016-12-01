@@ -21,6 +21,10 @@ public:
    struct CannotCreate : public Exception { using Exception::Exception; };
    struct NotInitialized : public Exception { using Exception::Exception; };
    friend class Console;
+   CLContext(const CLContext&) = delete;
+   CLContext& operator=(const CLContext&) = delete;
+   CLContext(CLContext&&) = delete;
+   CLContext& operator=(CLContext&&) = delete;
    /// Creates an empty wrapper with no OpenCL context.
    CLContext() = default;
    ~CLContext();

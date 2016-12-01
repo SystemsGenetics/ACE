@@ -54,11 +54,11 @@ public:
 private:
    struct CommandQuit {};
    void process(GetOpts&);
-   void gpu_process(GetOpts&);
-   void gpu_list();
-   void gpu_info(GetOpts&);
-   void gpu_set(GetOpts&);
-   void gpu_clear();
+   void cl_process(GetOpts&);
+   void cl_list();
+   void cl_info(GetOpts&);
+   void cl_set(GetOpts&);
+   void cl_clear();
    void data_open(GetOpts&);
    void data_close(GetOpts&);
    void data_select(GetOpts&);
@@ -91,6 +91,10 @@ private:
 class Console::CommandError
 {
 public:
+   CommandError(const CommandError&) = default;
+   CommandError& operator=(const CommandError&) = default;
+   CommandError(CommandError&&) = default;
+   CommandError& operator=(CommandError&&) = default;
    /// Initializes a new command error and sets who threw it and its message.
    /// @param who Identifies who threw the error message.
    /// @param msg The message describing the error that occured.
