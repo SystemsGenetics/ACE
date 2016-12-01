@@ -1,6 +1,6 @@
 #ifndef ACCELCOMPENG_ANALYTIC_H
 #define ACCELCOMPENG_ANALYTIC_H
-#include <CL/cl.hpp>
+#include <CL/cl.h>
 #include <string>
 #include <memory>
 #include "data.h"

@@ -14,7 +14,7 @@ libf := $(lib)libace.a
 
 acxxflags := $(CXXFLAGS) -g -std=c++11
 aldflags := $(LDFLAGS)
-aldlibs := $(LDLIBS) -lOpenCL -L../lib -lace
+aldlibs := $(LDLIBS) -L../lib -lace -lOpenCL
 
 unitf := $(run)$(NAME)
 
