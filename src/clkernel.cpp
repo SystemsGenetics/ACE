@@ -28,7 +28,9 @@ CLKernel::CLKernel(const CLKernel& copy):
 }
 
 
-
+/*
+* Overloaded operator for a deep copy of a given CLKernel instance
+*/
 CLKernel& CLKernel::operator=(const CLKernel& copy)
 {
    if ( _isAlive )

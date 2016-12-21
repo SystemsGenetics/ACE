@@ -651,7 +651,7 @@ void Console::analytic(GetOpts& ops)
 }
 
 
-
+// TODO: as what this does
 void Console::seperate(const std::string& who, const std::string& raw, std::string& file,
                        std::string& type)
 {
