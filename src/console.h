@@ -51,6 +51,8 @@ public:
    /// Run a single command in the console that is non-blocking and returns control once the command
    /// is complete.
    bool command(const std::string& line);
+   // TODO documentation
+   Data* getData(const std::string& name);
 private:
    struct CommandQuit {};
    void process(GetOpts&);

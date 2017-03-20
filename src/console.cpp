@@ -149,6 +149,13 @@ bool Console::command(const std::string& line)
 
 
 
+Data* Console::getData(const std::string& name)
+{
+   return _dataMap.find(name);
+}
+
+
+
 void Console::process(GetOpts& ops)
 {
    enum {Analytic=0,GPU,Open,Load,Select,Dump,Query,Close,List,Clear,History,
