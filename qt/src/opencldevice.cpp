@@ -183,9 +183,8 @@ quint64 OpenCLDevice::getGlobalMemorySize() const
    {
       return 0;
    }
-   cl_ulong* a = OpenCL::getDeviceInfo<cl_ulong>(*_deviceID,CL_DEVICE_GLOBAL_MEM_SIZE);
+   unique_ptr<cl_ulong> a(OpenCL::getDeviceInfo<cl_ulong>(*_deviceID,CL_DEVICE_GLOBAL_MEM_SIZE));
    quint64 size = *a;
-   delete a;
    return size;
 }
 
@@ -200,9 +199,8 @@ quint64 OpenCLDevice::getLocalMemorySize() const
    {
       return 0;
    }
-   cl_ulong* a = OpenCL::getDeviceInfo<cl_ulong>(*_deviceID,CL_DEVICE_LOCAL_MEM_SIZE);
+   unique_ptr<cl_ulong> a(OpenCL::getDeviceInfo<cl_ulong>(*_deviceID,CL_DEVICE_LOCAL_MEM_SIZE));
    quint64 size = *a;
-   delete a;
    return size;
 }
 

@@ -2,6 +2,11 @@
 #define UTILITIES_H
 #include <CL/cl.h>
 #include <QtCore>
+#include <memory>
+
+
+
+using namespace std;
 
 
 
@@ -70,7 +75,7 @@ namespace OpenCL
 
 
    template<class T>
-   T* getDeviceInfo(cl_device_id id, cl_device_info what)
+   unique_ptr<T> getDeviceInfo(cl_device_id id, cl_device_info what)
    {
       // determine the size of the variable requested in bytes
       size_t size;
@@ -88,7 +93,7 @@ namespace OpenCL
          delete[] reinterpret_cast<char*>(info);
          return nullptr;
       }
-      return info;
+      return unique_ptr<T>(info);
    }
 }
 

@@ -2,6 +2,11 @@
 #define OPENCLDEVICEMODEL_H
 #include <QtCore>
 #include <CL/cl.h>
+#include <memory>
+
+
+
+using namespace std;
 
 
 
@@ -26,7 +31,7 @@ private:
    int getDeviceCount(int platformRow) const;
    cl_device_id getDeviceID(int platformRow, int row) const;
    QString getDeviceName(int platformRow, int row) const;
-   char* getPlatformInfo(cl_platform_id id, cl_platform_info what) const;
+   unique_ptr<char> getPlatformInfo(cl_platform_id id, cl_platform_info what) const;
    template<class T> T* getDeviceInfo(cl_device_id id, cl_device_info what) const;
    QString getDetailedPlatformInfo(cl_platform_id id) const;
    QString getDetailedDeviceInfo(cl_device_id id) const;

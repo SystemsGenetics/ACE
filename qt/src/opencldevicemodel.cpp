@@ -1,13 +1,7 @@
-#include <memory>
-
 #include "opencldevicemodel.h"
 #include "utilities.h"
 #include "opencldevice.h"
 #include "exception.h"
-
-
-
-using namespace std;
 
 
 
@@ -258,13 +252,12 @@ QString OpenCLDeviceModel::getPlatformName(int row) const
    }
 
    // get platform name
-   char* cName = getPlatformInfo(id,CL_PLATFORM_NAME);
+   unique_ptr<char> cName(getPlatformInfo(id,CL_PLATFORM_NAME));
    if ( !cName )
    {
       return QString();
    }
-   QString name(cName);
-   delete[] cName;
+   QString name(cName.get());
    return name;
 }
 
@@ -323,13 +316,12 @@ QString OpenCLDeviceModel::getDeviceName(int platformRow, int row) const
    cl_device_id id = getDeviceID(platformRow,row);
 
    // get device name
-   char* cName = OpenCL::getDeviceInfo<char>(id,CL_DEVICE_NAME);
+   unique_ptr<char> cName(OpenCL::getDeviceInfo<char>(id,CL_DEVICE_NAME));
    if ( !cName )
    {
       return QString();
    }
-   QString name(cName);
-   delete[] cName;
+   QString name(cName.get());
    return name;
 }
 
@@ -338,7 +330,7 @@ QString OpenCLDeviceModel::getDeviceName(int platformRow, int row) const
 
 
 
-char* OpenCLDeviceModel::getPlatformInfo(cl_platform_id id, cl_platform_info what) const
+unique_ptr<char> OpenCLDeviceModel::getPlatformInfo(cl_platform_id id, cl_platform_info what) const
 {
    // query the size of the c string
    size_t size;
@@ -356,7 +348,7 @@ char* OpenCLDeviceModel::getPlatformInfo(cl_platform_id id, cl_platform_info wha
       delete[] info;
       return nullptr;
    }
-   return info;
+   return unique_ptr<char>(info);
 }
 
 
@@ -402,16 +394,12 @@ QString OpenCLDeviceModel::getDetailedDeviceInfo(cl_device_id id) const
    unique_ptr<cl_device_type> type(OpenCL::getDeviceInfo<cl_device_type>(id,CL_DEVICE_TYPE));
    unique_ptr<cl_bool> available(OpenCL::getDeviceInfo<cl_bool>(id,CL_DEVICE_AVAILABLE));
    unique_ptr<cl_bool> compile(OpenCL::getDeviceInfo<cl_bool>(id,CL_DEVICE_COMPILER_AVAILABLE));
-   unique_ptr<cl_bool> unifiedMemory(OpenCL::getDeviceInfo<cl_bool>(id
-                                                                   ,CL_DEVICE_HOST_UNIFIED_MEMORY));
-   unique_ptr<cl_uint> clockSpeedMhz(OpenCL::getDeviceInfo<cl_uint>(id
-                                                                   ,CL_DEVICE_MAX_CLOCK_FREQUENCY));
+   unique_ptr<cl_bool> unifiedMemory(OpenCL::getDeviceInfo<cl_bool>(id,CL_DEVICE_HOST_UNIFIED_MEMORY));
+   unique_ptr<cl_uint> clockSpeedMhz(OpenCL::getDeviceInfo<cl_uint>(id,CL_DEVICE_MAX_CLOCK_FREQUENCY));
    unique_ptr<cl_uint> computeUnits(OpenCL::getDeviceInfo<cl_uint>(id,CL_DEVICE_MAX_COMPUTE_UNITS));
    unique_ptr<size_t> workSize(OpenCL::getDeviceInfo<size_t>(id,CL_DEVICE_MAX_WORK_GROUP_SIZE));
-   unique_ptr<cl_ulong> globalMemorySize(OpenCL::getDeviceInfo<cl_ulong>(id
-                                                                       ,CL_DEVICE_GLOBAL_MEM_SIZE));
-   unique_ptr<cl_ulong> localMemorySize(OpenCL::getDeviceInfo<cl_ulong>(id
-                                                                        ,CL_DEVICE_LOCAL_MEM_SIZE));
+   unique_ptr<cl_ulong> globalMemorySize(OpenCL::getDeviceInfo<cl_ulong>(id,CL_DEVICE_GLOBAL_MEM_SIZE));
+   unique_ptr<cl_ulong> localMemorySize(OpenCL::getDeviceInfo<cl_ulong>(id,CL_DEVICE_LOCAL_MEM_SIZE));
 
    // if any information failed delete any allocated memory and return
    if ( !name || !type || !available || !compile || !unifiedMemory || !clockSpeedMhz
