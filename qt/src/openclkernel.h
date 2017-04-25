@@ -29,7 +29,7 @@ private:
    cl_kernel _id;
    cl_command_queue _commandQueueID;
    cl_device_id _deviceID;
-   cl_uint _dimensionCount;
+   cl_uint _dimensionCount {1};
    size_t* _globalSizes {nullptr};
    size_t* _workgroupSizes {nullptr};
 };

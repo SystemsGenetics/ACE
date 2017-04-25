@@ -82,7 +82,7 @@ namespace OpenCL
       cl_int code = clGetDeviceInfo(id,what,0,nullptr,&size);
       if ( code != CL_SUCCESS )
       {
-         return nullptr;
+         throwError("clGetDeviceInfo",code);
       }
 
       // allocate memory needed and get information data
@@ -91,7 +91,7 @@ namespace OpenCL
       if ( code != CL_SUCCESS )
       {
          delete[] reinterpret_cast<char*>(info);
-         return nullptr;
+         throwError("clGetDeviceInfo",code);
       }
       return unique_ptr<T>(info);
    }

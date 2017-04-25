@@ -226,7 +226,7 @@ cl_platform_id OpenCLDeviceModel::getPlatformID(int row) const
    cl_int code = clGetPlatformIDs(total,platforms,nullptr);
    if ( code != CL_SUCCESS )
    {
-      return 0;
+      OpenCL::throwError("clGetPlatformIDs",code);
    }
    cl_platform_id id = platforms[row];
    delete[] platforms;
@@ -243,19 +243,11 @@ QString OpenCLDeviceModel::getPlatformName(int row) const
    // get platform ID
    cl_platform_id id = getPlatformID(row);
 
-   // query size of platform name
-   size_t size;
-   cl_int code = clGetPlatformInfo(id,CL_PLATFORM_NAME,0,nullptr,&size);
-   if ( code != CL_SUCCESS )
-   {
-      return QString();
-   }
-
    // get platform name
-   unique_ptr<char> cName(getPlatformInfo(id,CL_PLATFORM_NAME));
+   StringPointer cName(getPlatformInfo(id,CL_PLATFORM_NAME));
    if ( !cName )
    {
-      return QString();
+      QString();
    }
    QString name(cName.get());
    return name;
@@ -273,7 +265,7 @@ int OpenCLDeviceModel::getDeviceCount(int platformRow) const
    cl_int code = clGetDeviceIDs(id,CL_DEVICE_TYPE_ALL,0,nullptr,&total);
    if ( code != CL_SUCCESS )
    {
-      total = 0;
+      OpenCL::throwError("clGetDeviceIDs",code);
    }
    return total;
 }
@@ -298,7 +290,7 @@ cl_device_id OpenCLDeviceModel::getDeviceID(int platformRow, int row) const
    cl_int code = clGetDeviceIDs(platformID,CL_DEVICE_TYPE_ALL,total,devices,nullptr);
    if ( code != CL_SUCCESS )
    {
-      return 0;
+      OpenCL::throwError("clGetDeviceIDs",code);
    }
    cl_device_id id = devices[row];
    delete[] devices;
@@ -330,14 +322,15 @@ QString OpenCLDeviceModel::getDeviceName(int platformRow, int row) const
 
 
 
-unique_ptr<char> OpenCLDeviceModel::getPlatformInfo(cl_platform_id id, cl_platform_info what) const
+OpenCLDeviceModel::StringPointer OpenCLDeviceModel::getPlatformInfo(cl_platform_id id
+                                                                    , cl_platform_info what) const
 {
    // query the size of the c string
    size_t size;
    cl_int code = clGetPlatformInfo(id,what,0,nullptr,&size);
    if ( code != CL_SUCCESS )
    {
-      return nullptr;
+      OpenCL::throwError("clGetPlatformInfo",code);
    }
 
    // allocate memory for c string and get information
@@ -346,9 +339,9 @@ unique_ptr<char> OpenCLDeviceModel::getPlatformInfo(cl_platform_id id, cl_platfo
    if ( code != CL_SUCCESS )
    {
       delete[] info;
-      return nullptr;
+      OpenCL::throwError("clGetPlatformInfo",code);
    }
-   return unique_ptr<char>(info);
+   return StringPointer(info);
 }
 
 
@@ -359,11 +352,11 @@ unique_ptr<char> OpenCLDeviceModel::getPlatformInfo(cl_platform_id id, cl_platfo
 QString OpenCLDeviceModel::getDetailedPlatformInfo(cl_platform_id id) const
 {
    // get all platform information
-   unique_ptr<char> name(getPlatformInfo(id,CL_PLATFORM_NAME));
-   unique_ptr<char> vendor(getPlatformInfo(id,CL_PLATFORM_VENDOR));
-   unique_ptr<char> version(getPlatformInfo(id,CL_PLATFORM_VERSION));
-   unique_ptr<char> profile(getPlatformInfo(id,CL_PLATFORM_PROFILE));
-   unique_ptr<char> extensions(getPlatformInfo(id,CL_PLATFORM_EXTENSIONS));
+   StringPointer name(getPlatformInfo(id,CL_PLATFORM_NAME));
+   StringPointer vendor(getPlatformInfo(id,CL_PLATFORM_VENDOR));
+   StringPointer version(getPlatformInfo(id,CL_PLATFORM_VERSION));
+   StringPointer profile(getPlatformInfo(id,CL_PLATFORM_PROFILE));
+   StringPointer extensions(getPlatformInfo(id,CL_PLATFORM_EXTENSIONS));
 
    // if any information failed delete any allocated memory and return
    if ( !name || !vendor || !version || !profile || !extensions )
@@ -390,7 +383,8 @@ QString OpenCLDeviceModel::getDetailedPlatformInfo(cl_platform_id id) const
 QString OpenCLDeviceModel::getDetailedDeviceInfo(cl_device_id id) const
 {
    // get all device information
-   unique_ptr<char> name(OpenCL::getDeviceInfo<char>(id,CL_DEVICE_NAME));
+   unique_ptr<char> a(OpenCL::getDeviceInfo<char>(id,CL_DEVICE_NAME));
+   StringPointer name(a.release());
    unique_ptr<cl_device_type> type(OpenCL::getDeviceInfo<cl_device_type>(id,CL_DEVICE_TYPE));
    unique_ptr<cl_bool> available(OpenCL::getDeviceInfo<cl_bool>(id,CL_DEVICE_AVAILABLE));
    unique_ptr<cl_bool> compile(OpenCL::getDeviceInfo<cl_bool>(id,CL_DEVICE_COMPILER_AVAILABLE));

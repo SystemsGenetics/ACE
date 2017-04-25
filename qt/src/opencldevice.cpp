@@ -126,7 +126,6 @@ void OpenCLDevice::setDevice(cl_platform_id platformID, cl_device_id deviceID)
    }
    catch (...)
    {
-      // clear object if anything went wrong
       clear();
       throw;
    }

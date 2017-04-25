@@ -8,11 +8,11 @@
 OpenCLKernel::OpenCLKernel(cl_program programID, cl_command_queue commandQueueID
                            , cl_device_id deviceID, const QString &name):
    _commandQueueID(commandQueueID),
-   _deviceID(deviceID),
-   _dimensionCount(1)
+   _deviceID(deviceID)
 {
    try
    {
+      // create a new kernel
       cl_int code;
       QByteArray temp = name.toLatin1();
       _id = clCreateKernel(programID,temp.data(),&code);
@@ -20,6 +20,8 @@ OpenCLKernel::OpenCLKernel(cl_program programID, cl_command_queue commandQueueID
       {
          OpenCL::throwError("clCreateKernel",code);
       }
+
+      // initialize dimensions, global work size, and workgroup size
       _globalSizes = new size_t[1];
       _workgroupSizes = new size_t[1];
       _globalSizes[0] = 1;
@@ -53,11 +55,14 @@ OpenCLKernel::~OpenCLKernel()
 
 void OpenCLKernel::setDimensionCount(cl_uint count)
 {
+   // set new dimension and reallocate size arrays
    _dimensionCount = count;
    delete[] _globalSizes;
    delete[] _workgroupSizes;
    _globalSizes = new size_t[count];
    _workgroupSizes = new size_t[count];
+
+   // initialize all sizes to 1
    for (unsigned int i = 0; i < count ;++i)
    {
       _globalSizes[i] = 1;
