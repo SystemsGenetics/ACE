@@ -107,14 +107,19 @@ void OpenCL::throwError(const QString& function, cl_int code)
 
 QString formatMemorySize(quint64 size)
 {
+   // initialize temporary variables
    enum { kb=1,mb,gb,tb };
    float a = size;
    int multi = 0;
+
+   // divide a by 1024 until it is less than 1024 or reaches TB
    while ( a > 1024.0 && multi <= tb )
    {
       a /= 1024;
       ++multi;
    }
+
+   // make formatted memory size output
    QString formatted;
    QTextStream stream(&formatted);
    stream.setRealNumberPrecision(4);
