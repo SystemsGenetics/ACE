@@ -23,7 +23,7 @@ private slots:
    void cancel();
    void set();
 private:
-   OpenCLDeviceDialog(QWidget *parent = 0);
+   explicit OpenCLDeviceDialog(QWidget *parent = 0);
    static OpenCLDeviceDialog* _instance;
    QTreeView* _list;
    QPushButton* _refresh;
