@@ -12,7 +12,7 @@ class AbstractAnalyticFactory
 public:
    virtual ~AbstractAnalyticFactory() = default;
    static AbstractAnalyticFactory& getInstance();
-   static void setInstance(std::unique_ptr<AbstractAnalyticFactory> factory);
+   static void setInstance(std::unique_ptr<AbstractAnalyticFactory>&& factory);
    virtual int getCount() = 0;
    virtual QString getName(int type) = 0;
    virtual std::unique_ptr<AbstractAnalytic> makeAnalytic(int type) = 0;

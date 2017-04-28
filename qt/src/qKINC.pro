@@ -36,7 +36,8 @@ SOURCES += main.cpp\
     utilities.cpp \
     exception.cpp \
     mainwindow.cpp \
-    abstractanalyticfactory.cpp
+    abstractanalyticfactory.cpp \
+    setupanalyticdialog.cpp
 
 HEADERS  += opencldevicedialog.h \
     opencldevicemodel.h \
@@ -49,6 +50,7 @@ HEADERS  += opencldevicedialog.h \
     exception.h \
     mainwindow.h \
     abstractanalyticfactory.h \
-    abstractanalytic.h
+    abstractanalytic.h \
+    setupanalyticdialog.h
 
 unix:!macx: LIBS += -lOpenCL

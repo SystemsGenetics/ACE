@@ -19,7 +19,7 @@ AbstractAnalyticFactory& AbstractAnalyticFactory::getInstance()
 
 
 
-void AbstractAnalyticFactory::setInstance(std::unique_ptr<AbstractAnalyticFactory> factory)
+void AbstractAnalyticFactory::setInstance(std::unique_ptr<AbstractAnalyticFactory>&& factory)
 {
    if ( _instance )
    {

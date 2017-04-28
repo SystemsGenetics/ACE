@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 {
    QApplication application(argc, argv);
    AbstractAnalyticFactory::setInstance(unique_ptr<AnalyticFactory>(new AnalyticFactory));
-   MainWindow window;
-   window.show();
+   MainWindow::getInstance().show();
    return application.exec();
 }
+// SetupAnalyticDialog, RunAnalyticDialog :)

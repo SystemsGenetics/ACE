@@ -8,17 +8,19 @@ class MainWindow : public QMainWindow
 {
    Q_OBJECT
 public:
-   explicit MainWindow(QWidget *parent = nullptr);
+   static MainWindow& getInstance();
 private slots:
    void open();
-   void close();
+   void exit();
    void runAnalytic();
    void setOpenCL();
 private:
+   explicit MainWindow(QWidget *parent = nullptr);
    void createActions();
    void createMenus();
+   static MainWindow* _instance;
    QAction* _openAction;
-   QAction* _closeAction;
+   QAction* _exitAction;
    QList<QAction*> _analyticActions;
    QAction* _setOpenCLAction;
    QMenu* _fileMenu;

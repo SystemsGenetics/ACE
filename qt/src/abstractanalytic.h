@@ -19,9 +19,11 @@ public:
    };
    virtual ~AbstractAnalytic() = default;
    virtual int getArgumentCount() = 0;
-   virtual ArgumentType getArgumentType(int argument);
-   virtual QString getArgumentTitle() = 0;
-   virtual QString getArgumentWhatsThis() = 0;
+   virtual QStringList getCommandLineArguments() = 0;
+   virtual ArgumentType getArgumentType(int argument) = 0;
+   virtual QString getArgumentTitle(int argument) = 0;
+   virtual QString getArgumentWhatsThis(int argument) = 0;
+   virtual QStringList getFileArgumentFilters(int argument) = 0;
    virtual void setArgument(int argument, QVariant value) = 0;
    virtual void setDataArgument(int argument/*, AbstractData* data*/) = 0;
    virtual void initialize() = 0;
