@@ -35,8 +35,17 @@ SetupAnalyticDialog::~SetupAnalyticDialog()
 
 
 
-void SetupAnalyticDialog::findFile(int /*argument*/)
+void SetupAnalyticDialog::findFile(int argument)
 {
+   switch (_analytic->getArgumentType(argument))
+   {
+   case AbstractAnalytic::ArgumentType::FileIn:
+   case AbstractAnalytic::ArgumentType::FileOut:
+   case AbstractAnalytic::ArgumentType::DataObjectFileIn:
+   case AbstractAnalytic::ArgumentType::DataObjectFileOut:
+   default:
+      return;
+   }
 }
 
 
@@ -76,22 +85,35 @@ QGridLayout* SetupAnalyticDialog::createInputs()
       switch (_analytic->getArgumentType(i))
       {
       case AbstractAnalytic::ArgumentType::Integer:
+      {
+         QRegExp exp;//TODO regular expression for integers
+         _inputs.append(new QLineEdit);
+         formLayout->addWidget(_inputs.back(),i,1,Qt::AlignLeft);
          break;
+      }
       case AbstractAnalytic::ArgumentType::Float:
       case AbstractAnalytic::ArgumentType::Double:
+      {
+         QRegExp exp;//TODO regular expression for floating point numbers
+         _inputs.append(new QLineEdit);
+         formLayout->addWidget(_inputs.back(),i,1,Qt::AlignLeft);
          break;
+      }
       case AbstractAnalytic::ArgumentType::String:
+      {
+         _inputs.append(new QLineEdit);
+         formLayout->addWidget(_inputs.back(),i,1,Qt::AlignLeft);
          break;
-      case AbstractAnalytic::ArgumentType::File:
+      }
+      case AbstractAnalytic::ArgumentType::FileIn:
+      case AbstractAnalytic::ArgumentType::FileOut:
       case AbstractAnalytic::ArgumentType::DataObjectFileIn:
       case AbstractAnalytic::ArgumentType::DataObjectFileOut:
       {
-         QVBoxLayout* fileBox = new QVBoxLayout;
          _inputs.append(new QLineEdit);
-         fileBox->addWidget(_inputs.back());
+         formLayout->addWidget(_inputs.back(),i,1,Qt::AlignCenter);
          QPushButton* findFileButton = new QPushButton(tr("Browse"));
-         fileBox->addWidget(findFileButton);
-         formLayout->addLayout(fileBox,i,1,Qt::AlignLeft);
+         formLayout->addWidget(findFileButton,i,2,Qt::AlignLeft);
          connect(findFileButton,SIGNAL(clicked(bool)),mapper,SLOT(map()));
          mapper->setMapping(findFileButton,i);
          break;

@@ -13,7 +13,8 @@ public:
       ,Float
       ,Double
       ,String
-      ,File
+      ,FileIn
+      ,FileOut
       ,DataObjectFileIn
       ,DataObjectFileOut
    };
@@ -25,7 +26,8 @@ public:
    virtual QString getArgumentWhatsThis(int argument) = 0;
    virtual QStringList getFileArgumentFilters(int argument) = 0;
    virtual void setArgument(int argument, QVariant value) = 0;
-   virtual void setDataArgument(int argument/*, AbstractData* data*/) = 0;
+   virtual void setArgument(int argument, QFile* file) = 0;
+   virtual void setArgument(int argument/*, AbstractData* data*/) = 0;
    virtual void initialize() = 0;
    virtual int getBlockSize() = 0;
    virtual bool runBlock(int block) = 0;

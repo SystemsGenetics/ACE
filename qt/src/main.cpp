@@ -43,3 +43,7 @@ int main(int argc, char *argv[])
    return application.exec();
 }
 // SetupAnalyticDialog, RunAnalyticDialog :)
+
+//for data;
+//Data, History, AbstractData, AbstractDataFactory, DataManager :)
+//DataWindow :))
