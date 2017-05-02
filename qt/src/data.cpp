@@ -1,4 +1,10 @@
+#include <QtEndian>
+
 #include "data.h"
+
+
+
+using namespace std;
 
 
 
@@ -8,7 +14,6 @@
 Data::~Data()
 {
    delete _file;
-   delete _stream;
 }
 
 
@@ -16,21 +21,39 @@ Data::~Data()
 
 
 
-bool Data::open(const QString& path, QIODevice::OpenModeFlag flags)
+unique_ptr<Data> Data::open(const QString& path)
 {
-   delete _file;
-   delete _stream;
-   _stream = nullptr;
-   _file = new QFile(path);
-   if ( _file->open(flags) )
+   QFile* file = new QFile(path);
+   if ( !file->open(QIODevice::ReadWrite) )
    {
-      _good = true;
+      return nullptr;
+   }
+   quint64 usedSize {0};
+   if ( !file->seek(0) )
+   {
+      return nullptr;
+   }
+   if ( file->size() >= sizeof(quint64) )
+   {
+      if ( file->readData(reinterpret_cast<char*>(&usedSize),sizeof(quint64)) != sizeof(quint64) )
+      {
+         return nullptr;
+      }
+      usedSize = qFromBigEndian(usedSize);
    }
    else
    {
-      _good = false;
+      quint64 a = qToBigEndian(usedSize);
+      if ( file->writeData(reinterpret_cast<char*>(&a),sizeof(quint64)) != sizeof(quint64) )
+      {
+         return nullptr;
+      }
    }
-   return _good;
+   if ( !file->seek(sizeof(quint64)) )
+   {
+      return nullptr;
+   }
+   return unique_ptr<Data>(new Data(file,usedSize));
 }
 
 
@@ -40,7 +63,19 @@ bool Data::open(const QString& path, QIODevice::OpenModeFlag flags)
 
 quint64 Data::allocate(quint64 size)
 {
-
+   if ( !_file )
+   {
+      ;//uh oh!
+   }
+   quint64 pointer = _file->size();
+   if ( size > (_file->size()-_usedSize) )
+   {
+      if ( !_file->resize(size-_file->size()+_usedSize) )
+      {
+         return 0;
+      }
+   }
+   return pointer;
 }
 
 
@@ -50,7 +85,19 @@ quint64 Data::allocate(quint64 size)
 
 quint64 Data::size(Data::MemoryType type) const
 {
-
+   if ( !_file )
+   {
+      ;//uh oh!
+   }
+   switch (type)
+   {
+   case MemoryType::Used:
+      return _usedSize;
+   case MemoryType::Free:
+      return _file->size()-_usedSize;
+   case MemoryType::Total:
+      return _file->size();
+   }
 }
 
 
@@ -58,19 +105,13 @@ quint64 Data::size(Data::MemoryType type) const
 
 
 
-bool Data::isGood() const
+bool Data::seek(quint64 location)
 {
-
-}
-
-
-
-
-
-
-bool Data::seek(quint64 location) const
-{
-
+   if ( !_file )
+   {
+      ;//uh oh!
+   }
+   return _file->seek(location);
 }
 
 
@@ -98,5 +139,4 @@ QDataStream& Data::stream()
 
 void Data::clear()
 {
-
 }

@@ -19,6 +19,10 @@ public:
       ,DataObjectFileOut
    };
    virtual ~AbstractAnalytic() = default;
+   AbstractAnalytic(const AbstractAnalytic&) = delete;
+   AbstractAnalytic& operator=(const AbstractAnalytic&) = delete;
+   AbstractAnalytic(AbstractAnalytic&&) = delete;
+   AbstractAnalytic& operator=(AbstractAnalytic&&) = delete;
    virtual int getArgumentCount() = 0;
    virtual QStringList getCommandLineArguments() = 0;
    virtual ArgumentType getArgumentType(int argument) = 0;
