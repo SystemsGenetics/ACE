@@ -62,12 +62,14 @@ private:
       ,Pixmap = 170
    };
    constexpr static int _maxStringSize {65536};
+   constexpr static int _stringBufferSize {1024};
    template<class T> bool write(T value, quint64 size = 1);
    template<class T> bool read(T* value, quint64 size = 1);
    Data(QFile* file, quint64 usedSize);
    QFile* _file;
    quint64 _usedSize;
    Status _status {Status::Ok};
+   QChar _stringBuffer[_stringBufferSize];
 };
 
 

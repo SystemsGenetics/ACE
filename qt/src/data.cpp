@@ -461,13 +461,22 @@ Data& Data::operator>>(QString& value)
          if ( read(&size) )
          {
             size = qFromBigEndian(size);
-            QChar* buffer = new QChar[size+1];
+            QChar* buffer;
+            unique_ptr<QChar> holder;
+            if ( (size+1) > _stringBufferSize )
+            {
+               holder = unique_ptr<QChar>(new QChar[size+1]);
+               buffer = holder.get();
+            }
+            else
+            {
+               buffer = _stringBuffer;
+            }
             if ( read(buffer,size) )
             {
                buffer[size] = QChar('\0');
                value = QString(buffer,size);
             }
-            delete[] buffer;
          }
       }
       else
