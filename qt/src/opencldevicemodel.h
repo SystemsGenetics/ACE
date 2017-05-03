@@ -6,10 +6,6 @@
 
 
 
-using namespace std;
-
-
-
 class OpenCLDeviceModel : public QAbstractItemModel
 {
    Q_OBJECT
@@ -25,7 +21,7 @@ public:
    void setDevice(const QModelIndex& index) const;
    void reset();
 private:
-   using StringPointer = unique_ptr<char,default_delete<char[]>>;
+   using StringPointer = std::unique_ptr<char,std::default_delete<char[]>>;
    int getPlatformCount() const;
    cl_platform_id getPlatformID(int row) const;
    QString getPlatformName(int row) const;

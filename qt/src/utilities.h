@@ -6,10 +6,6 @@
 
 
 
-using namespace std;
-
-
-
 namespace OpenCL
 {
    namespace ReturnCodes
@@ -75,7 +71,7 @@ namespace OpenCL
 
 
    template<class T>
-   unique_ptr<T> getDeviceInfo(cl_device_id id, cl_device_info what)
+   std::unique_ptr<T> getDeviceInfo(cl_device_id id, cl_device_info what)
    {
       // determine the size of the variable requested in bytes
       size_t size;
@@ -93,7 +89,7 @@ namespace OpenCL
          delete[] reinterpret_cast<char*>(info);
          throwError("clGetDeviceInfo",code);
       }
-      return unique_ptr<T>(info);
+      return std::unique_ptr<T>(info);
    }
 }
 

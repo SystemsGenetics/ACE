@@ -8,7 +8,6 @@
 
 
 
-using namespace std;
 class OpenCLProgram;
 class OpenCLKernel;
 
@@ -26,8 +25,8 @@ public:
    void initialize();
    void setDevice(cl_platform_id platformID, cl_device_id deviceID);
    void clear();
-   unique_ptr<OpenCLProgram> makeProgram() const;
-   template<class T> unique_ptr<OpenCLBuffer<T>> makeBuffer(quint64 size);
+   std::unique_ptr<OpenCLProgram> makeProgram() const;
+   template<class T> std::unique_ptr<OpenCLBuffer<T>> makeBuffer(quint64 size);
    quint64 getGlobalMemorySize() const;
    quint64 getLocalMemorySize() const;
 private:
@@ -45,13 +44,13 @@ private:
 
 
 template<class T>
-unique_ptr<OpenCLBuffer<T>> OpenCLDevice::makeBuffer(quint64 size)
+std::unique_ptr<OpenCLBuffer<T>> OpenCLDevice::makeBuffer(quint64 size)
 {
    if ( !_contextID || !_commandQueueID )
    {
       return nullptr;
    }
-   return unique_ptr<OpenCLBuffer<T>>(new OpenCLBuffer<T>(*_contextID,*_commandQueueID,size));
+   return std::unique_ptr<OpenCLBuffer<T>>(new OpenCLBuffer<T>(*_contextID,*_commandQueueID,size));
 }
 
 

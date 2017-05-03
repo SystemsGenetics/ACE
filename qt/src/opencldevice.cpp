@@ -6,9 +6,7 @@
 
 
 
-
-
-
+using namespace std;
 OpenCLDevice* OpenCLDevice::_instance = nullptr;
 
 

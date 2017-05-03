@@ -6,7 +6,6 @@
 
 
 
-using namespace std;
 class OpenCLKernel;
 
 
@@ -23,7 +22,7 @@ public:
    void addSource(const QString& source);
    void addFile(const QString& filePath);
    bool compile(const QString& options);
-   unique_ptr<OpenCLKernel> makeKernel(const QString& name);
+   std::unique_ptr<OpenCLKernel> makeKernel(const QString& name);
 private:
    cl_device_id _deviceID;
    cl_context _contextID;
