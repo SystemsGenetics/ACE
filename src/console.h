@@ -68,6 +68,7 @@ private:
    void data_list();
    void data_history(GetOpts&);
    void data_load(GetOpts&);
+   void data_import(GetOpts&);
    void data_dump(GetOpts&);
    void data_query(GetOpts&);
    void analytic(GetOpts&);

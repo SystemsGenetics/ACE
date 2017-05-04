@@ -160,9 +160,9 @@ Data* Console::getData(const std::string& name)
 void Console::process(GetOpts& ops)
 {
    enum {Analytic=0,GPU,Open,Load,Select,Dump,Query,Close,List,Clear,History,
-         Quit};
+         Quit,Import};
    switch (ops.com_get({"cl","open","load","select","dump","query","close",
-                        "list","clear","history","quit"}))
+                        "list","clear","history","quit","import"}))
    {
    case GPU:
       ops.com_pop();
@@ -201,6 +201,10 @@ void Console::process(GetOpts& ops)
    case Query:
       ops.com_pop();
       data_query(ops);
+      break;
+   case Import:
+      ops.com_pop();
+      data_import(ops);
       break;
    case Quit:
       throw CommandQuit();
@@ -509,6 +513,60 @@ void Console::data_load(GetOpts& ops)
    catch (DataMap::NoSelect)
    {
       throw CommandError("load","no data object selected.");
+   }
+}
+
+
+
+void Console::data_import(GetOpts& ops)
+{
+   if ( ops.com_empty() )
+   {
+      throw CommandError("import","command requires 1 argument.");
+   }
+   std::string file;
+   std::string type;
+   seperate("open",ops.com_front(),file,type);
+   if ( file.empty() || type.empty() )
+   {
+      throw CommandError("import","syntax error detected in first argument.");
+   }
+   Data* k;
+   File* np;
+   try
+   {
+      k = _dataMap.open(file,type,true);
+      np = dynamic_cast<File*>(k);
+   }
+   catch (DataMap::AlreadyExists)
+   {
+      std::ostringstream buffer;
+      buffer << "error: " << file << " already exists.";
+      throw CommandError("import",buffer.str());
+   }
+   catch (DataMap::InvalidType)
+   {
+      std::ostringstream buffer;
+      buffer << "error: '" << type << "' is not valid data type.";
+      throw CommandError("import",buffer.str());
+   }
+   ops.com_pop();
+   try
+   {
+      bool willForce {ops.has_opt("force",true)};
+      if ( !k->empty() && !willForce )
+      {
+         throw CommandError("import","cannot overwrite non-empty data object.");
+      }
+      k->clear();
+      k->init_history();
+      k->history().init(file,"__LOAD__",ops.orig());
+      k->write_history();
+      _dataMap.load(ops,_tm);
+   }
+   catch (DataMap::NoSelect)
+   {
+      throw CommandError("import","no data object selected.");
    }
 }
 
