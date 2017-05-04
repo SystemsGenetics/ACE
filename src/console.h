@@ -56,6 +56,7 @@ public:
 private:
    struct CommandQuit {};
    void process(GetOpts&);
+   void help(GetOpts&);
    void cl_process(GetOpts&);
    void cl_list();
    void cl_info(GetOpts&);

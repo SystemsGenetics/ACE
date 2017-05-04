@@ -13,6 +13,7 @@
 #include "cldevice.h"
 #include "data.h"
 #include "factory.h"
+#include "helpfactory.h"
 namespace AccelCompEng
 {
 
@@ -160,9 +161,9 @@ Data* Console::getData(const std::string& name)
 void Console::process(GetOpts& ops)
 {
    enum {Analytic=0,GPU,Open,Load,Select,Dump,Query,Close,List,Clear,History,
-         Quit,Import};
+         Quit,Import,Help};
    switch (ops.com_get({"cl","open","load","select","dump","query","close",
-                        "list","clear","history","quit","import"}))
+                        "list","clear","history","quit","import","help"}))
    {
    case GPU:
       ops.com_pop();
@@ -206,11 +207,41 @@ void Console::process(GetOpts& ops)
       ops.com_pop();
       data_import(ops);
       break;
+   case Help:
+      ops.com_pop();
+      help(ops);
+      break;
    case Quit:
       throw CommandQuit();
    case Analytic:
       analytic(ops);
       break;
+   }
+}
+
+
+
+void Console::help(GetOpts& ops)
+{
+   if ( ops.com_empty() )
+   {
+      _tm << "help <command>\nThe following commands are available:\n\n";
+      for (int i = 0; i < HelpFactory::getInstance().getItemCount() ;++i)
+      {
+         _tm << HelpFactory::getInstance().getItemName(i) << "\n";
+      }
+      _tm << "\n";
+   }
+   else
+   {
+      for (int i = 0; i < HelpFactory::getInstance().getItemCount() ;++i)
+      {
+         if ( HelpFactory::getInstance().getItemName(i) == ops.com_front() )
+         {
+            _tm << HelpFactory::getInstance().getItemDescription(i);
+            return;
+         }
+      }
    }
 }
 

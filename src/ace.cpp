@@ -1,5 +1,7 @@
 #include <iostream>
 #include "../ace.h"
+#include "helpfactory.h"
+#include "helpitems.h"
 namespace AccelCompEng
 {
 using namespace std;
@@ -23,6 +25,17 @@ int run(const char* header, Factory& factory, int argc, char* argv[], void (*cal
       }
       else
       {
+         HelpFactory::getInstance().addItem(unique_ptr<AbstractHelpItem>(new CLHelpItem));
+         HelpFactory::getInstance().addItem(unique_ptr<AbstractHelpItem>(new OpenHelpItem));
+         HelpFactory::getInstance().addItem(unique_ptr<AbstractHelpItem>(new CloseHelpItem));
+         HelpFactory::getInstance().addItem(unique_ptr<AbstractHelpItem>(new SelectHelpItem));
+         HelpFactory::getInstance().addItem(unique_ptr<AbstractHelpItem>(new ClearHelpItem));
+         HelpFactory::getInstance().addItem(unique_ptr<AbstractHelpItem>(new ListHelpItem));
+         HelpFactory::getInstance().addItem(unique_ptr<AbstractHelpItem>(new HistoryHelpItem));
+         HelpFactory::getInstance().addItem(unique_ptr<AbstractHelpItem>(new LoadHelpItem));
+         HelpFactory::getInstance().addItem(unique_ptr<AbstractHelpItem>(new ImportHelpItem));
+         HelpFactory::getInstance().addItem(unique_ptr<AbstractHelpItem>(new DumpHelpItem));
+         HelpFactory::getInstance().addItem(unique_ptr<AbstractHelpItem>(new QueryHelpItem));
          console.run();
       }
    }
