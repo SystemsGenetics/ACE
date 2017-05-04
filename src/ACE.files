@@ -1,3 +1,4 @@
+abstracthelpitem.h
 ace.cpp
 ../ace.h
 analytic.cpp
@@ -30,6 +31,10 @@ fstring.cpp
 fstring.h
 getopts.cpp
 getopts.h
+helpfactory.cpp
+helpfactory.h
+helpitems.cpp
+helpitems.h
 history.cpp
 history.h
 file.cpp
