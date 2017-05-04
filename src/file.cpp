@@ -62,7 +62,6 @@ void File::clear()
 {
    static const char* f = __PRETTY_FUNCTION__;
    assert<NullMemory>(!_header.is_null_memory(),f,__LINE__);
-   assert<AlreadyNew>(!is_new(),f,__LINE__);
    _header.rmem().clear();
    reset();
    _header.allocate();
