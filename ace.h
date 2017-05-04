@@ -14,6 +14,8 @@
 #include "src/file.h"
 #include "src/factory.h"
 #include "src/linuxterm.h"
+#include "src/helpfactory.h"
+#include "src/abstracthelpitem.h"
 namespace AccelCompEng
 {
 
