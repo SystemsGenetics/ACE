@@ -30,6 +30,8 @@ fstring.cpp
 fstring.h
 getopts.cpp
 getopts.h
+helpfactory.cpp
+helpfactory.h
 history.cpp
 history.h
 file.cpp
