@@ -74,6 +74,7 @@ Console::~Console()
 
 void Console::run()
 {
+   _tm << "Welcome to ACE.\n";
    bool alive = true;
    while ( alive )
    {

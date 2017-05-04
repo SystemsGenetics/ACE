@@ -84,6 +84,7 @@ LinuxTerm::~LinuxTerm()
 void LinuxTerm::header(const std::string& header)
 {
    _header = header;
+   _header.append(" ");
 }
 
 

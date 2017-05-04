@@ -2,6 +2,7 @@
 #include "../ace.h"
 namespace AccelCompEng
 {
+using namespace std;
 
 
 
@@ -9,9 +10,12 @@ int run(const char* header, Factory& factory, int argc, char* argv[], void (*cal
 {
    try
    {
+      cout << "Initializing data manager...\n";
       DataMap dataMap(factory);
+      cout << "Initializing terminal...\n";
       LinuxTerm::stty_raw();
       LinuxTerm terminal;
+      terminal << "Initializing console system...\n";
       Console console(argc,argv,terminal,factory,dataMap,header);
       if ( callBack )
       {
