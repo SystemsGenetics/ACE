@@ -4,6 +4,10 @@
 
 
 
+class AbstractData;
+
+
+
 class AbstractAnalytic
 {
 public:
@@ -31,18 +35,19 @@ public:
    virtual QStringList getFileArgumentFilters(int argument) = 0;
    virtual void setArgument(int argument, QVariant value) = 0;
    virtual void setArgument(int argument, QFile* file) = 0;
-   virtual void setArgument(int argument/*, AbstractData* data*/) = 0;
+   virtual void setArgument(int argument, AbstractData* data) = 0;
    virtual void initialize() = 0;
    virtual int getBlockSize() = 0;
    virtual bool runBlock(int block) = 0;
    virtual void finish() = 0;
-   bool hasInfoChanged();
-   void markInfoRead();
    int getPercentComplete();
    QString getStatus();
 protected:
    void setPercentComplete(int percent);
    void setStatus(QString status);
+private:
+   int _percentComplete;
+   QString _status;
 };
 
 
