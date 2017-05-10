@@ -41,9 +41,22 @@ DataStream::Status DataStream::getStatus() const
 
 
 
+DataStream::operator bool() const
+{
+   return _status == Ok;
+}
+
+
+
+
+
+
 DataStream& DataStream::operator<<(qint8 value)
 {
-   write(value);
+   if ( _status == Ok )
+   {
+      write(value);
+   }
    return *this;
 }
 
@@ -54,7 +67,10 @@ DataStream& DataStream::operator<<(qint8 value)
 
 DataStream& DataStream::operator<<(quint8 value)
 {
-   write(value);
+   if ( _status == Ok )
+   {
+      write(value);
+   }
    return *this;
 }
 
@@ -65,8 +81,11 @@ DataStream& DataStream::operator<<(quint8 value)
 
 DataStream& DataStream::operator<<(qint16 value)
 {
-   value = qToBigEndian(value);
-   write(value);
+   if ( _status == Ok )
+   {
+      value = qToBigEndian(value);
+      write(value);
+   }
    return *this;
 }
 
@@ -77,8 +96,11 @@ DataStream& DataStream::operator<<(qint16 value)
 
 DataStream& DataStream::operator<<(quint16 value)
 {
-   value = qToBigEndian(value);
-   write(value);
+   if ( _status == Ok )
+   {
+      value = qToBigEndian(value);
+      write(value);
+   }
    return *this;
 }
 
@@ -89,8 +111,11 @@ DataStream& DataStream::operator<<(quint16 value)
 
 DataStream& DataStream::operator<<(qint32 value)
 {
-   value = qToBigEndian(value);
-   write(value);
+   if ( _status == Ok )
+   {
+      value = qToBigEndian(value);
+      write(value);
+   }
    return *this;
 }
 
@@ -101,8 +126,11 @@ DataStream& DataStream::operator<<(qint32 value)
 
 DataStream& DataStream::operator<<(quint32 value)
 {
-   value = qToBigEndian(value);
-   write(value);
+   if ( _status == Ok )
+   {
+      value = qToBigEndian(value);
+      write(value);
+   }
    return *this;
 }
 
@@ -113,8 +141,11 @@ DataStream& DataStream::operator<<(quint32 value)
 
 DataStream& DataStream::operator<<(qint64 value)
 {
-   value = qToBigEndian(value);
-   write(value);
+   if ( _status == Ok )
+   {
+      value = qToBigEndian(value);
+      write(value);
+   }
    return *this;
 }
 
@@ -125,8 +156,11 @@ DataStream& DataStream::operator<<(qint64 value)
 
 DataStream& DataStream::operator<<(quint64 value)
 {
-   value = qToBigEndian(value);
-   write(value);
+   if ( _status == Ok )
+   {
+      value = qToBigEndian(value);
+      write(value);
+   }
    return *this;
 }
 
@@ -137,7 +171,10 @@ DataStream& DataStream::operator<<(quint64 value)
 
 DataStream& DataStream::operator<<(float value)
 {
-   write(value);
+   if ( _status == Ok )
+   {
+      write(value);
+   }
    return *this;
 }
 
@@ -148,7 +185,10 @@ DataStream& DataStream::operator<<(float value)
 
 DataStream& DataStream::operator<<(double value)
 {
-   write(value);
+   if ( _status == Ok )
+   {
+      write(value);
+   }
    return *this;
 }
 
@@ -159,18 +199,21 @@ DataStream& DataStream::operator<<(double value)
 
 DataStream& DataStream::operator<<(const QString& value)
 {
-   if ( value.size() > _maxStringSize )
+   if ( _status == Ok )
    {
-      _status = Status::StringTooBig;
-      return *this;
-   }
-   quint8 type = String;
-   if ( write(type) )
-   {
-      quint16 size = qToBigEndian(value.size());
-      if ( write(size) )
+      if ( value.size() > _maxStringSize )
       {
-         write(value.data(),size);
+         _status = Status::StringTooBig;
+         return *this;
+      }
+      quint8 type = String;
+      if ( write(type) )
+      {
+         quint16 size = qToBigEndian(value.size());
+         if ( write(size) )
+         {
+            write(value.data(),size);
+         }
       }
    }
    return *this;
@@ -181,19 +224,22 @@ DataStream& DataStream::operator<<(const QString& value)
 
 
 
-DataStream &DataStream::operator<<(const QPixmap &value)
+DataStream &DataStream::operator<<(const QPixmap& value)
 {
-   quint8 type = Pixmap;
-   if ( write(type) )
+   if ( _status == Ok )
    {
-      QByteArray data;
-      QBuffer buffer(&data);
-      buffer.open(QIODevice::WriteOnly);
-      value.save(&buffer,"PNG");
-      quint32 size = qToBigEndian(data.size());
-      if ( write(size) )
+      quint8 type = Pixmap;
+      if ( write(type) )
       {
-         write(data.data(),size);
+         QByteArray data;
+         QBuffer buffer(&data);
+         buffer.open(QIODevice::WriteOnly);
+         value.save(&buffer,"PNG");
+         quint32 size = qToBigEndian(data.size());
+         if ( write(size) )
+         {
+            write(data.data(),size);
+         }
       }
    }
    return *this;
@@ -206,7 +252,11 @@ DataStream &DataStream::operator<<(const QPixmap &value)
 
 DataStream& DataStream::operator>>(qint8& value)
 {
-   read(&value);
+   value = 0;
+   if ( _status == Ok )
+   {
+      read(&value);
+   }
    return *this;
 }
 
@@ -217,7 +267,11 @@ DataStream& DataStream::operator>>(qint8& value)
 
 DataStream& DataStream::operator>>(quint8& value)
 {
-   read(&value);
+   value = 0;
+   if ( _status == Ok )
+   {
+      read(&value);
+   }
    return *this;
 }
 
@@ -228,9 +282,13 @@ DataStream& DataStream::operator>>(quint8& value)
 
 DataStream& DataStream::operator>>(qint16& value)
 {
-   if ( read(&value) )
+   value = 0;
+   if ( _status == Ok )
    {
-      value = qFromBigEndian(value);
+      if ( read(&value) )
+      {
+         value = qFromBigEndian(value);
+      }
    }
    return *this;
 }
@@ -242,9 +300,13 @@ DataStream& DataStream::operator>>(qint16& value)
 
 DataStream& DataStream::operator>>(quint16& value)
 {
-   if ( read(&value) )
+   value = 0;
+   if ( _status == Ok )
    {
-      value = qFromBigEndian(value);
+      if ( read(&value) )
+      {
+         value = qFromBigEndian(value);
+      }
    }
    return *this;
 }
@@ -256,9 +318,13 @@ DataStream& DataStream::operator>>(quint16& value)
 
 DataStream& DataStream::operator>>(qint32& value)
 {
-   if ( read(&value) )
+   value = 0;
+   if ( _status == Ok )
    {
-      value = qFromBigEndian(value);
+      if ( read(&value) )
+      {
+         value = qFromBigEndian(value);
+      }
    }
    return *this;
 }
@@ -270,9 +336,13 @@ DataStream& DataStream::operator>>(qint32& value)
 
 DataStream& DataStream::operator>>(quint32& value)
 {
-   if ( read(&value) )
+   value = 0;
+   if ( _status == Ok )
    {
-      value = qFromBigEndian(value);
+      if ( read(&value) )
+      {
+         value = qFromBigEndian(value);
+      }
    }
    return *this;
 }
@@ -284,9 +354,13 @@ DataStream& DataStream::operator>>(quint32& value)
 
 DataStream& DataStream::operator>>(qint64& value)
 {
-   if ( read(&value) )
+   value = 0;
+   if ( _status == Ok )
    {
-      value = qFromBigEndian(value);
+      if ( read(&value) )
+      {
+         value = qFromBigEndian(value);
+      }
    }
    return *this;
 }
@@ -298,9 +372,13 @@ DataStream& DataStream::operator>>(qint64& value)
 
 DataStream& DataStream::operator>>(quint64& value)
 {
-   if ( read(&value) )
+   value = 0;
+   if ( _status == Ok )
    {
-      value = qFromBigEndian(value);
+      if ( read(&value) )
+      {
+         value = qFromBigEndian(value);
+      }
    }
    return *this;
 }
@@ -312,7 +390,11 @@ DataStream& DataStream::operator>>(quint64& value)
 
 DataStream& DataStream::operator>>(float& value)
 {
-   read(&value);
+   value = 0.0;
+   if ( _status == Ok )
+   {
+      read(&value);
+   }
    return *this;
 }
 
@@ -323,7 +405,11 @@ DataStream& DataStream::operator>>(float& value)
 
 DataStream& DataStream::operator>>(double& value)
 {
-   read(&value);
+   value = 0.0;
+   if ( _status == Ok )
+   {
+      read(&value);
+   }
    return *this;
 }
 
@@ -334,36 +420,40 @@ DataStream& DataStream::operator>>(double& value)
 
 DataStream& DataStream::operator>>(QString& value)
 {
-   quint8 type {0};
-   if ( read(&type) )
+   value.clear();
+   if ( _status == Ok )
    {
-      if ( type == String )
+      quint8 type {0};
+      if ( read(&type) )
       {
-         quint16 size;
-         if ( read(&size) )
+         if ( type == String )
          {
-            size = qFromBigEndian(size);
-            QChar* buffer;
-            unique_ptr<QChar> holder;
-            if ( (size+1) > _stringBufferSize )
+            quint16 size;
+            if ( read(&size) )
             {
-               holder = unique_ptr<QChar>(new QChar[size+1]);
-               buffer = holder.get();
-            }
-            else
-            {
-               buffer = _stringBuffer;
-            }
-            if ( read(buffer,size) )
-            {
-               buffer[size] = QChar('\0');
-               value = QString(buffer,size);
+               size = qFromBigEndian(size);
+               QChar* buffer;
+               unique_ptr<QChar> holder;
+               if ( (size+1) > _stringBufferSize )
+               {
+                  holder = unique_ptr<QChar>(new QChar[size+1]);
+                  buffer = holder.get();
+               }
+               else
+               {
+                  buffer = _stringBuffer;
+               }
+               if ( read(buffer,size) )
+               {
+                  buffer[size] = QChar('\0');
+                  value = QString(buffer,size);
+               }
             }
          }
-      }
-      else
-      {
-         _status = Status::CorruptData;
+         else
+         {
+            _status = Status::CorruptData;
+         }
       }
    }
    return *this;
@@ -374,31 +464,35 @@ DataStream& DataStream::operator>>(QString& value)
 
 
 
-DataStream& DataStream::operator>>(QPixmap &value)
+DataStream& DataStream::operator>>(QPixmap& value)
 {
-   quint8 type {0};
-   if ( read(&type) )
+   value = QPixmap();
+   if ( _status == Ok )
    {
-      if ( type == Pixmap )
+      quint8 type {0};
+      if ( read(&type) )
       {
-         quint32 size;
-         if ( read(&size) )
+         if ( type == Pixmap )
          {
-            size = qFromBigEndian(size);
-            QByteArray buffer;
-            buffer.resize(size);
-            if ( read(buffer.data(),size) )
+            quint32 size;
+            if ( read(&size) )
             {
-               if ( !value.loadFromData(buffer) )
+               size = qFromBigEndian(size);
+               QByteArray buffer;
+               buffer.resize(size);
+               if ( read(buffer.data(),size) )
                {
-                  _status = Status::CorruptData;
+                  if ( !value.loadFromData(buffer) )
+                  {
+                     _status = Status::CorruptData;
+                  }
                }
             }
          }
-      }
-      else
-      {
-         _status = Status::CorruptData;
+         else
+         {
+            _status = Status::CorruptData;
+         }
       }
    }
    return *this;

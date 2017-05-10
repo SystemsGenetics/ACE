@@ -1,7 +1,6 @@
 #include "opencldevice.h"
 #include "openclprogram.h"
 #include "openclkernel.h"
-#include "utilities.h"
 #include "exception.h"
 
 

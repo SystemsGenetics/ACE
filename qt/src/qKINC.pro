@@ -39,7 +39,9 @@ SOURCES += main.cpp\
     abstractanalyticfactory.cpp \
     setupanalyticdialog.cpp \
     abstractdata.cpp \
-    datastream.cpp
+    datastream.cpp \
+    dataobject.cpp \
+    abstractdatafactory.cpp
 
 HEADERS  += opencldevicedialog.h \
     opencldevicemodel.h \
@@ -56,6 +58,8 @@ HEADERS  += opencldevicedialog.h \
     setupanalyticdialog.h \
     abstractdata.h \
     abstractdataiterator.h \
-    datastream.h
+    datastream.h \
+    dataobject.h \
+    abstractdatafactory.h
 
 unix:!macx: LIBS += -lOpenCL

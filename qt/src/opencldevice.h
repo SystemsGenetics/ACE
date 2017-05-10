@@ -5,6 +5,7 @@
 
 #include "openclevent.h"
 #include "openclbuffer.h"
+#include "utilities.h"
 
 
 
@@ -17,10 +18,7 @@ class OpenCLDevice
 {
 public:
    ~OpenCLDevice();
-   OpenCLDevice(const OpenCLDevice&) = delete;
-   OpenCLDevice& operator=(const OpenCLDevice&) = delete;
-   OpenCLDevice(OpenCLDevice&&) = delete;
-   OpenCLDevice& operator=(OpenCLDevice&&) = delete;
+   MAKE_NO_COPY_OR_MOVE(OpenCLDevice);
    static OpenCLDevice& getInstance();
    void initialize();
    void setDevice(cl_platform_id platformID, cl_device_id deviceID);

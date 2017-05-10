@@ -1,17 +1,17 @@
-#include "abstractanalyticfactory.h"
+#include "abstractdatafactory.h"
 #include "exception.h"
 
 
 
 using namespace std;
-unique_ptr<AbstractAnalyticFactory> AbstractAnalyticFactory::_instance {nullptr};
+unique_ptr<AbstractDataFactory> AbstractDataFactory::_instance {nullptr};
 
 
 
 
 
 
-AbstractAnalyticFactory& AbstractAnalyticFactory::getInstance()
+AbstractDataFactory& AbstractDataFactory::getInstance()
 {
    if ( !_instance )
    {
@@ -28,7 +28,7 @@ AbstractAnalyticFactory& AbstractAnalyticFactory::getInstance()
 
 
 
-void AbstractAnalyticFactory::setInstance(unique_ptr<AbstractAnalyticFactory>&& factory)
+void AbstractDataFactory::setInstance(unique_ptr<AbstractDataFactory>&& factory)
 {
    _instance = move(factory);
 }

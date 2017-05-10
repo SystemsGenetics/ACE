@@ -3,6 +3,8 @@
 #include <CL/cl.h>
 #include <QtCore>
 #include <memory>
+#define MAKE_NO_COPY_OR_MOVE(name) name(const name&) = delete;\
+   name& operator=(const name&) = delete;name(name&&) = delete;name& operator=(name&&) = delete
 
 
 

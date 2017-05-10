@@ -3,6 +3,7 @@
 #include <CL/cl.h>
 
 #include "openclbuffer.h"
+#include "utilities.h"
 
 
 
@@ -12,10 +13,7 @@ public:
    OpenCLKernel(cl_program programID, cl_command_queue commandQueueID, cl_device_id deviceID
                 , const QString& name);
    ~OpenCLKernel();
-   OpenCLKernel(const OpenCLKernel&) = delete;
-   OpenCLKernel& operator=(const OpenCLKernel&) = delete;
-   OpenCLKernel(OpenCLKernel&&) = delete;
-   OpenCLKernel& operator=(OpenCLKernel&&) = delete;
+   MAKE_NO_COPY_OR_MOVE(OpenCLKernel);
    template<class T> void setArgument(cl_uint index, T value);
    template<class T> void setBuffer(cl_uint index, OpenCLBuffer<T>* buffer);
    template<class T> void addLocalMemory(cl_uint index, cl_uint size);

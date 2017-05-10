@@ -4,6 +4,8 @@
 #include <CL/cl.h>
 #include <memory>
 
+#include "utilities.h"
+
 
 
 class OpenCLKernel;
@@ -15,10 +17,7 @@ class OpenCLProgram
 public:
    OpenCLProgram(cl_device_id deviceID, cl_context contextID, cl_command_queue commandQueueID);
    ~OpenCLProgram();
-   OpenCLProgram(const OpenCLProgram&) = delete;
-   OpenCLProgram& operator=(const OpenCLProgram&) = delete;
-   OpenCLProgram(OpenCLProgram&&) = delete;
-   OpenCLProgram& operator=(OpenCLProgram&&) = delete;
+   MAKE_NO_COPY_OR_MOVE(OpenCLProgram);
    void addSource(const QString& source);
    void addFile(const QString& filePath);
    bool compile(const QString& options);

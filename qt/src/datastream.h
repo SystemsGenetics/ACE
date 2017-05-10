@@ -3,12 +3,14 @@
 #include <QtCore>
 #include <memory>
 
+#include "utilities.h"
+
 
 
 class DataStream
 {
 public:
-   enum class Status
+   enum Status
    {
       Ok = 0
       ,ReadFailed
@@ -18,11 +20,9 @@ public:
    };
    DataStream(QFile* file);
    ~DataStream();
-   DataStream(const DataStream&) = delete;
-   DataStream& operator=(const DataStream&) = delete;
-   DataStream(DataStream&&) = delete;
-   DataStream& operator=(DataStream&&) = delete;
+   MAKE_NO_COPY_OR_MOVE(DataStream);
    Status getStatus() const;
+   operator bool() const;
    DataStream& operator<<(qint8 value);
    DataStream& operator<<(quint8 value);
    DataStream& operator<<(qint16 value);
@@ -58,7 +58,7 @@ private:
    template<class T> bool write(T value, quint64 size = 1);
    template<class T> bool read(T* value, quint64 size = 1);
    QFile* _file;
-   Status _status {Status::Ok};
+   Status _status {Ok};
    QChar _stringBuffer[_stringBufferSize];
 };
 
