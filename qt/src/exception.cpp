@@ -61,7 +61,24 @@ QTextStream &Exception::out()
 
 
 
-void Exception::display()
+void Exception::display(Exception::Type type)
+{
+   switch (type)
+   {
+   case Type::Plain:
+   case Type::Data:
+   case Type::Analytic:
+      displayPlain();
+      break;
+   }
+}
+
+
+
+
+
+
+void Exception::displayPlain()
 {
    // generate the message box's textual information
    QString message;

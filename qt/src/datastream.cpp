@@ -381,7 +381,7 @@ DataStream& DataStream::operator>>(QPixmap &value)
    {
       if ( type == Pixmap )
       {
-         quint16 size;
+         quint32 size;
          if ( read(&size) )
          {
             size = qFromBigEndian(size);

@@ -9,13 +9,20 @@
 class Exception
 {
 public:
+   enum class Type
+   {
+      Plain
+      ,Analytic
+      ,Data
+   };
    void setFunction(const QString& function);
    void setFile(const QString& file);
    void setLine(unsigned int line);
    void setTitle(const QString& title);
    QTextStream& out();
-   void display();
+   void display(Type type = Type::Plain);
 private:
+   void displayPlain();
    QString _function;
    QString _file;
    unsigned int _line;
