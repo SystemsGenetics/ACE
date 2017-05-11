@@ -18,7 +18,7 @@ class OpenCLDevice
 {
 public:
    ~OpenCLDevice();
-   MAKE_NO_COPY_OR_MOVE(OpenCLDevice);
+   EMAKE_NO_COPY_OR_MOVE(OpenCLDevice);
    static OpenCLDevice& getInstance();
    void initialize();
    void setDevice(cl_platform_id platformID, cl_device_id deviceID);

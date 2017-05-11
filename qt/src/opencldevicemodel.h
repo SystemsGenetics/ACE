@@ -3,6 +3,7 @@
 #include <QtCore>
 #include <CL/cl.h>
 #include <memory>
+namespace Ace {
 
 
 
@@ -36,4 +37,5 @@ private:
 
 
 
+}
 #endif

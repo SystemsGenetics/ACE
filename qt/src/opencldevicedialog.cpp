@@ -9,6 +9,7 @@
 #include "opencldevicemodel.h"
 #include "opencldevice.h"
 #include "exception.h"
+namespace Ace {
 
 
 
@@ -44,7 +45,7 @@ void OpenCLDeviceDialog::updateDetails(const QModelIndex &index)
       _set->setDisabled(!_model->isDevice(index));
       _selected = index;
    }
-   catch (Exception e)
+   catch (EException e)
    {
       e.display();
       exit(1);
@@ -64,7 +65,7 @@ void OpenCLDeviceDialog::refresh()
       _details->setText("");
       _set->setDisabled(true);
    }
-   catch (Exception e)
+   catch (EException e)
    {
       e.display();
       exit(1);
@@ -93,7 +94,7 @@ void OpenCLDeviceDialog::set()
       _model->setDevice(_selected);
       hide();
    }
-   catch (Exception e)
+   catch (EException e)
    {
       e.display();
       exit(1);
@@ -150,4 +151,8 @@ OpenCLDeviceDialog::OpenCLDeviceDialog(QWidget *parent):
    // set layout to main and set title
    setLayout(main);
    setWindowTitle(tr("OpenCL Device Selection"));
+}
+
+
+
 }

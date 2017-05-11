@@ -12,7 +12,7 @@ using namespace std;
 
 
 
-DataStream::DataStream(QFile *file):
+EDataStream::EDataStream(QFile *file):
    _file(file)
 {}
 
@@ -21,17 +21,7 @@ DataStream::DataStream(QFile *file):
 
 
 
-DataStream::~DataStream()
-{
-   delete _file;
-}
-
-
-
-
-
-
-DataStream::Status DataStream::getStatus() const
+EDataStream::Status EDataStream::getStatus() const
 {
    return _status;
 }
@@ -41,7 +31,7 @@ DataStream::Status DataStream::getStatus() const
 
 
 
-DataStream::operator bool() const
+EDataStream::operator bool() const
 {
    return _status == Ok;
 }
@@ -51,7 +41,7 @@ DataStream::operator bool() const
 
 
 
-DataStream& DataStream::operator<<(qint8 value)
+EDataStream& EDataStream::operator<<(qint8 value)
 {
    if ( _status == Ok )
    {
@@ -65,7 +55,7 @@ DataStream& DataStream::operator<<(qint8 value)
 
 
 
-DataStream& DataStream::operator<<(quint8 value)
+EDataStream& EDataStream::operator<<(quint8 value)
 {
    if ( _status == Ok )
    {
@@ -79,22 +69,7 @@ DataStream& DataStream::operator<<(quint8 value)
 
 
 
-DataStream& DataStream::operator<<(qint16 value)
-{
-   if ( _status == Ok )
-   {
-      value = qToBigEndian(value);
-      write(value);
-   }
-   return *this;
-}
-
-
-
-
-
-
-DataStream& DataStream::operator<<(quint16 value)
+EDataStream& EDataStream::operator<<(qint16 value)
 {
    if ( _status == Ok )
    {
@@ -109,7 +84,7 @@ DataStream& DataStream::operator<<(quint16 value)
 
 
 
-DataStream& DataStream::operator<<(qint32 value)
+EDataStream& EDataStream::operator<<(quint16 value)
 {
    if ( _status == Ok )
    {
@@ -124,7 +99,7 @@ DataStream& DataStream::operator<<(qint32 value)
 
 
 
-DataStream& DataStream::operator<<(quint32 value)
+EDataStream& EDataStream::operator<<(qint32 value)
 {
    if ( _status == Ok )
    {
@@ -139,7 +114,7 @@ DataStream& DataStream::operator<<(quint32 value)
 
 
 
-DataStream& DataStream::operator<<(qint64 value)
+EDataStream& EDataStream::operator<<(quint32 value)
 {
    if ( _status == Ok )
    {
@@ -154,7 +129,7 @@ DataStream& DataStream::operator<<(qint64 value)
 
 
 
-DataStream& DataStream::operator<<(quint64 value)
+EDataStream& EDataStream::operator<<(qint64 value)
 {
    if ( _status == Ok )
    {
@@ -169,7 +144,22 @@ DataStream& DataStream::operator<<(quint64 value)
 
 
 
-DataStream& DataStream::operator<<(float value)
+EDataStream& EDataStream::operator<<(quint64 value)
+{
+   if ( _status == Ok )
+   {
+      value = qToBigEndian(value);
+      write(value);
+   }
+   return *this;
+}
+
+
+
+
+
+
+EDataStream& EDataStream::operator<<(float value)
 {
    if ( _status == Ok )
    {
@@ -183,7 +173,7 @@ DataStream& DataStream::operator<<(float value)
 
 
 
-DataStream& DataStream::operator<<(double value)
+EDataStream& EDataStream::operator<<(double value)
 {
    if ( _status == Ok )
    {
@@ -197,7 +187,7 @@ DataStream& DataStream::operator<<(double value)
 
 
 
-DataStream& DataStream::operator<<(const QString& value)
+EDataStream& EDataStream::operator<<(const QString& value)
 {
    if ( _status == Ok )
    {
@@ -224,7 +214,7 @@ DataStream& DataStream::operator<<(const QString& value)
 
 
 
-DataStream &DataStream::operator<<(const QPixmap& value)
+EDataStream& EDataStream::operator<<(const QPixmap& value)
 {
    if ( _status == Ok )
    {
@@ -250,7 +240,7 @@ DataStream &DataStream::operator<<(const QPixmap& value)
 
 
 
-DataStream& DataStream::operator>>(qint8& value)
+EDataStream& EDataStream::operator>>(qint8& value)
 {
    value = 0;
    if ( _status == Ok )
@@ -265,7 +255,7 @@ DataStream& DataStream::operator>>(qint8& value)
 
 
 
-DataStream& DataStream::operator>>(quint8& value)
+EDataStream& EDataStream::operator>>(quint8& value)
 {
    value = 0;
    if ( _status == Ok )
@@ -280,7 +270,7 @@ DataStream& DataStream::operator>>(quint8& value)
 
 
 
-DataStream& DataStream::operator>>(qint16& value)
+EDataStream& EDataStream::operator>>(qint16& value)
 {
    value = 0;
    if ( _status == Ok )
@@ -298,7 +288,7 @@ DataStream& DataStream::operator>>(qint16& value)
 
 
 
-DataStream& DataStream::operator>>(quint16& value)
+EDataStream& EDataStream::operator>>(quint16& value)
 {
    value = 0;
    if ( _status == Ok )
@@ -316,7 +306,7 @@ DataStream& DataStream::operator>>(quint16& value)
 
 
 
-DataStream& DataStream::operator>>(qint32& value)
+EDataStream& EDataStream::operator>>(qint32& value)
 {
    value = 0;
    if ( _status == Ok )
@@ -334,7 +324,7 @@ DataStream& DataStream::operator>>(qint32& value)
 
 
 
-DataStream& DataStream::operator>>(quint32& value)
+EDataStream& EDataStream::operator>>(quint32& value)
 {
    value = 0;
    if ( _status == Ok )
@@ -352,7 +342,7 @@ DataStream& DataStream::operator>>(quint32& value)
 
 
 
-DataStream& DataStream::operator>>(qint64& value)
+EDataStream& EDataStream::operator>>(qint64& value)
 {
    value = 0;
    if ( _status == Ok )
@@ -370,7 +360,7 @@ DataStream& DataStream::operator>>(qint64& value)
 
 
 
-DataStream& DataStream::operator>>(quint64& value)
+EDataStream& EDataStream::operator>>(quint64& value)
 {
    value = 0;
    if ( _status == Ok )
@@ -388,7 +378,7 @@ DataStream& DataStream::operator>>(quint64& value)
 
 
 
-DataStream& DataStream::operator>>(float& value)
+EDataStream& EDataStream::operator>>(float& value)
 {
    value = 0.0;
    if ( _status == Ok )
@@ -403,7 +393,7 @@ DataStream& DataStream::operator>>(float& value)
 
 
 
-DataStream& DataStream::operator>>(double& value)
+EDataStream& EDataStream::operator>>(double& value)
 {
    value = 0.0;
    if ( _status == Ok )
@@ -418,7 +408,7 @@ DataStream& DataStream::operator>>(double& value)
 
 
 
-DataStream& DataStream::operator>>(QString& value)
+EDataStream& EDataStream::operator>>(QString& value)
 {
    value.clear();
    if ( _status == Ok )
@@ -464,7 +454,7 @@ DataStream& DataStream::operator>>(QString& value)
 
 
 
-DataStream& DataStream::operator>>(QPixmap& value)
+EDataStream& EDataStream::operator>>(QPixmap& value)
 {
    value = QPixmap();
    if ( _status == Ok )
@@ -504,7 +494,7 @@ DataStream& DataStream::operator>>(QPixmap& value)
 
 
 template<class T>
-bool DataStream::write(T value, quint64 size)
+bool EDataStream::write(T value, quint64 size)
 {
    if ( static_cast<quint64>(_file->write(reinterpret_cast<char*>(&value),sizeof(T)*size))
         != sizeof(T)*size )
@@ -521,7 +511,7 @@ bool DataStream::write(T value, quint64 size)
 
 
 template<class T>
-bool DataStream::read(T* value, quint64 size)
+bool EDataStream::read(T* value, quint64 size)
 {
    if ( static_cast<quint64>(_file->read(reinterpret_cast<char*>(value),sizeof(T)*size))
         != sizeof(T)*size )

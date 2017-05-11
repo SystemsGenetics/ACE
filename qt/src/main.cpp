@@ -4,7 +4,7 @@
 #include "abstractanalyticfactory.h"
 using namespace std;
 
-struct AnalyticFactory : public AbstractAnalyticFactory
+struct AnalyticFactory : public EAbstractAnalyticFactory
 {
    int getCount() override final
    {
@@ -24,7 +24,7 @@ struct AnalyticFactory : public AbstractAnalyticFactory
          return QString();
       }
    }
-   unique_ptr<AbstractAnalytic> makeAnalytic(int /*type*/) override final
+   unique_ptr<EAbstractAnalytic> makeAnalytic(int /*type*/) override final
    {
       return nullptr;
    }
@@ -38,12 +38,12 @@ struct AnalyticFactory : public AbstractAnalyticFactory
 int main(int argc, char *argv[])
 {
    QApplication application(argc, argv);
-   AbstractAnalyticFactory::setInstance(unique_ptr<AnalyticFactory>(new AnalyticFactory));
-   MainWindow::getInstance().show();
+   EAbstractAnalyticFactory::setInstance(unique_ptr<AnalyticFactory>(new AnalyticFactory));
+   Ace::MainWindow::getInstance().show();
    return application.exec();
 }
-// SetupAnalyticDialog, RunAnalyticDialog :)
+// Ace::SetupAnalyticDialog, Ace::RunAnalyticDialog :)
 
 //for data;
-//!DataStream, DataObject, AbstractData, AbstractDataFactory, DataManager :)
-//DataWindow :))
+//!EDataStream, Ace::DataObject, EAbstractData, EAbstractDataFactory, Ace::DataManager :)
+//Ace::DataWindow :))

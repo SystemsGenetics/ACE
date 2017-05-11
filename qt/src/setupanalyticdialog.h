@@ -6,14 +6,18 @@
 
 class QLineEdit;
 class QGridLayout;
-class AbstractAnalytic;
+class EAbstractAnalytic;
+
+
+
+namespace Ace {
 
 
 
 class SetupAnalyticDialog : public QDialog
 {
 public:
-   SetupAnalyticDialog(AbstractAnalytic* analytic, QWidget* parent = nullptr);
+   SetupAnalyticDialog(EAbstractAnalytic* analytic, QWidget* parent = nullptr);
    ~SetupAnalyticDialog();
 private slots:
    void findFile(int argument);
@@ -22,9 +26,10 @@ private slots:
 private:
    QGridLayout* createInputs();
    QList<QWidget*> _inputs;
-   AbstractAnalytic* _analytic;
+   EAbstractAnalytic* _analytic;
 };
 
 
 
+}
 #endif

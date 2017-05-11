@@ -1,12 +1,12 @@
 #ifndef EXCEPTION_H
 #define EXCEPTION_H
 #include <QtCore>
-#define MAKE_EXCEPTION(e) Exception e;e.setFile(__FILE__);e.setFunction(__PRETTY_FUNCTION__);\
+#define EMAKE_EXCEPTION(e) EException e;e.setFile(__FILE__);e.setFunction(__PRETTY_FUNCTION__);\
    e.setLine(__LINE__)
 
 
 
-class Exception
+class EException
 {
 public:
    enum class Type
@@ -34,3 +34,15 @@ private:
 
 
 #endif
+//EAbstractAnalytic
+//EAbstractAnalyticFactory
+//EAbstractData
+//EAbstractDataFactory
+//EAbstractDataIterator
+//EDataStream
+//EException
+//EOpenCLBuffer <-- here
+//EOpenCLDevice
+//EOpenCLEvent
+//EOpenCLKernel
+//EOpenCLProgram

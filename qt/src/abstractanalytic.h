@@ -10,7 +10,7 @@ class AbstractData;
 
 
 
-class AbstractAnalytic
+class EAbstractAnalytic
 {
 public:
    enum class ArgumentType
@@ -24,9 +24,9 @@ public:
       ,DataObjectFileIn
       ,DataObjectFileOut
    };
-   AbstractAnalytic() = default;
-   virtual ~AbstractAnalytic() = default;
-   MAKE_NO_COPY_OR_MOVE(AbstractAnalytic);
+   EAbstractAnalytic() = default;
+   virtual ~EAbstractAnalytic() = default;
+   EMAKE_NO_COPY_OR_MOVE(EAbstractAnalytic);
    virtual int getArgumentCount() = 0;
    virtual QStringList getCommandLineArguments() = 0;
    virtual ArgumentType getArgumentType(int argument) = 0;

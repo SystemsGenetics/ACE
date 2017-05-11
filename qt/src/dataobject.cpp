@@ -1,6 +1,7 @@
 #include "dataobject.h"
 #include "exception.h"
 #include "abstractdatafactory.h"
+namespace Ace {
 
 
 
@@ -15,7 +16,7 @@ DataObject::DataObject(const QString& path)
       _status = CannotOpen;
       return;
    }
-   _stream.reset(new DataStream(_file.get()));
+   _stream.reset(new EDataStream(_file.get()));
    if ( _file->size() <= _mininumFileSize )
    {
       ;//make new file
@@ -36,13 +37,13 @@ DataObject::DataObject(const QString& path)
       _status = CorruptFile;
       return;
    }
-   if ( dataType >= AbstractDataFactory::getInstance().getCount()
-        || extension != AbstractDataFactory::getInstance().getFileExtension(dataType) )
+   if ( dataType >= EAbstractDataFactory::getInstance().getCount()
+        || extension != EAbstractDataFactory::getInstance().getFileExtension(dataType) )
    {
       _status = InvalidDataType;
       return;
    }
-   _data = AbstractDataFactory::getInstance().makeData(dataType);
+   _data = EAbstractDataFactory::getInstance().makeData(dataType);
    _headerOffset = _file->pos();
    _data->readData();
    _isNew = false;
@@ -111,11 +112,11 @@ bool DataObject::isNew() const
 
 
 
-AbstractData& DataObject::data()
+EAbstractData& DataObject::data()
 {
    if ( !_data )
    {
-      MAKE_EXCEPTION(e);
+      EMAKE_EXCEPTION(e);
       e.setTitle(QObject::tr("Data Object Error"));
       e.out() << QObject::tr("Attempting to get data on failed object with no data.");
       throw e;
@@ -131,4 +132,8 @@ AbstractData& DataObject::data()
 DataObject::operator bool() const
 {
    return _status == Ok;
+}
+
+
+
 }

@@ -3,7 +3,7 @@
 
 
 
-class AbstractDataIterator
+class EAbstractDataIterator
 {
 public:
    virtual bool next() = 0;

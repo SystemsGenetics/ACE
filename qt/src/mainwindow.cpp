@@ -6,6 +6,7 @@
 #include "mainwindow.h"
 #include "opencldevicedialog.h"
 #include "abstractanalyticfactory.h"
+namespace Ace {
 
 
 
@@ -105,10 +106,10 @@ void MainWindow::createActions()
    connect(_setOpenCLAction,SIGNAL(triggered(bool)),this,SLOT(setOpenCL()));
 
    // create analytic actions
-   _analyticActions.reserve(AbstractAnalyticFactory::getInstance().getCount());
-   for (int i = 0; i < AbstractAnalyticFactory::getInstance().getCount() ;++i)
+   _analyticActions.reserve(EAbstractAnalyticFactory::getInstance().getCount());
+   for (int i = 0; i < EAbstractAnalyticFactory::getInstance().getCount() ;++i)
    {
-      _analyticActions.append(new QAction(AbstractAnalyticFactory::getInstance().getName(i),this));
+      _analyticActions.append(new QAction(EAbstractAnalyticFactory::getInstance().getName(i),this));
       _analyticActions.back()->setData(QVariant(i));
       connect(_analyticActions.back(),SIGNAL(triggered(bool)),this,SLOT(runAnalytic()));
    }
@@ -128,7 +129,7 @@ void MainWindow::createMenus()
 
    // create analytic menu
    _analyticMenu = menuBar()->addMenu(tr("&Analytics"));
-   for (int i = 0; i < AbstractAnalyticFactory::getInstance().getCount() ;++i)
+   for (int i = 0; i < EAbstractAnalyticFactory::getInstance().getCount() ;++i)
    {
       _analyticMenu->addAction(_analyticActions[i]);
    }
@@ -136,4 +137,8 @@ void MainWindow::createMenus()
    // create OpenCL menu
    _settingsMenu = menuBar()->addMenu(tr("&OpenCL"));
    _settingsMenu->addAction(_setOpenCLAction);
+}
+
+
+
 }

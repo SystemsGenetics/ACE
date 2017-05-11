@@ -7,7 +7,7 @@
 
 
 
-void Exception::setFunction(const QString& function)
+void EException::setFunction(const QString& function)
 {
    _function = function;
 }
@@ -17,7 +17,7 @@ void Exception::setFunction(const QString& function)
 
 
 
-void Exception::setFile(const QString& file)
+void EException::setFile(const QString& file)
 {
    _file = file;
 }
@@ -27,7 +27,7 @@ void Exception::setFile(const QString& file)
 
 
 
-void Exception::setLine(unsigned int line)
+void EException::setLine(unsigned int line)
 {
    _line = line;
 }
@@ -37,7 +37,7 @@ void Exception::setLine(unsigned int line)
 
 
 
-void Exception::setTitle(const QString& title)
+void EException::setTitle(const QString& title)
 {
    _title = title;
 }
@@ -47,7 +47,7 @@ void Exception::setTitle(const QString& title)
 
 
 
-QTextStream &Exception::out()
+QTextStream& EException::out()
 {
    if ( !_stream )
    {
@@ -61,7 +61,7 @@ QTextStream &Exception::out()
 
 
 
-void Exception::display(Exception::Type type)
+void EException::display(Type type)
 {
    switch (type)
    {
@@ -78,7 +78,7 @@ void Exception::display(Exception::Type type)
 
 
 
-void Exception::displayPlain()
+void EException::displayPlain()
 {
    // generate the message box's textual information
    QString message;

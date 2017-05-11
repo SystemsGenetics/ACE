@@ -8,13 +8,14 @@
 
 #include "setupanalyticdialog.h"
 #include "abstractanalytic.h"
+namespace Ace {
 
 
 
 
 
 
-SetupAnalyticDialog::SetupAnalyticDialog(AbstractAnalytic* analytic, QWidget* parent):
+SetupAnalyticDialog::SetupAnalyticDialog(EAbstractAnalytic* analytic, QWidget* parent):
    QDialog(parent),
    _analytic(analytic)
 {
@@ -39,10 +40,10 @@ void SetupAnalyticDialog::findFile(int argument)
 {
    switch (_analytic->getArgumentType(argument))
    {
-   case AbstractAnalytic::ArgumentType::FileIn:
-   case AbstractAnalytic::ArgumentType::FileOut:
-   case AbstractAnalytic::ArgumentType::DataObjectFileIn:
-   case AbstractAnalytic::ArgumentType::DataObjectFileOut:
+   case EAbstractAnalytic::ArgumentType::FileIn:
+   case EAbstractAnalytic::ArgumentType::FileOut:
+   case EAbstractAnalytic::ArgumentType::DataObjectFileIn:
+   case EAbstractAnalytic::ArgumentType::DataObjectFileOut:
    default:
       return;
    }
@@ -84,31 +85,31 @@ QGridLayout* SetupAnalyticDialog::createInputs()
       formLayout->addWidget(label,i,0,Qt::AlignRight);
       switch (_analytic->getArgumentType(i))
       {
-      case AbstractAnalytic::ArgumentType::Integer:
+      case EAbstractAnalytic::ArgumentType::Integer:
       {
          QRegExp exp;//TODO regular expression for integers
          _inputs.append(new QLineEdit);
          formLayout->addWidget(_inputs.back(),i,1,Qt::AlignLeft);
          break;
       }
-      case AbstractAnalytic::ArgumentType::Float:
-      case AbstractAnalytic::ArgumentType::Double:
+      case EAbstractAnalytic::ArgumentType::Float:
+      case EAbstractAnalytic::ArgumentType::Double:
       {
          QRegExp exp;//TODO regular expression for floating point numbers
          _inputs.append(new QLineEdit);
          formLayout->addWidget(_inputs.back(),i,1,Qt::AlignLeft);
          break;
       }
-      case AbstractAnalytic::ArgumentType::String:
+      case EAbstractAnalytic::ArgumentType::String:
       {
          _inputs.append(new QLineEdit);
          formLayout->addWidget(_inputs.back(),i,1,Qt::AlignLeft);
          break;
       }
-      case AbstractAnalytic::ArgumentType::FileIn:
-      case AbstractAnalytic::ArgumentType::FileOut:
-      case AbstractAnalytic::ArgumentType::DataObjectFileIn:
-      case AbstractAnalytic::ArgumentType::DataObjectFileOut:
+      case EAbstractAnalytic::ArgumentType::FileIn:
+      case EAbstractAnalytic::ArgumentType::FileOut:
+      case EAbstractAnalytic::ArgumentType::DataObjectFileIn:
+      case EAbstractAnalytic::ArgumentType::DataObjectFileOut:
       {
          _inputs.append(new QLineEdit);
          formLayout->addWidget(_inputs.back(),i,1,Qt::AlignCenter);
@@ -121,4 +122,8 @@ QGridLayout* SetupAnalyticDialog::createInputs()
       }
    }
    return formLayout;
+}
+
+
+
 }

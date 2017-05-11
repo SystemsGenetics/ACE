@@ -8,7 +8,11 @@
 
 
 
-class DataStream;
+class EDataStream;
+
+
+
+namespace Ace {
 
 
 
@@ -25,20 +29,20 @@ public:
    };
    DataObject(const QString& path);
    ~DataObject();
-   MAKE_NO_COPY_OR_MOVE(DataObject);
+   EMAKE_NO_COPY_OR_MOVE(DataObject);
    bool seek(quint64 offset);
    bool allocate(quint64 size);
    Status getStatus() const;
    void clear(const QString& newType);
    bool isNew() const;
-   AbstractData& data();
+   EAbstractData& data();
    operator bool() const;
 private:
    constexpr static int _mininumFileSize {12};
    constexpr static quint64 _specialValue {584};
    std::unique_ptr<QFile> _file {nullptr};
-   std::unique_ptr<DataStream> _stream {nullptr};
-   std::unique_ptr<AbstractData> _data {nullptr};
+   std::unique_ptr<EDataStream> _stream {nullptr};
+   std::unique_ptr<EAbstractData> _data {nullptr};
    quint64 _headerOffset {0};
    Status _status {Ok};
    bool _isNew {true};
@@ -46,5 +50,6 @@ private:
 
 
 
+}
 #endif
-// 64special 16inttype 16extsize ??extstring
+// 64special 16inttype qstring

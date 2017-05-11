@@ -207,7 +207,7 @@ quint64 OpenCLDevice::getLocalMemorySize() const
 
 void OpenCLDevice::throwInitializeError()
 {
-   MAKE_EXCEPTION(e);
+   EMAKE_EXCEPTION(e);
    e.setTitle(QObject::tr("Cannot Initialize OpenCL"));
    e.out() << QObject::tr("Cannot query OpenCL platforms or devices. It appears your system does"
                           " not have OpenCL installed on it.");

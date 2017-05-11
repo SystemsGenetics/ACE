@@ -4,18 +4,18 @@
 
 
 using namespace std;
-unique_ptr<AbstractDataFactory> AbstractDataFactory::_instance {nullptr};
+unique_ptr<EAbstractDataFactory> EAbstractDataFactory::_instance {nullptr};
 
 
 
 
 
 
-AbstractDataFactory& AbstractDataFactory::getInstance()
+EAbstractDataFactory& EAbstractDataFactory::getInstance()
 {
    if ( !_instance )
    {
-      MAKE_EXCEPTION(e);
+      EMAKE_EXCEPTION(e);
       e.setTitle(QObject::tr("Analytic Factory Error"));
       e.out() << QObject::tr("Attempting to get abstract analytic factory when none has been set.");
       throw e;
@@ -28,7 +28,7 @@ AbstractDataFactory& AbstractDataFactory::getInstance()
 
 
 
-void AbstractDataFactory::setInstance(unique_ptr<AbstractDataFactory>&& factory)
+void EAbstractDataFactory::setInstance(unique_ptr<EAbstractDataFactory>&& factory)
 {
    _instance = move(factory);
 }

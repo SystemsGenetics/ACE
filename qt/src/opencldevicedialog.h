@@ -6,9 +6,16 @@
 
 
 class QTreeView;
-class OpenCLDeviceModel;
 class QLabel;
 class QPushButton;
+
+
+
+namespace Ace {
+
+
+
+class OpenCLDeviceModel;
 
 
 
@@ -36,4 +43,5 @@ private:
 
 
 
+}
 #endif

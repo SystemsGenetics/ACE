@@ -2,6 +2,7 @@
 #include "utilities.h"
 #include "opencldevice.h"
 #include "exception.h"
+namespace Ace {
 
 
 
@@ -51,7 +52,7 @@ QVariant OpenCLDeviceModel::data(const QModelIndex &index, int role) const
          return QVariant();
       }
    }
-   catch (Exception e)
+   catch (EException e)
    {
       e.display();
       exit(1);
@@ -76,7 +77,7 @@ QModelIndex OpenCLDeviceModel::index(int row, int column, const QModelIndex& par
          return createIndex(row,column,parent.row()+1);
       }
    }
-   catch (Exception e)
+   catch (EException e)
    {
       e.display();
       exit(1);
@@ -101,7 +102,7 @@ QModelIndex OpenCLDeviceModel::parent(const QModelIndex &index) const
          return createIndex(index.internalId()-1,0);
       }
    }
-   catch (Exception e)
+   catch (EException e)
    {
       e.display();
       exit(1);
@@ -130,7 +131,7 @@ int OpenCLDeviceModel::rowCount(const QModelIndex &parent) const
          return 0;
       }
    }
-   catch (Exception e)
+   catch (EException e)
    {
       e.display();
       exit(1);
@@ -217,7 +218,7 @@ cl_platform_id OpenCLDeviceModel::getPlatformID(int row) const
    int total = getPlatformCount();
    if ( row >= total || row < 0 )
    {
-      MAKE_EXCEPTION(e);
+      EMAKE_EXCEPTION(e);
       e.setTitle(tr("Invalid OpenCL Platform"));
       e.out() << tr("An invalid row number was given that is out of range of the available "
                     "platforms. The number must be between 1 and 2 while the given number is 3.")
@@ -447,4 +448,8 @@ QString OpenCLDeviceModel::getDetailedDeviceInfo(cl_device_id id) const
 
    // delete temporarily used local memory
    return detailedInfo;
+}
+
+
+
 }

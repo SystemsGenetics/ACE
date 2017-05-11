@@ -7,7 +7,7 @@
 
 
 
-class DataStream
+class EDataStream
 {
 public:
    enum Status
@@ -18,35 +18,34 @@ public:
       ,WriteFailed
       ,StringTooBig
    };
-   DataStream(QFile* file);
-   ~DataStream();
-   MAKE_NO_COPY_OR_MOVE(DataStream);
+   EDataStream(QFile* file);
+   EMAKE_NO_COPY_OR_MOVE(EDataStream);
    Status getStatus() const;
    operator bool() const;
-   DataStream& operator<<(qint8 value);
-   DataStream& operator<<(quint8 value);
-   DataStream& operator<<(qint16 value);
-   DataStream& operator<<(quint16 value);
-   DataStream& operator<<(qint32 value);
-   DataStream& operator<<(quint32 value);
-   DataStream& operator<<(qint64 value);
-   DataStream& operator<<(quint64 value);
-   DataStream& operator<<(float value);
-   DataStream& operator<<(double value);
-   DataStream& operator<<(const QString& value);
-   DataStream& operator<<(const QPixmap& value);
-   DataStream& operator>>(qint8& value);
-   DataStream& operator>>(quint8& value);
-   DataStream& operator>>(qint16& value);
-   DataStream& operator>>(quint16& value);
-   DataStream& operator>>(qint32& value);
-   DataStream& operator>>(quint32& value);
-   DataStream& operator>>(qint64& value);
-   DataStream& operator>>(quint64& value);
-   DataStream& operator>>(float& value);
-   DataStream& operator>>(double& value);
-   DataStream& operator>>(QString& value);
-   DataStream& operator>>(QPixmap& value);
+   EDataStream& operator<<(qint8 value);
+   EDataStream& operator<<(quint8 value);
+   EDataStream& operator<<(qint16 value);
+   EDataStream& operator<<(quint16 value);
+   EDataStream& operator<<(qint32 value);
+   EDataStream& operator<<(quint32 value);
+   EDataStream& operator<<(qint64 value);
+   EDataStream& operator<<(quint64 value);
+   EDataStream& operator<<(float value);
+   EDataStream& operator<<(double value);
+   EDataStream& operator<<(const QString& value);
+   EDataStream& operator<<(const QPixmap& value);
+   EDataStream& operator>>(qint8& value);
+   EDataStream& operator>>(quint8& value);
+   EDataStream& operator>>(qint16& value);
+   EDataStream& operator>>(quint16& value);
+   EDataStream& operator>>(qint32& value);
+   EDataStream& operator>>(quint32& value);
+   EDataStream& operator>>(qint64& value);
+   EDataStream& operator>>(quint64& value);
+   EDataStream& operator>>(float& value);
+   EDataStream& operator>>(double& value);
+   EDataStream& operator>>(QString& value);
+   EDataStream& operator>>(QPixmap& value);
 private:
    enum
    {
