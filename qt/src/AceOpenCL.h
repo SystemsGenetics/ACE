@@ -1,0 +1,5 @@
+#include "openclbuffer.h"
+#include "opencldevice.h"
+#include "openclevent.h"
+#include "openclkernel.h"
+#include "openclprogram.h"
