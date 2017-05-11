@@ -8,14 +8,13 @@
 
 #include "setupanalyticdialog.h"
 #include "abstractanalytic.h"
-namespace Ace {
 
 
 
 
 
 
-SetupAnalyticDialog::SetupAnalyticDialog(EAbstractAnalytic* analytic, QWidget* parent):
+Ace::SetupAnalyticDialog::SetupAnalyticDialog(EAbstractAnalytic* analytic, QWidget* parent):
    QDialog(parent),
    _analytic(analytic)
 {
@@ -27,7 +26,7 @@ SetupAnalyticDialog::SetupAnalyticDialog(EAbstractAnalytic* analytic, QWidget* p
 
 
 
-SetupAnalyticDialog::~SetupAnalyticDialog()
+Ace::SetupAnalyticDialog::~SetupAnalyticDialog()
 {
 }
 
@@ -36,7 +35,7 @@ SetupAnalyticDialog::~SetupAnalyticDialog()
 
 
 
-void SetupAnalyticDialog::findFile(int argument)
+void Ace::SetupAnalyticDialog::findFile(int argument)
 {
    switch (_analytic->getArgumentType(argument))
    {
@@ -54,7 +53,7 @@ void SetupAnalyticDialog::findFile(int argument)
 
 
 
-void SetupAnalyticDialog::cancel()
+void Ace::SetupAnalyticDialog::cancel()
 {
 }
 
@@ -63,7 +62,7 @@ void SetupAnalyticDialog::cancel()
 
 
 
-void SetupAnalyticDialog::executeButton()
+void Ace::SetupAnalyticDialog::executeButton()
 {
 }
 
@@ -72,7 +71,7 @@ void SetupAnalyticDialog::executeButton()
 
 
 
-QGridLayout* SetupAnalyticDialog::createInputs()
+QGridLayout* Ace::SetupAnalyticDialog::createInputs()
 {
    QSignalMapper* mapper = new QSignalMapper(this);
    connect(mapper,SIGNAL(mapped(int)),this,SLOT(findFile(int)));
@@ -122,8 +121,4 @@ QGridLayout* SetupAnalyticDialog::createInputs()
       }
    }
    return formLayout;
-}
-
-
-
 }

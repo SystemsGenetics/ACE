@@ -1,19 +1,19 @@
-#ifndef OPENCLEVENT_H
-#define OPENCLEVENT_H
+#ifndef EOPENCLEVENT_H
+#define EOPENCLEVENT_H
 #include <CL/cl.h>
 
 
 
-class OpenCLEvent
+class EOpenCLEvent
 {
 public:
-   OpenCLEvent() = default;
-   OpenCLEvent(cl_event id);
-   ~OpenCLEvent();
-   OpenCLEvent(const OpenCLEvent& copy);
-   OpenCLEvent& operator=(const OpenCLEvent& copy);
-   OpenCLEvent(OpenCLEvent&& move);
-   OpenCLEvent& operator=(OpenCLEvent&& move);
+   EOpenCLEvent() = default;
+   EOpenCLEvent(cl_event id);
+   ~EOpenCLEvent();
+   EOpenCLEvent(const EOpenCLEvent& copy);
+   EOpenCLEvent& operator=(const EOpenCLEvent& copy);
+   EOpenCLEvent(EOpenCLEvent&& move);
+   EOpenCLEvent& operator=(EOpenCLEvent&& move);
    void wait() const;
    bool isDone() const;
 private:

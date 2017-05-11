@@ -1,5 +1,5 @@
-#ifndef ABSTRACTDATAFACTORY_H
-#define ABSTRACTDATAFACTORY_H
+#ifndef EABSTRACTDATAFACTORY_H
+#define EABSTRACTDATAFACTORY_H
 #include <memory>
 
 #include "utilities.h"
@@ -12,7 +12,7 @@ class EAbstractDataFactory
 public:
    EAbstractDataFactory() = default;
    virtual ~EAbstractDataFactory() = default;
-   EMAKE_NO_COPY_OR_MOVE(EAbstractDataFactory);
+   ACE_MAKE_NO_COPY_OR_MOVE(EAbstractDataFactory);
    static EAbstractDataFactory& getInstance();
    static void setInstance(std::unique_ptr<EAbstractDataFactory>&& factory);
    virtual int getCount() = 0;

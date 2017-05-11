@@ -1,5 +1,5 @@
-#ifndef DATA_H
-#define DATA_H
+#ifndef EDATASTREAM_H
+#define EDATASTREAM_H
 #include <QtCore>
 #include <memory>
 
@@ -19,7 +19,7 @@ public:
       ,StringTooBig
    };
    EDataStream(QFile* file);
-   EMAKE_NO_COPY_OR_MOVE(EDataStream);
+   ACE_MAKE_NO_COPY_OR_MOVE(EDataStream);
    Status getStatus() const;
    operator bool() const;
    EDataStream& operator<<(qint8 value);

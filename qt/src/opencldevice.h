@@ -1,5 +1,5 @@
-#ifndef OPENCLDEVICE_H
-#define OPENCLDEVICE_H
+#ifndef EOPENCLDEVICE_H
+#define EOPENCLDEVICE_H
 #include <QtCore>
 #include <memory>
 
@@ -9,28 +9,28 @@
 
 
 
-class OpenCLProgram;
-class OpenCLKernel;
+class EOpenCLProgram;
+class EOpenCLKernel;
 
 
 
-class OpenCLDevice
+class EOpenCLDevice
 {
 public:
-   ~OpenCLDevice();
-   EMAKE_NO_COPY_OR_MOVE(OpenCLDevice);
-   static OpenCLDevice& getInstance();
+   ~EOpenCLDevice();
+   ACE_MAKE_NO_COPY_OR_MOVE(EOpenCLDevice);
+   static EOpenCLDevice& getInstance();
    void initialize();
    void setDevice(cl_platform_id platformID, cl_device_id deviceID);
    void clear();
-   std::unique_ptr<OpenCLProgram> makeProgram() const;
-   template<class T> std::unique_ptr<OpenCLBuffer<T>> makeBuffer(quint64 size);
+   std::unique_ptr<EOpenCLProgram> makeProgram() const;
+   template<class T> std::unique_ptr<EOpenCLBuffer<T>> makeBuffer(quint64 size);
    quint64 getGlobalMemorySize() const;
    quint64 getLocalMemorySize() const;
 private:
-   OpenCLDevice() = default;
+   EOpenCLDevice() = default;
    void throwInitializeError();
-   static OpenCLDevice* _instance;
+   static EOpenCLDevice* _instance;
    cl_device_id* _deviceID {nullptr};
    cl_context* _contextID {nullptr};
    cl_command_queue* _commandQueueID {nullptr};
@@ -42,13 +42,14 @@ private:
 
 
 template<class T>
-std::unique_ptr<OpenCLBuffer<T>> OpenCLDevice::makeBuffer(quint64 size)
+std::unique_ptr<EOpenCLBuffer<T>> EOpenCLDevice::makeBuffer(quint64 size)
 {
    if ( !_contextID || !_commandQueueID )
    {
       return nullptr;
    }
-   return std::unique_ptr<OpenCLBuffer<T>>(new OpenCLBuffer<T>(*_contextID,*_commandQueueID,size));
+   return std::unique_ptr<EOpenCLBuffer<T>>(new EOpenCLBuffer<T>(*_contextID,*_commandQueueID
+                                                                 ,size));
 }
 
 

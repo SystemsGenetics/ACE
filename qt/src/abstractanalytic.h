@@ -1,5 +1,5 @@
-#ifndef ABSTRACTANALYTIC_H
-#define ABSTRACTANALYTIC_H
+#ifndef EABSTRACTANALYTIC_H
+#define EABSTRACTANALYTIC_H
 #include <QtCore>
 
 #include "utilities.h"
@@ -26,7 +26,7 @@ public:
    };
    EAbstractAnalytic() = default;
    virtual ~EAbstractAnalytic() = default;
-   EMAKE_NO_COPY_OR_MOVE(EAbstractAnalytic);
+   ACE_MAKE_NO_COPY_OR_MOVE(EAbstractAnalytic);
    virtual int getArgumentCount() = 0;
    virtual QStringList getCommandLineArguments() = 0;
    virtual ArgumentType getArgumentType(int argument) = 0;

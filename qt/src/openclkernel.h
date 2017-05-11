@@ -7,22 +7,22 @@
 
 
 
-class OpenCLKernel
+class EOpenCLKernel
 {
 public:
-   OpenCLKernel(cl_program programID, cl_command_queue commandQueueID, cl_device_id deviceID
+   EOpenCLKernel(cl_program programID, cl_command_queue commandQueueID, cl_device_id deviceID
                 , const QString& name);
-   ~OpenCLKernel();
-   EMAKE_NO_COPY_OR_MOVE(OpenCLKernel);
+   ~EOpenCLKernel();
+   ACE_MAKE_NO_COPY_OR_MOVE(EOpenCLKernel);
    template<class T> void setArgument(cl_uint index, T value);
-   template<class T> void setBuffer(cl_uint index, OpenCLBuffer<T>* buffer);
+   template<class T> void setBuffer(cl_uint index, EOpenCLBuffer<T>* buffer);
    template<class T> void addLocalMemory(cl_uint index, cl_uint size);
    void setDimensionCount(cl_uint count);
    bool setGlobalSize(cl_uint dimension, cl_uint size);
    bool setWorkgroupSize(cl_uint dimension, cl_uint size);
    size_t getMaxWorkgroupSize() const;
    size_t getWorkgroupMultiple() const;
-   OpenCLEvent operator()();
+   EOpenCLEvent operator()();
 private:
    cl_kernel _id;
    cl_command_queue _commandQueueID;
@@ -38,12 +38,12 @@ private:
 
 
 template<class T>
-void OpenCLKernel::setArgument(cl_uint index, T value)
+void EOpenCLKernel::setArgument(cl_uint index, T value)
 {
    cl_int code = clSetKernelArg(_id,index,sizeof(T),&value);
    if ( code != CL_SUCCESS )
    {
-      OpenCL::throwError("clSetKernelArg",code);
+      Ace::OpenCL::throwError("clSetKernelArg",code);
    }
 }
 
@@ -53,12 +53,12 @@ void OpenCLKernel::setArgument(cl_uint index, T value)
 
 
 template<class T>
-void OpenCLKernel::setBuffer(cl_uint index, OpenCLBuffer<T>* buffer)
+void EOpenCLKernel::setBuffer(cl_uint index, EOpenCLBuffer<T>* buffer)
 {
    cl_int code = clSetKernelArg(_id,index,sizeof(cl_mem),buffer->getOpenCLMemory());
    if ( code != CL_SUCCESS )
    {
-      OpenCL::throwError("clSetKernelArg",code);
+      Ace::OpenCL::throwError("clSetKernelArg",code);
    }
 }
 
@@ -68,13 +68,13 @@ void OpenCLKernel::setBuffer(cl_uint index, OpenCLBuffer<T>* buffer)
 
 
 template<class T>
-void OpenCLKernel::addLocalMemory(cl_uint index, cl_uint size)
+void EOpenCLKernel::addLocalMemory(cl_uint index, cl_uint size)
 {
    size_t byteSize = sizeof(T)*size;
    cl_int code = clSetKernelArg(_id,index,byteSize,nullptr);
    if ( code != CL_SUCCESS )
    {
-      OpenCL::throwError("clSetKernelArg",code);
+      Ace::OpenCL::throwError("clSetKernelArg",code);
    }
 }
 

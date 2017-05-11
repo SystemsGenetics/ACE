@@ -6,19 +6,18 @@
 #include "mainwindow.h"
 #include "opencldevicedialog.h"
 #include "abstractanalyticfactory.h"
-namespace Ace {
 
 
 
 using namespace std;
-MainWindow* MainWindow::_instance {nullptr};
+Ace::MainWindow* Ace::MainWindow::_instance {nullptr};
 
 
 
 
 
 
-MainWindow &MainWindow::getInstance()
+Ace::MainWindow& Ace::MainWindow::getInstance()
 {
    if ( !_instance )
    {
@@ -32,7 +31,7 @@ MainWindow &MainWindow::getInstance()
 
 
 
-void MainWindow::open()
+void Ace::MainWindow::open()
 {
 
 }
@@ -42,7 +41,7 @@ void MainWindow::open()
 
 
 
-void MainWindow::exit()
+void Ace::MainWindow::exit()
 {
 
 }
@@ -52,7 +51,7 @@ void MainWindow::exit()
 
 
 
-void MainWindow::runAnalytic()
+void Ace::MainWindow::runAnalytic()
 {
    QAction* from = qobject_cast<QAction*>(sender());
    cout << "Analytic #" << from->data().toInt() << "\n";
@@ -63,7 +62,7 @@ void MainWindow::runAnalytic()
 
 
 
-void MainWindow::setOpenCL()
+void Ace::MainWindow::setOpenCL()
 {
    OpenCLDeviceDialog::getInstance().exec();
 }
@@ -73,7 +72,7 @@ void MainWindow::setOpenCL()
 
 
 
-MainWindow::MainWindow(QWidget *parent):
+Ace::MainWindow::MainWindow(QWidget *parent):
    QMainWindow(parent)
 {
    createActions();
@@ -86,7 +85,7 @@ MainWindow::MainWindow(QWidget *parent):
 
 
 
-void MainWindow::createActions()
+void Ace::MainWindow::createActions()
 {
    // create open action
    _openAction = new QAction(tr("&Open"),this);
@@ -120,7 +119,7 @@ void MainWindow::createActions()
 
 
 
-void MainWindow::createMenus()
+void Ace::MainWindow::createMenus()
 {
    // create file menu
    _fileMenu = menuBar()->addMenu(tr("&File"));
@@ -137,8 +136,4 @@ void MainWindow::createMenus()
    // create OpenCL menu
    _settingsMenu = menuBar()->addMenu(tr("&OpenCL"));
    _settingsMenu->addAction(_setOpenCLAction);
-}
-
-
-
 }

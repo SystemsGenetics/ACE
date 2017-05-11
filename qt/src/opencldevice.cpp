@@ -6,14 +6,14 @@
 
 
 using namespace std;
-OpenCLDevice* OpenCLDevice::_instance = nullptr;
+EOpenCLDevice* EOpenCLDevice::_instance = nullptr;
 
 
 
 
 
 
-OpenCLDevice::~OpenCLDevice()
+EOpenCLDevice::~EOpenCLDevice()
 {
    // release command queue and/or context if present
    if ( _commandQueueID )
@@ -36,11 +36,11 @@ OpenCLDevice::~OpenCLDevice()
 
 
 
-OpenCLDevice& OpenCLDevice::getInstance()
+EOpenCLDevice& EOpenCLDevice::getInstance()
 {
    if ( !_instance )
    {
-      _instance = new OpenCLDevice();
+      _instance = new EOpenCLDevice();
    }
    return *_instance;
 }
@@ -50,7 +50,7 @@ OpenCLDevice& OpenCLDevice::getInstance()
 
 
 
-void OpenCLDevice::initialize()
+void EOpenCLDevice::initialize()
 {
    // get very first platform
    cl_uint total;
@@ -88,7 +88,7 @@ void OpenCLDevice::initialize()
 
 
 
-void OpenCLDevice::setDevice(cl_platform_id platformID, cl_device_id deviceID)
+void EOpenCLDevice::setDevice(cl_platform_id platformID, cl_device_id deviceID)
 {
    try
    {
@@ -110,7 +110,7 @@ void OpenCLDevice::setDevice(cl_platform_id platformID, cl_device_id deviceID)
       *_contextID = clCreateContext(properties,1,_deviceID,nullptr,nullptr,&code);
       if ( code != CL_SUCCESS )
       {
-         OpenCL::throwError("clCreateContext",code);
+         Ace::OpenCL::throwError("clCreateContext",code);
       }
 
       // create new command queue
@@ -118,7 +118,7 @@ void OpenCLDevice::setDevice(cl_platform_id platformID, cl_device_id deviceID)
                                               ,CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE,&code);
       if ( code != CL_SUCCESS )
       {
-         OpenCL::throwError("clCreateCommandQueue",code);
+         Ace::OpenCL::throwError("clCreateCommandQueue",code);
       }
    }
    catch (...)
@@ -133,7 +133,7 @@ void OpenCLDevice::setDevice(cl_platform_id platformID, cl_device_id deviceID)
 
 
 
-void OpenCLDevice::clear()
+void EOpenCLDevice::clear()
 {
    // release command queue and/or context if present
    if ( _commandQueueID )
@@ -159,13 +159,13 @@ void OpenCLDevice::clear()
 
 
 
-unique_ptr<OpenCLProgram> OpenCLDevice::makeProgram() const
+unique_ptr<EOpenCLProgram> EOpenCLDevice::makeProgram() const
 {
    if ( !_deviceID || !_contextID || !_commandQueueID )
    {
       return nullptr;
    }
-   return unique_ptr<OpenCLProgram>(new OpenCLProgram(*_deviceID,*_contextID,*_commandQueueID));
+   return unique_ptr<EOpenCLProgram>(new EOpenCLProgram(*_deviceID,*_contextID,*_commandQueueID));
 }
 
 
@@ -173,13 +173,14 @@ unique_ptr<OpenCLProgram> OpenCLDevice::makeProgram() const
 
 
 
-quint64 OpenCLDevice::getGlobalMemorySize() const
+quint64 EOpenCLDevice::getGlobalMemorySize() const
 {
    if ( !_deviceID )
    {
       return 0;
    }
-   unique_ptr<cl_ulong> a(OpenCL::getDeviceInfo<cl_ulong>(*_deviceID,CL_DEVICE_GLOBAL_MEM_SIZE));
+   unique_ptr<cl_ulong> a(Ace::OpenCL::getDeviceInfo<cl_ulong>(*_deviceID
+                                                               ,CL_DEVICE_GLOBAL_MEM_SIZE));
    quint64 size = *a;
    return size;
 }
@@ -189,13 +190,14 @@ quint64 OpenCLDevice::getGlobalMemorySize() const
 
 
 
-quint64 OpenCLDevice::getLocalMemorySize() const
+quint64 EOpenCLDevice::getLocalMemorySize() const
 {
    if ( !_deviceID )
    {
       return 0;
    }
-   unique_ptr<cl_ulong> a(OpenCL::getDeviceInfo<cl_ulong>(*_deviceID,CL_DEVICE_LOCAL_MEM_SIZE));
+   unique_ptr<cl_ulong> a(Ace::OpenCL::getDeviceInfo<cl_ulong>(*_deviceID
+                                                               ,CL_DEVICE_LOCAL_MEM_SIZE));
    quint64 size = *a;
    return size;
 }
@@ -205,7 +207,7 @@ quint64 OpenCLDevice::getLocalMemorySize() const
 
 
 
-void OpenCLDevice::throwInitializeError()
+void EOpenCLDevice::throwInitializeError()
 {
    EMAKE_EXCEPTION(e);
    e.setTitle(QObject::tr("Cannot Initialize OpenCL"));

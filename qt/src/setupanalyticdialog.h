@@ -1,5 +1,5 @@
-#ifndef SETUPANALYTICDIALOG_H
-#define SETUPANALYTICDIALOG_H
+#ifndef ACE_SETUPANALYTICDIALOG_H
+#define ACE_SETUPANALYTICDIALOG_H
 #include <QDialog>
 
 
@@ -10,26 +10,24 @@ class EAbstractAnalytic;
 
 
 
-namespace Ace {
-
-
-
-class SetupAnalyticDialog : public QDialog
+namespace Ace
 {
-public:
-   SetupAnalyticDialog(EAbstractAnalytic* analytic, QWidget* parent = nullptr);
-   ~SetupAnalyticDialog();
-private slots:
-   void findFile(int argument);
-   void cancel();
-   void executeButton();
-private:
-   QGridLayout* createInputs();
-   QList<QWidget*> _inputs;
-   EAbstractAnalytic* _analytic;
-};
-
-
-
+   class SetupAnalyticDialog : public QDialog
+   {
+   public:
+      SetupAnalyticDialog(EAbstractAnalytic* analytic, QWidget* parent = nullptr);
+      ~SetupAnalyticDialog();
+   private slots:
+      void findFile(int argument);
+      void cancel();
+      void executeButton();
+   private:
+      QGridLayout* createInputs();
+      QList<QWidget*> _inputs;
+      EAbstractAnalytic* _analytic;
+   };
 }
+
+
+
 #endif

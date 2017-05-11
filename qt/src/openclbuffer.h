@@ -1,5 +1,5 @@
-#ifndef OPENCLBUFFER_H
-#define OPENCLBUFFER_H
+#ifndef EOPENCLBUFFER_H
+#define EOPENCLBUFFER_H
 #include <CL/cl.h>
 #include <QtCore>
 
@@ -9,19 +9,19 @@
 
 
 template<class T>
-class OpenCLBuffer
+class EOpenCLBuffer
 {
 public:
-   OpenCLBuffer(cl_context contextID, cl_command_queue commandQueueID, quint64 size);
-   ~OpenCLBuffer();
-   OpenCLBuffer(const OpenCLBuffer<T>&) = delete;
-   OpenCLBuffer& operator=(const OpenCLBuffer<T>&) = delete;
-   OpenCLBuffer(OpenCLBuffer<T>&&) = delete;
-   OpenCLBuffer& operator=(OpenCLBuffer<T>&&) = delete;
+   EOpenCLBuffer(cl_context contextID, cl_command_queue commandQueueID, quint64 size);
+   ~EOpenCLBuffer();
+   EOpenCLBuffer(const EOpenCLBuffer<T>&) = delete;
+   EOpenCLBuffer& operator=(const EOpenCLBuffer<T>&) = delete;
+   EOpenCLBuffer(EOpenCLBuffer<T>&&) = delete;
+   EOpenCLBuffer& operator=(EOpenCLBuffer<T>&&) = delete;
    T& operator[](int index);
    const T& operator[](int index) const;
-   OpenCLEvent read();
-   OpenCLEvent write();
+   EOpenCLEvent read();
+   EOpenCLEvent write();
    cl_mem* getOpenCLMemory();
 private:
    cl_command_queue _commandQueueID;
@@ -36,7 +36,8 @@ private:
 
 
 template<class T>
-OpenCLBuffer<T>::OpenCLBuffer(cl_context contextID, cl_command_queue commandQueueID, quint64 size):
+EOpenCLBuffer<T>::EOpenCLBuffer(cl_context contextID, cl_command_queue commandQueueID
+                                , quint64 size):
    _commandQueueID(commandQueueID),
    _size(size)
 {
@@ -51,7 +52,7 @@ OpenCLBuffer<T>::OpenCLBuffer(cl_context contextID, cl_command_queue commandQueu
       _id = clCreateBuffer(contextID,CL_MEM_READ_WRITE,size*sizeof(T),_host,&code);
       if ( code != CL_SUCCESS )
       {
-         OpenCL::throwError("clCreateBuffer",code);
+         Ace::OpenCL::throwError("clCreateBuffer",code);
       }
    }
    catch (...)
@@ -68,7 +69,7 @@ OpenCLBuffer<T>::OpenCLBuffer(cl_context contextID, cl_command_queue commandQueu
 
 
 template<class T>
-OpenCLBuffer<T>::~OpenCLBuffer()
+EOpenCLBuffer<T>::~EOpenCLBuffer()
 {
    clReleaseMemObject(_id);
    clReleaseCommandQueue(_commandQueueID);
@@ -81,7 +82,7 @@ OpenCLBuffer<T>::~OpenCLBuffer()
 
 
 template<class T>
-T& OpenCLBuffer<T>::operator[](int index)
+T& EOpenCLBuffer<T>::operator[](int index)
 {
    return _host[index];
 }
@@ -92,7 +93,7 @@ T& OpenCLBuffer<T>::operator[](int index)
 
 
 template<class T>
-const T& OpenCLBuffer<T>::operator[](int i) const
+const T& EOpenCLBuffer<T>::operator[](int i) const
 {
    return _host[index];
 }
@@ -103,16 +104,16 @@ const T& OpenCLBuffer<T>::operator[](int i) const
 
 
 template<class T>
-OpenCLEvent OpenCLBuffer<T>::read()
+EOpenCLEvent EOpenCLBuffer<T>::read()
 {
    cl_event eventID;
    cl_int code = clEnqueueReadBuffer(_commandQueueID,_id,CL_FALSE,0,_size*sizeof(T),_host,0,nullptr
                                      ,&eventID);
    if ( code != CL_SUCCESS )
    {
-      OpenCL::throwError("clEnqueueReadBuffer",code);
+      Ace::OpenCL::throwError("clEnqueueReadBuffer",code);
    }
-   return OpenCLEvent(eventID);
+   return EOpenCLEvent(eventID);
 }
 
 
@@ -121,16 +122,16 @@ OpenCLEvent OpenCLBuffer<T>::read()
 
 
 template<class T>
-OpenCLEvent OpenCLBuffer<T>::write()
+EOpenCLEvent EOpenCLBuffer<T>::write()
 {
    cl_event eventID;
    cl_int code = clEnqueueWriteBuffer(_commandQueueID,_id,CL_FALSE,0,_size*sizeof(T),_host,0,nullptr
                                       ,&eventID);
    if ( code != CL_SUCCESS )
    {
-      OpenCL::throwError("clEnqueueWriteBuffer",code);
+      Ace::OpenCL::throwError("clEnqueueWriteBuffer",code);
    }
-   return OpenCLEvent(eventID);
+   return EOpenCLEvent(eventID);
 }
 
 
@@ -139,7 +140,7 @@ OpenCLEvent OpenCLBuffer<T>::write()
 
 
 template<class T>
-cl_mem* OpenCLBuffer<T>::getOpenCLMemory()
+cl_mem* EOpenCLBuffer<T>::getOpenCLMemory()
 {
    return &_id;
 }

@@ -11,7 +11,7 @@ using namespace std;
 
 
 
-OpenCLProgram::OpenCLProgram(cl_device_id deviceID, cl_context contextID
+EOpenCLProgram::EOpenCLProgram(cl_device_id deviceID, cl_context contextID
                              , cl_command_queue commandQueueID):
    _deviceID(deviceID),
    _contextID(contextID),
@@ -26,7 +26,7 @@ OpenCLProgram::OpenCLProgram(cl_device_id deviceID, cl_context contextID
 
 
 
-OpenCLProgram::~OpenCLProgram()
+EOpenCLProgram::~EOpenCLProgram()
 {
    // if program exists release it
    if ( _id )
@@ -45,7 +45,7 @@ OpenCLProgram::~OpenCLProgram()
 
 
 
-void OpenCLProgram::addSource(const QString& source)
+void EOpenCLProgram::addSource(const QString& source)
 {
    _sources.append(source.toLatin1());
 }
@@ -55,7 +55,7 @@ void OpenCLProgram::addSource(const QString& source)
 
 
 
-void OpenCLProgram::addFile(const QString& filePath)
+void EOpenCLProgram::addFile(const QString& filePath)
 {
    // open given file
    QFile file(filePath);
@@ -78,7 +78,7 @@ void OpenCLProgram::addFile(const QString& filePath)
 
 
 
-bool OpenCLProgram::compile(const QString& options)
+bool EOpenCLProgram::compile(const QString& options)
 {
    try
    {
@@ -108,7 +108,7 @@ bool OpenCLProgram::compile(const QString& options)
       *_id = clCreateProgramWithSource(_contextID,codeCount,codes,codeSizes,&code);
       if ( code != CL_SUCCESS )
       {
-         OpenCL::throwError("clCreateProgramWithSource",code);
+         Ace::OpenCL::throwError("clCreateProgramWithSource",code);
       }
 
       // compile program
@@ -117,7 +117,7 @@ bool OpenCLProgram::compile(const QString& options)
       if ( code != CL_SUCCESS )
       {
          // if a build error occured while compiling then report build log as error
-         if ( code == OpenCL::ReturnCodes::BuildProgramFailure )
+         if ( code == Ace::OpenCL::ReturnCodes::BuildProgramFailure )
          {
             size_t strSize = 0;
             clGetProgramBuildInfo(*_id,_deviceID,CL_PROGRAM_BUILD_LOG,0,nullptr,&strSize);
@@ -131,7 +131,7 @@ bool OpenCLProgram::compile(const QString& options)
          else
          {
             // else another type of error occured and report normally
-            OpenCL::throwError("clBuildProgram",code);
+            Ace::OpenCL::throwError("clBuildProgram",code);
          }
       }
       return true;
@@ -149,11 +149,11 @@ bool OpenCLProgram::compile(const QString& options)
 
 
 
-unique_ptr<OpenCLKernel> OpenCLProgram::makeKernel(const QString& name)
+unique_ptr<EOpenCLKernel> EOpenCLProgram::makeKernel(const QString& name)
 {
    if ( !_id )
    {
       return nullptr;
    }
-   return unique_ptr<OpenCLKernel>(new OpenCLKernel(*_id,_commandQueueID,_deviceID,name));
+   return unique_ptr<EOpenCLKernel>(new EOpenCLKernel(*_id,_commandQueueID,_deviceID,name));
 }

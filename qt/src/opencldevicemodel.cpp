@@ -2,7 +2,6 @@
 #include "utilities.h"
 #include "opencldevice.h"
 #include "exception.h"
-namespace Ace {
 
 
 
@@ -13,7 +12,7 @@ using namespace std;
 
 
 
-OpenCLDeviceModel::OpenCLDeviceModel(QObject* parent):
+Ace::OpenCLDeviceModel::OpenCLDeviceModel(QObject* parent):
    QAbstractItemModel(parent)
 {
 }
@@ -23,7 +22,7 @@ OpenCLDeviceModel::OpenCLDeviceModel(QObject* parent):
 
 
 
-int OpenCLDeviceModel::columnCount(const QModelIndex& /*parent*/) const
+int Ace::OpenCLDeviceModel::columnCount(const QModelIndex& /*parent*/) const
 {
    return 1;
 }
@@ -33,7 +32,7 @@ int OpenCLDeviceModel::columnCount(const QModelIndex& /*parent*/) const
 
 
 
-QVariant OpenCLDeviceModel::data(const QModelIndex &index, int role) const
+QVariant Ace::OpenCLDeviceModel::data(const QModelIndex &index, int role) const
 {
    try
    {
@@ -64,7 +63,7 @@ QVariant OpenCLDeviceModel::data(const QModelIndex &index, int role) const
 
 
 
-QModelIndex OpenCLDeviceModel::index(int row, int column, const QModelIndex& parent) const
+QModelIndex Ace::OpenCLDeviceModel::index(int row, int column, const QModelIndex& parent) const
 {
    try
    {
@@ -89,7 +88,7 @@ QModelIndex OpenCLDeviceModel::index(int row, int column, const QModelIndex& par
 
 
 
-QModelIndex OpenCLDeviceModel::parent(const QModelIndex &index) const
+QModelIndex Ace::OpenCLDeviceModel::parent(const QModelIndex &index) const
 {
    try
    {
@@ -114,7 +113,7 @@ QModelIndex OpenCLDeviceModel::parent(const QModelIndex &index) const
 
 
 
-int OpenCLDeviceModel::rowCount(const QModelIndex &parent) const
+int Ace::OpenCLDeviceModel::rowCount(const QModelIndex &parent) const
 {
    try
    {
@@ -143,7 +142,7 @@ int OpenCLDeviceModel::rowCount(const QModelIndex &parent) const
 
 
 
-QString OpenCLDeviceModel::getDetailedInfo(const QModelIndex &index) const
+QString Ace::OpenCLDeviceModel::getDetailedInfo(const QModelIndex &index) const
 {
    if ( index.internalId() == 0 )
    {
@@ -160,7 +159,7 @@ QString OpenCLDeviceModel::getDetailedInfo(const QModelIndex &index) const
 
 
 
-bool OpenCLDeviceModel::isDevice(const QModelIndex &index) const
+bool Ace::OpenCLDeviceModel::isDevice(const QModelIndex &index) const
 {
    return ( index.internalId() != 0 );
 }
@@ -170,13 +169,13 @@ bool OpenCLDeviceModel::isDevice(const QModelIndex &index) const
 
 
 
-void OpenCLDeviceModel::setDevice(const QModelIndex &index) const
+void Ace::OpenCLDeviceModel::setDevice(const QModelIndex &index) const
 {
    if ( index.internalId() != 0 )
    {
       cl_platform_id platformID = getPlatformID(index.parent().row());
       cl_device_id deviceID = getDeviceID(index.parent().row(),index.row());
-      OpenCLDevice::getInstance().setDevice(platformID,deviceID);
+      EOpenCLDevice::getInstance().setDevice(platformID,deviceID);
    }
 }
 
@@ -185,7 +184,7 @@ void OpenCLDeviceModel::setDevice(const QModelIndex &index) const
 
 
 
-void OpenCLDeviceModel::reset()
+void Ace::OpenCLDeviceModel::reset()
 {
    beginResetModel();
    endResetModel();
@@ -196,7 +195,7 @@ void OpenCLDeviceModel::reset()
 
 
 
-int OpenCLDeviceModel::getPlatformCount() const
+int Ace::OpenCLDeviceModel::getPlatformCount() const
 {
    cl_uint total;
    cl_int code = clGetPlatformIDs(0,nullptr,&total);
@@ -212,7 +211,7 @@ int OpenCLDeviceModel::getPlatformCount() const
 
 
 
-cl_platform_id OpenCLDeviceModel::getPlatformID(int row) const
+cl_platform_id Ace::OpenCLDeviceModel::getPlatformID(int row) const
 {
    // get total number of platforms
    int total = getPlatformCount();
@@ -243,7 +242,7 @@ cl_platform_id OpenCLDeviceModel::getPlatformID(int row) const
 
 
 
-QString OpenCLDeviceModel::getPlatformName(int row) const
+QString Ace::OpenCLDeviceModel::getPlatformName(int row) const
 {
    // get platform ID
    cl_platform_id id = getPlatformID(row);
@@ -263,7 +262,7 @@ QString OpenCLDeviceModel::getPlatformName(int row) const
 
 
 
-int OpenCLDeviceModel::getDeviceCount(int platformRow) const
+int Ace::OpenCLDeviceModel::getDeviceCount(int platformRow) const
 {
    cl_platform_id id = getPlatformID(platformRow);
    cl_uint total;
@@ -280,7 +279,7 @@ int OpenCLDeviceModel::getDeviceCount(int platformRow) const
 
 
 
-cl_device_id OpenCLDeviceModel::getDeviceID(int platformRow, int row) const
+cl_device_id Ace::OpenCLDeviceModel::getDeviceID(int platformRow, int row) const
 {
    // get total number of devices and platform ID
    int total = getDeviceCount(platformRow);
@@ -307,7 +306,7 @@ cl_device_id OpenCLDeviceModel::getDeviceID(int platformRow, int row) const
 
 
 
-QString OpenCLDeviceModel::getDeviceName(int platformRow, int row) const
+QString Ace::OpenCLDeviceModel::getDeviceName(int platformRow, int row) const
 {
    // get device ID
    cl_device_id id = getDeviceID(platformRow,row);
@@ -327,8 +326,8 @@ QString OpenCLDeviceModel::getDeviceName(int platformRow, int row) const
 
 
 
-OpenCLDeviceModel::StringPointer OpenCLDeviceModel::getPlatformInfo(cl_platform_id id
-                                                                    , cl_platform_info what) const
+Ace::OpenCLDeviceModel::StringPointer Ace::OpenCLDeviceModel::getPlatformInfo(cl_platform_id id
+                                                                              , cl_platform_info what) const
 {
    // query the size of the c string
    size_t size;
@@ -354,7 +353,7 @@ OpenCLDeviceModel::StringPointer OpenCLDeviceModel::getPlatformInfo(cl_platform_
 
 
 
-QString OpenCLDeviceModel::getDetailedPlatformInfo(cl_platform_id id) const
+QString Ace::OpenCLDeviceModel::getDetailedPlatformInfo(cl_platform_id id) const
 {
    // get all platform information
    StringPointer name(getPlatformInfo(id,CL_PLATFORM_NAME));
@@ -385,7 +384,7 @@ QString OpenCLDeviceModel::getDetailedPlatformInfo(cl_platform_id id) const
 
 
 
-QString OpenCLDeviceModel::getDetailedDeviceInfo(cl_device_id id) const
+QString Ace::OpenCLDeviceModel::getDetailedDeviceInfo(cl_device_id id) const
 {
    // get all device information
    unique_ptr<char> a(OpenCL::getDeviceInfo<char>(id,CL_DEVICE_NAME));
@@ -448,8 +447,4 @@ QString OpenCLDeviceModel::getDetailedDeviceInfo(cl_device_id id) const
 
    // delete temporarily used local memory
    return detailedInfo;
-}
-
-
-
 }

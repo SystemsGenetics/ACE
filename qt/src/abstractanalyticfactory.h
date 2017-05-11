@@ -1,5 +1,5 @@
-#ifndef ABSTRACTANALYTICFACTORY_H
-#define ABSTRACTANALYTICFACTORY_H
+#ifndef EABSTRACTANALYTICFACTORY_H
+#define EABSTRACTANALYTICFACTORY_H
 #include <QtCore>
 #include <memory>
 
@@ -13,7 +13,7 @@ class EAbstractAnalyticFactory
 public:
    EAbstractAnalyticFactory() = default;
    virtual ~EAbstractAnalyticFactory() = default;
-   EMAKE_NO_COPY_OR_MOVE(EAbstractAnalyticFactory);
+   ACE_MAKE_NO_COPY_OR_MOVE(EAbstractAnalyticFactory);
    static EAbstractAnalyticFactory& getInstance();
    static void setInstance(std::unique_ptr<EAbstractAnalyticFactory>&& factory);
    virtual int getCount() = 0;

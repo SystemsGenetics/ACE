@@ -1,5 +1,5 @@
-#ifndef ABSTRACTDATA_H
-#define ABSTRACTDATA_H
+#ifndef EABSTRACTDATA_H
+#define EABSTRACTDATA_H
 #include <QtCore>
 #include <memory>
 
@@ -18,7 +18,7 @@ class EAbstractData
 public:
    EAbstractData() = default;
    virtual ~EAbstractData() = default;
-   EMAKE_NO_COPY_OR_MOVE(EAbstractData);
+   ACE_MAKE_NO_COPY_OR_MOVE(EAbstractData);
    virtual void readData() = 0;
    virtual quint64 getDataEnd() const = 0;
    virtual void prepare(bool preAllocate) = 0;

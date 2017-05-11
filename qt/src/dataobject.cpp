@@ -1,14 +1,13 @@
 #include "dataobject.h"
 #include "exception.h"
 #include "abstractdatafactory.h"
-namespace Ace {
 
 
 
 
 
 
-DataObject::DataObject(const QString& path)
+Ace::DataObject::DataObject(const QString& path)
 {
    _file.reset(new QFile(path));
    if ( !_file->open(QIODevice::ReadWrite) )
@@ -54,7 +53,7 @@ DataObject::DataObject(const QString& path)
 
 
 
-DataObject::~DataObject()
+Ace::DataObject::~DataObject()
 {
    _data.reset();
    _stream.reset();
@@ -66,7 +65,7 @@ DataObject::~DataObject()
 
 
 
-bool DataObject::seek(quint64 offset)
+bool Ace::DataObject::seek(quint64 offset)
 {
 }
 
@@ -75,7 +74,7 @@ bool DataObject::seek(quint64 offset)
 
 
 
-bool DataObject::allocate(quint64 size)
+bool Ace::DataObject::allocate(quint64 size)
 {
 }
 
@@ -84,7 +83,7 @@ bool DataObject::allocate(quint64 size)
 
 
 
-DataObject::Status DataObject::getStatus() const
+Ace::DataObject::Status Ace::DataObject::getStatus() const
 {
    return _status;
 }
@@ -94,7 +93,7 @@ DataObject::Status DataObject::getStatus() const
 
 
 
-void DataObject::clear(const QString& newType)
+void Ace::DataObject::clear(const QString& newType)
 {
 }
 
@@ -103,7 +102,7 @@ void DataObject::clear(const QString& newType)
 
 
 
-bool DataObject::isNew() const
+bool Ace::DataObject::isNew() const
 {
 }
 
@@ -112,7 +111,7 @@ bool DataObject::isNew() const
 
 
 
-EAbstractData& DataObject::data()
+EAbstractData& Ace::DataObject::data()
 {
    if ( !_data )
    {
@@ -129,11 +128,7 @@ EAbstractData& DataObject::data()
 
 
 
-DataObject::operator bool() const
+Ace::DataObject::operator bool() const
 {
    return _status == Ok;
-}
-
-
-
 }

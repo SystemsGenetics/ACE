@@ -1,5 +1,5 @@
-#ifndef EXCEPTION_H
-#define EXCEPTION_H
+#ifndef EEXCEPTION_H
+#define EEXCEPTION_H
 #include <QtCore>
 #define EMAKE_EXCEPTION(e) EException e;e.setFile(__FILE__);e.setFunction(__PRETTY_FUNCTION__);\
    e.setLine(__LINE__)
@@ -34,15 +34,3 @@ private:
 
 
 #endif
-//EAbstractAnalytic
-//EAbstractAnalyticFactory
-//EAbstractData
-//EAbstractDataFactory
-//EAbstractDataIterator
-//EDataStream
-//EException
-//EOpenCLBuffer <-- here
-//EOpenCLDevice
-//EOpenCLEvent
-//EOpenCLKernel
-//EOpenCLProgram

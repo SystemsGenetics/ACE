@@ -9,21 +9,17 @@
 #include "opencldevicemodel.h"
 #include "opencldevice.h"
 #include "exception.h"
-namespace Ace {
+
+
+
+Ace::OpenCLDeviceDialog* Ace::OpenCLDeviceDialog::_instance = nullptr;
 
 
 
 
 
 
-OpenCLDeviceDialog* OpenCLDeviceDialog::_instance = nullptr;
-
-
-
-
-
-
-OpenCLDeviceDialog &OpenCLDeviceDialog::getInstance()
+Ace::OpenCLDeviceDialog& Ace::OpenCLDeviceDialog::getInstance()
 {
    if ( !_instance )
    {
@@ -37,7 +33,7 @@ OpenCLDeviceDialog &OpenCLDeviceDialog::getInstance()
 
 
 
-void OpenCLDeviceDialog::updateDetails(const QModelIndex &index)
+void Ace::OpenCLDeviceDialog::updateDetails(const QModelIndex &index)
 {
    try
    {
@@ -57,7 +53,7 @@ void OpenCLDeviceDialog::updateDetails(const QModelIndex &index)
 
 
 
-void OpenCLDeviceDialog::refresh()
+void Ace::OpenCLDeviceDialog::refresh()
 {
    try
    {
@@ -77,7 +73,7 @@ void OpenCLDeviceDialog::refresh()
 
 
 
-void OpenCLDeviceDialog::cancel()
+void Ace::OpenCLDeviceDialog::cancel()
 {
    hide();
 }
@@ -87,7 +83,7 @@ void OpenCLDeviceDialog::cancel()
 
 
 
-void OpenCLDeviceDialog::set()
+void Ace::OpenCLDeviceDialog::set()
 {
    try
    {
@@ -106,7 +102,7 @@ void OpenCLDeviceDialog::set()
 
 
 
-OpenCLDeviceDialog::OpenCLDeviceDialog(QWidget *parent):
+Ace::OpenCLDeviceDialog::OpenCLDeviceDialog(QWidget *parent):
    QDialog(parent)
 {
    // initialize view and model for opencl devices
@@ -151,8 +147,4 @@ OpenCLDeviceDialog::OpenCLDeviceDialog(QWidget *parent):
    // set layout to main and set title
    setLayout(main);
    setWindowTitle(tr("OpenCL Device Selection"));
-}
-
-
-
 }

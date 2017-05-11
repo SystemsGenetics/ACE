@@ -6,7 +6,7 @@
 
 
 
-OpenCLEvent::OpenCLEvent(cl_event id)
+EOpenCLEvent::EOpenCLEvent(cl_event id)
 {
    _id = new cl_event;
    *_id = id;
@@ -17,7 +17,7 @@ OpenCLEvent::OpenCLEvent(cl_event id)
 
 
 
-OpenCLEvent::~OpenCLEvent()
+EOpenCLEvent::~EOpenCLEvent()
 {
    if ( _id )
    {
@@ -31,7 +31,7 @@ OpenCLEvent::~OpenCLEvent()
 
 
 
-OpenCLEvent::OpenCLEvent(const OpenCLEvent& copy)
+EOpenCLEvent::EOpenCLEvent(const EOpenCLEvent& copy)
 {
    try
    {
@@ -43,7 +43,7 @@ OpenCLEvent::OpenCLEvent(const OpenCLEvent& copy)
       cl_int code = clRetainEvent(*_id);
       if ( code != CL_SUCCESS )
       {
-         OpenCL::throwError("clRetainEvent",code);
+         Ace::OpenCL::throwError("clRetainEvent",code);
       }
    }
    catch (...)
@@ -58,7 +58,7 @@ OpenCLEvent::OpenCLEvent(const OpenCLEvent& copy)
 
 
 
-OpenCLEvent& OpenCLEvent::operator=(const OpenCLEvent& copy)
+EOpenCLEvent& EOpenCLEvent::operator=(const EOpenCLEvent& copy)
 {
    // if there is no event then allocate one
    if ( !_id )
@@ -71,7 +71,7 @@ OpenCLEvent& OpenCLEvent::operator=(const OpenCLEvent& copy)
       cl_int code = clReleaseEvent(*_id);
       if ( code != CL_SUCCESS )
       {
-         OpenCL::throwError("clRetainEvent",code);
+         Ace::OpenCL::throwError("clRetainEvent",code);
       }
    }
 
@@ -80,7 +80,7 @@ OpenCLEvent& OpenCLEvent::operator=(const OpenCLEvent& copy)
    cl_int code = clRetainEvent(*_id);
    if ( code != CL_SUCCESS )
    {
-      OpenCL::throwError("clRetainEvent",code);
+      Ace::OpenCL::throwError("clRetainEvent",code);
    }
    return *this;
 }
@@ -90,7 +90,7 @@ OpenCLEvent& OpenCLEvent::operator=(const OpenCLEvent& copy)
 
 
 
-OpenCLEvent::OpenCLEvent(OpenCLEvent&& move)
+EOpenCLEvent::EOpenCLEvent(EOpenCLEvent&& move)
 {
    try
    {
@@ -110,7 +110,7 @@ OpenCLEvent::OpenCLEvent(OpenCLEvent&& move)
 
 
 
-OpenCLEvent& OpenCLEvent::operator=(OpenCLEvent&& move)
+EOpenCLEvent& EOpenCLEvent::operator=(EOpenCLEvent&& move)
 {
    // if there is no event then allocate one
    if ( !_id )
@@ -123,7 +123,7 @@ OpenCLEvent& OpenCLEvent::operator=(OpenCLEvent&& move)
       cl_int code = clReleaseEvent(*_id);
       if ( code != CL_SUCCESS )
       {
-         OpenCL::throwError("clRetainEvent",code);
+         Ace::OpenCL::throwError("clRetainEvent",code);
       }
    }
 
@@ -138,14 +138,14 @@ OpenCLEvent& OpenCLEvent::operator=(OpenCLEvent&& move)
 
 
 
-void OpenCLEvent::wait() const
+void EOpenCLEvent::wait() const
 {
    if ( _id )
    {
       cl_int code = clWaitForEvents(1,_id);
       if ( code != CL_SUCCESS )
       {
-         OpenCL::throwError("clWaitForEvents",code);
+         Ace::OpenCL::throwError("clWaitForEvents",code);
       }
    }
 }
@@ -155,7 +155,7 @@ void OpenCLEvent::wait() const
 
 
 
-bool OpenCLEvent::isDone() const
+bool EOpenCLEvent::isDone() const
 {
    // return if there is no event
    if ( !_id )
@@ -169,7 +169,7 @@ bool OpenCLEvent::isDone() const
                                 ,nullptr);
    if ( code != CL_SUCCESS )
    {
-      OpenCL::throwError("clGetEventInfo",code);
+      Ace::OpenCL::throwError("clGetEventInfo",code);
    }
    if ( status == CL_COMPLETE )
    {

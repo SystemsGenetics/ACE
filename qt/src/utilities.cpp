@@ -6,7 +6,7 @@
 
 
 
-QString OpenCL::generateErrorString(cl_int code)
+QString Ace::OpenCL::generateErrorString(cl_int code)
 {
    static const char* errors[] =
    {
@@ -91,7 +91,7 @@ QString OpenCL::generateErrorString(cl_int code)
 
 
 
-void OpenCL::throwError(const QString& function, cl_int code)
+void Ace::OpenCL::throwError(const QString& function, cl_int code)
 {
    EMAKE_EXCEPTION(e);
    e.setTitle(QObject::tr("OpenCL Error"));
@@ -105,7 +105,7 @@ void OpenCL::throwError(const QString& function, cl_int code)
 
 
 
-QString formatMemorySize(quint64 size)
+QString Ace::formatMemorySize(quint64 size)
 {
    // initialize temporary variables
    enum { kb=1,mb,gb,tb };
