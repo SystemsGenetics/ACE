@@ -31,7 +31,7 @@ namespace Ace
       bool seek(quint64 offset);
       bool allocate(quint64 size);
       Status getStatus() const;
-      void clear(const QString& newType);
+      bool clear(quint16 newType);
       bool isNew() const;
       EAbstractData& data();
       operator bool() const;

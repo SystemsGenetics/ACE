@@ -21,6 +21,7 @@ public:
    ACE_MAKE_NO_COPY_OR_MOVE(EAbstractData);
    virtual void readData() = 0;
    virtual quint64 getDataEnd() const = 0;
+   virtual void newData() = 0;
    virtual void prepare(bool preAllocate) = 0;
    virtual void finish() = 0;
    virtual std::unique_ptr<EAbstractDataIterator> begin() = 0;
@@ -37,3 +38,10 @@ private:
 
 
 #endif
+// ->newData
+// start analytic
+// run initialize
+// ->prepare
+// run analytic
+// ->finish
+// ->getDataEnd

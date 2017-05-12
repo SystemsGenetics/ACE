@@ -106,7 +106,7 @@ void Ace::MainWindow::createActions()
 
    // create analytic actions
    _analyticActions.reserve(EAbstractAnalyticFactory::getInstance().getCount());
-   for (int i = 0; i < EAbstractAnalyticFactory::getInstance().getCount() ;++i)
+   for (quint16 i = 0; i < EAbstractAnalyticFactory::getInstance().getCount() ;++i)
    {
       _analyticActions.append(new QAction(EAbstractAnalyticFactory::getInstance().getName(i),this));
       _analyticActions.back()->setData(QVariant(i));

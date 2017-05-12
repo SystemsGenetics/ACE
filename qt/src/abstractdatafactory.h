@@ -15,10 +15,10 @@ public:
    ACE_MAKE_NO_COPY_OR_MOVE(EAbstractDataFactory);
    static EAbstractDataFactory& getInstance();
    static void setInstance(std::unique_ptr<EAbstractDataFactory>&& factory);
-   virtual int getCount() = 0;
-   virtual QString getName(int type) = 0;
-   virtual QString getFileExtension(int type) = 0;
-   virtual std::unique_ptr<EAbstractData> makeData(int type) = 0;
+   virtual quint16 getCount() = 0;
+   virtual QString getName(quint16 type) = 0;
+   virtual QString getFileExtension(quint16 type) = 0;
+   virtual std::unique_ptr<EAbstractData> makeData(quint16 type) = 0;
 private:
    static std::unique_ptr<EAbstractDataFactory> _instance;
 };

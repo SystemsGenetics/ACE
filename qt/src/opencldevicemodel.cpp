@@ -34,27 +34,19 @@ int Ace::OpenCLDeviceModel::columnCount(const QModelIndex& /*parent*/) const
 
 QVariant Ace::OpenCLDeviceModel::data(const QModelIndex &index, int role) const
 {
-   try
+   switch (role)
    {
-      switch (role)
+   case Qt::DisplayRole:
+      if ( !index.parent().isValid() )
       {
-      case Qt::DisplayRole:
-         if ( !index.parent().isValid() )
-         {
-            return getPlatformName(index.row());
-         }
-         else
-         {
-            return getDeviceName(index.parent().row(),index.row());
-         }
-      default:
-         return QVariant();
+         return getPlatformName(index.row());
       }
-   }
-   catch (EException e)
-   {
-      e.display();
-      exit(1);
+      else
+      {
+         return getDeviceName(index.parent().row(),index.row());
+      }
+   default:
+      return QVariant();
    }
 }
 
@@ -65,21 +57,13 @@ QVariant Ace::OpenCLDeviceModel::data(const QModelIndex &index, int role) const
 
 QModelIndex Ace::OpenCLDeviceModel::index(int row, int column, const QModelIndex& parent) const
 {
-   try
+   if ( !parent.isValid() )
    {
-      if ( !parent.isValid() )
-      {
-         return createIndex(row,column,static_cast<quintptr>(0));
-      }
-      else
-      {
-         return createIndex(row,column,parent.row()+1);
-      }
+      return createIndex(row,column,static_cast<quintptr>(0));
    }
-   catch (EException e)
+   else
    {
-      e.display();
-      exit(1);
+      return createIndex(row,column,parent.row()+1);
    }
 }
 
@@ -90,21 +74,13 @@ QModelIndex Ace::OpenCLDeviceModel::index(int row, int column, const QModelIndex
 
 QModelIndex Ace::OpenCLDeviceModel::parent(const QModelIndex &index) const
 {
-   try
+   if ( index.internalId() == 0 )
    {
-      if ( index.internalId() == 0 )
-      {
-         return QModelIndex();
-      }
-      else
-      {
-         return createIndex(index.internalId()-1,0);
-      }
+      return QModelIndex();
    }
-   catch (EException e)
+   else
    {
-      e.display();
-      exit(1);
+      return createIndex(index.internalId()-1,0);
    }
 }
 
@@ -115,25 +91,17 @@ QModelIndex Ace::OpenCLDeviceModel::parent(const QModelIndex &index) const
 
 int Ace::OpenCLDeviceModel::rowCount(const QModelIndex &parent) const
 {
-   try
+   if ( !parent.isValid() )
    {
-      if ( !parent.isValid() )
-      {
-         return getPlatformCount();
-      }
-      else if ( !parent.parent().isValid() )
-      {
-         return getDeviceCount(parent.row());
-      }
-      else
-      {
-         return 0;
-      }
+      return getPlatformCount();
    }
-   catch (EException e)
+   else if ( !parent.parent().isValid() )
    {
-      e.display();
-      exit(1);
+      return getDeviceCount(parent.row());
+   }
+   else
+   {
+      return 0;
    }
 }
 

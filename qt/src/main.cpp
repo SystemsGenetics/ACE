@@ -2,15 +2,16 @@
 
 #include "mainwindow.h"
 #include "abstractanalyticfactory.h"
+#include "AceCore.h"
 using namespace std;
 
 struct AnalyticFactory : public EAbstractAnalyticFactory
 {
-   int getCount() override final
+   quint16 getCount() override final
    {
       return 3;
    }
-   QString getName(int type) override final
+   QString getName(quint16 type) override final
    {
       switch (type)
       {
@@ -24,7 +25,7 @@ struct AnalyticFactory : public EAbstractAnalyticFactory
          return QString();
       }
    }
-   unique_ptr<EAbstractAnalytic> makeAnalytic(int /*type*/) override final
+   unique_ptr<EAbstractAnalytic> makeAnalytic(quint16 /*type*/) override final
    {
       return nullptr;
    }
@@ -37,9 +38,8 @@ struct AnalyticFactory : public EAbstractAnalyticFactory
 
 int main(int argc, char *argv[])
 {
-   QApplication application(argc, argv);
    EAbstractAnalyticFactory::setInstance(unique_ptr<AnalyticFactory>(new AnalyticFactory));
-   Ace::MainWindow::getInstance().show();
+   EApplication application(argc, argv);
    return application.exec();
 }
 // Ace::SetupAnalyticDialog, Ace::RunAnalyticDialog :)

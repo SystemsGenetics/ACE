@@ -35,17 +35,9 @@ Ace::OpenCLDeviceDialog& Ace::OpenCLDeviceDialog::getInstance()
 
 void Ace::OpenCLDeviceDialog::updateDetails(const QModelIndex &index)
 {
-   try
-   {
-      _details->setText(_model->getDetailedInfo(index));
-      _set->setDisabled(!_model->isDevice(index));
-      _selected = index;
-   }
-   catch (EException e)
-   {
-      e.display();
-      exit(1);
-   }
+   _details->setText(_model->getDetailedInfo(index));
+   _set->setDisabled(!_model->isDevice(index));
+   _selected = index;
 }
 
 
@@ -55,17 +47,9 @@ void Ace::OpenCLDeviceDialog::updateDetails(const QModelIndex &index)
 
 void Ace::OpenCLDeviceDialog::refresh()
 {
-   try
-   {
-      _model->reset();
-      _details->setText("");
-      _set->setDisabled(true);
-   }
-   catch (EException e)
-   {
-      e.display();
-      exit(1);
-   }
+   _model->reset();
+   _details->setText("");
+   _set->setDisabled(true);
 }
 
 
@@ -85,16 +69,8 @@ void Ace::OpenCLDeviceDialog::cancel()
 
 void Ace::OpenCLDeviceDialog::set()
 {
-   try
-   {
-      _model->setDevice(_selected);
-      hide();
-   }
-   catch (EException e)
-   {
-      e.display();
-      exit(1);
-   }
+   _model->setDevice(_selected);
+   hide();
 }
 
 

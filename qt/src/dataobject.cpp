@@ -18,14 +18,12 @@ Ace::DataObject::DataObject(const QString& path)
    _stream.reset(new EDataStream(_file.get()));
    if ( _file->size() <= _mininumFileSize )
    {
-      ;//make new file
       return;
    }
-   quint64 value;
+   quint64 value {0};
    *_stream >> value;
-   if ( !*_stream )
+   if ( !*_stream || value != _specialValue )
    {
-      ;//make new file
       return;
    }
    quint16 dataType;
@@ -67,6 +65,11 @@ Ace::DataObject::~DataObject()
 
 bool Ace::DataObject::seek(quint64 offset)
 {
+   if ( _status != Ok || _isNew )
+   {
+      return false;
+   }
+   return _file->seek(offset+_headerOffset);
 }
 
 
@@ -76,6 +79,11 @@ bool Ace::DataObject::seek(quint64 offset)
 
 bool Ace::DataObject::allocate(quint64 size)
 {
+   if ( _status != Ok || _isNew )
+   {
+      return false;
+   }
+   return _file->resize(_file->pos()+size);
 }
 
 
@@ -93,8 +101,35 @@ Ace::DataObject::Status Ace::DataObject::getStatus() const
 
 
 
-void Ace::DataObject::clear(const QString& newType)
+bool Ace::DataObject::clear(quint16 newType)
 {
+   if ( _status != Ok )
+   {
+      return false;
+   }
+   if ( newType >= EAbstractDataFactory::getInstance().getCount() )
+   {
+      _status = InvalidDataType;
+      return false;
+   }
+   _data = EAbstractDataFactory::getInstance().makeData(newType);
+   if ( !_file->seek(0) )
+   {
+      _status = CannotWrite;
+      return false;
+   }
+   quint64 value = _specialValue;
+   quint16 type = newType;
+   *_stream << value << type << EAbstractDataFactory::getInstance().getFileExtension(newType);
+   if ( !*_stream )
+   {
+      _status = CannotWrite;
+      return false;
+   }
+   _headerOffset = _file->pos();
+   _data->newData();
+   _isNew = false;
+   return true;
 }
 
 
@@ -104,6 +139,7 @@ void Ace::DataObject::clear(const QString& newType)
 
 bool Ace::DataObject::isNew() const
 {
+   return _isNew;
 }
 
 
@@ -113,11 +149,11 @@ bool Ace::DataObject::isNew() const
 
 EAbstractData& Ace::DataObject::data()
 {
-   if ( !_data )
+   if ( _status != Ok || _isNew )
    {
       EMAKE_EXCEPTION(e);
       e.setTitle(QObject::tr("Data Object Error"));
-      e.out() << QObject::tr("Attempting to get data on failed object with no data.");
+      e.out() << QObject::tr("Attempting to get data on failed/empty object with no data.");
       throw e;
    }
    return *_data;

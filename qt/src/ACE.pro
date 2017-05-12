@@ -27,8 +27,7 @@ QMAKE_CXXFLAGS += -std=c++11
 
 unix|win32: LIBS += -lOpenCL
 
-SOURCES += main.cpp\
-        opencldevicedialog.cpp \
+SOURCES += opencldevicedialog.cpp \
     opencldevicemodel.cpp \
     opencldevice.cpp \
     openclevent.cpp \
@@ -42,7 +41,8 @@ SOURCES += main.cpp\
     abstractdata.cpp \
     datastream.cpp \
     dataobject.cpp \
-    abstractdatafactory.cpp
+    abstractdatafactory.cpp \
+    application.cpp
 
 HEADERS  += opencldevicedialog.h \
     opencldevicemodel.h \
@@ -63,4 +63,5 @@ HEADERS  += opencldevicedialog.h \
     dataobject.h \
     abstractdatafactory.h \
     AceCore.h \
-    AceOpenCL.h
+    AceOpenCL.h \
+    application.h
