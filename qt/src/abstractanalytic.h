@@ -26,7 +26,7 @@ public:
    };
    EAbstractAnalytic() = default;
    virtual ~EAbstractAnalytic() = default;
-   ACE_MAKE_NO_COPY_OR_MOVE(EAbstractAnalytic);
+   ACE_DISBALE_COPY_AND_MOVE(EAbstractAnalytic)
    virtual int getArgumentCount() = 0;
    virtual QStringList getCommandLineArguments() = 0;
    virtual ArgumentType getArgumentType(int argument) = 0;

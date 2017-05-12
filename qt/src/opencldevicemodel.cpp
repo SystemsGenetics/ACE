@@ -185,10 +185,10 @@ cl_platform_id Ace::OpenCLDeviceModel::getPlatformID(int row) const
    int total = getPlatformCount();
    if ( row >= total || row < 0 )
    {
-      EMAKE_EXCEPTION(e);
+      E_MAKE_EXCEPTION(e);
       e.setTitle(tr("Invalid OpenCL Platform"));
       e.out() << tr("An invalid row number was given that is out of range of the available "
-                    "platforms. The number must be between 1 and 2 while the given number is 3.")
+                    "platforms. The number must be between %1 and %2 while the given number is %3.")
                  .arg(0).arg(total-1).arg(row);
       throw e;
    }

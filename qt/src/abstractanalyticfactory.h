@@ -13,7 +13,7 @@ class EAbstractAnalyticFactory
 public:
    EAbstractAnalyticFactory() = default;
    virtual ~EAbstractAnalyticFactory() = default;
-   ACE_MAKE_NO_COPY_OR_MOVE(EAbstractAnalyticFactory);
+   ACE_DISBALE_COPY_AND_MOVE(EAbstractAnalyticFactory)
    static EAbstractAnalyticFactory& getInstance();
    static void setInstance(std::unique_ptr<EAbstractAnalyticFactory>&& factory);
    virtual quint16 getCount() = 0;

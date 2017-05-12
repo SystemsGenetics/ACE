@@ -8,7 +8,7 @@ class EApplication : public QApplication
 {
    Q_OBJECT
 public:
-   EApplication(int& argc, char* argv[]);
+   EApplication(int& argc, char** argv, const QString& title);
    bool notify(QObject* receiver, QEvent* event) override final;
 };
 

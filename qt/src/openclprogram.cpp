@@ -61,7 +61,7 @@ void EOpenCLProgram::addFile(const QString& filePath)
    QFile file(filePath);
    if ( !file.open(QIODevice::ReadOnly) )
    {
-      EMAKE_EXCEPTION(e);
+      E_MAKE_EXCEPTION(e);
       e.setTitle(QObject::tr("Cannot Open File"));
       e.out() << QObject::tr("Failed to open file %1 as read only.").arg(filePath);
       throw e;
@@ -123,7 +123,7 @@ bool EOpenCLProgram::compile(const QString& options)
             clGetProgramBuildInfo(*_id,_deviceID,CL_PROGRAM_BUILD_LOG,0,nullptr,&strSize);
             char buffer[strSize];
             clGetProgramBuildInfo(*_id,_deviceID,CL_PROGRAM_BUILD_LOG,strSize,buffer,nullptr);
-            EMAKE_EXCEPTION(e);
+            E_MAKE_EXCEPTION(e);
             e.setTitle(QObject::tr("OpenCL Build Error"));
             e.out() << buffer;
             throw e;

@@ -1,8 +1,8 @@
 #ifndef EEXCEPTION_H
 #define EEXCEPTION_H
 #include <QtCore>
-#define EMAKE_EXCEPTION(e) EException e;e.setFile(__FILE__);e.setFunction(__PRETTY_FUNCTION__);\
-   e.setLine(__LINE__)
+#define E_MAKE_EXCEPTION(e) EException e;e.setFile(__FILE__);e.setFunction(__PRETTY_FUNCTION__);\
+   e.setLine(__LINE__);
 
 
 

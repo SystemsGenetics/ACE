@@ -17,7 +17,7 @@ class EOpenCLProgram
 public:
    EOpenCLProgram(cl_device_id deviceID, cl_context contextID, cl_command_queue commandQueueID);
    ~EOpenCLProgram();
-   ACE_MAKE_NO_COPY_OR_MOVE(EOpenCLProgram);
+   ACE_DISBALE_COPY_AND_MOVE(EOpenCLProgram)
    void addSource(const QString& source);
    void addFile(const QString& filePath);
    bool compile(const QString& options);

@@ -93,7 +93,7 @@ QString Ace::OpenCL::generateErrorString(cl_int code)
 
 void Ace::OpenCL::throwError(const QString& function, cl_int code)
 {
-   EMAKE_EXCEPTION(e);
+   E_MAKE_EXCEPTION(e);
    e.setTitle(QObject::tr("OpenCL Error"));
    e.out() << QObject::tr("The function %1 returned the error code %2.")
               .arg(function).arg(generateErrorString(code));

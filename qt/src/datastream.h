@@ -19,7 +19,7 @@ public:
       ,StringTooBig
    };
    EDataStream(QFile* file);
-   ACE_MAKE_NO_COPY_OR_MOVE(EDataStream);
+   ACE_DISBALE_COPY_AND_MOVE(EDataStream)
    Status getStatus() const;
    operator bool() const;
    EDataStream& operator<<(qint8 value);

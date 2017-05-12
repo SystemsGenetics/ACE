@@ -8,11 +8,20 @@
 
 
 
-EApplication::EApplication(int &argc, char *argv[]):
+EApplication::EApplication(int& argc, char** argv, const QString& title):
    QApplication(argc,argv)
 {
-   EOpenCLDevice::getInstance().initialize();
-   Ace::MainWindow::getInstance().show();
+   try
+   {
+      EOpenCLDevice::getInstance().initialize();
+      Ace::MainWindow::getInstance().setWindowTitle(title);
+      Ace::MainWindow::getInstance().show();
+   }
+   catch (EException e)
+   {
+      e.display();
+      ::exit(1);
+   }
 }
 
 
@@ -29,6 +38,10 @@ bool EApplication::notify(QObject *receiver, QEvent *event)
    catch (EException e)
    {
       e.display();
+   }
+   catch (std::exception e)
+   {
+      qDebug() << tr("STD exception %1 caught!\n").arg(e.what());
    }
    catch (...)
    {

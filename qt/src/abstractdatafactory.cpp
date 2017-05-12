@@ -15,7 +15,7 @@ EAbstractDataFactory& EAbstractDataFactory::getInstance()
 {
    if ( !_instance )
    {
-      EMAKE_EXCEPTION(e);
+      E_MAKE_EXCEPTION(e);
       e.setTitle(QObject::tr("Analytic Factory Error"));
       e.out() << QObject::tr("Attempting to get abstract analytic factory when none has been set.");
       throw e;

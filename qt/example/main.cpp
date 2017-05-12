@@ -1,11 +1,20 @@
-#include "mainwindow.h"
-#include <QApplication>
+#include <AceCore.h>
+
+#include "analyticfactory.h"
+
+
+
+using namespace std;
+
+
+
+
+
 
 int main(int argc, char *argv[])
 {
-   QApplication a(argc, argv);
-   MainWindow w;
-   w.show();
-
-   return a.exec();
+   unique_ptr<AnalyticFactory> analyticFactory(new AnalyticFactory);
+   EAbstractAnalyticFactory::setInstance(move(analyticFactory));
+   EApplication application(argc,argv,"KINC");
+   return application.exec();
 }

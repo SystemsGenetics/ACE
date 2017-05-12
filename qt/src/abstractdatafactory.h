@@ -12,7 +12,7 @@ class EAbstractDataFactory
 public:
    EAbstractDataFactory() = default;
    virtual ~EAbstractDataFactory() = default;
-   ACE_MAKE_NO_COPY_OR_MOVE(EAbstractDataFactory);
+   ACE_DISBALE_COPY_AND_MOVE(EAbstractDataFactory)
    static EAbstractDataFactory& getInstance();
    static void setInstance(std::unique_ptr<EAbstractDataFactory>&& factory);
    virtual quint16 getCount() = 0;

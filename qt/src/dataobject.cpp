@@ -42,6 +42,7 @@ Ace::DataObject::DataObject(const QString& path)
    }
    _data = EAbstractDataFactory::getInstance().makeData(dataType);
    _headerOffset = _file->pos();
+   _data->initialize(this,_stream.get());
    _data->readData();
    _isNew = false;
 }
@@ -112,6 +113,10 @@ bool Ace::DataObject::clear(quint16 newType)
       _status = InvalidDataType;
       return false;
    }
+   if ( _data )
+   {
+      emit cleared();
+   }
    _data = EAbstractDataFactory::getInstance().makeData(newType);
    if ( !_file->seek(0) )
    {
@@ -127,6 +132,7 @@ bool Ace::DataObject::clear(quint16 newType)
       return false;
    }
    _headerOffset = _file->pos();
+   _data->initialize(this,_stream.get());
    _data->newData();
    _isNew = false;
    return true;
@@ -151,7 +157,7 @@ EAbstractData& Ace::DataObject::data()
 {
    if ( _status != Ok || _isNew )
    {
-      EMAKE_EXCEPTION(e);
+      E_MAKE_EXCEPTION(e);
       e.setTitle(QObject::tr("Data Object Error"));
       e.out() << QObject::tr("Attempting to get data on failed/empty object with no data.");
       throw e;

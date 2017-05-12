@@ -18,7 +18,7 @@ class EOpenCLDevice
 {
 public:
    ~EOpenCLDevice();
-   ACE_MAKE_NO_COPY_OR_MOVE(EOpenCLDevice);
+   ACE_DISBALE_COPY_AND_MOVE(EOpenCLDevice)
    static EOpenCLDevice& getInstance();
    void initialize();
    void setDevice(cl_platform_id platformID, cl_device_id deviceID);

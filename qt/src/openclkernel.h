@@ -13,7 +13,7 @@ public:
    EOpenCLKernel(cl_program programID, cl_command_queue commandQueueID, cl_device_id deviceID
                 , const QString& name);
    ~EOpenCLKernel();
-   ACE_MAKE_NO_COPY_OR_MOVE(EOpenCLKernel);
+   ACE_DISBALE_COPY_AND_MOVE(EOpenCLKernel)
    template<class T> void setArgument(cl_uint index, T value);
    template<class T> void setBuffer(cl_uint index, EOpenCLBuffer<T>* buffer);
    template<class T> void addLocalMemory(cl_uint index, cl_uint size);

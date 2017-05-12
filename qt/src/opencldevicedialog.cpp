@@ -8,7 +8,6 @@
 #include "opencldevicedialog.h"
 #include "opencldevicemodel.h"
 #include "opencldevice.h"
-#include "exception.h"
 
 
 

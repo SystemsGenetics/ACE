@@ -2,7 +2,6 @@
 #define ACE_DATAOBJECT_H
 #include <QtCore>
 
-#include "utilities.h"
 #include "abstractdata.h"
 #include "datastream.h"
 
@@ -14,8 +13,9 @@ class EDataStream;
 
 namespace Ace
 {
-   class DataObject
+   class DataObject : public QObject
    {
+      Q_OBJECT
    public:
       enum Status
       {
@@ -27,7 +27,6 @@ namespace Ace
       };
       DataObject(const QString& path);
       ~DataObject();
-      ACE_MAKE_NO_COPY_OR_MOVE(DataObject);
       bool seek(quint64 offset);
       bool allocate(quint64 size);
       Status getStatus() const;
@@ -35,6 +34,8 @@ namespace Ace
       bool isNew() const;
       EAbstractData& data();
       operator bool() const;
+   signals:
+      void cleared();
    private:
       constexpr static int _mininumFileSize {12};
       constexpr static quint64 _specialValue {584};
