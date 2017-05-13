@@ -7,10 +7,6 @@
 
 
 
-class EDataStream;
-
-
-
 namespace Ace
 {
    class DataObject : public QObject

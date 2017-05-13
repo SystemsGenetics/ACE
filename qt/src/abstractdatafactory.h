@@ -3,7 +3,10 @@
 #include <memory>
 
 #include "utilities.h"
-#include "abstractdata.h"
+
+
+
+class EAbstractData;
 
 
 

@@ -3,8 +3,11 @@
 #include <QtCore>
 #include <memory>
 
-#include "abstractanalytic.h"
 #include "utilities.h"
+
+
+
+class EAbstractAnalytic;
 
 
 

@@ -140,6 +140,7 @@ bool Ace::DataObject::clear(quint16 newType)
       _status = CannotWrite;
       return false;
    }
+   _isNew = true;
    _headerOffset = _file->pos();
    _data->initialize(this,_stream.get());
    try
