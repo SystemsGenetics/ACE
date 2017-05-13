@@ -13,8 +13,9 @@ EApplication::EApplication(int& argc, char** argv, const QString& title):
 {
    try
    {
-      Ace::MainWindow::getInstance().setWindowTitle(title);
-      Ace::MainWindow::getInstance().show();
+      Ace::MainWindow& window {Ace::MainWindow::getInstance()};
+      window.setWindowTitle(title);
+      window.show();
    }
    catch (EException e)
    {
