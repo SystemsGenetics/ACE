@@ -32,7 +32,7 @@ Ace::OpenCLDeviceDialog& Ace::OpenCLDeviceDialog::getInstance()
 
 
 
-void Ace::OpenCLDeviceDialog::updateDetails(const QModelIndex &index)
+void Ace::OpenCLDeviceDialog::indexPressed(const QModelIndex &index)
 {
    _details->setText(_model->getDetailedInfo(index));
    _set->setDisabled(!_model->isDevice(index));
@@ -85,7 +85,7 @@ Ace::OpenCLDeviceDialog::OpenCLDeviceDialog(QWidget *parent):
    _list->setHeaderHidden(true);
    _model = new OpenCLDeviceModel;
    _list->setModel(_model);
-   connect(_list,SIGNAL(pressed(QModelIndex)),this,SLOT(updateDetails(QModelIndex)));
+   connect(_list,SIGNAL(pressed(QModelIndex)),this,SLOT(indexPressed(QModelIndex)));
 
    // initialize opencl platform/device details label
    _details = new QLabel;

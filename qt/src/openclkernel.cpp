@@ -7,32 +7,29 @@
 
 EOpenCLKernel::EOpenCLKernel(cl_program programID, cl_command_queue commandQueueID
                            , cl_device_id deviceID, const QString &name):
+   _id(new cl_kernel),
    _commandQueueID(commandQueueID),
-   _deviceID(deviceID)
+   _deviceID(deviceID),
+   _globalSizes(new size_t[1]),
+   _workgroupSizes(new size_t[1])
 {
-   try
-   {
-      // create a new kernel
-      cl_int code;
-      QByteArray temp = name.toLatin1();
-      _id = clCreateKernel(programID,temp.data(),&code);
-      if ( code != CL_SUCCESS )
-      {
-         Ace::OpenCL::throwError("clCreateKernel",code);
-      }
+   // retain the command queue
+   clRetainCommandQueue(commandQueueID);
 
-      // initialize dimensions, global work size, and workgroup size
-      _globalSizes = new size_t[1];
-      _workgroupSizes = new size_t[1];
-      _globalSizes[0] = 1;
-      _workgroupSizes[0] = 1;
-   }
-   catch (...)
+   // create a new kernel
+   cl_int code;
+   QByteArray temp = name.toLatin1();
+   *_id = clCreateKernel(programID,temp.data(),&code);
+   if ( code != CL_SUCCESS )
    {
-      delete[] _globalSizes;
-      delete[] _workgroupSizes;
-      throw;
+      _id.reset();
+      reportError("clCreateKernel",code);
+      return;
    }
+
+   // initialize dimensions, global work size, and workgroup size
+   _globalSizes[0] = 1;
+   _workgroupSizes[0] = 1;
 }
 
 
@@ -42,10 +39,11 @@ EOpenCLKernel::EOpenCLKernel(cl_program programID, cl_command_queue commandQueue
 
 EOpenCLKernel::~EOpenCLKernel()
 {
-   clReleaseKernel(_id);
+   if ( _id )
+   {
+      clReleaseKernel(*_id);
+   }
    clReleaseCommandQueue(_commandQueueID);
-   delete[] _globalSizes;
-   delete[] _workgroupSizes;
 }
 
 
@@ -55,12 +53,15 @@ EOpenCLKernel::~EOpenCLKernel()
 
 void EOpenCLKernel::setDimensionCount(cl_uint count)
 {
+   if ( count == 0 || getStatus() != Ok )
+   {
+      return;
+   }
+
    // set new dimension and reallocate size arrays
    _dimensionCount = count;
-   delete[] _globalSizes;
-   delete[] _workgroupSizes;
-   _globalSizes = new size_t[count];
-   _workgroupSizes = new size_t[count];
+   _globalSizes.reset(new size_t[count]);
+   _workgroupSizes.reset(new size_t[count]);
 
    // initialize all sizes to 1
    for (unsigned int i = 0; i < count ;++i)
@@ -77,7 +78,7 @@ void EOpenCLKernel::setDimensionCount(cl_uint count)
 
 bool EOpenCLKernel::setGlobalSize(cl_uint dimension, cl_uint size)
 {
-   if ( dimension >= _dimensionCount )
+   if ( dimension >= _dimensionCount || getStatus() != Ok )
    {
       return false;
    }
@@ -92,7 +93,7 @@ bool EOpenCLKernel::setGlobalSize(cl_uint dimension, cl_uint size)
 
 bool EOpenCLKernel::setWorkgroupSize(cl_uint dimension, cl_uint size)
 {
-   if ( dimension >= _dimensionCount )
+   if ( dimension >= _dimensionCount || getStatus() != Ok )
    {
       return false;
    }
@@ -105,14 +106,19 @@ bool EOpenCLKernel::setWorkgroupSize(cl_uint dimension, cl_uint size)
 
 
 
-size_t EOpenCLKernel::getMaxWorkgroupSize() const
+size_t EOpenCLKernel::getMaxWorkgroupSize()
 {
+   if ( getStatus() != Ok )
+   {
+      return 0;
+   }
    size_t size;
-   cl_int code = clGetKernelWorkGroupInfo(_id,_deviceID,CL_KERNEL_WORK_GROUP_SIZE,sizeof(size_t)
+   cl_int code = clGetKernelWorkGroupInfo(*_id,_deviceID,CL_KERNEL_WORK_GROUP_SIZE,sizeof(size_t)
                                           ,&size,nullptr);
    if ( code != CL_SUCCESS )
    {
-      Ace::OpenCL::throwError("clGetKernelWorkGroupInfo",code);
+      reportError("clGetKernelWorkGroupInfo",code);
+      return 0;
    }
    return size;
 }
@@ -122,14 +128,19 @@ size_t EOpenCLKernel::getMaxWorkgroupSize() const
 
 
 
-size_t EOpenCLKernel::getWorkgroupMultiple() const
+size_t EOpenCLKernel::getWorkgroupMultiple()
 {
+   if ( getStatus() != Ok )
+   {
+      return 0;
+   }
    size_t size;
-   cl_int code = clGetKernelWorkGroupInfo(_id,_deviceID,CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE
+   cl_int code = clGetKernelWorkGroupInfo(*_id,_deviceID,CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE
                                           ,sizeof(size_t),&size,nullptr);
    if ( code != CL_SUCCESS )
    {
-      Ace::OpenCL::throwError("clGetKernelWorkGroupInfo",code);
+      reportError("clGetKernelWorkGroupInfo",code);
+      return 0;
    }
    return size;
 }
@@ -139,19 +150,25 @@ size_t EOpenCLKernel::getWorkgroupMultiple() const
 
 
 
-EOpenCLEvent EOpenCLKernel::operator()()
+EOpenCLEvent EOpenCLKernel::execute()
 {
+   if ( getStatus() != Ok )
+   {
+      return EOpenCLEvent();
+   }
    size_t offsets[_dimensionCount];
    for (unsigned int i = 0; i < _dimensionCount ;++i)
    {
       offsets[i] = 0;
    }
    cl_event eventID;
-   cl_int code = clEnqueueNDRangeKernel(_commandQueueID,_id,_dimensionCount,offsets,_globalSizes
-                                        ,_workgroupSizes,0,nullptr,&eventID);
+   cl_int code = clEnqueueNDRangeKernel(_commandQueueID,*_id,_dimensionCount,offsets
+                                        ,_globalSizes.get(),_workgroupSizes.get(),0,nullptr
+                                        ,&eventID);
    if ( code != CL_SUCCESS )
    {
-      Ace::OpenCL::throwError("clEnqueueNDRangeKernel",code);
+      reportError("clEnqueueNDRangeKernel",code);
+      return EOpenCLEvent();
    }
    return EOpenCLEvent(eventID);
 }

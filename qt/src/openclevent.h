@@ -16,6 +16,8 @@ public:
    EOpenCLEvent& operator=(EOpenCLEvent&& move);
    void wait() const;
    bool isDone() const;
+   bool isNull() const;
+   operator bool() const;
 private:
    cl_event* _id {nullptr};
 };

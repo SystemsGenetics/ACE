@@ -42,7 +42,8 @@ SOURCES += opencldevicedialog.cpp \
     datastream.cpp \
     dataobject.cpp \
     abstractdatafactory.cpp \
-    application.cpp
+    application.cpp \
+    opencl.cpp
 
 HEADERS  += opencldevicedialog.h \
     opencldevicemodel.h \
@@ -64,4 +65,5 @@ HEADERS  += opencldevicedialog.h \
     abstractdatafactory.h \
     AceCore.h \
     AceOpenCL.h \
-    application.h
+    application.h \
+    opencl.h

@@ -5,7 +5,7 @@
 
 #include "openclevent.h"
 #include "openclbuffer.h"
-#include "utilities.h"
+#include "opencl.h"
 
 
 
@@ -14,26 +14,24 @@ class EOpenCLKernel;
 
 
 
-class EOpenCLDevice
+class EOpenCLDevice : public EOpenCL
 {
 public:
    ~EOpenCLDevice();
    ACE_DISBALE_COPY_AND_MOVE(EOpenCLDevice)
    static EOpenCLDevice& getInstance();
-   void initialize();
-   void setDevice(cl_platform_id platformID, cl_device_id deviceID);
-   void clear();
+   bool setDevice(cl_platform_id platformID, cl_device_id deviceID);
    std::unique_ptr<EOpenCLProgram> makeProgram() const;
    template<class T> std::unique_ptr<EOpenCLBuffer<T>> makeBuffer(quint64 size);
    quint64 getGlobalMemorySize() const;
    quint64 getLocalMemorySize() const;
 private:
-   EOpenCLDevice() = default;
-   void throwInitializeError();
-   static EOpenCLDevice* _instance;
-   cl_device_id* _deviceID {nullptr};
-   cl_context* _contextID {nullptr};
-   cl_command_queue* _commandQueueID {nullptr};
+   void reportNoOpenCL();
+   EOpenCLDevice();
+   static std::unique_ptr<EOpenCLDevice> _instance;
+   cl_device_id _deviceID {0};
+   std::unique_ptr<cl_context> _contextID {nullptr};
+   std::unique_ptr<cl_command_queue> _commandQueueID {nullptr};
 };
 
 
@@ -44,7 +42,7 @@ private:
 template<class T>
 std::unique_ptr<EOpenCLBuffer<T>> EOpenCLDevice::makeBuffer(quint64 size)
 {
-   if ( !_contextID || !_commandQueueID )
+   if ( getStatus() != Ok )
    {
       return nullptr;
    }

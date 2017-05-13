@@ -4,7 +4,7 @@
 #include <CL/cl.h>
 #include <memory>
 
-#include "utilities.h"
+#include "opencl.h"
 
 
 
@@ -12,21 +12,21 @@ class EOpenCLKernel;
 
 
 
-class EOpenCLProgram
+class EOpenCLProgram : public EOpenCL
 {
 public:
    EOpenCLProgram(cl_device_id deviceID, cl_context contextID, cl_command_queue commandQueueID);
    ~EOpenCLProgram();
    ACE_DISBALE_COPY_AND_MOVE(EOpenCLProgram)
    void addSource(const QString& source);
-   void addFile(const QString& filePath);
+   bool addFile(const QString& filePath);
    bool compile(const QString& options);
    std::unique_ptr<EOpenCLKernel> makeKernel(const QString& name);
 private:
    cl_device_id _deviceID;
    cl_context _contextID;
    cl_command_queue _commandQueueID;
-   cl_program* _id {nullptr};
+   std::unique_ptr<cl_program> _id {nullptr};
    QList<QByteArray> _sources;
 };
 

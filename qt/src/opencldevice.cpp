@@ -6,7 +6,7 @@
 
 
 using namespace std;
-EOpenCLDevice* EOpenCLDevice::_instance = nullptr;
+unique_ptr<EOpenCLDevice> EOpenCLDevice::_instance {nullptr};
 
 
 
@@ -15,7 +15,6 @@ EOpenCLDevice* EOpenCLDevice::_instance = nullptr;
 
 EOpenCLDevice::~EOpenCLDevice()
 {
-   // release command queue and/or context if present
    if ( _commandQueueID )
    {
       clReleaseCommandQueue(*_commandQueueID);
@@ -24,11 +23,6 @@ EOpenCLDevice::~EOpenCLDevice()
    {
       clReleaseContext(*_contextID);
    }
-
-   // delete allocated memory
-   delete _deviceID;
-   delete _contextID;
-   delete _commandQueueID;
 }
 
 
@@ -38,10 +32,13 @@ EOpenCLDevice::~EOpenCLDevice()
 
 EOpenCLDevice& EOpenCLDevice::getInstance()
 {
+   // create singleton instance first time function is called
    if ( !_instance )
    {
-      _instance = new EOpenCLDevice();
+      _instance.reset(new EOpenCLDevice());
    }
+
+   // return reference
    return *_instance;
 }
 
@@ -50,91 +47,14 @@ EOpenCLDevice& EOpenCLDevice::getInstance()
 
 
 
-void EOpenCLDevice::initialize()
+bool EOpenCLDevice::setDevice(cl_platform_id platformID, cl_device_id deviceID)
 {
-   // get very first platform
-   cl_uint total;
-   cl_int code = clGetPlatformIDs(0,nullptr,&total);
-   if ( code != CL_SUCCESS || total == 0 )
+   // make sure state is not bad
+   if ( getStatus() == NoOpenCL )
    {
-      throwInitializeError();
-   }
-   cl_platform_id platformID;
-   code = clGetPlatformIDs(1,&platformID,nullptr);
-   if ( code != CL_SUCCESS )
-   {
-      throwInitializeError();
+      return false;
    }
 
-   // get very first device of very first platform
-   code = clGetDeviceIDs(platformID,CL_DEVICE_TYPE_ALL,0,nullptr,&total);
-   if ( code != CL_SUCCESS || total == 0 )
-   {
-      throwInitializeError();
-   }
-   cl_device_id deviceID;
-   code = clGetDeviceIDs(platformID,CL_DEVICE_TYPE_ALL,1,&deviceID,nullptr);
-   if ( code != CL_SUCCESS )
-   {
-      throwInitializeError();
-   }
-
-   // set device to first one found
-   setDevice(platformID,deviceID);
-}
-
-
-
-
-
-
-void EOpenCLDevice::setDevice(cl_platform_id platformID, cl_device_id deviceID)
-{
-   try
-   {
-      // clear any previously set device and allocate new memory
-      clear();
-      _deviceID = new cl_device_id;
-      _contextID = new cl_context;
-      _commandQueueID = new cl_command_queue;
-
-      // create new context
-      *_deviceID = deviceID;
-      cl_context_properties properties[] =
-      {
-         CL_CONTEXT_PLATFORM,
-         (cl_context_properties)platformID,
-         0
-      };
-      cl_int code;
-      *_contextID = clCreateContext(properties,1,_deviceID,nullptr,nullptr,&code);
-      if ( code != CL_SUCCESS )
-      {
-         Ace::OpenCL::throwError("clCreateContext",code);
-      }
-
-      // create new command queue
-      *_commandQueueID = clCreateCommandQueue(*_contextID,*_deviceID
-                                              ,CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE,&code);
-      if ( code != CL_SUCCESS )
-      {
-         Ace::OpenCL::throwError("clCreateCommandQueue",code);
-      }
-   }
-   catch (...)
-   {
-      clear();
-      throw;
-   }
-}
-
-
-
-
-
-
-void EOpenCLDevice::clear()
-{
    // release command queue and/or context if present
    if ( _commandQueueID )
    {
@@ -145,13 +65,39 @@ void EOpenCLDevice::clear()
       clReleaseContext(*_contextID);
    }
 
-   // delete allocated memory and set pointers to null
-   delete _deviceID;
-   delete _contextID;
-   delete _commandQueueID;
-   _deviceID = nullptr;
-   _contextID = nullptr;
-   _commandQueueID = nullptr;
+   // allocate new memory
+   _contextID.reset(new cl_context);
+   _commandQueueID.reset(new cl_command_queue);
+
+   // create new context
+   _deviceID = deviceID;
+   cl_context_properties properties[] =
+   {
+      CL_CONTEXT_PLATFORM,
+      (cl_context_properties)platformID,
+      0
+   };
+   cl_int code;
+   *_contextID = clCreateContext(properties,1,&_deviceID,nullptr,nullptr,&code);
+   if ( code != CL_SUCCESS )
+   {
+      _contextID.reset();
+      reportError("clCreateContext",code);
+      return false;
+   }
+
+   // create new command queue
+   *_commandQueueID = clCreateCommandQueue(*_contextID,_deviceID
+                                           ,CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE,&code);
+   if ( code != CL_SUCCESS )
+   {
+      _commandQueueID.reset();
+      reportError("clCreateCommandQueue",code);
+      return false;
+   }
+
+   // return success
+   return true;
 }
 
 
@@ -161,11 +107,14 @@ void EOpenCLDevice::clear()
 
 unique_ptr<EOpenCLProgram> EOpenCLDevice::makeProgram() const
 {
-   if ( !_deviceID || !_contextID || !_commandQueueID )
+   // make sure status is good
+   if ( getStatus() != Ok )
    {
       return nullptr;
    }
-   return unique_ptr<EOpenCLProgram>(new EOpenCLProgram(*_deviceID,*_contextID,*_commandQueueID));
+
+   // create new program object and return
+   return unique_ptr<EOpenCLProgram>(new EOpenCLProgram(_deviceID,*_contextID,*_commandQueueID));
 }
 
 
@@ -175,12 +124,17 @@ unique_ptr<EOpenCLProgram> EOpenCLDevice::makeProgram() const
 
 quint64 EOpenCLDevice::getGlobalMemorySize() const
 {
-   if ( !_deviceID )
+   // make sure status is good
+   if ( getStatus() != Ok )
    {
       return 0;
    }
-   unique_ptr<cl_ulong> a(Ace::OpenCL::getDeviceInfo<cl_ulong>(*_deviceID
+
+   // get size information
+   unique_ptr<cl_ulong> a(Ace::OpenCL::getDeviceInfo<cl_ulong>(_deviceID
                                                                ,CL_DEVICE_GLOBAL_MEM_SIZE));
+
+   // return size information
    quint64 size = *a;
    return size;
 }
@@ -192,12 +146,17 @@ quint64 EOpenCLDevice::getGlobalMemorySize() const
 
 quint64 EOpenCLDevice::getLocalMemorySize() const
 {
-   if ( !_deviceID )
+   // make sure status is good
+   if ( getStatus() != Ok )
    {
       return 0;
    }
-   unique_ptr<cl_ulong> a(Ace::OpenCL::getDeviceInfo<cl_ulong>(*_deviceID
+
+   // get size information
+   unique_ptr<cl_ulong> a(Ace::OpenCL::getDeviceInfo<cl_ulong>(_deviceID
                                                                ,CL_DEVICE_LOCAL_MEM_SIZE));
+
+   // return size information
    quint64 size = *a;
    return size;
 }
@@ -207,11 +166,54 @@ quint64 EOpenCLDevice::getLocalMemorySize() const
 
 
 
-void EOpenCLDevice::throwInitializeError()
+EOpenCLDevice::EOpenCLDevice()
 {
+   // get very first platform
+   cl_uint total;
+   cl_int code = clGetPlatformIDs(0,nullptr,&total);
+   if ( code != CL_SUCCESS || total == 0 )
+   {
+      reportNoOpenCL();
+      return;
+   }
+   cl_platform_id platformID;
+   code = clGetPlatformIDs(1,&platformID,nullptr);
+   if ( code != CL_SUCCESS )
+   {
+      reportNoOpenCL();
+      return;
+   }
+
+   // get very first device of very first platform
+   code = clGetDeviceIDs(platformID,CL_DEVICE_TYPE_ALL,0,nullptr,&total);
+   if ( code != CL_SUCCESS || total == 0 )
+   {
+      reportNoOpenCL();
+      return;
+   }
+   cl_device_id deviceID;
+   code = clGetDeviceIDs(platformID,CL_DEVICE_TYPE_ALL,1,&deviceID,nullptr);
+   if ( code != CL_SUCCESS )
+   {
+      reportNoOpenCL();
+      return;
+   }
+
+   // set device to first one found
+   setDevice(platformID,deviceID);
+}
+
+
+
+
+
+
+void EOpenCLDevice::reportNoOpenCL()
+{
+   setNoOpenCL();
    E_MAKE_EXCEPTION(e);
    e.setTitle(QObject::tr("Cannot Initialize OpenCL"));
    e.out() << QObject::tr("Cannot query OpenCL platforms or devices. It appears your system does"
                           " not have OpenCL installed on it.");
-   throw e;
+   e.display();
 }

@@ -10,8 +10,9 @@ class AbstractData;
 
 
 
-class EAbstractAnalytic
+class EAbstractAnalytic : public QThread
 {
+   Q_OBJECT
 public:
    enum class ArgumentType
    {
@@ -26,7 +27,6 @@ public:
    };
    EAbstractAnalytic() = default;
    virtual ~EAbstractAnalytic() = default;
-   ACE_DISBALE_COPY_AND_MOVE(EAbstractAnalytic)
    virtual int getArgumentCount() = 0;
    virtual QStringList getCommandLineArguments() = 0;
    virtual ArgumentType getArgumentType(int argument) = 0;
@@ -40,14 +40,11 @@ public:
    virtual int getBlockSize() = 0;
    virtual bool runBlock(int block) = 0;
    virtual void finish() = 0;
-   int getPercentComplete();
-   QString getStatus();
-protected:
-   void setPercentComplete(int percent);
-   void setStatus(QString status);
+signals:
+   void progressed(int perceptComplete);
+   void finished();
 private:
-   int _percentComplete;
-   QString _status;
+   void run() override final {}
 };
 
 

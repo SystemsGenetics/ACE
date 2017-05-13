@@ -1,0 +1,69 @@
+#include "opencl.h"
+
+
+
+
+
+
+EOpenCL::Status EOpenCL::getStatus() const
+{
+   return _status;
+}
+
+
+
+
+
+
+QString EOpenCL::getErrorFunction() const
+{
+   return _errorFunction;
+}
+
+
+
+
+
+
+QString EOpenCL::getErrorCode() const
+{
+   return Ace::OpenCL::generateErrorString(_errorCode);
+}
+
+
+
+
+
+
+void EOpenCL::setNoOpenCL()
+{
+   if ( _status == Ok )
+   {
+      _status = NoOpenCL;
+   }
+}
+
+
+
+
+
+
+void EOpenCL::reportError(const QString &function, cl_int code)
+{
+   if ( _status == Ok )
+   {
+      _errorFunction = function;
+      _errorCode = code;
+      _status = OpenCLError;
+   }
+}
+
+
+
+
+
+
+EOpenCL::operator bool() const
+{
+   return _status == Ok;
+}

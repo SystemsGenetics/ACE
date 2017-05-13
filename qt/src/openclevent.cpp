@@ -180,3 +180,23 @@ bool EOpenCLEvent::isDone() const
       return false;
    }
 }
+
+
+
+
+
+
+bool EOpenCLEvent::isNull() const
+{
+   return !_id;
+}
+
+
+
+
+
+
+EOpenCLEvent::operator bool() const
+{
+   return _id;
+}

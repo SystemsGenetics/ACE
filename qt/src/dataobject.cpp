@@ -43,7 +43,16 @@ Ace::DataObject::DataObject(const QString& path)
    _data = EAbstractDataFactory::getInstance().makeData(dataType);
    _headerOffset = _file->pos();
    _data->initialize(this,_stream.get());
-   _data->readData();
+   try
+   {
+      _data->readData();
+   }
+   catch (EException e)
+   {
+      e.display();
+      _data.reset();
+      return;
+   }
    _isNew = false;
 }
 
@@ -133,7 +142,16 @@ bool Ace::DataObject::clear(quint16 newType)
    }
    _headerOffset = _file->pos();
    _data->initialize(this,_stream.get());
-   _data->newData();
+   try
+   {
+      _data->newData();
+   }
+   catch (EException e)
+   {
+      e.display();
+      _data.reset();
+      return false;
+   }
    _isNew = false;
    return true;
 }

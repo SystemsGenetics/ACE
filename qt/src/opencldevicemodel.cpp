@@ -39,13 +39,16 @@ QVariant Ace::OpenCLDeviceModel::data(const QModelIndex &index, int role) const
    case Qt::DisplayRole:
       if ( !index.parent().isValid() )
       {
+         // return platform name
          return getPlatformName(index.row());
       }
       else
       {
+         // return device name
          return getDeviceName(index.parent().row(),index.row());
       }
    default:
+      // return nothing if not display role
       return QVariant();
    }
 }
@@ -59,10 +62,12 @@ QModelIndex Ace::OpenCLDeviceModel::index(int row, int column, const QModelIndex
 {
    if ( !parent.isValid() )
    {
+      // return platform index
       return createIndex(row,column,static_cast<quintptr>(0));
    }
    else
    {
+      // return device index
       return createIndex(row,column,parent.row()+1);
    }
 }
@@ -76,10 +81,12 @@ QModelIndex Ace::OpenCLDeviceModel::parent(const QModelIndex &index) const
 {
    if ( index.internalId() == 0 )
    {
+      // return invalid index
       return QModelIndex();
    }
    else
    {
+      // return device's platform index
       return createIndex(index.internalId()-1,0);
    }
 }
@@ -93,14 +100,17 @@ int Ace::OpenCLDeviceModel::rowCount(const QModelIndex &parent) const
 {
    if ( !parent.isValid() )
    {
+      // return number of platforms
       return getPlatformCount();
    }
    else if ( !parent.parent().isValid() )
    {
+      // return number of devices for platform
       return getDeviceCount(parent.row());
    }
    else
    {
+      // return 0 for device
       return 0;
    }
 }
@@ -114,10 +124,12 @@ QString Ace::OpenCLDeviceModel::getDetailedInfo(const QModelIndex &index) const
 {
    if ( index.internalId() == 0 )
    {
+      // return platform information
       return getDetailedPlatformInfo(getPlatformID(index.row()));
    }
    else
    {
+      // return device information
       return getDetailedDeviceInfo(getDeviceID(index.parent().row(),index.row()));
    }
 }
@@ -141,8 +153,11 @@ void Ace::OpenCLDeviceModel::setDevice(const QModelIndex &index) const
 {
    if ( index.internalId() != 0 )
    {
+      // get platform and device ID
       cl_platform_id platformID = getPlatformID(index.parent().row());
       cl_device_id deviceID = getDeviceID(index.parent().row(),index.row());
+
+      // set new device with IDs
       EOpenCLDevice::getInstance().setDevice(platformID,deviceID);
    }
 }
@@ -165,12 +180,16 @@ void Ace::OpenCLDeviceModel::reset()
 
 int Ace::OpenCLDeviceModel::getPlatformCount() const
 {
+   // get platform count
    cl_uint total;
    cl_int code = clGetPlatformIDs(0,nullptr,&total);
    if ( code != CL_SUCCESS )
    {
+      // set to none if error occured
       total = 0;
    }
+
+   // return count
    return total;
 }
 
@@ -202,6 +221,8 @@ cl_platform_id Ace::OpenCLDeviceModel::getPlatformID(int row) const
    }
    cl_platform_id id = platforms[row];
    delete[] platforms;
+
+   // return ID
    return id;
 }
 
@@ -216,12 +237,14 @@ QString Ace::OpenCLDeviceModel::getPlatformName(int row) const
    cl_platform_id id = getPlatformID(row);
 
    // get platform name
-   StringPointer cName(getPlatformInfo(id,CL_PLATFORM_NAME));
+   unique_ptr<char[]> cName(getPlatformInfo(id,CL_PLATFORM_NAME));
    if ( !cName )
    {
       QString();
    }
    QString name(cName.get());
+
+   // return name
    return name;
 }
 
@@ -232,13 +255,18 @@ QString Ace::OpenCLDeviceModel::getPlatformName(int row) const
 
 int Ace::OpenCLDeviceModel::getDeviceCount(int platformRow) const
 {
+   // get platform ID
    cl_platform_id id = getPlatformID(platformRow);
+
+   // get device count
    cl_uint total;
    cl_int code = clGetDeviceIDs(id,CL_DEVICE_TYPE_ALL,0,nullptr,&total);
    if ( code != CL_SUCCESS )
    {
       OpenCL::throwError("clGetDeviceIDs",code);
    }
+
+   // return count
    return total;
 }
 
@@ -266,6 +294,8 @@ cl_device_id Ace::OpenCLDeviceModel::getDeviceID(int platformRow, int row) const
    }
    cl_device_id id = devices[row];
    delete[] devices;
+
+   // return ID
    return id;
 }
 
@@ -286,6 +316,8 @@ QString Ace::OpenCLDeviceModel::getDeviceName(int platformRow, int row) const
       return QString();
    }
    QString name(cName.get());
+
+   // return name
    return name;
 }
 
@@ -294,8 +326,8 @@ QString Ace::OpenCLDeviceModel::getDeviceName(int platformRow, int row) const
 
 
 
-Ace::OpenCLDeviceModel::StringPointer Ace::OpenCLDeviceModel::getPlatformInfo(cl_platform_id id
-                                                                              , cl_platform_info what) const
+unique_ptr<char[]> Ace::OpenCLDeviceModel::getPlatformInfo(cl_platform_id id
+                                                           , cl_platform_info what) const
 {
    // query the size of the c string
    size_t size;
@@ -313,7 +345,9 @@ Ace::OpenCLDeviceModel::StringPointer Ace::OpenCLDeviceModel::getPlatformInfo(cl
       delete[] info;
       OpenCL::throwError("clGetPlatformInfo",code);
    }
-   return StringPointer(info);
+
+   // return string
+   return unique_ptr<char[]>(info);
 }
 
 
@@ -324,11 +358,11 @@ Ace::OpenCLDeviceModel::StringPointer Ace::OpenCLDeviceModel::getPlatformInfo(cl
 QString Ace::OpenCLDeviceModel::getDetailedPlatformInfo(cl_platform_id id) const
 {
    // get all platform information
-   StringPointer name(getPlatformInfo(id,CL_PLATFORM_NAME));
-   StringPointer vendor(getPlatformInfo(id,CL_PLATFORM_VENDOR));
-   StringPointer version(getPlatformInfo(id,CL_PLATFORM_VERSION));
-   StringPointer profile(getPlatformInfo(id,CL_PLATFORM_PROFILE));
-   StringPointer extensions(getPlatformInfo(id,CL_PLATFORM_EXTENSIONS));
+   unique_ptr<char[]> name(getPlatformInfo(id,CL_PLATFORM_NAME));
+   unique_ptr<char[]> vendor(getPlatformInfo(id,CL_PLATFORM_VENDOR));
+   unique_ptr<char[]> version(getPlatformInfo(id,CL_PLATFORM_VERSION));
+   unique_ptr<char[]> profile(getPlatformInfo(id,CL_PLATFORM_PROFILE));
+   unique_ptr<char[]> extensions(getPlatformInfo(id,CL_PLATFORM_EXTENSIONS));
 
    // if any information failed delete any allocated memory and return
    if ( !name || !vendor || !version || !profile || !extensions )
@@ -344,6 +378,8 @@ QString Ace::OpenCLDeviceModel::getDetailedPlatformInfo(cl_platform_id id) const
    stream << "<b>Version:</b> " << version.get() << "<br/>";
    stream << "<b>Profile:</b> " << profile.get() << "<br/>";
    stream << "<b>Extensions:</b> " << extensions.get() << "<br/>";
+
+   // return information
    return detailedInfo;
 }
 
@@ -356,7 +392,7 @@ QString Ace::OpenCLDeviceModel::getDetailedDeviceInfo(cl_device_id id) const
 {
    // get all device information
    unique_ptr<char> a(OpenCL::getDeviceInfo<char>(id,CL_DEVICE_NAME));
-   StringPointer name(a.release());
+   unique_ptr<char[]> name(a.release());
    unique_ptr<cl_device_type> type(OpenCL::getDeviceInfo<cl_device_type>(id,CL_DEVICE_TYPE));
    unique_ptr<cl_bool> available(OpenCL::getDeviceInfo<cl_bool>(id,CL_DEVICE_AVAILABLE));
    unique_ptr<cl_bool> compile(OpenCL::getDeviceInfo<cl_bool>(id,CL_DEVICE_COMPILER_AVAILABLE));
@@ -413,6 +449,6 @@ QString Ace::OpenCLDeviceModel::getDetailedDeviceInfo(cl_device_id id) const
    stream << "<b>Global Memory:</b> " << formatMemorySize(*globalMemorySize) << "<br/>";
    stream << "<b>Local Memory:</b> " << formatMemorySize(*localMemorySize) << "<br/>";
 
-   // delete temporarily used local memory
+   // return information
    return detailedInfo;
 }

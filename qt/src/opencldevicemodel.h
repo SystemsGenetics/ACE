@@ -23,14 +23,13 @@ namespace Ace
       void setDevice(const QModelIndex& index) const;
       void reset();
    private:
-      using StringPointer = std::unique_ptr<char,std::default_delete<char[]>>;
       int getPlatformCount() const;
       cl_platform_id getPlatformID(int row) const;
       QString getPlatformName(int row) const;
       int getDeviceCount(int platformRow) const;
       cl_device_id getDeviceID(int platformRow, int row) const;
       QString getDeviceName(int platformRow, int row) const;
-      StringPointer getPlatformInfo(cl_platform_id id, cl_platform_info what) const;
+      std::unique_ptr<char[]> getPlatformInfo(cl_platform_id id, cl_platform_info what) const;
       template<class T> T* getDeviceInfo(cl_device_id id, cl_device_info what) const;
       QString getDetailedPlatformInfo(cl_platform_id id) const;
       QString getDetailedDeviceInfo(cl_device_id id) const;

@@ -20,7 +20,7 @@ namespace Ace
    public:
       static OpenCLDeviceDialog& getInstance();
    private slots:
-      void updateDetails(const QModelIndex& index);
+      void indexPressed(const QModelIndex& index);
       void refresh();
       void cancel();
       void set();

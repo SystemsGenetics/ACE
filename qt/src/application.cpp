@@ -13,7 +13,6 @@ EApplication::EApplication(int& argc, char** argv, const QString& title):
 {
    try
    {
-      EOpenCLDevice::getInstance().initialize();
       Ace::MainWindow::getInstance().setWindowTitle(title);
       Ace::MainWindow::getInstance().show();
    }
