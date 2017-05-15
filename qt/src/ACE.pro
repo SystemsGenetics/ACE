@@ -61,7 +61,6 @@ HEADERS  += opencldevicedialog.h \
     abstractanalytic.h \
     setupanalyticdialog.h \
     abstractdata.h \
-    abstractdataiterator.h \
     datastream.h \
     dataobject.h \
     abstractdatafactory.h \

@@ -3,7 +3,6 @@
 #include <QtCore>
 #include <memory>
 
-#include "abstractdataiterator.h"
 #include "utilities.h"
 
 
@@ -24,7 +23,6 @@ public:
    virtual void newData() = 0;
    virtual void prepare(bool preAllocate) = 0;
    virtual void finish() = 0;
-   virtual std::unique_ptr<EAbstractDataIterator> begin() = 0;
    void initialize(Ace::DataObject* object, EDataStream* stream);
 protected:
    EDataStream& stream();
