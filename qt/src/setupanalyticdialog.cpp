@@ -37,12 +37,13 @@ Ace::SetupAnalyticDialog::~SetupAnalyticDialog()
 
 void Ace::SetupAnalyticDialog::findFile(int argument)
 {
+   using Type = EAbstractAnalytic::ArgumentType;
    switch (_analytic->getArgumentType(argument))
    {
-   case EAbstractAnalytic::ArgumentType::FileIn:
-   case EAbstractAnalytic::ArgumentType::FileOut:
-   case EAbstractAnalytic::ArgumentType::DataObjectFileIn:
-   case EAbstractAnalytic::ArgumentType::DataObjectFileOut:
+   case Type::FileIn:
+   case Type::FileOut:
+   case Type::DataObjectFileIn:
+   case Type::DataObjectFileOut:
    default:
       return;
    }
@@ -73,6 +74,7 @@ void Ace::SetupAnalyticDialog::executeButton()
 
 QGridLayout* Ace::SetupAnalyticDialog::createInputs()
 {
+   using Type = EAbstractAnalytic::ArgumentType;
    QSignalMapper* mapper = new QSignalMapper(this);
    connect(mapper,SIGNAL(mapped(int)),this,SLOT(findFile(int)));
    QGridLayout* formLayout = new QGridLayout;
@@ -84,31 +86,31 @@ QGridLayout* Ace::SetupAnalyticDialog::createInputs()
       formLayout->addWidget(label,i,0,Qt::AlignRight);
       switch (_analytic->getArgumentType(i))
       {
-      case EAbstractAnalytic::ArgumentType::Integer:
+      case Type::Integer:
       {
          QRegExp exp;//TODO regular expression for integers
          _inputs.append(new QLineEdit);
          formLayout->addWidget(_inputs.back(),i,1,Qt::AlignLeft);
          break;
       }
-      case EAbstractAnalytic::ArgumentType::Float:
-      case EAbstractAnalytic::ArgumentType::Double:
+      case Type::Float:
+      case Type::Double:
       {
          QRegExp exp;//TODO regular expression for floating point numbers
          _inputs.append(new QLineEdit);
          formLayout->addWidget(_inputs.back(),i,1,Qt::AlignLeft);
          break;
       }
-      case EAbstractAnalytic::ArgumentType::String:
+      case Type::String:
       {
          _inputs.append(new QLineEdit);
          formLayout->addWidget(_inputs.back(),i,1,Qt::AlignLeft);
          break;
       }
-      case EAbstractAnalytic::ArgumentType::FileIn:
-      case EAbstractAnalytic::ArgumentType::FileOut:
-      case EAbstractAnalytic::ArgumentType::DataObjectFileIn:
-      case EAbstractAnalytic::ArgumentType::DataObjectFileOut:
+      case Type::FileIn:
+      case Type::FileOut:
+      case Type::DataObjectFileIn:
+      case Type::DataObjectFileOut:
       {
          _inputs.append(new QLineEdit);
          formLayout->addWidget(_inputs.back(),i,1,Qt::AlignCenter);
