@@ -40,7 +40,7 @@ Ace::DataObject::DataObject(const QString& path)
       _status = InvalidDataType;
       return;
    }
-   _data = EAbstractDataFactory::getInstance().makeData(dataType);
+   _data = EAbstractDataFactory::getInstance().make(dataType);
    _headerOffset = _file->pos();
    _data->initialize(this,_stream.get());
    try
@@ -126,7 +126,7 @@ bool Ace::DataObject::clear(quint16 newType)
    {
       emit cleared();
    }
-   _data = EAbstractDataFactory::getInstance().makeData(newType);
+   _data = EAbstractDataFactory::getInstance().make(newType);
    if ( !_file->seek(0) )
    {
       _status = CannotWrite;

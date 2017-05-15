@@ -21,7 +21,7 @@ public:
    static void setInstance(std::unique_ptr<EAbstractAnalyticFactory>&& factory);
    virtual quint16 getCount() = 0;
    virtual QString getName(quint16 type) = 0;
-   virtual std::unique_ptr<EAbstractAnalytic> makeAnalytic(quint16 type) = 0;
+   virtual std::unique_ptr<EAbstractAnalytic> make(quint16 type) = 0;
 private:
    static std::unique_ptr<EAbstractAnalyticFactory> _instance;
 };

@@ -45,7 +45,8 @@ SOURCES += opencldevicedialog.cpp \
     application.cpp \
     opencl.cpp \
     datamanager.cpp \
-    datareference.cpp
+    datareference.cpp \
+    abstractanalytic.cpp
 
 HEADERS  += opencldevicedialog.h \
     opencldevicemodel.h \

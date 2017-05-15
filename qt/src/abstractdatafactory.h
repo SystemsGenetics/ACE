@@ -21,7 +21,7 @@ public:
    virtual quint16 getCount() = 0;
    virtual QString getName(quint16 type) = 0;
    virtual QString getFileExtension(quint16 type) = 0;
-   virtual std::unique_ptr<EAbstractData> makeData(quint16 type) = 0;
+   virtual std::unique_ptr<EAbstractData> make(quint16 type) = 0;
 private:
    static std::unique_ptr<EAbstractDataFactory> _instance;
 };

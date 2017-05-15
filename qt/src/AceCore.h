@@ -2,7 +2,6 @@
 #include "abstractanalyticfactory.h"
 #include "abstractdata.h"
 #include "abstractdatafactory.h"
-#include "abstractdataiterator.h"
 #include "datastream.h"
 #include "exception.h"
 #include "application.h"

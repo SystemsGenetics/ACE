@@ -39,7 +39,7 @@ QString AnalyticFactory::getName(quint16 type)
 
 
 
-unique_ptr<EAbstractAnalytic> AnalyticFactory::makeAnalytic(quint16 /*type*/)
+unique_ptr<EAbstractAnalytic> AnalyticFactory::make(quint16 /*type*/)
 {
    return nullptr;
 }
