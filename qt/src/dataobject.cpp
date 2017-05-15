@@ -27,15 +27,17 @@ Ace::DataObject::DataObject(const QString& path)
       return;
    }
    quint16 dataType;
+   QString name;
    QString extension;
-   *_stream >> dataType >> extension;
+   *_stream >> dataType >> name >> extension;
    if ( !*_stream )
    {
       _status = CorruptFile;
       return;
    }
-   if ( dataType >= EAbstractDataFactory::getInstance().getCount()
-        || extension != EAbstractDataFactory::getInstance().getFileExtension(dataType) )
+   EAbstractDataFactory& factory {EAbstractDataFactory::getInstance()};
+   if ( dataType >= factory.getCount() || name != factory.getName(dataType)
+        || extension != factory.getFileExtension(dataType) )
    {
       _status = InvalidDataType;
       return;
@@ -117,7 +119,8 @@ bool Ace::DataObject::clear(quint16 newType)
    {
       return false;
    }
-   if ( newType >= EAbstractDataFactory::getInstance().getCount() )
+   EAbstractDataFactory& factory {EAbstractDataFactory::getInstance()};
+   if ( newType >= factory.getCount() )
    {
       _status = InvalidDataType;
       return false;
@@ -126,7 +129,7 @@ bool Ace::DataObject::clear(quint16 newType)
    {
       emit cleared();
    }
-   _data = EAbstractDataFactory::getInstance().make(newType);
+   _data = factory.make(newType);
    if ( !_file->seek(0) )
    {
       _status = CannotWrite;
@@ -134,7 +137,7 @@ bool Ace::DataObject::clear(quint16 newType)
    }
    quint64 value = _specialValue;
    quint16 type = newType;
-   *_stream << value << type << EAbstractDataFactory::getInstance().getFileExtension(newType);
+   *_stream << value << type << factory.getName(newType) << factory.getFileExtension(newType);
    if ( !*_stream )
    {
       _status = CannotWrite;
