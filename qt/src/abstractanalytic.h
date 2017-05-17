@@ -40,7 +40,7 @@ public:
    virtual void setArgument(int argument, QVariant value) = 0;
    virtual void setArgument(int argument, QFile* file) = 0;
    virtual void setArgument(int argument, EAbstractData* data) = 0;
-   virtual void initialize() = 0;
+   virtual bool initialize() = 0;
    virtual int getBlockSize() = 0;
    virtual bool runBlock(int block) = 0;
    virtual void finish() = 0;
