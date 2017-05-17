@@ -21,7 +21,7 @@ namespace Ace
          ,InvalidDataType
          ,CorruptFile
       };
-      DataObject(const QString& path);
+      explicit DataObject(const QString& path);
       ~DataObject();
       bool seek(quint64 offset);
       bool allocate(quint64 size);

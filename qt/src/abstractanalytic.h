@@ -6,7 +6,7 @@
 
 
 
-class AbstractData;
+class EAbstractData;
 
 
 
@@ -24,13 +24,13 @@ public:
       ,Combo
       ,FileIn
       ,FileOut
-      ,DataObjectFileIn
-      ,DataObjectFileOut
+      ,DataObjectIn
+      ,DataObjectOut
    };
    EAbstractAnalytic() = default;
    virtual ~EAbstractAnalytic() = default;
    virtual int getArgumentCount() = 0;
-   virtual QStringList getCommandLineArguments() = 0;
+   virtual QString getCommandLineName(int argument) = 0;
    virtual ArgumentType getArgumentType(int argument) = 0;
    virtual QString getArgumentTitle(int argument) = 0;
    virtual QStringList getComboValues(int argument) = 0;
@@ -39,7 +39,7 @@ public:
    virtual quint16 getDataArgumentType(int argument) = 0;
    virtual void setArgument(int argument, QVariant value) = 0;
    virtual void setArgument(int argument, QFile* file) = 0;
-   virtual void setArgument(int argument, AbstractData* data) = 0;
+   virtual void setArgument(int argument, EAbstractData* data) = 0;
    virtual void initialize() = 0;
    virtual int getBlockSize() = 0;
    virtual bool runBlock(int block) = 0;
