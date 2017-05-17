@@ -1,4 +1,5 @@
 #include "analyticfactory.h"
+#include "analytic.h"
 
 
 
@@ -11,7 +12,7 @@ using namespace std;
 
 quint16 AnalyticFactory::getCount()
 {
-   return 3;
+   return Total;
 }
 
 
@@ -23,12 +24,8 @@ QString AnalyticFactory::getName(quint16 type)
 {
    switch (type)
    {
-   case 0:
-      return QString("Test 1");
-   case 1:
-      return QString("Test 2");
-   case 2:
-      return QString("Test 3");
+   case MathTransform:
+      return QString("Math Transform");
    default:
       return QString();
    }
@@ -39,7 +36,13 @@ QString AnalyticFactory::getName(quint16 type)
 
 
 
-unique_ptr<EAbstractAnalytic> AnalyticFactory::make(quint16 /*type*/)
+unique_ptr<EAbstractAnalytic> AnalyticFactory::make(quint16 type)
 {
-   return nullptr;
+   switch (type)
+   {
+   case MathTransform:
+      return unique_ptr<Analytic>(new Analytic());
+   default:
+      return nullptr;
+   }
 }
