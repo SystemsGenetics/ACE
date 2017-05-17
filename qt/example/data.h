@@ -13,6 +13,7 @@ public:
    void prepare(bool preAllocate) override final;
    void finish() override final;
    QList<int> _numbers;
+   int _futureSize {0};
 };
 
 

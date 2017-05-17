@@ -208,10 +208,12 @@ void Analytic::setArgument(int argument, EAbstractData* data)
 
 
 
-void Analytic::initialize()
+bool Analytic::initialize()
 {
    _out->_numbers.clear();
    _out->_numbers.reserve(_in->_numbers.size());
+   _out->_futureSize = _in->_numbers.size();
+   return true;
 }
 
 

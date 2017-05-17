@@ -31,7 +31,7 @@ public:
    void setArgument(int argument, QVariant value) override final;
    void setArgument(int argument, QFile* file) override final;
    void setArgument(int argument, EAbstractData* data) override final;
-   void initialize() override final;
+   bool initialize() override final;
    int getBlockSize() override final;
    bool runBlock(int block) override final;
    void finish() override final;
