@@ -4,9 +4,11 @@
 
 
 
+// Data factory
 class DataFactory : public EAbstractDataFactory
 {
 public:
+   // Make enumeration of all possible data types
    enum Types
    {
       Integers = 0

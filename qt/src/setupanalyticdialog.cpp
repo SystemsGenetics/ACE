@@ -42,8 +42,8 @@ void Ace::SetupAnalyticDialog::findFile(int argument)
    {
    case Type::FileIn:
    case Type::FileOut:
-   case Type::DataObjectIn:
-   case Type::DataObjectOut:
+   case Type::DataIn:
+   case Type::DataOut:
    default:
       return;
    }
@@ -109,8 +109,8 @@ QGridLayout* Ace::SetupAnalyticDialog::createInputs()
       }
       case Type::FileIn:
       case Type::FileOut:
-      case Type::DataObjectIn:
-      case Type::DataObjectOut:
+      case Type::DataIn:
+      case Type::DataOut:
       {
          _inputs.append(new QLineEdit);
          formLayout->addWidget(_inputs.back(),i,1,Qt::AlignCenter);

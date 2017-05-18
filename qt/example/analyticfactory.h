@@ -4,9 +4,11 @@
 
 
 
+// Analytic factory
 class AnalyticFactory : public EAbstractAnalyticFactory
 {
 public:
+   // Make enumeration of all possible analytic types
    enum Types
    {
       MathTransform = 0,

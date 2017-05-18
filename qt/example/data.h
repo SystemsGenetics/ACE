@@ -4,6 +4,9 @@
 
 
 
+// Data type that implements the Integer type from factory
+//
+// This data object stores a one dimensional array of integer values
 class Data : public EAbstractData
 {
 public:
@@ -12,6 +15,8 @@ public:
    void newData() override final;
    void prepare(bool preAllocate) override final;
    void finish() override final;
+   // This is a contrived example, data should be private and iterator classes defined to access
+   // it
    QList<int> _numbers;
    int _futureSize {0};
 };

@@ -7,9 +7,12 @@
 
 
 
+/// Data stream used for input/output of data objects. All output stream operators will do nothing
+/// if the stream is in an error state and input stream operators will set their values to null.
 class EDataStream
 {
 public:
+   /// Possible states of data stream.
    enum Status
    {
       Ok = 0
@@ -20,7 +23,13 @@ public:
    };
    EDataStream(QFile* file);
    ACE_DISBALE_COPY_AND_MOVE(EDataStream)
+   /// Get stream's status.
+   ///
+   /// @return Current status.
    Status getStatus() const;
+   /// Check if stream's status is Ok.
+   ///
+   /// @return True if stream is Ok or false if in error state.
    operator bool() const;
    EDataStream& operator<<(qint8 value);
    EDataStream& operator<<(quint8 value);

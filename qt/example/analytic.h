@@ -8,6 +8,10 @@ class Data;
 
 
 
+// Analytic type that implements math transform from analytic factory
+//
+// This analytic takes one integer array, does a mathematical operation on each value, and stores
+// the new values to a new integer array.
 class Analytic : public EAbstractAnalytic
 {
    Q_OBJECT
@@ -36,6 +40,7 @@ public:
    bool runBlock(int block) override final;
    void finish() override final;
 private:
+   // Enumerated types to define all possible operations
    enum class OperType
    {
       Addition
@@ -43,9 +48,13 @@ private:
       ,Multiplication
       ,Division
    };
+   // Integer array input
    Data* _in {nullptr};
+   // Integer array output
    Data* _out {nullptr};
+   // Type of operation that will be done
    OperType _type {OperType::Addition};
+   // Value that will be used for operation
    int _amount {0};
 };
 
