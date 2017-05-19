@@ -7,7 +7,7 @@
 // Data type that implements the Integer type from factory
 //
 // This data object stores a one dimensional array of integer values
-class Data : public EAbstractData
+class IntegerArray : public EAbstractData
 {
 public:
    void readData() override final;

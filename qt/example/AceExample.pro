@@ -37,12 +37,12 @@ else:unix|win32-g++: PRE_TARGETDEPS += $$PWD/../build-src/libace.a
 
 SOURCES += main.cpp \
     analyticfactory.cpp \
-    analytic.cpp \
     datafactory.cpp \
-    data.cpp
+    integerarray.cpp \
+    mathtransform.cpp
 
 HEADERS += \
     analyticfactory.h \
-    analytic.h \
     datafactory.h \
-    data.h
+    integerarray.h \
+    mathtransform.h

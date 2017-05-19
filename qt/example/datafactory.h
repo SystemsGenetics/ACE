@@ -11,7 +11,7 @@ public:
    // Make enumeration of all possible data types
    enum Types
    {
-      Integers = 0
+      IntegerArrayType = 0
       ,Total
    };
    quint16 getCount() override final;

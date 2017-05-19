@@ -11,7 +11,7 @@ public:
    // Make enumeration of all possible analytic types
    enum Types
    {
-      MathTransform = 0,
+      MathTransformType = 0,
       Total
    };
    quint16 getCount() override final;

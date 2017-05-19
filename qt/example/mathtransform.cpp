@@ -1,5 +1,5 @@
-#include "analytic.h"
-#include "data.h"
+#include "mathtransform.h"
+#include "integerarray.h"
 #include "datafactory.h"
 
 #define ADDITION "Addition"
@@ -12,7 +12,7 @@
 
 
 
-int Analytic::getArgumentCount()
+int MathTransform::getArgumentCount()
 {
    // Return total number of arguments
    return Total;
@@ -23,7 +23,7 @@ int Analytic::getArgumentCount()
 
 
 
-QString Analytic::getCommandLineName(int argument)
+QString MathTransform::getCommandLineName(int argument)
 {
    switch (argument)
    {
@@ -50,7 +50,7 @@ QString Analytic::getCommandLineName(int argument)
 
 
 
-EAbstractAnalytic::ArgumentType Analytic::getArgumentType(int argument)
+EAbstractAnalytic::ArgumentType MathTransform::getArgumentType(int argument)
 {
    using Type = EAbstractAnalytic::ArgumentType;
    switch (argument)
@@ -78,7 +78,7 @@ EAbstractAnalytic::ArgumentType Analytic::getArgumentType(int argument)
 
 
 
-QString Analytic::getArgumentTitle(int argument)
+QString MathTransform::getArgumentTitle(int argument)
 {
    switch (argument)
    {
@@ -104,7 +104,7 @@ QString Analytic::getArgumentTitle(int argument)
 
 
 
-QStringList Analytic::getComboValues(int argument)
+QStringList MathTransform::getComboValues(int argument)
 {
    switch (argument)
    {
@@ -122,7 +122,7 @@ QStringList Analytic::getComboValues(int argument)
 
 
 
-QString Analytic::getArgumentWhatsThis(int argument)
+QString MathTransform::getArgumentWhatsThis(int argument)
 {
    switch (argument)
    {
@@ -149,7 +149,7 @@ QString Analytic::getArgumentWhatsThis(int argument)
 
 
 
-QStringList Analytic::getFileArgumentFilters(int /*argument*/)
+QStringList MathTransform::getFileArgumentFilters(int /*argument*/)
 {
    // This analytic uses no files arguments, always return empty list
    return QStringList();
@@ -160,10 +160,10 @@ QStringList Analytic::getFileArgumentFilters(int /*argument*/)
 
 
 
-quint16 Analytic::getDataArgumentType(int /*argument*/)
+quint16 MathTransform::getDataArgumentType(int /*argument*/)
 {
    // Because this analytic uses only one data type, always return that type identifier
-   return DataFactory::Integers;
+   return DataFactory::IntegerArrayType;
 }
 
 
@@ -171,7 +171,7 @@ quint16 Analytic::getDataArgumentType(int /*argument*/)
 
 
 
-void Analytic::setArgument(int argument, QVariant value)
+void MathTransform::setArgument(int argument, QVariant value)
 {
    switch (argument)
    {
@@ -209,7 +209,7 @@ void Analytic::setArgument(int argument, QVariant value)
 
 
 
-void Analytic::setArgument(int /*argument*/, QFile* /*file*/)
+void MathTransform::setArgument(int /*argument*/, QFile* /*file*/)
 {
    // This analytic has no file arguments so this virtual function does nothing
 }
@@ -219,17 +219,17 @@ void Analytic::setArgument(int /*argument*/, QFile* /*file*/)
 
 
 
-void Analytic::setArgument(int argument, EAbstractData* data)
+void MathTransform::setArgument(int argument, EAbstractData* data)
 {
    switch (argument)
    {
    case InputData:
       // This is input data, set reference
-      _in = dynamic_cast<Data*>(data);
+      _in = dynamic_cast<IntegerArray*>(data);
       break;
    case OutputData:
       // This is output data, set reference
-      _out = dynamic_cast<Data*>(data);
+      _out = dynamic_cast<IntegerArray*>(data);
       break;
    }
 }
@@ -239,7 +239,7 @@ void Analytic::setArgument(int argument, EAbstractData* data)
 
 
 
-bool Analytic::initialize()
+bool MathTransform::initialize()
 {
    // Clear any numbers the output data may hold
    _out->_numbers.clear();
@@ -257,7 +257,7 @@ bool Analytic::initialize()
 
 
 
-int Analytic::getBlockSize()
+int MathTransform::getBlockSize()
 {
    // Because this is a simple analytic simply return 1
    return 1;
@@ -268,7 +268,7 @@ int Analytic::getBlockSize()
 
 
 
-bool Analytic::runBlock(int /*block*/)
+bool MathTransform::runBlock(int /*block*/)
 {
    // Get total amount of numbers to process
    int total {_in->_numbers.size()};
@@ -319,7 +319,7 @@ bool Analytic::runBlock(int /*block*/)
 
 
 
-void Analytic::finish()
+void MathTransform::finish()
 {
    // Emit the finished signal
    emit finished();

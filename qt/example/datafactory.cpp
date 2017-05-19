@@ -1,5 +1,5 @@
 #include "datafactory.h"
-#include "data.h"
+#include "integerarray.h"
 
 
 
@@ -25,7 +25,7 @@ QString DataFactory::getName(quint16 type)
 {
    switch (type)
    {
-   case Integers:
+   case IntegerArrayType:
       // This is Integers data object, return name.
       return QString("Integer Array");
    default:
@@ -43,7 +43,7 @@ QString DataFactory::getFileExtension(quint16 type)
 {
    switch (type)
    {
-   case Integers:
+   case IntegerArrayType:
       // This is Integers data object, return extension name.
       return QString("num");
    default:
@@ -61,9 +61,9 @@ std::unique_ptr<EAbstractData> DataFactory::make(quint16 type)
 {
    switch (type)
    {
-   case Integers:
+   case IntegerArrayType:
       // This is Integers data object, return new object.
-      return unique_ptr<Data>(new Data());
+      return unique_ptr<IntegerArray>(new IntegerArray());
    default:
       // This is unknown type, return null pointer.
       return nullptr;

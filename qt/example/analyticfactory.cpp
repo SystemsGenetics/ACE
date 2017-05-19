@@ -1,5 +1,5 @@
 #include "analyticfactory.h"
-#include "analytic.h"
+#include "mathtransform.h"
 
 
 
@@ -25,7 +25,7 @@ QString AnalyticFactory::getName(quint16 type)
 {
    switch (type)
    {
-   case MathTransform:
+   case MathTransformType:
       // This is math transform type, return name
       return QString("Math Transform");
    default:
@@ -43,9 +43,9 @@ unique_ptr<EAbstractAnalytic> AnalyticFactory::make(quint16 type)
 {
    switch (type)
    {
-   case MathTransform:
+   case MathTransformType:
       // This is math transform type, return new object
-      return unique_ptr<Analytic>(new Analytic());
+      return unique_ptr<MathTransform>(new MathTransform());
    default:
       // This is unkonwn type, return null pointer
       return nullptr;

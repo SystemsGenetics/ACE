@@ -4,7 +4,7 @@
 
 
 
-class Data;
+class IntegerArray;
 
 
 
@@ -12,7 +12,7 @@ class Data;
 //
 // This analytic takes one integer array, does a mathematical operation on each value, and stores
 // the new values to a new integer array.
-class Analytic : public EAbstractAnalytic
+class MathTransform : public EAbstractAnalytic
 {
    Q_OBJECT
 public:
@@ -49,9 +49,9 @@ private:
       ,Division
    };
    // Integer array input
-   Data* _in {nullptr};
+   IntegerArray* _in {nullptr};
    // Integer array output
-   Data* _out {nullptr};
+   IntegerArray* _out {nullptr};
    // Type of operation that will be done
    OperType _type {OperType::Addition};
    // Value that will be used for operation

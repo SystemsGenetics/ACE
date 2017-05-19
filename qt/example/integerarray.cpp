@@ -1,11 +1,11 @@
-#include "data.h"
+#include "integerarray.h"
 
 
 
 
 
 
-void Data::readData()
+void IntegerArray::readData()
 {
    // Read size of integer array in file
    quint32 amount {0};
@@ -49,7 +49,7 @@ void Data::readData()
 
 
 
-quint64 Data::getDataEnd() const
+quint64 IntegerArray::getDataEnd() const
 {
    // Report offset at end of file data
    return static_cast<quint64>(_numbers.size())*4+4;
@@ -60,7 +60,7 @@ quint64 Data::getDataEnd() const
 
 
 
-void Data::newData()
+void IntegerArray::newData()
 {
    // Seek to beginning of file, making sure it was successful
    if ( !seek(0) )
@@ -92,7 +92,7 @@ void Data::newData()
 
 
 
-void Data::prepare(bool preAllocate)
+void IntegerArray::prepare(bool preAllocate)
 {
    if ( preAllocate )
    {
@@ -123,7 +123,7 @@ void Data::prepare(bool preAllocate)
 
 
 
-void Data::finish()
+void IntegerArray::finish()
 {
    // Seek to beginning of file, making sure it worked
    if ( !seek(0) )
