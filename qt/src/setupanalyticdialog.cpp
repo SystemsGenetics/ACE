@@ -5,6 +5,11 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QSignalMapper>
+#include <QFormLayout>
+#include <QIntValidator>
+#include <QDoubleValidator>
+#include <QCheckBox>
+#include <QComboBox>
 
 #include "setupanalyticdialog.h"
 #include "abstractanalytic.h"
@@ -72,55 +77,77 @@ void Ace::SetupAnalyticDialog::executeButton()
 
 
 
-QGridLayout* Ace::SetupAnalyticDialog::createInputs()
+// TODO; use hasAcceptableInput() and add bool isArgumentRequired(int argument);
+// then add signals for that with the execute button so you can only execute when it is
+// doable :d
+QFormLayout* Ace::SetupAnalyticDialog::createInputs()
 {
    using Type = EAbstractAnalytic::ArgumentType;
    QSignalMapper* mapper = new QSignalMapper(this);
    connect(mapper,SIGNAL(mapped(int)),this,SLOT(findFile(int)));
-   QGridLayout* formLayout = new QGridLayout;
+   QFormLayout* formLayout = new QFormLayout;
    for (int i = 0; i < _analytic->getArgumentCount() ;++i)
    {
-      QString title = _analytic->getArgumentTitle(1);
-      title.append(":");
-      QLabel* label = new QLabel(title);
-      formLayout->addWidget(label,i,0,Qt::AlignRight);
+      QLabel* label = new QLabel(_analytic->getArgumentTitle(i));
+      QWidget* field;
       switch (_analytic->getArgumentType(i))
       {
-      case Type::Integer:
-      {
-         QRegExp exp;//TODO regular expression for integers
-         _inputs.append(new QLineEdit);
-         formLayout->addWidget(_inputs.back(),i,1,Qt::AlignLeft);
+      case Type::Bool:
+         _inputs.append(new QCheckBox);
+         field = _inputs.back();
          break;
-      }
+      break;
+      case Type::Integer:
+         {
+            QLineEdit* edit = new QLineEdit;
+            edit->setValidator(new QIntValidator(this));
+            _inputs.append(edit);
+            field = edit;
+         }
+         break;
       case Type::Float:
       case Type::Double:
-      {
-         QRegExp exp;//TODO regular expression for floating point numbers
-         _inputs.append(new QLineEdit);
-         formLayout->addWidget(_inputs.back(),i,1,Qt::AlignLeft);
+         {
+            QLineEdit* edit = new QLineEdit;
+            edit->setValidator(new QDoubleValidator(this));
+            _inputs.append(edit);
+            field = edit;
+         }
          break;
-      }
       case Type::String:
-      {
          _inputs.append(new QLineEdit);
-         formLayout->addWidget(_inputs.back(),i,1,Qt::AlignLeft);
+         field = _inputs.back();
          break;
-      }
+      case Type::Combo:
+         {
+            QComboBox* combo = new QComboBox;
+            QStringList options = _analytic->getComboValues(i);
+            for (auto i = options.constBegin(); i != options.constEnd() ;++i)
+            {
+               combo->addItem(*i);
+            }
+            _inputs.append(combo);
+            field = combo;
+         }
+         break;
       case Type::FileIn:
       case Type::FileOut:
       case Type::DataIn:
       case Type::DataOut:
-      {
-         _inputs.append(new QLineEdit);
-         formLayout->addWidget(_inputs.back(),i,1,Qt::AlignCenter);
-         QPushButton* findFileButton = new QPushButton(tr("Browse"));
-         formLayout->addWidget(findFileButton,i,2,Qt::AlignLeft);
-         connect(findFileButton,SIGNAL(clicked(bool)),mapper,SLOT(map()));
-         mapper->setMapping(findFileButton,i);
+         {
+            field = new QWidget;
+            QHBoxLayout* fieldLayout = new QHBoxLayout;
+            _inputs.append(new QLineEdit);
+            fieldLayout->addWidget(_inputs.back());
+            QPushButton* findFileButton = new QPushButton(tr("Browse"));
+            fieldLayout->addWidget(findFileButton);
+            connect(findFileButton,SIGNAL(clicked(bool)),mapper,SLOT(map()));
+            field->setLayout(fieldLayout);
+            mapper->setMapping(findFileButton,i);
+         }
          break;
       }
-      }
+      formLayout->addRow(label,field);
    }
    return formLayout;
 }

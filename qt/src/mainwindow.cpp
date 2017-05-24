@@ -6,6 +6,8 @@
 #include "mainwindow.h"
 #include "opencldevicedialog.h"
 #include "abstractanalyticfactory.h"
+#include "setupanalyticdialog.h"
+#include "abstractanalytic.h"
 
 
 
@@ -55,6 +57,10 @@ void Ace::MainWindow::runAnalytic()
 {
    QAction* from = qobject_cast<QAction*>(sender());
    cout << "Analytic #" << from->data().toInt() << "\n";
+   EAbstractAnalyticFactory& factory = EAbstractAnalyticFactory::getInstance();
+   unique_ptr<EAbstractAnalytic> analytic(factory.make(from->data().toInt()));
+   SetupAnalyticDialog dialog(analytic.get());
+   dialog.exec();
 }
 
 

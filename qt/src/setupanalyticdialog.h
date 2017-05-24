@@ -5,7 +5,7 @@
 
 
 class QLineEdit;
-class QGridLayout;
+class QFormLayout;
 class EAbstractAnalytic;
 
 
@@ -22,7 +22,7 @@ namespace Ace
       void cancel();
       void executeButton();
    private:
-      QGridLayout* createInputs();
+      QFormLayout* createInputs();
       QList<QWidget*> _inputs;
       EAbstractAnalytic* _analytic;
    };
