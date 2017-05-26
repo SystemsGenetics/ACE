@@ -30,7 +30,7 @@ public:
    QString getArgumentTitle(int argument) override final;
    QStringList getComboValues(int argument) override final;
    QString getArgumentWhatsThis(int argument) override final;
-   QStringList getFileArgumentFilters(int argument) override final;
+   QString getFileArgumentFilters(int argument) override final;
    quint16 getDataArgumentType(int argument) override final;
    void setArgument(int argument, QVariant value) override final;
    void setArgument(int argument, QFile* file) override final;

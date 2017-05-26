@@ -149,10 +149,10 @@ QString MathTransform::getArgumentWhatsThis(int argument)
 
 
 
-QStringList MathTransform::getFileArgumentFilters(int /*argument*/)
+QString MathTransform::getFileArgumentFilters(int /*argument*/)
 {
    // This analytic uses no files arguments, always return empty list
-   return QStringList();
+   return QString();
 }
 
 

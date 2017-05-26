@@ -14,6 +14,7 @@ namespace Ace
 {
    class SetupAnalyticDialog : public QDialog
    {
+      Q_OBJECT
    public:
       SetupAnalyticDialog(EAbstractAnalytic* analytic, QWidget* parent = nullptr);
       ~SetupAnalyticDialog();

@@ -64,7 +64,7 @@ public:
    ///
    /// @param argument Argument number.
    /// @return List of file filters.
-   virtual QStringList getFileArgumentFilters(int argument) = 0;
+   virtual QString getFileArgumentFilters(int argument) = 0;
    /// Get data object type for data input/output argument.
    ///
    /// @param argument Argument number.
