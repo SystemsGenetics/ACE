@@ -26,7 +26,6 @@ public:
    quint64 getGlobalMemorySize() const;
    quint64 getLocalMemorySize() const;
 private:
-   void reportNoOpenCL();
    EOpenCLDevice();
    static std::unique_ptr<EOpenCLDevice> _instance;
    cl_device_id _deviceID {0};

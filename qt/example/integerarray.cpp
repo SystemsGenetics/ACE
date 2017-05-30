@@ -17,7 +17,7 @@ void IntegerArray::readData()
       // If failure occured create exception to report failure
       E_MAKE_EXCEPTION(e);
       e.setTitle(QObject::tr("IO Error"));
-      e.out() << QObject::tr("Error reading from file.");
+      e.setDetails(QObject::tr("Error reading from file."));
       throw e;
    }
 
@@ -34,7 +34,7 @@ void IntegerArray::readData()
          // If failure occured create exception to report failure
          E_MAKE_EXCEPTION(e);
          e.setTitle(QObject::tr("IO Error"));
-         e.out() << QObject::tr("Error reading from file.");
+         e.setDetails(QObject::tr("Error reading from file."));
          throw e;
       }
 
@@ -68,7 +68,7 @@ void IntegerArray::newData()
       // If failure occured create exception to report failure
       E_MAKE_EXCEPTION(e);
       e.setTitle(QObject::tr("IO Error"));
-      e.out() << QObject::tr("Error setting cursor position in file.");
+      e.setDetails(QObject::tr("Error setting cursor position in file."));
       throw e;
    }
 
@@ -82,7 +82,7 @@ void IntegerArray::newData()
       // If failure occured create exception to report failure
       E_MAKE_EXCEPTION(e);
       e.setTitle(QObject::tr("IO Error"));
-      e.out() << QObject::tr("Error writing to file.");
+      e.setDetails(QObject::tr("Error writing to file."));
       throw e;
    }
 }
@@ -102,7 +102,7 @@ void IntegerArray::prepare(bool preAllocate)
          // If failure occured create exception to report failure
          E_MAKE_EXCEPTION(e);
          e.setTitle(QObject::tr("IO Error"));
-         e.out() << QObject::tr("Error setting cursor position in file.");
+         e.setDetails(QObject::tr("Error setting cursor position in file."));
          throw e;
       }
 
@@ -112,7 +112,7 @@ void IntegerArray::prepare(bool preAllocate)
          // If failure occured create exception to report failure
          E_MAKE_EXCEPTION(e);
          e.setTitle(QObject::tr("IO Error"));
-         e.out() << QObject::tr("Error allocating new space in file.");
+         e.setDetails(QObject::tr("Error allocating new space in file."));
          throw e;
       }
    }
@@ -131,7 +131,7 @@ void IntegerArray::finish()
       // If failure occured create exception to report failure
       E_MAKE_EXCEPTION(e);
       e.setTitle(QObject::tr("IO Error"));
-      e.out() << QObject::tr("Error setting cursor position in file.");
+      e.setDetails(QObject::tr("Error setting cursor position in file."));
       throw e;
    }
 
@@ -145,7 +145,7 @@ void IntegerArray::finish()
       // If failure occured create exception to report failure
       E_MAKE_EXCEPTION(e);
       e.setTitle(QObject::tr("IO Error"));
-      e.out() << QObject::tr("Error writing to file.");
+      e.setDetails(QObject::tr("Error writing to file."));
       throw e;
    }
 
@@ -162,7 +162,7 @@ void IntegerArray::finish()
          // If failure occured create exception to report failure
          E_MAKE_EXCEPTION(e);
          e.setTitle(QObject::tr("IO Error"));
-         e.out() << QObject::tr("Error writing to file.");
+         e.setDetails(QObject::tr("Error writing to file."));
          throw e;
       }
    }

@@ -6,5 +6,4 @@
 #include "abstractdatafactory.h"
 #include "datastream.h"
 #include "exception.h"
-#include "application.h"
 #endif

@@ -92,6 +92,7 @@ bool EOpenCLProgram::compile(const QString& options)
    }
 
    // allocate new program ID and build source arrays
+   _buildError.clear();
    _id.reset(new cl_program);
    cl_uint codeCount = _sources.size();
    const char* codes[codeCount];
@@ -137,10 +138,7 @@ bool EOpenCLProgram::compile(const QString& options)
             reportError("clGetProgramBuildInfo",code);
             return false;
          }
-         E_MAKE_EXCEPTION(e);
-         e.setTitle(QObject::tr("OpenCL Build Error"));
-         e.out() << buffer;
-         e.display();
+         _buildError = buffer;
          return false;
       }
       else
@@ -165,4 +163,24 @@ unique_ptr<EOpenCLKernel> EOpenCLProgram::makeKernel(const QString& name)
       return nullptr;
    }
    return unique_ptr<EOpenCLKernel>(new EOpenCLKernel(*_id,_commandQueueID,_deviceID,name));
+}
+
+
+
+
+
+
+bool EOpenCLProgram::hasBuildError() const
+{
+   return _buildError.size() > 0;
+}
+
+
+
+
+
+
+QString EOpenCLProgram::getBuildError() const
+{
+   return _buildError;
 }

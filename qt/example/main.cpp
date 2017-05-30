@@ -1,4 +1,5 @@
-#include <AceCore.h>
+#include <core/AceCore.h>
+#include <gui/Application.h>
 
 #include "analyticfactory.h"
 #include "datafactory.h"

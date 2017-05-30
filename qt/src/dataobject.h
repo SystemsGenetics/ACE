@@ -20,6 +20,7 @@ namespace Ace
          ,CannotWrite
          ,InvalidDataType
          ,CorruptFile
+         ,DataException
       };
       explicit DataObject(const QString& path);
       ~DataObject();

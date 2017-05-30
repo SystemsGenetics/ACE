@@ -9,26 +9,23 @@
 class EException
 {
 public:
-   enum class Type
-   {
-      Plain
-      ,Analytic
-      ,Data
-   };
    void setFunction(const QString& function);
    void setFile(const QString& file);
    void setLine(unsigned int line);
    void setTitle(const QString& title);
-   QTextStream& out();
-   void display(Type type = Type::Plain);
+   void setDetails(const QString& details);
+   QString getFunction() const;
+   QString getFile() const;
+   int getLine() const;
+   QString getTitle() const;
+   QString getDetails() const;
 private:
-   void displayPlain();
    QString _function;
    QString _file;
    unsigned int _line;
    QString _title;
    QString _description;
-   QTextStream* _stream {nullptr};
+   QString _details;
 };
 
 

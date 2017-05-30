@@ -1,5 +1,3 @@
-#include <QMessageBox>
-
 #include "exception.h"
 
 
@@ -47,13 +45,9 @@ void EException::setTitle(const QString& title)
 
 
 
-QTextStream& EException::out()
+void EException::setDetails(const QString &details)
 {
-   if ( !_stream )
-   {
-      _stream = new QTextStream(&_description);
-   }
-   return *_stream;
+   _details = details;
 }
 
 
@@ -61,16 +55,9 @@ QTextStream& EException::out()
 
 
 
-void EException::display(Type type)
+QString EException::getFunction() const
 {
-   switch (type)
-   {
-   case Type::Plain:
-   case Type::Data:
-   case Type::Analytic:
-      displayPlain();
-      break;
-   }
+   return _function;
 }
 
 
@@ -78,6 +65,47 @@ void EException::display(Type type)
 
 
 
+QString EException::getFile() const
+{
+   return _file;
+}
+
+
+
+
+
+
+int EException::getLine() const
+{
+   return _line;
+}
+
+
+
+
+
+
+QString EException::getTitle() const
+{
+   return _title;
+}
+
+
+
+
+
+
+QString EException::getDetails() const
+{
+   return _details;
+}
+
+
+
+
+
+
+/*
 void EException::displayPlain()
 {
    // generate the message box's textual information
@@ -99,3 +127,4 @@ void EException::displayPlain()
    critical.setDetailedText(_description);
    critical.exec();
 }
+*/

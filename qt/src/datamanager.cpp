@@ -67,8 +67,8 @@ void Ace::DataManager::referenceReleased(const QString& absolutePath)
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(tr("Internal Data Reference Error"));
-      e.out() << tr("A data reference at path %1 was released when no data at that path exists"
-                    " within the data manager.").arg(absolutePath);
+      e.setDetails(tr("A data reference at path %1 was released when no data at that path exists"
+                      " within the data manager.").arg(absolutePath));
       throw e;
    }
    if ( i->use_count() == 1 )

@@ -22,12 +22,15 @@ public:
    bool addFile(const QString& filePath);
    bool compile(const QString& options);
    std::unique_ptr<EOpenCLKernel> makeKernel(const QString& name);
+   bool hasBuildError() const;
+   QString getBuildError() const;
 private:
    cl_device_id _deviceID;
    cl_context _contextID;
    cl_command_queue _commandQueueID;
    std::unique_ptr<cl_program> _id {nullptr};
    QList<QByteArray> _sources;
+   QString _buildError;
 };
 
 

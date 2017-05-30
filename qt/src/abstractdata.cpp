@@ -24,8 +24,8 @@ EDataStream& EAbstractData::stream()
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(QObject::tr("Abstract Data Interface Error"));
-      e.out() << QObject::tr("Requesting reference to stream object of uninitialized abstract data"
-                             " object.");
+      e.setDetails(QObject::tr("Requesting reference to stream object of uninitialized abstract data"
+                               " object."));
       throw e;
    }
    return *_stream;

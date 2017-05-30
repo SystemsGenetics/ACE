@@ -173,14 +173,14 @@ EOpenCLDevice::EOpenCLDevice()
    cl_int code = clGetPlatformIDs(0,nullptr,&total);
    if ( code != CL_SUCCESS || total == 0 )
    {
-      reportNoOpenCL();
+      setNoOpenCL();
       return;
    }
    cl_platform_id platformID;
    code = clGetPlatformIDs(1,&platformID,nullptr);
    if ( code != CL_SUCCESS )
    {
-      reportNoOpenCL();
+      setNoOpenCL();
       return;
    }
 
@@ -188,32 +188,17 @@ EOpenCLDevice::EOpenCLDevice()
    code = clGetDeviceIDs(platformID,CL_DEVICE_TYPE_ALL,0,nullptr,&total);
    if ( code != CL_SUCCESS || total == 0 )
    {
-      reportNoOpenCL();
+      setNoOpenCL();
       return;
    }
    cl_device_id deviceID;
    code = clGetDeviceIDs(platformID,CL_DEVICE_TYPE_ALL,1,&deviceID,nullptr);
    if ( code != CL_SUCCESS )
    {
-      reportNoOpenCL();
+      setNoOpenCL();
       return;
    }
 
    // set device to first one found
    setDevice(platformID,deviceID);
-}
-
-
-
-
-
-
-void EOpenCLDevice::reportNoOpenCL()
-{
-   setNoOpenCL();
-   E_MAKE_EXCEPTION(e);
-   e.setTitle(QObject::tr("Cannot Initialize OpenCL"));
-   e.out() << QObject::tr("Cannot query OpenCL platforms or devices. It appears your system does"
-                          " not have OpenCL installed on it.");
-   e.display();
 }

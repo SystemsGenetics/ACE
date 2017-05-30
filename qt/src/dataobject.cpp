@@ -49,11 +49,11 @@ Ace::DataObject::DataObject(const QString& path)
    {
       _data->readData();
    }
-   catch (EException e)
+   catch (EException)
    {
-      e.display();
+      _status = DataException;
       _data.reset();
-      return;
+      throw;
    }
    _isNew = false;
 }
@@ -150,11 +150,11 @@ bool Ace::DataObject::clear(quint16 newType)
    {
       _data->newData();
    }
-   catch (EException e)
+   catch (EException)
    {
-      e.display();
+      _status = DataException;
       _data.reset();
-      return false;
+      throw;
    }
    _isNew = false;
    return true;
@@ -181,7 +181,7 @@ EAbstractData& Ace::DataObject::data()
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(QObject::tr("Data Object Error"));
-      e.out() << QObject::tr("Attempting to get data on failed/empty object with no data.");
+      e.setDetails(QObject::tr("Attempting to get data on failed/empty object with no data."));
       throw e;
    }
    return *_data;
