@@ -1,8 +1,10 @@
 
 QT += core
 
+DESTDIR = $$PWD/../../build/libs/
 TARGET = acecore
-CONFIG += c++11 staticlib create_prl
+CONFIG += c++11
+VERSION = 0.0.999
 
 unix|win32: LIBS += -lOpenCL
 

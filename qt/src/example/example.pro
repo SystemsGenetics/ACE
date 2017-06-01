@@ -2,19 +2,14 @@
 QT += core gui widgets
 
 TARGET = example
-CONFIG += c++11 link_prl
+CONFIG += c++11
 
 unix|win32: LIBS += -lOpenCL
 
-LIBS += \
-   $$PWD/../../build/core/libacecore.a \
-   $$PWD/../../build/gui/libacegui.a
+LIBS += -lOpenCL -L$$PWD/../../build/libs -lacecore -lacegui
 
-PRE_TARGETDEPS += \
-   $$PWD/../../build/core/libacecore.a \
-   $$PWD/../../build/gui/libacegui.a
-
-INCLUDEPATH += ../
+INCLUDEPATH += $$PWD/../
+DEPENDPATH += $$PWD/../
 
 TEMPLATE = app
 

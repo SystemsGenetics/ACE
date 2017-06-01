@@ -10,3 +10,10 @@ SUBDIRS += \
 
 gui.depends = core
 example.depends = core gui
+
+# MetadataModel(QAbstractItemModel)(This can dump JSON for you)
+# MetadataObject
+# MetadataArray
+# MetadataValue
+
+# TODO: make MetadataValue variant class

@@ -1,16 +1,15 @@
 
 QT += core gui widgets
 
+DESTDIR = $$PWD/../../build/libs/
 TARGET = acegui
-CONFIG += c++11 staticlib create_prl
+CONFIG += c++11
+VERSION = 0.0.999
 
-unix|win32: LIBS += -lOpenCL
+LIBS += -lOpenCL -L$$PWD/../../build/libs -lacecore
 
-LIBS += $$PWD/../../build/core/libacecore.a
-
-PRE_TARGETDEPS += $$PWD/../../build/core/libacecore.a
-
-INCLUDEPATH += ../core/
+INCLUDEPATH += $$PWD/../core/
+DEPENDPATH += $$PWD/../core/
 
 TEMPLATE = lib
 
