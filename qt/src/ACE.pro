@@ -16,4 +16,4 @@ example.depends = core gui
 # MetadataArray
 # MetadataValue
 
-# TODO: make MetadataValue variant class
+# TODO: make header for object and array types

@@ -26,7 +26,8 @@ SOURCES += \
    opencl.cpp \
    datamanager.cpp \
    datareference.cpp \
-   abstractanalytic.cpp
+   abstractanalytic.cpp \
+    metadatavalue.cpp
 
 HEADERS += \
    opencldevicemodel.h \
@@ -47,6 +48,7 @@ HEADERS += \
    datamanager.h \
    datareference.h \
    AceCore.h \
-   AceOpenCL.h
+   AceOpenCL.h \
+    metadatavalue.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
