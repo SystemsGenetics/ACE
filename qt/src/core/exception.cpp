@@ -5,7 +5,7 @@
 
 
 
-void EException::setFunction(const QString& function)
+void EException::setFunction(const QString& function) noexcept
 {
    _function = function;
 }
@@ -15,7 +15,7 @@ void EException::setFunction(const QString& function)
 
 
 
-void EException::setFile(const QString& file)
+void EException::setFile(const QString& file) noexcept
 {
    _file = file;
 }
@@ -25,7 +25,7 @@ void EException::setFile(const QString& file)
 
 
 
-void EException::setLine(unsigned int line)
+void EException::setLine(unsigned int line) noexcept
 {
    _line = line;
 }
@@ -35,7 +35,7 @@ void EException::setLine(unsigned int line)
 
 
 
-void EException::setTitle(const QString& title)
+void EException::setTitle(const QString& title) noexcept
 {
    _title = title;
 }
@@ -45,7 +45,7 @@ void EException::setTitle(const QString& title)
 
 
 
-void EException::setDetails(const QString &details)
+void EException::setDetails(const QString &details) noexcept
 {
    _details = details;
 }
@@ -55,7 +55,27 @@ void EException::setDetails(const QString &details)
 
 
 
-QString EException::getFunction() const
+void EException::setType(int type) noexcept
+{
+   _type = type;
+}
+
+
+
+
+
+
+void EException::setLevel(EException::Level level) noexcept
+{
+   _level = level;
+}
+
+
+
+
+
+
+QString EException::getFunction() const noexcept
 {
    return _function;
 }
@@ -65,7 +85,7 @@ QString EException::getFunction() const
 
 
 
-QString EException::getFile() const
+QString EException::getFile() const noexcept
 {
    return _file;
 }
@@ -75,7 +95,7 @@ QString EException::getFile() const
 
 
 
-int EException::getLine() const
+int EException::getLine() const noexcept
 {
    return _line;
 }
@@ -85,7 +105,7 @@ int EException::getLine() const
 
 
 
-QString EException::getTitle() const
+QString EException::getTitle() const noexcept
 {
    return _title;
 }
@@ -95,9 +115,29 @@ QString EException::getTitle() const
 
 
 
-QString EException::getDetails() const
+QString EException::getDetails() const noexcept
 {
    return _details;
+}
+
+
+
+
+
+
+int EException::getType() const noexcept
+{
+   return _type;
+}
+
+
+
+
+
+
+EException::Level EException::getLevel() const noexcept
+{
+   return _level;
 }
 
 
@@ -128,3 +168,51 @@ void EException::displayPlain()
    critical.exec();
 }
 */
+
+
+
+
+
+
+bool ESilent::hasException() const noexcept
+{
+   return _exception.get() != nullptr;
+}
+
+
+
+
+
+
+EException ESilent::getException() const noexcept
+{
+   if ( !_exception )
+   {
+      return EException();
+   }
+   return *_exception;
+}
+
+
+
+
+
+
+void ESilent::setException(EException exception) noexcept
+{
+   *_exception = exception;
+   if ( !_critical && exception.getLevel() == EException::Critical )
+   {
+      _critical = true;
+   }
+}
+
+
+
+
+
+
+ESilent::operator bool() const noexcept
+{
+   return _critical;
+}
