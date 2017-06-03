@@ -16,4 +16,4 @@ example.depends = core gui
 # MetadataArray
 # MetadataValue
 
-# TODO: make header for object and array types
+# TODO: finish code of metadata arrays and make MetadataModel DADADA!
