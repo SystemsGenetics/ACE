@@ -9,53 +9,67 @@
 
 Ace::DataObject::DataObject(const QString& path)
 {
-   _file.reset(new QFile(path));
-   if ( !_file->open(QIODevice::ReadWrite) )
-   {
-      _status = CannotOpen;
-      return;
-   }
-   _stream.reset(new EDataStream(_file.get()));
-   if ( _file->size() <= _mininumFileSize )
-   {
-      return;
-   }
-   quint64 value {0};
-   *_stream >> value;
-   if ( !*_stream || value != _specialValue )
-   {
-      return;
-   }
-   quint16 dataType;
-   QString name;
-   QString extension;
-   *_stream >> dataType >> name >> extension;
-   if ( !*_stream )
-   {
-      _status = CorruptFile;
-      return;
-   }
-   EAbstractDataFactory& factory {EAbstractDataFactory::getInstance()};
-   if ( dataType >= factory.getCount() || name != factory.getName(dataType)
-        || extension != factory.getFileExtension(dataType) )
-   {
-      _status = InvalidDataType;
-      return;
-   }
-   _data = EAbstractDataFactory::getInstance().make(dataType);
-   _headerOffset = _file->pos();
-   _data->initialize(this,_stream.get());
    try
    {
-      _data->readData();
+      _file.reset(new QFile(path));
+      if ( !_file->open(QIODevice::ReadWrite) )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setLevel(EException::Critical);
+         e.setType(CannotOpen);
+         e.setTitle(tr("Open Data Object"));
+         e.setDetails(tr("Cannot open file %1.").arg(path));
+         throw e;
+      }
+      _stream.reset(new EDataStream(_file.get()));
+      if ( _file->size() <= _mininumFileSize )
+      {
+         return;
+      }
+      quint64 value {0};
+      *_stream >> value;
+      if ( !*_stream || value != _specialValue )
+      {
+         return;
+      }
+      quint16 dataType;
+      QString name;
+      QString extension;
+      *_stream >> dataType >> name >> extension;
+      if ( !*_stream )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setLevel(EException::Notice);
+         e.setType(CorruptFile);
+         e.setTitle(tr("Open Data Object"));
+         e.setDetails(tr("Cannot load file %1 because it's header is corrupt.").arg(path));
+         throw e;
+      }
+      EAbstractDataFactory& factory {EAbstractDataFactory::getInstance()};
+      if ( dataType >= factory.getCount() || name != factory.getName(dataType)
+           || extension != factory.getFileExtension(dataType) )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setLevel(EException::Notice);
+         e.setType(InvalidDataType);
+         e.setTitle(tr("Open Data Object"));
+         e.setDetails(tr("Cannot load file %1 because it's header specifies an invalid data type.")
+                      .arg(path));
+         throw e;
+      }
+      _data = EAbstractDataFactory::getInstance().make(dataType);
+      _headerOffset = _file->pos();
+      _data->initialize(this,_stream.get());
+      _isNew = false;
    }
-   catch (EException)
+   catch (EException e)
    {
-      _status = DataException;
-      _data.reset();
+      if ( e.getLevel() == EException::Critical )
+      {
+         _invalid = true;
+      }
       throw;
    }
-   _isNew = false;
 }
 
 
@@ -63,7 +77,7 @@ Ace::DataObject::DataObject(const QString& path)
 
 
 
-Ace::DataObject::~DataObject()
+Ace::DataObject::~DataObject() noexcept
 {
    _data.reset();
    _stream.reset();
@@ -75,9 +89,9 @@ Ace::DataObject::~DataObject()
 
 
 
-bool Ace::DataObject::seek(quint64 offset)
+bool Ace::DataObject::seek(quint64 offset) noexcept
 {
-   if ( _status != Ok || _isNew )
+   if ( _invalid || _isNew )
    {
       return false;
    }
@@ -89,9 +103,9 @@ bool Ace::DataObject::seek(quint64 offset)
 
 
 
-bool Ace::DataObject::allocate(quint64 size)
+bool Ace::DataObject::allocate(quint64 size) noexcept
 {
-   if ( _status != Ok || _isNew )
+   if ( _invalid || _isNew )
    {
       return false;
    }
@@ -103,61 +117,63 @@ bool Ace::DataObject::allocate(quint64 size)
 
 
 
-Ace::DataObject::Status Ace::DataObject::getStatus() const
+void Ace::DataObject::clear(quint16 newType)
 {
-   return _status;
-}
-
-
-
-
-
-
-bool Ace::DataObject::clear(quint16 newType)
-{
-   if ( _status != Ok )
+   if ( _invalid )
    {
-      return false;
+      return;
    }
-   EAbstractDataFactory& factory {EAbstractDataFactory::getInstance()};
-   if ( newType >= factory.getCount() )
-   {
-      _status = InvalidDataType;
-      return false;
-   }
-   if ( _data )
-   {
-      emit cleared();
-   }
-   _data = factory.make(newType);
-   if ( !_file->seek(0) )
-   {
-      _status = CannotWrite;
-      return false;
-   }
-   quint64 value = _specialValue;
-   quint16 type = newType;
-   *_stream << value << type << factory.getName(newType) << factory.getFileExtension(newType);
-   if ( !*_stream )
-   {
-      _status = CannotWrite;
-      return false;
-   }
-   _isNew = true;
-   _headerOffset = _file->pos();
-   _data->initialize(this,_stream.get());
    try
    {
+      EAbstractDataFactory& factory {EAbstractDataFactory::getInstance()};
+      if ( newType >= factory.getCount() )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setLevel(EException::Notice);
+         e.setType(InvalidDataType);
+         e.setTitle(tr("Clear Data Object"));
+         e.setDetails(tr("Cannot initialize data object with unknown type %1.").arg(newType));
+         throw e;
+      }
+      if ( _data )
+      {
+         emit cleared();
+      }
+      _data = factory.make(newType);
+      if ( !_file->seek(0) )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setLevel(EException::Critical);
+         e.setType(CannotWrite);
+         e.setTitle(tr("Data Object I/O"));
+         e.setDetails(tr("Cannot write to data object file."));
+         throw e;
+      }
+      quint64 value = _specialValue;
+      quint16 type = newType;
+      *_stream << value << type << factory.getName(newType) << factory.getFileExtension(newType);
+      if ( !*_stream )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setLevel(EException::Critical);
+         e.setType(CannotWrite);
+         e.setTitle(tr("Data Object I/O"));
+         e.setDetails(tr("Cannot write to data object file."));
+         throw e;
+      }
+      _headerOffset = _file->pos();
+      _data->initialize(this,_stream.get());
       _data->newData();
+      _isNew = false;
    }
-   catch (EException)
+   catch (EException e)
    {
-      _status = DataException;
-      _data.reset();
+      if ( e.getLevel() == EException::Critical )
+      {
+         _invalid = true;
+      }
       throw;
    }
-   _isNew = false;
-   return true;
 }
 
 
@@ -165,7 +181,7 @@ bool Ace::DataObject::clear(quint16 newType)
 
 
 
-bool Ace::DataObject::isNew() const
+bool Ace::DataObject::isNew() const noexcept
 {
    return _isNew;
 }
@@ -177,10 +193,12 @@ bool Ace::DataObject::isNew() const
 
 EAbstractData& Ace::DataObject::data()
 {
-   if ( _status != Ok || _isNew )
+   if ( _invalid || _isNew )
    {
       E_MAKE_EXCEPTION(e);
-      e.setTitle(QObject::tr("Data Object Error"));
+      e.setLevel(EException::Critical);
+      e.setType(NullReference);
+      e.setTitle(QObject::tr("Data Object Reference"));
       e.setDetails(QObject::tr("Attempting to get data on failed/empty object with no data."));
       throw e;
    }
@@ -192,7 +210,7 @@ EAbstractData& Ace::DataObject::data()
 
 
 
-Ace::DataObject::operator bool() const
+Ace::DataObject::operator bool() const noexcept
 {
-   return _status == Ok;
+   return !_invalid;
 }

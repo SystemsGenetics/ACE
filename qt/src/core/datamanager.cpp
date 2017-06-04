@@ -36,23 +36,12 @@ unique_ptr<Ace::DataReference> Ace::DataManager::open(const QString& path)
       return unique_ptr<DataReference>(new DataReference(*i,absolutePath));
    }
    shared_ptr<DataObject> data(new DataObject(path));
-   _lastOpenStatus = data->getStatus();
    if ( !*data )
    {
       return nullptr;
    }
    _dataObjects.insert(absolutePath,data);
    return unique_ptr<DataReference>(new DataReference(data,absolutePath));
-}
-
-
-
-
-
-
-Ace::DataObject::Status Ace::DataManager::getLastOpenStatus() const
-{
-   return _lastOpenStatus;
 }
 
 

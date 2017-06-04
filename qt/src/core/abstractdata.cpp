@@ -7,7 +7,7 @@
 
 
 
-void EAbstractData::initialize(Ace::DataObject* object, EDataStream* stream)
+void EAbstractData::initialize(Ace::DataObject* object, EDataStream* stream) noexcept
 {
    _data = object;
    _stream = stream;
@@ -23,7 +23,9 @@ EDataStream& EAbstractData::stream()
    if ( !_stream )
    {
       E_MAKE_EXCEPTION(e);
-      e.setTitle(QObject::tr("Abstract Data Interface Error"));
+      e.setLevel(EException::Critical);
+      e.setType(NullReference);
+      e.setTitle(QObject::tr("Abstract Data Interface"));
       e.setDetails(QObject::tr("Requesting reference to stream object of uninitialized abstract data"
                                " object."));
       throw e;
@@ -36,7 +38,7 @@ EDataStream& EAbstractData::stream()
 
 
 
-bool EAbstractData::seek(quint64 offset)
+bool EAbstractData::seek(quint64 offset) noexcept
 {
    if ( !_data )
    {
@@ -50,7 +52,7 @@ bool EAbstractData::seek(quint64 offset)
 
 
 
-bool EAbstractData::allocate(quint64 size)
+bool EAbstractData::allocate(quint64 size) noexcept
 {
    if ( !_data )
    {

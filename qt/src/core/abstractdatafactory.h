@@ -14,6 +14,10 @@ class EAbstractData;
 class EAbstractDataFactory
 {
 public:
+   enum Errors
+   {
+      NoFactorySet = 0
+   };
    EAbstractDataFactory() = default;
    virtual ~EAbstractDataFactory() = default;
    ACE_DISBALE_COPY_AND_MOVE(EAbstractDataFactory)
@@ -24,21 +28,21 @@ public:
    /// Set new data factory instance.
    ///
    /// @param factory New data factory.
-   static void setInstance(std::unique_ptr<EAbstractDataFactory>&& factory);
+   static void setInstance(std::unique_ptr<EAbstractDataFactory>&& factory) noexcept;
    /// Get total number of possible data types.
-   virtual quint16 getCount() = 0;
+   virtual quint16 getCount() noexcept = 0;
    /// Get name of specific data type.
    ///
    /// @param type Data type identifier.
-   virtual QString getName(quint16 type) = 0;
+   virtual QString getName(quint16 type) noexcept = 0;
    /// Get file extension of specific data type.
    ///
    /// @param type Data type identifier.
-   virtual QString getFileExtension(quint16 type) = 0;
+   virtual QString getFileExtension(quint16 type) noexcept = 0;
    /// Make new data object of given type.
    ///
    /// @param type Data type identifier.
-   virtual std::unique_ptr<EAbstractData> make(quint16 type) = 0;
+   virtual std::unique_ptr<EAbstractData> make(quint16 type) noexcept = 0;
 private:
    static std::unique_ptr<EAbstractDataFactory> _instance;
 };

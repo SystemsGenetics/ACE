@@ -13,7 +13,7 @@ namespace Ace
    {
       Q_OBJECT
    public:
-      enum Status
+      enum Errors
       {
          Ok = 0
          ,CannotOpen
@@ -21,16 +21,16 @@ namespace Ace
          ,InvalidDataType
          ,CorruptFile
          ,DataException
+         ,NullReference
       };
       explicit DataObject(const QString& path);
-      ~DataObject();
-      bool seek(quint64 offset);
-      bool allocate(quint64 size);
-      Status getStatus() const;
-      bool clear(quint16 newType);
-      bool isNew() const;
+      ~DataObject() noexcept;
+      bool seek(quint64 offset) noexcept;
+      bool allocate(quint64 size) noexcept;
+      void clear(quint16 newType);
+      bool isNew() const noexcept;
       EAbstractData& data();
-      operator bool() const;
+      operator bool() const noexcept;
    signals:
       void cleared();
    private:
@@ -40,8 +40,8 @@ namespace Ace
       std::unique_ptr<EDataStream> _stream {nullptr};
       std::unique_ptr<EAbstractData> _data {nullptr};
       quint64 _headerOffset {0};
-      Status _status {Ok};
       bool _isNew {true};
+      bool _invalid {false};
    };
 }
 

@@ -21,29 +21,9 @@ EDataStream::EDataStream(QFile *file):
 
 
 
-EDataStream::Status EDataStream::getStatus() const
-{
-   return _status;
-}
-
-
-
-
-
-
-EDataStream::operator bool() const
-{
-   return _status == Ok;
-}
-
-
-
-
-
-
 EDataStream& EDataStream::operator<<(qint8 value)
 {
-   if ( _status == Ok )
+   if ( *this )
    {
       write(value);
    }
@@ -57,7 +37,7 @@ EDataStream& EDataStream::operator<<(qint8 value)
 
 EDataStream& EDataStream::operator<<(quint8 value)
 {
-   if ( _status == Ok )
+   if ( *this )
    {
       write(value);
    }
@@ -71,7 +51,7 @@ EDataStream& EDataStream::operator<<(quint8 value)
 
 EDataStream& EDataStream::operator<<(qint16 value)
 {
-   if ( _status == Ok )
+   if ( *this )
    {
       value = qToBigEndian(value);
       write(value);
@@ -86,7 +66,7 @@ EDataStream& EDataStream::operator<<(qint16 value)
 
 EDataStream& EDataStream::operator<<(quint16 value)
 {
-   if ( _status == Ok )
+   if ( *this )
    {
       value = qToBigEndian(value);
       write(value);
@@ -101,7 +81,7 @@ EDataStream& EDataStream::operator<<(quint16 value)
 
 EDataStream& EDataStream::operator<<(qint32 value)
 {
-   if ( _status == Ok )
+   if ( *this )
    {
       value = qToBigEndian(value);
       write(value);
@@ -116,7 +96,7 @@ EDataStream& EDataStream::operator<<(qint32 value)
 
 EDataStream& EDataStream::operator<<(quint32 value)
 {
-   if ( _status == Ok )
+   if ( *this )
    {
       value = qToBigEndian(value);
       write(value);
@@ -131,7 +111,7 @@ EDataStream& EDataStream::operator<<(quint32 value)
 
 EDataStream& EDataStream::operator<<(qint64 value)
 {
-   if ( _status == Ok )
+   if ( *this )
    {
       value = qToBigEndian(value);
       write(value);
@@ -146,7 +126,7 @@ EDataStream& EDataStream::operator<<(qint64 value)
 
 EDataStream& EDataStream::operator<<(quint64 value)
 {
-   if ( _status == Ok )
+   if ( *this )
    {
       value = qToBigEndian(value);
       write(value);
@@ -161,7 +141,7 @@ EDataStream& EDataStream::operator<<(quint64 value)
 
 EDataStream& EDataStream::operator<<(float value)
 {
-   if ( _status == Ok )
+   if ( *this )
    {
       write(value);
    }
@@ -175,7 +155,7 @@ EDataStream& EDataStream::operator<<(float value)
 
 EDataStream& EDataStream::operator<<(double value)
 {
-   if ( _status == Ok )
+   if ( *this )
    {
       write(value);
    }
@@ -189,11 +169,16 @@ EDataStream& EDataStream::operator<<(double value)
 
 EDataStream& EDataStream::operator<<(const QString& value)
 {
-   if ( _status == Ok )
+   if ( *this )
    {
       if ( value.size() > _maxStringSize )
       {
-         _status = Status::StringTooBig;
+         E_MAKE_EXCEPTION(e);
+         e.setLevel(EException::Critical);
+         e.setType(StringTooBig);
+         e.setTitle(QObject::tr("Data Stream Write"));
+         e.setDetails(QObject::tr("Could not write string because it is too large."));
+         setException(e);
          return *this;
       }
       quint8 type = String;
@@ -216,7 +201,7 @@ EDataStream& EDataStream::operator<<(const QString& value)
 
 EDataStream& EDataStream::operator<<(const QPixmap& value)
 {
-   if ( _status == Ok )
+   if ( *this )
    {
       quint8 type = Pixmap;
       if ( write(type) )
@@ -243,7 +228,7 @@ EDataStream& EDataStream::operator<<(const QPixmap& value)
 EDataStream& EDataStream::operator>>(qint8& value)
 {
    value = 0;
-   if ( _status == Ok )
+   if ( *this )
    {
       read(&value);
    }
@@ -258,7 +243,7 @@ EDataStream& EDataStream::operator>>(qint8& value)
 EDataStream& EDataStream::operator>>(quint8& value)
 {
    value = 0;
-   if ( _status == Ok )
+   if ( *this )
    {
       read(&value);
    }
@@ -273,7 +258,7 @@ EDataStream& EDataStream::operator>>(quint8& value)
 EDataStream& EDataStream::operator>>(qint16& value)
 {
    value = 0;
-   if ( _status == Ok )
+   if ( *this )
    {
       if ( read(&value) )
       {
@@ -291,7 +276,7 @@ EDataStream& EDataStream::operator>>(qint16& value)
 EDataStream& EDataStream::operator>>(quint16& value)
 {
    value = 0;
-   if ( _status == Ok )
+   if ( *this )
    {
       if ( read(&value) )
       {
@@ -309,7 +294,7 @@ EDataStream& EDataStream::operator>>(quint16& value)
 EDataStream& EDataStream::operator>>(qint32& value)
 {
    value = 0;
-   if ( _status == Ok )
+   if ( *this )
    {
       if ( read(&value) )
       {
@@ -327,7 +312,7 @@ EDataStream& EDataStream::operator>>(qint32& value)
 EDataStream& EDataStream::operator>>(quint32& value)
 {
    value = 0;
-   if ( _status == Ok )
+   if ( *this )
    {
       if ( read(&value) )
       {
@@ -345,7 +330,7 @@ EDataStream& EDataStream::operator>>(quint32& value)
 EDataStream& EDataStream::operator>>(qint64& value)
 {
    value = 0;
-   if ( _status == Ok )
+   if ( *this )
    {
       if ( read(&value) )
       {
@@ -363,7 +348,7 @@ EDataStream& EDataStream::operator>>(qint64& value)
 EDataStream& EDataStream::operator>>(quint64& value)
 {
    value = 0;
-   if ( _status == Ok )
+   if ( *this )
    {
       if ( read(&value) )
       {
@@ -381,7 +366,7 @@ EDataStream& EDataStream::operator>>(quint64& value)
 EDataStream& EDataStream::operator>>(float& value)
 {
    value = 0.0;
-   if ( _status == Ok )
+   if ( *this )
    {
       read(&value);
    }
@@ -396,7 +381,7 @@ EDataStream& EDataStream::operator>>(float& value)
 EDataStream& EDataStream::operator>>(double& value)
 {
    value = 0.0;
-   if ( _status == Ok )
+   if ( *this )
    {
       read(&value);
    }
@@ -411,7 +396,7 @@ EDataStream& EDataStream::operator>>(double& value)
 EDataStream& EDataStream::operator>>(QString& value)
 {
    value.clear();
-   if ( _status == Ok )
+   if ( *this )
    {
       quint8 type {0};
       if ( read(&type) )
@@ -442,7 +427,12 @@ EDataStream& EDataStream::operator>>(QString& value)
          }
          else
          {
-            _status = Status::CorruptData;
+            E_MAKE_EXCEPTION(e);
+            e.setLevel(EException::Critical);
+            e.setType(CorruptData);
+            e.setTitle(QObject::tr("Data Stream Read"));
+            e.setDetails(QObject::tr("Could not read string because data is corrupt"));
+            setException(e);
          }
       }
    }
@@ -457,7 +447,7 @@ EDataStream& EDataStream::operator>>(QString& value)
 EDataStream& EDataStream::operator>>(QPixmap& value)
 {
    value = QPixmap();
-   if ( _status == Ok )
+   if ( *this )
    {
       quint8 type {0};
       if ( read(&type) )
@@ -474,14 +464,24 @@ EDataStream& EDataStream::operator>>(QPixmap& value)
                {
                   if ( !value.loadFromData(buffer) )
                   {
-                     _status = Status::CorruptData;
+                     E_MAKE_EXCEPTION(e);
+                     e.setLevel(EException::Critical);
+                     e.setType(CorruptData);
+                     e.setTitle(QObject::tr("Data Stream Read"));
+                     e.setDetails(QObject::tr("Could not read image because data is corrupt"));
+                     setException(e);
                   }
                }
             }
          }
          else
          {
-            _status = Status::CorruptData;
+            E_MAKE_EXCEPTION(e);
+            e.setLevel(EException::Critical);
+            e.setType(CorruptData);
+            e.setTitle(QObject::tr("Data Stream Read"));
+            e.setDetails(QObject::tr("Could not read image because data is corrupt"));
+            setException(e);
          }
       }
    }
@@ -499,7 +499,12 @@ bool EDataStream::write(T value, quint64 size)
    if ( static_cast<quint64>(_file->write(reinterpret_cast<char*>(&value),sizeof(T)*size))
         != sizeof(T)*size )
    {
-      _status = Status::WriteFailed;
+      E_MAKE_EXCEPTION(e);
+      e.setLevel(EException::Critical);
+      e.setType(WriteFailed);
+      e.setTitle(QObject::tr("Data Stream Write"));
+      e.setDetails(QObject::tr("Failed writing to file: %1").arg(_file->errorString()));
+      setException(e);
       return false;
    }
    return true;
@@ -516,7 +521,12 @@ bool EDataStream::read(T* value, quint64 size)
    if ( static_cast<quint64>(_file->read(reinterpret_cast<char*>(value),sizeof(T)*size))
         != sizeof(T)*size )
    {
-      _status = Status::ReadFailed;
+      E_MAKE_EXCEPTION(e);
+      e.setLevel(EException::Critical);
+      e.setType(ReadFailed);
+      e.setTitle(QObject::tr("Data Stream Read"));
+      e.setDetails(QObject::tr("Failed reading from file: %1").arg(_file->errorString()));
+      setException(e);
       return false;
    }
    return true;

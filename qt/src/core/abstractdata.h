@@ -16,6 +16,10 @@ class EDataStream;
 class EAbstractData
 {
 public:
+   enum Errors
+   {
+      NullReference = 0
+   };
    EAbstractData() = default;
    virtual ~EAbstractData() = default;
    ACE_DISBALE_COPY_AND_MOVE(EAbstractData)
@@ -34,7 +38,7 @@ public:
    virtual void prepare(bool preAllocate) = 0;
    /// Finalize new data object after being given all input.
    virtual void finish() = 0;
-   void initialize(Ace::DataObject* object, EDataStream* stream);
+   void initialize(Ace::DataObject* object, EDataStream* stream) noexcept;
 protected:
    /// Get reference to data stream of object's file.
    ///
@@ -44,13 +48,13 @@ protected:
    ///
    /// @param offset New offset.
    /// @return True if successful or false if error occured.
-   bool seek(quint64 offset);
+   bool seek(quint64 offset) noexcept;
    /// Allocate new space in object's file in bytes based off current seek value. If new size is
    /// smaller than current size of file it will be shrinked.
    ///
    /// @param size Space to allocate in bytes.
    /// @return True if successful or false if error occured.
-   bool allocate(quint64 size);
+   bool allocate(quint64 size) noexcept;
 private:
    Ace::DataObject* _data {nullptr};
    EDataStream* _stream {nullptr};

@@ -4,16 +4,16 @@
 #include <memory>
 
 #include "utilities.h"
+#include "exception.h"
 
 
 
 /// Data stream used for input/output of data objects. All output stream operators will do nothing
 /// if the stream is in an error state and input stream operators will set their values to null.
-class EDataStream
+class EDataStream : public ESilent
 {
 public:
-   /// Possible states of data stream.
-   enum Status
+   enum Errors
    {
       Ok = 0
       ,ReadFailed
@@ -23,14 +23,6 @@ public:
    };
    EDataStream(QFile* file);
    ACE_DISBALE_COPY_AND_MOVE(EDataStream)
-   /// Get stream's status.
-   ///
-   /// @return Current status.
-   Status getStatus() const;
-   /// Check if stream's status is Ok.
-   ///
-   /// @return True if stream is Ok or false if in error state.
-   operator bool() const;
    EDataStream& operator<<(qint8 value);
    EDataStream& operator<<(quint8 value);
    EDataStream& operator<<(qint16 value);
@@ -66,7 +58,6 @@ private:
    template<class T> bool write(T value, quint64 size = 1);
    template<class T> bool read(T* value, quint64 size = 1);
    QFile* _file;
-   Status _status {Ok};
    QChar _stringBuffer[_stringBufferSize];
 };
 
