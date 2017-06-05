@@ -16,6 +16,8 @@ EAbstractAnalyticFactory& EAbstractAnalyticFactory::getInstance()
    if ( !_instance )
    {
       E_MAKE_EXCEPTION(e);
+      e.setLevel(EException::Critical);
+      e.setType(NoFactorySet);
       e.setTitle(QObject::tr("Analytic Factory Error"));
       e.setDetails(QObject::tr("Attempting to get abstract analytic factory when none has been set."));
       throw e;

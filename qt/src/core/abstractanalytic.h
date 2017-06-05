@@ -31,6 +31,10 @@ public:
    };
    EAbstractAnalytic() = default;
    virtual ~EAbstractAnalytic() = default;
+   virtual bool isArgumentRequired(int argument) = 0;
+   virtual QVariant getNumberMinimum() = 0;
+   virtual QVariant getNumberMaximum() = 0;
+   virtual QRegExp getStringValidator() = 0;
    /// Get the total number of arguments.
    ///
    /// @return Total number of arguments.
