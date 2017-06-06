@@ -6,7 +6,7 @@
 
 
 Ace::DataReference::DataReference(std::shared_ptr<Ace::DataObject> data
-                                  , const QString &absolutePath):
+                                  , const QString &absolutePath) noexcept:
    _data(data),
    _absolutePath(absolutePath)
 {}
@@ -16,7 +16,7 @@ Ace::DataReference::DataReference(std::shared_ptr<Ace::DataObject> data
 
 
 
-Ace::DataReference::~DataReference()
+Ace::DataReference::~DataReference() noexcept
 {
    _data.reset();
    emit released(_absolutePath);
@@ -27,7 +27,7 @@ Ace::DataReference::~DataReference()
 
 
 
-Ace::DataObject& Ace::DataReference::operator*()
+Ace::DataObject& Ace::DataReference::operator*() noexcept
 {
    return *_data;
 }
@@ -37,7 +37,7 @@ Ace::DataObject& Ace::DataReference::operator*()
 
 
 
-Ace::DataObject* Ace::DataReference::operator->()
+Ace::DataObject* Ace::DataReference::operator->() noexcept
 {
    return _data.get();
 }

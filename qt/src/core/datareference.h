@@ -15,10 +15,10 @@ namespace Ace
    {
       Q_OBJECT
    public:
-      DataReference(std::shared_ptr<DataObject> data, const QString& absolutePath);
-      ~DataReference();
-      DataObject& operator*();
-      DataObject* operator->();
+      DataReference(std::shared_ptr<DataObject> data, const QString& absolutePath) noexcept;
+      ~DataReference() noexcept;
+      DataObject& operator*() noexcept;
+      DataObject* operator->() noexcept;
    signals:
       void released(const QString& absolutePath);
    private:

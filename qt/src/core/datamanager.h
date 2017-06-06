@@ -17,7 +17,11 @@ namespace Ace
    {
       Q_OBJECT
    public:
-      static DataManager& getInstance();
+      enum Errors
+      {
+         NullReference = 0
+      };
+      static DataManager& getInstance() noexcept;
       std::unique_ptr<DataReference> open(const QString& path);
    public slots:
       void referenceReleased(const QString& absolutePath);
