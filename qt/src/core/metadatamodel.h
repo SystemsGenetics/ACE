@@ -3,7 +3,7 @@
 #include <QtCore>
 
 
-
+/*
 namespace Ace
 {
 class MetadataObject;
@@ -36,7 +36,7 @@ private:
    MetadataObject* _root {nullptr};
 };
 }
-
+*/
 
 
 #endif

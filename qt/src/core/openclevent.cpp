@@ -19,10 +19,13 @@ EOpenCLEvent::EOpenCLEvent(cl_event id)
 
 EOpenCLEvent::~EOpenCLEvent()
 {
+   // if event exists release it
    if ( _id )
    {
       clReleaseEvent(*_id);
    }
+
+   // delete pointer
    delete _id;
 }
 

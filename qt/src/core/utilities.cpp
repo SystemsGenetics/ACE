@@ -8,6 +8,7 @@
 
 QString Ace::OpenCL::generateErrorString(cl_int code)
 {
+   // static list of possible OpenCL error types
    static const char* errors[] =
    {
       "SUCCESS"
@@ -76,12 +77,15 @@ QString Ace::OpenCL::generateErrorString(cl_int code)
       ,"INVALID_GLOBAL_WORK_SIZE"
       ,"INVALID_PROPERTY"
    };
+
    if ( code <= 0 && code >= -64 )
    {
+      // if error code is within range look it up and return
       return QString(errors[-code]);
    }
    else
    {
+      // else error is not in range, return unkonwn
       return QString(errors[15]);
    }
 }

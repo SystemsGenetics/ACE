@@ -23,11 +23,7 @@ EDataStream::EDataStream(QFile *file):
 
 EDataStream& EDataStream::operator<<(qint8 value)
 {
-   if ( *this )
-   {
-      write(value);
-   }
-   return *this;
+   return writeNumber(value);
 }
 
 
@@ -37,11 +33,7 @@ EDataStream& EDataStream::operator<<(qint8 value)
 
 EDataStream& EDataStream::operator<<(quint8 value)
 {
-   if ( *this )
-   {
-      write(value);
-   }
-   return *this;
+   return writeNumber(value);
 }
 
 
@@ -51,12 +43,7 @@ EDataStream& EDataStream::operator<<(quint8 value)
 
 EDataStream& EDataStream::operator<<(qint16 value)
 {
-   if ( *this )
-   {
-      value = qToBigEndian(value);
-      write(value);
-   }
-   return *this;
+   return writeNumber(value);
 }
 
 
@@ -66,12 +53,7 @@ EDataStream& EDataStream::operator<<(qint16 value)
 
 EDataStream& EDataStream::operator<<(quint16 value)
 {
-   if ( *this )
-   {
-      value = qToBigEndian(value);
-      write(value);
-   }
-   return *this;
+   return writeNumber(value);
 }
 
 
@@ -81,12 +63,7 @@ EDataStream& EDataStream::operator<<(quint16 value)
 
 EDataStream& EDataStream::operator<<(qint32 value)
 {
-   if ( *this )
-   {
-      value = qToBigEndian(value);
-      write(value);
-   }
-   return *this;
+   return writeNumber(value);
 }
 
 
@@ -96,12 +73,7 @@ EDataStream& EDataStream::operator<<(qint32 value)
 
 EDataStream& EDataStream::operator<<(quint32 value)
 {
-   if ( *this )
-   {
-      value = qToBigEndian(value);
-      write(value);
-   }
-   return *this;
+   return writeNumber(value);
 }
 
 
@@ -111,12 +83,7 @@ EDataStream& EDataStream::operator<<(quint32 value)
 
 EDataStream& EDataStream::operator<<(qint64 value)
 {
-   if ( *this )
-   {
-      value = qToBigEndian(value);
-      write(value);
-   }
-   return *this;
+   return writeNumber(value);
 }
 
 
@@ -126,12 +93,7 @@ EDataStream& EDataStream::operator<<(qint64 value)
 
 EDataStream& EDataStream::operator<<(quint64 value)
 {
-   if ( *this )
-   {
-      value = qToBigEndian(value);
-      write(value);
-   }
-   return *this;
+   return writeNumber(value);
 }
 
 
@@ -141,11 +103,7 @@ EDataStream& EDataStream::operator<<(quint64 value)
 
 EDataStream& EDataStream::operator<<(float value)
 {
-   if ( *this )
-   {
-      write(value);
-   }
-   return *this;
+   return writeFloat(value);
 }
 
 
@@ -155,11 +113,7 @@ EDataStream& EDataStream::operator<<(float value)
 
 EDataStream& EDataStream::operator<<(double value)
 {
-   if ( *this )
-   {
-      write(value);
-   }
-   return *this;
+   return writeFloat(value);
 }
 
 
@@ -169,28 +123,24 @@ EDataStream& EDataStream::operator<<(double value)
 
 EDataStream& EDataStream::operator<<(const QString& value)
 {
+   // make sure stream is in ok state
    if ( *this )
    {
-      if ( value.size() > _maxStringSize )
-      {
-         E_MAKE_EXCEPTION(e);
-         e.setLevel(EException::Critical);
-         e.setType(StringTooBig);
-         e.setTitle(QObject::tr("Data Stream Write"));
-         e.setDetails(QObject::tr("Could not write string because it is too large."));
-         setException(e);
-         return *this;
-      }
+      // write out string identifier type
       quint8 type = String;
       if ( write(type) )
       {
+         // write out size of string in bytes
          quint16 size = qToBigEndian(value.size());
          if ( write(size) )
          {
+            // write out string itself
             write(value.data(),size);
          }
       }
    }
+
+   // return reference to stream
    return *this;
 }
 
@@ -201,22 +151,30 @@ EDataStream& EDataStream::operator<<(const QString& value)
 
 EDataStream& EDataStream::operator<<(const QPixmap& value)
 {
+   // make sure stream is in ok state
    if ( *this )
    {
+      // write out pixmap identifier type
       quint8 type = Pixmap;
       if ( write(type) )
       {
+         // save pixmap to byte array in PNG format
          QByteArray data;
          QBuffer buffer(&data);
          buffer.open(QIODevice::WriteOnly);
          value.save(&buffer,"PNG");
+
+         // write size of PNG byte array
          quint32 size = qToBigEndian(data.size());
          if ( write(size) )
          {
+            // write PNG byte array itself
             write(data.data(),size);
          }
       }
    }
+
+   // return reference to stream
    return *this;
 }
 
@@ -227,12 +185,7 @@ EDataStream& EDataStream::operator<<(const QPixmap& value)
 
 EDataStream& EDataStream::operator>>(qint8& value)
 {
-   value = 0;
-   if ( *this )
-   {
-      read(&value);
-   }
-   return *this;
+   return readNumber(value);
 }
 
 
@@ -242,12 +195,7 @@ EDataStream& EDataStream::operator>>(qint8& value)
 
 EDataStream& EDataStream::operator>>(quint8& value)
 {
-   value = 0;
-   if ( *this )
-   {
-      read(&value);
-   }
-   return *this;
+   return readNumber(value);
 }
 
 
@@ -257,15 +205,7 @@ EDataStream& EDataStream::operator>>(quint8& value)
 
 EDataStream& EDataStream::operator>>(qint16& value)
 {
-   value = 0;
-   if ( *this )
-   {
-      if ( read(&value) )
-      {
-         value = qFromBigEndian(value);
-      }
-   }
-   return *this;
+   return readNumber(value);
 }
 
 
@@ -275,15 +215,7 @@ EDataStream& EDataStream::operator>>(qint16& value)
 
 EDataStream& EDataStream::operator>>(quint16& value)
 {
-   value = 0;
-   if ( *this )
-   {
-      if ( read(&value) )
-      {
-         value = qFromBigEndian(value);
-      }
-   }
-   return *this;
+   return readNumber(value);
 }
 
 
@@ -293,15 +225,7 @@ EDataStream& EDataStream::operator>>(quint16& value)
 
 EDataStream& EDataStream::operator>>(qint32& value)
 {
-   value = 0;
-   if ( *this )
-   {
-      if ( read(&value) )
-      {
-         value = qFromBigEndian(value);
-      }
-   }
-   return *this;
+   return readNumber(value);
 }
 
 
@@ -311,15 +235,7 @@ EDataStream& EDataStream::operator>>(qint32& value)
 
 EDataStream& EDataStream::operator>>(quint32& value)
 {
-   value = 0;
-   if ( *this )
-   {
-      if ( read(&value) )
-      {
-         value = qFromBigEndian(value);
-      }
-   }
-   return *this;
+   return readNumber(value);
 }
 
 
@@ -329,15 +245,7 @@ EDataStream& EDataStream::operator>>(quint32& value)
 
 EDataStream& EDataStream::operator>>(qint64& value)
 {
-   value = 0;
-   if ( *this )
-   {
-      if ( read(&value) )
-      {
-         value = qFromBigEndian(value);
-      }
-   }
-   return *this;
+   return readNumber(value);
 }
 
 
@@ -347,15 +255,7 @@ EDataStream& EDataStream::operator>>(qint64& value)
 
 EDataStream& EDataStream::operator>>(quint64& value)
 {
-   value = 0;
-   if ( *this )
-   {
-      if ( read(&value) )
-      {
-         value = qFromBigEndian(value);
-      }
-   }
-   return *this;
+   return readNumber(value);
 }
 
 
@@ -365,12 +265,7 @@ EDataStream& EDataStream::operator>>(quint64& value)
 
 EDataStream& EDataStream::operator>>(float& value)
 {
-   value = 0.0;
-   if ( *this )
-   {
-      read(&value);
-   }
-   return *this;
+   return readFloat(value);
 }
 
 
@@ -380,12 +275,7 @@ EDataStream& EDataStream::operator>>(float& value)
 
 EDataStream& EDataStream::operator>>(double& value)
 {
-   value = 0.0;
-   if ( *this )
-   {
-      read(&value);
-   }
-   return *this;
+   return readFloat(value);
 }
 
 
@@ -395,37 +285,18 @@ EDataStream& EDataStream::operator>>(double& value)
 
 EDataStream& EDataStream::operator>>(QString& value)
 {
+   // clear input string
    value.clear();
+
+   // make sure stream is in ok state
    if ( *this )
    {
+      // read type identifier
       quint8 type {0};
       if ( read(&type) )
       {
-         if ( type == String )
-         {
-            quint16 size;
-            if ( read(&size) )
-            {
-               size = qFromBigEndian(size);
-               QChar* buffer;
-               unique_ptr<QChar> holder;
-               if ( (size+1) > _stringBufferSize )
-               {
-                  holder = unique_ptr<QChar>(new QChar[size+1]);
-                  buffer = holder.get();
-               }
-               else
-               {
-                  buffer = _stringBuffer;
-               }
-               if ( read(buffer,size) )
-               {
-                  buffer[size] = QChar('\0');
-                  value = QString(buffer,size);
-               }
-            }
-         }
-         else
+         // make sure it is correct type
+         if ( type != String )
          {
             E_MAKE_EXCEPTION(e);
             e.setLevel(EException::Critical);
@@ -434,8 +305,40 @@ EDataStream& EDataStream::operator>>(QString& value)
             e.setDetails(QObject::tr("Could not read string because data is corrupt"));
             setException(e);
          }
+         else
+         {
+            // read size of string in bytes
+            quint16 size;
+            if ( read(&size) )
+            {
+               size = qFromBigEndian(size);
+               QChar* buffer;
+               unique_ptr<QChar> holder;
+               if ( (size+1) > _stringBufferSize )
+               {
+                  // if string size is greater than internal buffer set it dynamic buffer
+                  holder = unique_ptr<QChar>(new QChar[size+1]);
+                  buffer = holder.get();
+               }
+               else
+               {
+                  // else if string size can fit in internal buffer use it
+                  buffer = _stringBuffer;
+               }
+
+               // read string into buffer
+               if ( read(buffer,size) )
+               {
+                  // if read successful set input string to buffer
+                  buffer[size] = QChar('\0');
+                  value = QString(buffer,size);
+               }
+            }
+         }
       }
    }
+
+   // return reference to stream
    return *this;
 }
 
@@ -446,24 +349,44 @@ EDataStream& EDataStream::operator>>(QString& value)
 
 EDataStream& EDataStream::operator>>(QPixmap& value)
 {
+   // clear input pixmap
    value = QPixmap();
+
+   // make sure stream is in ok state
    if ( *this )
    {
+
+      // read type identifier
       quint8 type {0};
       if ( read(&type) )
       {
-         if ( type == Pixmap )
+         // make sure it is correct type
+         if ( type != Pixmap )
          {
+            E_MAKE_EXCEPTION(e);
+            e.setLevel(EException::Critical);
+            e.setType(CorruptData);
+            e.setTitle(QObject::tr("Data Stream Read"));
+            e.setDetails(QObject::tr("Could not read image because data is corrupt"));
+            setException(e);
+         }
+         else
+         {
+            // read size of pixmap data in bytes
             quint32 size;
             if ( read(&size) )
             {
                size = qFromBigEndian(size);
+
+               // read pixmap data into byte array
                QByteArray buffer;
                buffer.resize(size);
                if ( read(buffer.data(),size) )
                {
+                  // load byte array data into pixmap
                   if ( !value.loadFromData(buffer) )
                   {
+                     // if byte array failed to load as pixmap report error
                      E_MAKE_EXCEPTION(e);
                      e.setLevel(EException::Critical);
                      e.setType(CorruptData);
@@ -474,17 +397,103 @@ EDataStream& EDataStream::operator>>(QPixmap& value)
                }
             }
          }
-         else
-         {
-            E_MAKE_EXCEPTION(e);
-            e.setLevel(EException::Critical);
-            e.setType(CorruptData);
-            e.setTitle(QObject::tr("Data Stream Read"));
-            e.setDetails(QObject::tr("Could not read image because data is corrupt"));
-            setException(e);
-         }
       }
    }
+
+   // return reference to stream
+   return *this;
+}
+
+
+
+
+
+
+
+template<class T>
+EDataStream& EDataStream::writeNumber(T value)
+{
+   // make sure stream is in ok state
+   if ( !*this )
+   {
+      return *this;
+   }
+
+   // change endianness to file format if required
+   if ( sizeof(T) > 1 )
+   {
+      value = qToBigEndian(value);
+   }
+
+   // write to stream and return reference to stream
+   write(value);
+   return *this;
+}
+
+
+
+
+
+
+template<class T>
+EDataStream& EDataStream::writeFloat(T value)
+{
+   // make sure stream is in ok state
+   if ( !*this )
+   {
+      return *this;
+   }
+
+   // write to stream and return reference to stream
+   write(value);
+   return *this;
+}
+
+
+
+
+
+
+template<class T>
+EDataStream& EDataStream::readNumber(T& value)
+{
+   // make sure stream is in ok state
+   if ( !*this )
+   {
+      value = 0;
+      return *this;
+   }
+
+   // read value from stream
+   if ( read(&value) && sizeof(T) > 1 )
+   {
+      // if read successfull and endian matters convert endianness to local
+      value = qFromBigEndian(value);
+   }
+
+   // return reference to stream
+   return *this;
+}
+
+
+
+
+
+
+template<class T>
+EDataStream& EDataStream::readFloat(T& value)
+{
+   // make sure stream is in ok state
+   if ( !*this )
+   {
+      value = 0.0;
+      return *this;
+   }
+
+   // read value from stream
+   read(&value);
+
+   // return reference to stream
    return *this;
 }
 
@@ -496,9 +505,11 @@ EDataStream& EDataStream::operator>>(QPixmap& value)
 template<class T>
 bool EDataStream::write(T value, quint64 size)
 {
+   // write data to file
    if ( static_cast<quint64>(_file->write(reinterpret_cast<char*>(&value),sizeof(T)*size))
         != sizeof(T)*size )
    {
+      // if write failed report error and return false
       E_MAKE_EXCEPTION(e);
       e.setLevel(EException::Critical);
       e.setType(WriteFailed);
@@ -507,6 +518,8 @@ bool EDataStream::write(T value, quint64 size)
       setException(e);
       return false;
    }
+
+   // return true on write success
    return true;
 }
 
@@ -518,9 +531,11 @@ bool EDataStream::write(T value, quint64 size)
 template<class T>
 bool EDataStream::read(T* value, quint64 size)
 {
+   // read data from file
    if ( static_cast<quint64>(_file->read(reinterpret_cast<char*>(value),sizeof(T)*size))
         != sizeof(T)*size )
    {
+      // if read failed report error and return false
       E_MAKE_EXCEPTION(e);
       e.setLevel(EException::Critical);
       e.setType(ReadFailed);
@@ -529,5 +544,7 @@ bool EDataStream::read(T* value, quint64 size)
       setException(e);
       return false;
    }
+
+   // return true on read success
    return true;
 }

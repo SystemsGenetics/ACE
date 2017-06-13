@@ -15,10 +15,13 @@ unique_ptr<EOpenCLDevice> EOpenCLDevice::_instance {nullptr};
 
 EOpenCLDevice::~EOpenCLDevice()
 {
+   // if command queue exists release it
    if ( _commandQueueID )
    {
       clReleaseCommandQueue(*_commandQueueID);
    }
+
+   // if context exists release it
    if ( _contextID )
    {
       clReleaseContext(*_contextID);

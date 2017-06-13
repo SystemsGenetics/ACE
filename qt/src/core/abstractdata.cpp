@@ -9,6 +9,7 @@
 
 void EAbstractData::initialize(Ace::DataObject* object, EDataStream* stream) noexcept
 {
+   // initialize data and stream pointers
    _data = object;
    _stream = stream;
 }
@@ -40,10 +41,13 @@ EDataStream& EAbstractData::stream()
 
 bool EAbstractData::seek(quint64 offset) noexcept
 {
+   // make sure data reference exists
    if ( !_data )
    {
       return false;
    }
+
+   // call seek of data object
    return _data->seek(offset);
 }
 
@@ -54,9 +58,12 @@ bool EAbstractData::seek(quint64 offset) noexcept
 
 bool EAbstractData::allocate(quint64 size) noexcept
 {
+   // make sure data reference exists
    if ( !_data )
    {
       return false;
    }
+
+   // call allocate of data object
    return _data->allocate(size);
 }

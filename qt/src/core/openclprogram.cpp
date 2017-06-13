@@ -46,10 +46,13 @@ EOpenCLProgram::~EOpenCLProgram()
 
 void EOpenCLProgram::addSource(const QString& source)
 {
+   // make sure program isn't already compiled
    if ( _id )
    {
       return;
    }
+
+   // add new source to list
    _sources.append(source.toLatin1());
 }
 
@@ -60,10 +63,12 @@ void EOpenCLProgram::addSource(const QString& source)
 
 bool EOpenCLProgram::addFile(const QString& filePath)
 {
+   // make sure program isn't already compiled
    if ( _id )
    {
       return false;
    }
+
    // open given file
    QFile file(filePath);
    if ( !file.open(QIODevice::ReadOnly) )
@@ -158,10 +163,13 @@ bool EOpenCLProgram::compile(const QString& options)
 
 unique_ptr<EOpenCLKernel> EOpenCLProgram::makeKernel(const QString& name)
 {
+   // make sure program is compiled and in ok state
    if ( !_id || getStatus() != Ok )
    {
       return nullptr;
    }
+
+   // return new kernel
    return unique_ptr<EOpenCLKernel>(new EOpenCLKernel(*_id,_commandQueueID,_deviceID,name));
 }
 

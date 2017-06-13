@@ -18,6 +18,7 @@ Ace::DataReference::DataReference(std::shared_ptr<Ace::DataObject> data
 
 Ace::DataReference::~DataReference() noexcept
 {
+   // shared pointer must be reset first before released signal emitted
    _data.reset();
    emit released(_absolutePath);
 }

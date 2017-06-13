@@ -24,6 +24,10 @@ public:
       ,Amount
       ,Total
    };
+   virtual bool isArgumentRequired(int argument) override final { Q_UNUSED(argument); }
+   virtual QVariant getNumberMinimum() override final {}
+   virtual QVariant getNumberMaximum() override final {}
+   virtual QRegExp getStringValidator() override final {}
    int getArgumentCount() override final;
    QString getCommandLineName(int argument) override final;
    ArgumentType getArgumentType(int argument) override final;

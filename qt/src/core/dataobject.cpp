@@ -11,6 +11,7 @@ Ace::DataObject::DataObject(const QString& path)
 {
    try
    {
+      // open file from given path and make sure it opened for read/write
       _file.reset(new QFile(path));
       if ( !_file->open(QIODevice::ReadWrite) )
       {
@@ -21,21 +22,33 @@ Ace::DataObject::DataObject(const QString& path)
          e.setDetails(tr("Cannot open file %1.").arg(path));
          throw e;
       }
+
+      // create a new data stream from the open file
       _stream.reset(new EDataStream(_file.get()));
+
+      // if file size is less than minimum size return as new object
       if ( _file->size() <= _mininumFileSize )
       {
          return;
       }
+
+      // read special identificaiton value
       quint64 value {0};
       *_stream >> value;
+
+      // if read failed for value is wrong return as new object
       if ( !*_stream || value != _specialValue )
       {
          return;
       }
+
+      // read data type, name, and extension
       quint16 dataType;
       QString name;
       QString extension;
       *_stream >> dataType >> name >> extension;
+
+      // make sure read was successful
       if ( !*_stream )
       {
          E_MAKE_EXCEPTION(e);
@@ -45,6 +58,8 @@ Ace::DataObject::DataObject(const QString& path)
          e.setDetails(tr("Cannot load file %1 because it's header is corrupt.").arg(path));
          throw e;
       }
+
+      // make sure data type in header is valid
       EAbstractDataFactory& factory {EAbstractDataFactory::getInstance()};
       if ( dataType >= factory.getCount() || name != factory.getName(dataType)
            || extension != factory.getFileExtension(dataType) )
@@ -57,13 +72,18 @@ Ace::DataObject::DataObject(const QString& path)
                       .arg(path));
          throw e;
       }
+
+      // create new abstract data object of type given in header and get header offset
       _data = EAbstractDataFactory::getInstance().make(dataType);
       _headerOffset = _file->pos();
+
+      // call abstract data initialize function and set object to not being new
       _data->initialize(this,_stream.get());
       _isNew = false;
    }
    catch (EException e)
    {
+      // make data object invalid if critical exception occured
       if ( e.getLevel() == EException::Critical )
       {
          _invalid = true;
@@ -79,6 +99,7 @@ Ace::DataObject::DataObject(const QString& path)
 
 Ace::DataObject::~DataObject() noexcept
 {
+   // order is important data must be cleared before stream, stream before file
    _data.reset();
    _stream.reset();
    _file.reset();
@@ -91,10 +112,13 @@ Ace::DataObject::~DataObject() noexcept
 
 bool Ace::DataObject::seek(quint64 offset) noexcept
 {
+   // make sure data object is not invalid or new
    if ( _invalid || _isNew )
    {
       return false;
    }
+
+   // call qt seek function and return it's return
    return _file->seek(offset+_headerOffset);
 }
 
@@ -105,10 +129,14 @@ bool Ace::DataObject::seek(quint64 offset) noexcept
 
 bool Ace::DataObject::allocate(quint64 size) noexcept
 {
+   // make sure data object is not invalid or new
    if ( _invalid || _isNew )
    {
       return false;
    }
+
+   // call qt resize function with additional space given to current header position, return it's
+   // return
    return _file->resize(_file->pos()+size);
 }
 
@@ -119,12 +147,14 @@ bool Ace::DataObject::allocate(quint64 size) noexcept
 
 void Ace::DataObject::clear(quint16 newType)
 {
+   // if data object is invalid do nothing
    if ( _invalid )
    {
       return;
    }
    try
    {
+      // make sure type given is valid
       EAbstractDataFactory& factory {EAbstractDataFactory::getInstance()};
       if ( newType >= factory.getCount() )
       {
@@ -135,11 +165,17 @@ void Ace::DataObject::clear(quint16 newType)
          e.setDetails(tr("Cannot initialize data object with unknown type %1.").arg(newType));
          throw e;
       }
+
+      // if data object already had data emit cleared signal
       if ( _data )
       {
          emit cleared();
       }
+
+      // make new abstract data with given type
       _data = factory.make(newType);
+
+      // seek to beginning of file
       if ( !_file->seek(0) )
       {
          E_MAKE_EXCEPTION(e);
@@ -149,6 +185,8 @@ void Ace::DataObject::clear(quint16 newType)
          e.setDetails(tr("Cannot write to data object file."));
          throw e;
       }
+
+      // write new header with information about new data type
       quint64 value = _specialValue;
       quint16 type = newType;
       *_stream << value << type << factory.getName(newType) << factory.getFileExtension(newType);
@@ -161,13 +199,19 @@ void Ace::DataObject::clear(quint16 newType)
          e.setDetails(tr("Cannot write to data object file."));
          throw e;
       }
+
+      // get new header offset in file
       _headerOffset = _file->pos();
+
+      // initialize new abstract data object, call its new data function, and mark this data object
+      // as not new
       _data->initialize(this,_stream.get());
       _data->newData();
       _isNew = false;
    }
    catch (EException e)
    {
+      // if any critical exception occurs while clearing make data object invalid
       if ( e.getLevel() == EException::Critical )
       {
          _invalid = true;

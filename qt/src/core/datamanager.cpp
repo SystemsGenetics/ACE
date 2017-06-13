@@ -28,16 +28,29 @@ Ace::DataManager& Ace::DataManager::getInstance() noexcept
 
 unique_ptr<Ace::DataReference> Ace::DataManager::open(const QString& path)
 {
+   // get absolute file path and prepare pointer
    QFileInfo fileInfo(path);
-   QString absolutePath = fileInfo.canonicalPath() + fileInfo.fileName();
+   QString absolutePath = fileInfo.canonicalFilePath();
+   shared_ptr<DataObject> data;
+
+   // see if file already exists within manager list
    auto i = _dataObjects.find(absolutePath);
    if ( i != _dataObjects.end() )
    {
-      return unique_ptr<DataReference>(new DataReference(*i,absolutePath));
+      // assign data pointer
+      data = *i;
    }
-   shared_ptr<DataObject> data(new DataObject(path));
-   _dataObjects.insert(absolutePath,data);
-   connect(data.get(),SIGNAL(released(const QString&)),this,SLOT(referenceReleased(const QString&)));
+   else
+   {
+      // it does not exist, make new data object with given path and insert into list
+      data.reset(new DataObject(path));
+      _dataObjects.insert(absolutePath,data);
+   }
+
+   // create new reference for data, connect released signal, and return it
+   unique_ptr<DataReference> reference(new DataReference(data,absolutePath));
+   connect(reference.get(),SIGNAL(released(const QString&)),this
+           ,SLOT(referenceReleased(const QString&)));
    return unique_ptr<DataReference>(new DataReference(data,absolutePath));
 }
 
@@ -48,6 +61,7 @@ unique_ptr<Ace::DataReference> Ace::DataManager::open(const QString& path)
 
 void Ace::DataManager::referenceReleased(const QString& absolutePath)
 {
+   // find data that is referenced
    auto i = _dataObjects.find(absolutePath);
    if ( i == _dataObjects.end() )
    {
@@ -59,6 +73,8 @@ void Ace::DataManager::referenceReleased(const QString& absolutePath)
                       " within the data manager.").arg(absolutePath));
       throw e;
    }
+
+   // remove data from list if this was its last reference
    if ( i->use_count() == 1 )
    {
       _dataObjects.erase(i);

@@ -78,10 +78,13 @@ void EOpenCLKernel::setDimensionCount(cl_uint count)
 
 bool EOpenCLKernel::setGlobalSize(cl_uint dimension, cl_uint size)
 {
+   // make sure kernel is in ok state and dimension is valid
    if ( dimension >= _dimensionCount || getStatus() != Ok )
    {
       return false;
    }
+
+   // set new global sizes and return true
    _globalSizes[dimension] = size;
    return true;
 }
@@ -93,10 +96,13 @@ bool EOpenCLKernel::setGlobalSize(cl_uint dimension, cl_uint size)
 
 bool EOpenCLKernel::setWorkgroupSize(cl_uint dimension, cl_uint size)
 {
+   // make sure kernel is in ok state and dimension is valid
    if ( dimension >= _dimensionCount || getStatus() != Ok )
    {
       return false;
    }
+
+   // set new group sizes and return true
    _workgroupSizes[dimension] = size;
    return true;
 }
@@ -108,10 +114,13 @@ bool EOpenCLKernel::setWorkgroupSize(cl_uint dimension, cl_uint size)
 
 size_t EOpenCLKernel::getMaxWorkgroupSize()
 {
+   // make sure kernel is in ok state
    if ( getStatus() != Ok )
    {
       return 0;
    }
+
+   // get maximum group size for this kernel
    size_t size;
    cl_int code = clGetKernelWorkGroupInfo(*_id,_deviceID,CL_KERNEL_WORK_GROUP_SIZE,sizeof(size_t)
                                           ,&size,nullptr);
@@ -120,6 +129,8 @@ size_t EOpenCLKernel::getMaxWorkgroupSize()
       reportError("clGetKernelWorkGroupInfo",code);
       return 0;
    }
+
+   // return maximum group size
    return size;
 }
 
@@ -130,10 +141,13 @@ size_t EOpenCLKernel::getMaxWorkgroupSize()
 
 size_t EOpenCLKernel::getWorkgroupMultiple()
 {
+   // make sure kernel is in ok state
    if ( getStatus() != Ok )
    {
       return 0;
    }
+
+   // get workgroup multiple hint
    size_t size;
    cl_int code = clGetKernelWorkGroupInfo(*_id,_deviceID,CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE
                                           ,sizeof(size_t),&size,nullptr);
@@ -142,6 +156,8 @@ size_t EOpenCLKernel::getWorkgroupMultiple()
       reportError("clGetKernelWorkGroupInfo",code);
       return 0;
    }
+
+   // return workgroup multiple hint
    return size;
 }
 
@@ -152,10 +168,13 @@ size_t EOpenCLKernel::getWorkgroupMultiple()
 
 EOpenCLEvent EOpenCLKernel::execute()
 {
+   // make sure kernel is in ok state
    if ( getStatus() != Ok )
    {
       return EOpenCLEvent();
    }
+
+   // prepare kernel arguments and launch kernel
    size_t offsets[_dimensionCount];
    for (unsigned int i = 0; i < _dimensionCount ;++i)
    {
@@ -170,5 +189,7 @@ EOpenCLEvent EOpenCLKernel::execute()
       reportError("clEnqueueNDRangeKernel",code);
       return EOpenCLEvent();
    }
+
+   // return OpenCL event of kernel execution
    return EOpenCLEvent(eventID);
 }

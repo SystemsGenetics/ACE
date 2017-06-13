@@ -15,8 +15,6 @@ class MetadataArray
 {
 public:
    class Iterator;
-   MetadataArray();
-   ~MetadataArray();
    void pushFront(const MetadataValue& value);
    void pushFront(MetadataValue&& value);
    void pushBack(const MetadataValue& value);

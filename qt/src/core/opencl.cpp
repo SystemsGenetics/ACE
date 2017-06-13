@@ -50,8 +50,10 @@ void EOpenCL::setNoOpenCL()
 
 void EOpenCL::reportError(const QString &function, cl_int code)
 {
+   // only report error if none has been set
    if ( _status == Ok )
    {
+      // set new error
       _errorFunction = function;
       _errorCode = code;
       _status = OpenCLError;

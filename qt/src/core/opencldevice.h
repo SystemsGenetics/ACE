@@ -41,10 +41,13 @@ private:
 template<class T>
 std::unique_ptr<EOpenCLBuffer<T>> EOpenCLDevice::makeBuffer(quint64 size)
 {
+   // make sure device is in ok state
    if ( getStatus() != Ok )
    {
       return nullptr;
    }
+
+   // return new OpenCL buffer
    return std::unique_ptr<EOpenCLBuffer<T>>(new EOpenCLBuffer<T>(*_contextID,*_commandQueueID
                                                                  ,size));
 }

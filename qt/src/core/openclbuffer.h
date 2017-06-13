@@ -100,10 +100,13 @@ const T& EOpenCLBuffer<T>::operator[](int i) const
 template<class T>
 EOpenCLEvent EOpenCLBuffer<T>::read()
 {
+   // make sure buffer is in ok state
    if ( getStatus() != Ok )
    {
       return EOpenCLEvent();
    }
+
+   // add read buffer command to queue
    cl_event eventID;
    cl_int code = clEnqueueReadBuffer(_commandQueueID,*_id,CL_FALSE,0,_size*sizeof(T),_host,0,nullptr
                                      ,&eventID);
@@ -112,6 +115,8 @@ EOpenCLEvent EOpenCLBuffer<T>::read()
       reportError("clEnqueueReadBuffer",code);
       return EOpenCLEvent();
    }
+
+   // return OpenCL event of read buffer command
    return EOpenCLEvent(eventID);
 }
 
@@ -123,10 +128,13 @@ EOpenCLEvent EOpenCLBuffer<T>::read()
 template<class T>
 EOpenCLEvent EOpenCLBuffer<T>::write()
 {
+   // make sure buffer is on ok state
    if ( getStatus() != Ok )
    {
       return EOpenCLEvent();
    }
+
+   // add write buffer command to queue
    cl_event eventID;
    cl_int code = clEnqueueWriteBuffer(_commandQueueID,*_id,CL_FALSE,0,_size*sizeof(T),_host,0
                                       ,nullptr,&eventID);

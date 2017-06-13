@@ -55,6 +55,10 @@ private:
    };
    constexpr static int _maxStringSize {65536};
    constexpr static int _stringBufferSize {1024};
+   template<class T> EDataStream& writeNumber(T value);
+   template<class T> EDataStream& writeFloat(T value);
+   template<class T> EDataStream& readNumber(T& value);
+   template<class T> EDataStream& readFloat(T& value);
    template<class T> bool write(T value, quint64 size = 1);
    template<class T> bool read(T* value, quint64 size = 1);
    QFile* _file;

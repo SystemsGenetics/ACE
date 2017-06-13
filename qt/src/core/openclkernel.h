@@ -41,10 +41,13 @@ private:
 template<class T>
 void EOpenCLKernel::setArgument(cl_uint index, T value)
 {
+   // make sure kernel is in ok state
    if ( getStatus() != Ok )
    {
       return;
    }
+
+   // set kernel argument
    cl_int code = clSetKernelArg(*_id,index,sizeof(T),&value);
    if ( code != CL_SUCCESS )
    {
@@ -60,10 +63,13 @@ void EOpenCLKernel::setArgument(cl_uint index, T value)
 template<class T>
 void EOpenCLKernel::setBuffer(cl_uint index, EOpenCLBuffer<T>* buffer)
 {
+   // make sure kernel is in ok state
    if ( getStatus() != Ok )
    {
       return;
    }
+
+   // set kernel argument to buffer
    cl_int code = clSetKernelArg(*_id,index,sizeof(cl_mem),buffer->getOpenCLMemory());
    if ( code != CL_SUCCESS )
    {
@@ -79,10 +85,13 @@ void EOpenCLKernel::setBuffer(cl_uint index, EOpenCLBuffer<T>* buffer)
 template<class T>
 void EOpenCLKernel::addLocalMemory(cl_uint index, cl_uint size)
 {
+   // make sure kernel is in ok state
    if ( getStatus() != Ok )
    {
       return;
    }
+
+   // set kernel argument for allocated local memory
    size_t byteSize = sizeof(T)*size;
    cl_int code = clSetKernelArg(*_id,index,byteSize,nullptr);
    if ( code != CL_SUCCESS )
