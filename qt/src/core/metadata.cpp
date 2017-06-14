@@ -1,6 +1,6 @@
 #include <QImage>
 
-#include "metadatavalue.h"
+#include "metadata.h"
 #include "exception.h"
 
 
