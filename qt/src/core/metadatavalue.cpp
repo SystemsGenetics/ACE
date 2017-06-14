@@ -1,8 +1,6 @@
 #include <QImage>
 
 #include "metadatavalue.h"
-#include "metadataarray.h"
-#include "metadataobject.h"
 #include "exception.h"
 
 
@@ -10,7 +8,7 @@
 
 
 
-Ace::MetadataValue::MetadataValue(Type type):
+Ace::Metadata::Metadata(Type type):
    _type(type)
 {
    initialize(type);
@@ -21,7 +19,7 @@ Ace::MetadataValue::MetadataValue(Type type):
 
 
 
-Ace::MetadataValue::~MetadataValue()
+Ace::Metadata::~Metadata()
 {
    clear();
 }
@@ -31,63 +29,7 @@ Ace::MetadataValue::~MetadataValue()
 
 
 
-Ace::MetadataValue::MetadataValue(const MetadataValue& copy)
-{
-   copy.checkCopyOrMove("copy");
-   _type = copy._type;
-   initialize(copy._type);
-   makeCopy(copy);
-}
-
-
-
-
-
-
-Ace::MetadataValue::MetadataValue(Ace::MetadataValue&& move)
-{
-   move.checkCopyOrMove("move");
-   _type = move._type;
-   _data = move._data;
-   move._type = Null;
-   move._data = nullptr;
-}
-
-
-
-
-
-
-Ace::MetadataValue& Ace::MetadataValue::operator=(const MetadataValue& copy)
-{
-   copy.checkCopyOrMove("copy");
-   setType(copy._type);
-   makeCopy(copy);
-   return *this;
-}
-
-
-
-
-
-
-Ace::MetadataValue& Ace::MetadataValue::operator=(MetadataValue&& move)
-{
-   move.checkCopyOrMove("move");
-   clear();
-   _type = move._type;
-   _data = move._data;
-   move._type = Null;
-   move._data = nullptr;
-   return *this;
-}
-
-
-
-
-
-
-bool Ace::MetadataValue::isNull() const
+bool Ace::Metadata::isNull() const
 {
    return _type == Null;
 }
@@ -97,7 +39,7 @@ bool Ace::MetadataValue::isNull() const
 
 
 
-bool Ace::MetadataValue::isBool() const
+bool Ace::Metadata::isBool() const
 {
    return _type == Bool;
 }
@@ -107,7 +49,7 @@ bool Ace::MetadataValue::isBool() const
 
 
 
-bool Ace::MetadataValue::isDouble() const
+bool Ace::Metadata::isDouble() const
 {
    return _type == Double;
 }
@@ -117,7 +59,7 @@ bool Ace::MetadataValue::isDouble() const
 
 
 
-bool Ace::MetadataValue::isString() const
+bool Ace::Metadata::isString() const
 {
    return _type == String;
 }
@@ -127,7 +69,7 @@ bool Ace::MetadataValue::isString() const
 
 
 
-bool Ace::MetadataValue::isImage() const
+bool Ace::Metadata::isImage() const
 {
    return _type == Image;
 }
@@ -137,7 +79,7 @@ bool Ace::MetadataValue::isImage() const
 
 
 
-bool Ace::MetadataValue::isArray() const
+bool Ace::Metadata::isArray() const
 {
    return _type == Array;
 }
@@ -147,7 +89,7 @@ bool Ace::MetadataValue::isArray() const
 
 
 
-bool Ace::MetadataValue::isObject() const
+bool Ace::Metadata::isObject() const
 {
    return _type == Object;
 }
@@ -157,10 +99,9 @@ bool Ace::MetadataValue::isObject() const
 
 
 
-const bool& Ace::MetadataValue::toBool() const
+const bool& Ace::Metadata::toBool() const
 {
-   checkType(Bool);
-   return *reinterpret_cast<bool*>(_data);
+   return toType<bool>(Bool);
 }
 
 
@@ -168,10 +109,9 @@ const bool& Ace::MetadataValue::toBool() const
 
 
 
-bool& Ace::MetadataValue::toBool()
+bool& Ace::Metadata::toBool()
 {
-   checkType(Bool);
-   return *reinterpret_cast<bool*>(_data);
+   return toType<bool>(Bool);
 }
 
 
@@ -179,10 +119,9 @@ bool& Ace::MetadataValue::toBool()
 
 
 
-const double& Ace::MetadataValue::toDouble() const
+const double& Ace::Metadata::toDouble() const
 {
-   checkType(Double);
-   return *reinterpret_cast<double*>(_data);
+   return toType<double>(Double);
 }
 
 
@@ -190,10 +129,9 @@ const double& Ace::MetadataValue::toDouble() const
 
 
 
-double& Ace::MetadataValue::toDouble()
+double& Ace::Metadata::toDouble()
 {
-   checkType(Double);
-   return *reinterpret_cast<double*>(_data);
+   return toType<double>(Double);
 }
 
 
@@ -201,10 +139,9 @@ double& Ace::MetadataValue::toDouble()
 
 
 
-const QString& Ace::MetadataValue::toString() const
+const QString& Ace::Metadata::toString() const
 {
-   checkType(String);
-   return *reinterpret_cast<QString*>(_data);
+   return toType<QString>(String);
 }
 
 
@@ -212,10 +149,9 @@ const QString& Ace::MetadataValue::toString() const
 
 
 
-QString& Ace::MetadataValue::toString()
+QString& Ace::Metadata::toString()
 {
-   checkType(String);
-   return *reinterpret_cast<QString*>(_data);
+   return toType<QString>(String);
 }
 
 
@@ -223,10 +159,9 @@ QString& Ace::MetadataValue::toString()
 
 
 
-const QImage& Ace::MetadataValue::toImage() const
+const QImage& Ace::Metadata::toImage() const
 {
-   checkType(Image);
-   return *reinterpret_cast<QImage*>(_data);
+   return toType<QImage>(Image);
 }
 
 
@@ -234,10 +169,9 @@ const QImage& Ace::MetadataValue::toImage() const
 
 
 
-QImage& Ace::MetadataValue::toImage()
+QImage& Ace::Metadata::toImage()
 {
-   checkType(Image);
-   return *reinterpret_cast<QImage*>(_data);
+   return toType<QImage>(Image);
 }
 
 
@@ -245,10 +179,9 @@ QImage& Ace::MetadataValue::toImage()
 
 
 
-const Ace::MetadataArray& Ace::MetadataValue::toArray() const
+const QList<Ace::Metadata*>& Ace::Metadata::toArray() const
 {
-   checkType(Array);
-   return *reinterpret_cast<MetadataArray*>(_data);
+   return toType<QList<Metadata*>>(Array);
 }
 
 
@@ -256,10 +189,9 @@ const Ace::MetadataArray& Ace::MetadataValue::toArray() const
 
 
 
-Ace::MetadataArray& Ace::MetadataValue::toArray()
+QList<Ace::Metadata*>& Ace::Metadata::toArray()
 {
-   checkType(Array);
-   return *reinterpret_cast<MetadataArray*>(_data);
+   return toType<QList<Metadata*>>(Array);
 }
 
 
@@ -267,10 +199,9 @@ Ace::MetadataArray& Ace::MetadataValue::toArray()
 
 
 
-const Ace::MetadataObject& Ace::MetadataValue::toObject() const
+const QMap<QString,Ace::Metadata*>& Ace::Metadata::toObject() const
 {
-   checkType(Object);
-   return *reinterpret_cast<MetadataObject*>(_data);
+   return toType<QMap<QString,Metadata*>>(Object);
 }
 
 
@@ -278,10 +209,9 @@ const Ace::MetadataObject& Ace::MetadataValue::toObject() const
 
 
 
-Ace::MetadataObject& Ace::MetadataValue::toObject()
+QMap<QString,Ace::Metadata*>& Ace::Metadata::toObject()
 {
-   checkType(Object);
-   return *reinterpret_cast<MetadataObject*>(_data);
+   return toType<QMap<QString,Metadata*>>(Object);
 }
 
 
@@ -289,7 +219,7 @@ Ace::MetadataObject& Ace::MetadataValue::toObject()
 
 
 
-void Ace::MetadataValue::setType(Type newType)
+void Ace::Metadata::setType(Type newType)
 {
    clear();
    _type = newType;
@@ -301,7 +231,7 @@ void Ace::MetadataValue::setType(Type newType)
 
 
 
-Ace::MetadataValue::Type Ace::MetadataValue::getType() const
+Ace::Metadata::Type Ace::Metadata::getType() const
 {
    return _type;
 }
@@ -311,7 +241,7 @@ Ace::MetadataValue::Type Ace::MetadataValue::getType() const
 
 
 
-void Ace::MetadataValue::clear()
+void Ace::Metadata::clear()
 {
    switch (_type)
    {
@@ -328,11 +258,19 @@ void Ace::MetadataValue::clear()
       delete reinterpret_cast<QImage*>(_data);
       break;
    case Array:
-      delete reinterpret_cast<MetadataArray*>(_data);
+   {
+      auto data = reinterpret_cast<QList<Metadata*>*>(_data);
+      qDeleteAll(*data);
+      delete data;
       break;
+   }
    case Object:
-      delete reinterpret_cast<MetadataObject*>(_data);
+   {
+      auto data = reinterpret_cast<QMap<QString,Metadata*>*>(_data);
+      qDeleteAll(*data);
+      delete data;
       break;
+   }
    case Null:
       break;
    }
@@ -345,7 +283,7 @@ void Ace::MetadataValue::clear()
 
 
 
-void Ace::MetadataValue::initialize(Type type)
+void Ace::Metadata::initialize(Type type)
 {
    switch (type)
    {
@@ -364,10 +302,10 @@ void Ace::MetadataValue::initialize(Type type)
       _data = reinterpret_cast<void*>(new QImage);
       break;
    case Array:
-      _data = reinterpret_cast<void*>(new MetadataArray);
+      _data = reinterpret_cast<void*>(new QList<Metadata*>);
       break;
    case Object:
-      _data = reinterpret_cast<void*>(new MetadataObject);
+      _data = reinterpret_cast<void*>(new QMap<QString,Metadata*>);
       break;
    case Null:
       break;
@@ -379,7 +317,8 @@ void Ace::MetadataValue::initialize(Type type)
 
 
 
-void Ace::MetadataValue::checkType(Type type) const
+template<class T>
+T& Ace::Metadata::toType(Type type)
 {
    if ( _type != type )
    {
@@ -389,6 +328,7 @@ void Ace::MetadataValue::checkType(Type type) const
                    .arg(getTypeName(_type)).arg(getTypeName(type)));
       throw e;
    }
+   return *reinterpret_cast<T*>(_data);
 }
 
 
@@ -396,15 +336,18 @@ void Ace::MetadataValue::checkType(Type type) const
 
 
 
-void Ace::MetadataValue::checkCopyOrMove(const QString& what) const
+template<class T>
+const T& Ace::Metadata::toType(Type type) const
 {
-   if ( _type == Array || _type == Object )
-   {
-      E_MAKE_EXCEPTION(e);
-      e.setTitle(QObject::tr("Invalid Metadata Copy"));
-      e.setDetails(QObject::tr("Cannot %1 metadata array or object.").arg(what));
-      throw e;
-   }
+    if ( _type != type )
+    {
+       E_MAKE_EXCEPTION(e);
+       e.setTitle(QObject::tr("Metadata Type Mismatch"));
+       e.setDetails(QObject::tr("Attempting to use metadata value of type %1 as type %2.")
+                    .arg(getTypeName(_type)).arg(getTypeName(type)));
+       throw e;
+    }
+    return *reinterpret_cast<T*>(_data);
 }
 
 
@@ -412,35 +355,7 @@ void Ace::MetadataValue::checkCopyOrMove(const QString& what) const
 
 
 
-void Ace::MetadataValue::makeCopy(const MetadataValue& copy)
-{
-   switch (_type)
-   {
-   case Bool:
-      toBool() = copy.toBool();
-      break;
-   case Double:
-      toDouble() = copy.toDouble();
-      break;
-   case String:
-      toString() = copy.toString();
-      break;
-   case Image:
-      toImage() = copy.toImage();
-      break;
-   case Array:
-   case Object:
-   case Null:
-      break;
-   }
-}
-
-
-
-
-
-
-QString Ace::MetadataValue::getTypeName(Ace::MetadataValue::Type type) const
+QString Ace::Metadata::getTypeName(Ace::Metadata::Type type) const
 {
    switch (type)
    {

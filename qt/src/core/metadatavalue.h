@@ -1,17 +1,14 @@
-#ifndef ACE_METADATAVALUE_H
-#define ACE_METADATAVALUE_H
+#ifndef ACE_METADATA_H
+#define ACE_METADATA_H
 #include <QtCore>
+
+#include "utilities.h"
 
 
 
 namespace Ace
 {
-class MetadataArray;
-class MetadataObject;
-
-
-
-class MetadataValue
+class Metadata
 {
 public:
    enum Type
@@ -24,12 +21,9 @@ public:
       ,Array
       ,Object
    };
-   MetadataValue(Type type = Null);
-   ~MetadataValue();
-   MetadataValue(const MetadataValue& copy);
-   MetadataValue(MetadataValue&& move);
-   MetadataValue& operator=(const MetadataValue& copy);
-   MetadataValue& operator=(MetadataValue&& move);
+   Metadata(Type type = Null);
+   ~Metadata();
+   ACE_DISBALE_COPY_AND_MOVE(Metadata)
    bool isNull() const;
    bool isBool() const;
    bool isDouble() const;
@@ -45,18 +39,17 @@ public:
    QString& toString();
    const QImage& toImage() const;
    QImage& toImage();
-   const MetadataArray& toArray() const;
-   MetadataArray& toArray();
-   const MetadataObject& toObject() const;
-   MetadataObject& toObject();
+   const QList<Metadata*>& toArray() const;
+   QList<Metadata*>& toArray();
+   const QMap<QString,Metadata*>& toObject() const;
+   QMap<QString,Metadata*>& toObject();
    void setType(Type newType);
    Type getType() const;
    void clear();
 private:
    void initialize(Type type);
-   void checkType(Type type) const;
-   void checkCopyOrMove(const QString& what) const;
-   void makeCopy(const MetadataValue& copy);
+   template<class T> T& toType(Type type);
+   template<class T> const T& toType(Type type) const;
    QString getTypeName(Type type) const;
    Type _type {Null};
    void* _data {nullptr};
