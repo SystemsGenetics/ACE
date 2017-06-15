@@ -2,8 +2,6 @@
 #define ACE_METADATA_H
 #include <QtCore>
 
-#include "utilities.h"
-
 
 
 namespace Ace
@@ -21,9 +19,12 @@ public:
       ,Array
       ,Object
    };
+   using List = QList<Metadata*>;
+   using Map = QList<QPair<QString,Metadata*>>;
    Metadata(Type type = Null);
+   Metadata(const Metadata&) = delete;
+   Metadata(Metadata&&) = delete;
    ~Metadata();
-   ACE_DISBALE_COPY_AND_MOVE(Metadata)
    bool isNull() const;
    bool isBool() const;
    bool isDouble() const;
@@ -39,10 +40,10 @@ public:
    QString& toString();
    const QImage& toImage() const;
    QImage& toImage();
-   const QList<Metadata*>& toArray() const;
-   QList<Metadata*>& toArray();
-   const QMap<QString,Metadata*>& toObject() const;
-   QMap<QString,Metadata*>& toObject();
+   const List& toArray() const;
+   List& toArray();
+   const Map& toObject() const;
+   Map& toObject();
    void setType(Type newType);
    Type getType() const;
    void clear();

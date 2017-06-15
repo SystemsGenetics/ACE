@@ -179,9 +179,9 @@ QImage& Ace::Metadata::toImage()
 
 
 
-const QList<Ace::Metadata*>& Ace::Metadata::toArray() const
+const Ace::Metadata::List& Ace::Metadata::toArray() const
 {
-   return toType<QList<Metadata*>>(Array);
+   return toType<List>(Array);
 }
 
 
@@ -189,9 +189,9 @@ const QList<Ace::Metadata*>& Ace::Metadata::toArray() const
 
 
 
-QList<Ace::Metadata*>& Ace::Metadata::toArray()
+Ace::Metadata::List& Ace::Metadata::toArray()
 {
-   return toType<QList<Metadata*>>(Array);
+   return toType<List>(Array);
 }
 
 
@@ -199,9 +199,9 @@ QList<Ace::Metadata*>& Ace::Metadata::toArray()
 
 
 
-const QMap<QString,Ace::Metadata*>& Ace::Metadata::toObject() const
+const Ace::Metadata::Map& Ace::Metadata::toObject() const
 {
-   return toType<QMap<QString,Metadata*>>(Object);
+   return toType<Map>(Object);
 }
 
 
@@ -209,9 +209,9 @@ const QMap<QString,Ace::Metadata*>& Ace::Metadata::toObject() const
 
 
 
-QMap<QString,Ace::Metadata*>& Ace::Metadata::toObject()
+Ace::Metadata::Map& Ace::Metadata::toObject()
 {
-   return toType<QMap<QString,Metadata*>>(Object);
+   return toType<Map>(Object);
 }
 
 
@@ -221,7 +221,10 @@ QMap<QString,Ace::Metadata*>& Ace::Metadata::toObject()
 
 void Ace::Metadata::setType(Type newType)
 {
+   // clear any existing data
    clear();
+
+   // set new type and initialize
    _type = newType;
    initialize(newType);
 }
@@ -243,6 +246,7 @@ Ace::Metadata::Type Ace::Metadata::getType() const
 
 void Ace::Metadata::clear()
 {
+   // delete data depending on which type
    switch (_type)
    {
    case Bool:
@@ -259,21 +263,33 @@ void Ace::Metadata::clear()
       break;
    case Array:
    {
-      auto data = reinterpret_cast<QList<Metadata*>*>(_data);
+      // delete all array children
+      auto data = reinterpret_cast<List*>(_data);
       qDeleteAll(*data);
+
+      // delete array itself
       delete data;
       break;
    }
    case Object:
    {
-      auto data = reinterpret_cast<QMap<QString,Metadata*>*>(_data);
-      qDeleteAll(*data);
+      // delete all object children
+      auto data = reinterpret_cast<Map*>(_data);
+      for (auto i = data->constBegin(); i != data->constEnd() ;++i)
+      {
+          delete i->second;
+      }
+
+      // delete object itself
       delete data;
       break;
    }
    case Null:
+      // null data, do nothing
       break;
    }
+
+   // set type to null
    _type = Null;
    _data = nullptr;
 }
@@ -285,6 +301,7 @@ void Ace::Metadata::clear()
 
 void Ace::Metadata::initialize(Type type)
 {
+   // initialize new data depending on type
    switch (type)
    {
    case Bool:
@@ -302,12 +319,13 @@ void Ace::Metadata::initialize(Type type)
       _data = reinterpret_cast<void*>(new QImage);
       break;
    case Array:
-      _data = reinterpret_cast<void*>(new QList<Metadata*>);
+      _data = reinterpret_cast<void*>(new List);
       break;
    case Object:
-      _data = reinterpret_cast<void*>(new QMap<QString,Metadata*>);
+      _data = reinterpret_cast<void*>(new Map);
       break;
    case Null:
+      // null data, nothing to initialize
       break;
    }
 }
@@ -320,6 +338,7 @@ void Ace::Metadata::initialize(Type type)
 template<class T>
 T& Ace::Metadata::toType(Type type)
 {
+   // make sure type is correct
    if ( _type != type )
    {
       E_MAKE_EXCEPTION(e);
@@ -328,6 +347,8 @@ T& Ace::Metadata::toType(Type type)
                    .arg(getTypeName(_type)).arg(getTypeName(type)));
       throw e;
    }
+
+   // return reference to data
    return *reinterpret_cast<T*>(_data);
 }
 
@@ -339,6 +360,7 @@ T& Ace::Metadata::toType(Type type)
 template<class T>
 const T& Ace::Metadata::toType(Type type) const
 {
+   // make sure type is correct
     if ( _type != type )
     {
        E_MAKE_EXCEPTION(e);
@@ -347,6 +369,8 @@ const T& Ace::Metadata::toType(Type type) const
                     .arg(getTypeName(_type)).arg(getTypeName(type)));
        throw e;
     }
+
+    // return reference to data
     return *reinterpret_cast<T*>(_data);
 }
 
@@ -357,6 +381,7 @@ const T& Ace::Metadata::toType(Type type) const
 
 QString Ace::Metadata::getTypeName(Ace::Metadata::Type type) const
 {
+   // determine which type object is and return name
    switch (type)
    {
    case Bool:
