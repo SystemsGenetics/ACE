@@ -13,4 +13,5 @@ example.depends = core gui
 
 # make OpenCLEvent NOTHROW exception class lolz(public EOpenCL)
 
-# flesh out code for MetadataModel :D
+# change qpixmap in edatastream to bytearray so it only needs qtcore, add load/save for metadata
+# using edatastream

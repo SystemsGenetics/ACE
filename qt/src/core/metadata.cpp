@@ -69,9 +69,9 @@ bool Ace::Metadata::isString() const
 
 
 
-bool Ace::Metadata::isImage() const
+bool Ace::Metadata::isBytes() const
 {
-   return _type == Image;
+   return _type == Bytes;
 }
 
 
@@ -159,9 +159,9 @@ QString& Ace::Metadata::toString()
 
 
 
-const QImage& Ace::Metadata::toImage() const
+const QByteArray& Ace::Metadata::toBytes() const
 {
-   return toType<QImage>(Image);
+   return toType<QByteArray>(Bytes);
 }
 
 
@@ -169,9 +169,9 @@ const QImage& Ace::Metadata::toImage() const
 
 
 
-QImage& Ace::Metadata::toImage()
+QByteArray& Ace::Metadata::toBytes()
 {
-   return toType<QImage>(Image);
+   return toType<QByteArray>(Bytes);
 }
 
 
@@ -258,8 +258,8 @@ void Ace::Metadata::clear()
    case String:
       delete reinterpret_cast<QString*>(_data);
       break;
-   case Image:
-      delete reinterpret_cast<QImage*>(_data);
+   case Bytes:
+      delete reinterpret_cast<QByteArray*>(_data);
       break;
    case Array:
    {
@@ -299,6 +299,26 @@ void Ace::Metadata::clear()
 
 
 
+void Ace::Metadata::setParent(Ace::Metadata *parent)
+{
+   _parent = parent;
+}
+
+
+
+
+
+
+Ace::Metadata *Ace::Metadata::getParent() const
+{
+   return _parent;
+}
+
+
+
+
+
+
 void Ace::Metadata::initialize(Type type)
 {
    // initialize new data depending on type
@@ -315,8 +335,8 @@ void Ace::Metadata::initialize(Type type)
    case String:
       _data = reinterpret_cast<void*>(new QString);
       break;
-   case Image:
-      _data = reinterpret_cast<void*>(new QImage);
+   case Bytes:
+      _data = reinterpret_cast<void*>(new QByteArray);
       break;
    case Array:
       _data = reinterpret_cast<void*>(new List);
@@ -390,8 +410,8 @@ QString Ace::Metadata::getTypeName(Ace::Metadata::Type type) const
       return QString("Double");
    case String:
       return QString("String");
-   case Image:
-      return QString("Image");
+   case Bytes:
+      return QString("Bytes");
    case Array:
       return QString("Array");
    case Object:

@@ -15,7 +15,7 @@ public:
       ,Bool
       ,Double
       ,String
-      ,Image
+      ,Bytes
       ,Array
       ,Object
    };
@@ -29,7 +29,7 @@ public:
    bool isBool() const;
    bool isDouble() const;
    bool isString() const;
-   bool isImage() const;
+   bool isBytes() const;
    bool isArray() const;
    bool isObject() const;
    const bool& toBool() const;
@@ -38,8 +38,8 @@ public:
    double& toDouble();
    const QString& toString() const;
    QString& toString();
-   const QImage& toImage() const;
-   QImage& toImage();
+   const QByteArray& toBytes() const;
+   QByteArray& toBytes();
    const List& toArray() const;
    List& toArray();
    const Map& toObject() const;
@@ -47,6 +47,8 @@ public:
    void setType(Type newType);
    Type getType() const;
    void clear();
+   void setParent(Metadata* parent);
+   Metadata* getParent() const;
 private:
    void initialize(Type type);
    template<class T> T& toType(Type type);
@@ -54,6 +56,7 @@ private:
    QString getTypeName(Type type) const;
    Type _type {Null};
    void* _data {nullptr};
+   Metadata* _parent {nullptr};
 };
 }
 
