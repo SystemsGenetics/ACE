@@ -14,6 +14,10 @@ class MetadataModel : public QAbstractItemModel
 {
    Q_OBJECT
 public:
+   enum Errors
+   {
+      InvalidParent = 0
+   };
    explicit MetadataModel(QObject* parent = nullptr) noexcept;
    MetadataModel(const MetadataModel&) = delete;
    MetadataModel(MetadataModel&&) = delete;

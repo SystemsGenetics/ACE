@@ -219,6 +219,37 @@ Ace::Metadata::Map& Ace::Metadata::toObject()
 
 
 
+QVariant Ace::Metadata::toVariant() const
+{
+   // figure out which type and return data wrapped in qt variant
+   switch (_type)
+   {
+   case Bool:
+      QVariant(*reinterpret_cast<bool*>(_data));
+      break;
+   case Double:
+      QVariant(*reinterpret_cast<double*>(_data));
+      break;
+   case String:
+      QVariant(*reinterpret_cast<QString*>(_data));
+      break;
+   case Bytes:
+      // if type is bytes simply state it is an image
+      QVariant(QObject::tr("Image"));
+      break;
+   case Array:
+   case Object:
+   case Null:
+      // if type is array, object, or null return nothing
+      return QVariant();
+   }
+}
+
+
+
+
+
+
 void Ace::Metadata::setType(Type newType)
 {
    // clear any existing data
@@ -319,6 +350,67 @@ Ace::Metadata *Ace::Metadata::getParent() const
 
 
 
+int Ace::Metadata::getChildIndex(Metadata* child) const
+{
+   // check if data type is array
+   if ( _type == Array )
+   {
+      // get array and iterate through it until child pointer is found
+      QList<Metadata*>& list {*reinterpret_cast<QList<Metadata*>*>(_data)};
+      for (int i = 0; i < list.size() ;++i)
+      {
+         if ( list.at(i) == child )
+         {
+            return i;
+         }
+      }
+   }
+
+   // check if data type is object
+   else if ( _type == Object )
+   {
+      // get array and iterate through it until child pointer is found
+      QList<QPair<QString,Metadata*>>& list {*reinterpret_cast<QList<QPair<QString,Metadata*>>*>(_data)};
+      for (int i = 0; i < list.size() ;++i)
+      {
+         if ( list.at(i).second == child )
+         {
+            return i;
+         }
+      }
+   }
+
+   // if data type is not array or object then report exception
+   else
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setLevel(EException::Critical);
+      e.setType(TypeMismatch);
+      e.setTitle(QObject::tr("Metadata Type Mismatch"));
+      e.setDetails(QObject::tr("Attempting to access children of metadata object that is of type %1.")
+                   .arg(convertTypeName(_type)));
+      throw e;
+   }
+
+   // return invalid index if no child is found
+   return -1;
+}
+
+
+
+
+
+
+QString Ace::Metadata::getTypeName() const
+{
+   return convertTypeName(_type);
+}
+
+
+
+
+
+
 void Ace::Metadata::initialize(Type type)
 {
    // initialize new data depending on type
@@ -362,9 +454,11 @@ T& Ace::Metadata::toType(Type type)
    if ( _type != type )
    {
       E_MAKE_EXCEPTION(e);
+      e.setLevel(EException::Critical);
+      e.setType(TypeMismatch);
       e.setTitle(QObject::tr("Metadata Type Mismatch"));
       e.setDetails(QObject::tr("Attempting to use metadata value of type %1 as type %2.")
-                   .arg(getTypeName(_type)).arg(getTypeName(type)));
+                   .arg(convertTypeName(_type)).arg(convertTypeName(type)));
       throw e;
    }
 
@@ -384,9 +478,11 @@ const T& Ace::Metadata::toType(Type type) const
     if ( _type != type )
     {
        E_MAKE_EXCEPTION(e);
+       e.setLevel(EException::Critical);
+       e.setType(TypeMismatch);
        e.setTitle(QObject::tr("Metadata Type Mismatch"));
        e.setDetails(QObject::tr("Attempting to use metadata value of type %1 as type %2.")
-                    .arg(getTypeName(_type)).arg(getTypeName(type)));
+                    .arg(convertTypeName(_type)).arg(convertTypeName(type)));
        throw e;
     }
 
@@ -399,7 +495,7 @@ const T& Ace::Metadata::toType(Type type) const
 
 
 
-QString Ace::Metadata::getTypeName(Ace::Metadata::Type type) const
+QString Ace::Metadata::convertTypeName(Ace::Metadata::Type type) const
 {
    // determine which type object is and return name
    switch (type)

@@ -9,6 +9,10 @@ namespace Ace
 class Metadata
 {
 public:
+   enum Errors
+   {
+      TypeMismatch = 0
+   };
    enum Type
    {
       Null
@@ -44,16 +48,19 @@ public:
    List& toArray();
    const Map& toObject() const;
    Map& toObject();
+   QVariant toVariant() const;
    void setType(Type newType);
    Type getType() const;
    void clear();
    void setParent(Metadata* parent);
    Metadata* getParent() const;
+   int getChildIndex(Metadata* child) const;
+   QString getTypeName() const;
 private:
    void initialize(Type type);
    template<class T> T& toType(Type type);
    template<class T> const T& toType(Type type) const;
-   QString getTypeName(Type type) const;
+   QString convertTypeName(Type type) const;
    Type _type {Null};
    void* _data {nullptr};
    Metadata* _parent {nullptr};
