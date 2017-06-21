@@ -243,6 +243,7 @@ QVariant Ace::Metadata::toVariant() const
       // if type is array, object, or null return nothing
       return QVariant();
    }
+   return QVariant();
 }
 
 
@@ -357,13 +358,7 @@ int Ace::Metadata::getChildIndex(Metadata* child) const
    {
       // get array and iterate through it until child pointer is found
       QList<Metadata*>& list {*reinterpret_cast<QList<Metadata*>*>(_data)};
-      for (int i = 0; i < list.size() ;++i)
-      {
-         if ( list.at(i) == child )
-         {
-            return i;
-         }
-      }
+      return list.lastIndexOf(child);
    }
 
    // check if data type is object

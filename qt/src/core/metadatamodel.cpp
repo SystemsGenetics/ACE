@@ -111,6 +111,12 @@ QModelIndex Ace::MetadataModel::parent(const QModelIndex& child) const
 
 int Ace::MetadataModel::rowCount(const QModelIndex& parent) const
 {
+   // make sure there is a root metadata object
+   if ( !_root )
+   {
+      return 0;
+   }
+
    // get pointer of parent index
    Metadata* metaParent;
    if ( parent.isValid() )
@@ -186,7 +192,7 @@ QVariant Ace::MetadataModel::data(const QModelIndex& index, int role) const
          // parent is of type it should not be so report error
          E_MAKE_EXCEPTION(e);
          e.setLevel(EException::Critical);
-         e.setType(InvalidParent);
+         e.setType(InvalidIndex);
          e.setTitle(tr("Metadata Model"));
          e.setDetails(tr("Discovered metadata parent that is not array or object."));
          throw e;
@@ -208,7 +214,28 @@ QVariant Ace::MetadataModel::data(const QModelIndex& index, int role) const
 
 Qt::ItemFlags Ace::MetadataModel::flags(const QModelIndex& index) const
 {
-   //
+   // setup basic flags that always exist
+   Qt::ItemFlags ret {Qt::ItemIsSelectable|Qt::ItemIsEnabled};
+
+   // get pointer to metadata of index
+   Metadata* meta;
+   if ( index.isValid() )
+   {
+      meta = reinterpret_cast<Metadata*>(index.internalPointer());
+   }
+   else
+   {
+      meta = _root;
+   }
+
+   // if metadata type is not array, object, or null then it is also editable
+   if ( !meta->isArray() && !meta->isObject() && !meta->isNull() )
+   {
+      ret |= Qt::ItemIsEditable;
+   }
+
+   // return flags
+   return ret;
 }
 
 
@@ -218,7 +245,60 @@ Qt::ItemFlags Ace::MetadataModel::flags(const QModelIndex& index) const
 
 bool Ace::MetadataModel::removeRows(int row, int count, const QModelIndex& parent)
 {
-   //
+   // get pointer to metadata of parent
+   Metadata* metaParent;
+   if ( parent.isValid() )
+   {
+      metaParent = reinterpret_cast<Metadata*>(parent.internalPointer());
+   }
+   else
+   {
+      metaParent = _root;
+   }
+
+   // check if metadata type is array
+   if ( metaParent->isArray() )
+   {
+      // get list and begin remove row opertation
+      QList<Metadata*>& list {metaParent->toArray()};
+      beginRemoveRows(parent,row,row+count-1);
+
+      // remove rows then end remove row operation
+      for (int i = 0; i < count ;++i)
+      {
+         list.removeAt(row);
+      }
+      endRemoveRows();
+   }
+
+   // check if metadata type is object
+   else if ( metaParent->isObject() )
+   {
+      // get list and begin remove row opertation
+      QList<QPair<QString,Metadata*>>& list {metaParent->toObject()};
+      beginRemoveRows(parent,row,row+count-1);
+
+      // remove rows then end remove row operation
+      for (int i = 0; i < count ;++i)
+      {
+         list.removeAt(row);
+      }
+      endRemoveRows();
+   }
+
+   // if metadata type is neither array or object an error has occured
+   else
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setLevel(EException::Critical);
+      e.setType(InvalidParent);
+      e.setTitle(tr("Metadata Model"));
+      e.setDetails(tr("Attempting to remove rows of metadata that is not array or object."));
+      throw e;
+   }
+
+   // return success of operation
+   return true;
 }
 
 
@@ -228,7 +308,54 @@ bool Ace::MetadataModel::removeRows(int row, int count, const QModelIndex& paren
 
 bool Ace::MetadataModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
-   //
+   // make sure this is the edit role
+   if ( role != Qt::EditRole )
+   {
+      return false;
+   }
+
+   // get pointer to metadata of index
+   Metadata* meta = reinterpret_cast<Metadata*>(index.internalPointer());
+
+   // set new value for metadata depending on what type it is
+   if ( meta->isBool() )
+   {
+      meta->toBool() = value.toBool();
+   }
+   else if ( meta->isDouble() )
+   {
+      bool ok {false};
+      meta->toDouble() = value.toDouble(&ok);
+
+      // make sure floating point value was given correctly
+      if ( !ok )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setLevel(EException::Critical);
+         e.setType(InvalidVariant);
+         e.setTitle(tr("Metadata Model"));
+         e.setDetails(tr("Could not get floating point value from qt variant class."));
+         throw e;
+      }
+   }
+   else if ( meta->isString() )
+   {
+      meta->toString() = value.toString();
+   }
+
+   // if this metadata is of a type that does not hold data report error
+   else
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setLevel(EException::Critical);
+      e.setType(InvalidIndex);
+      e.setTitle(tr("Metadata Model"));
+      e.setDetails(tr("Attempting to edit value of metadata that is an array or object."));
+      throw e;
+   }
+
+   // return success of operation
+   return true;
 }
 
 
