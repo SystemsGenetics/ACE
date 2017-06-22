@@ -19,6 +19,7 @@ public:
       InvalidParent = 0
       ,InvalidIndex
       ,InvalidVariant
+      ,InvalidRoot
    };
    explicit MetadataModel(QObject* parent = nullptr) noexcept;
    MetadataModel(const MetadataModel&) = delete;
@@ -35,12 +36,11 @@ public:
    QStringList mimeTypes() const override final;
    Qt::DropActions supportedDropActions() const override final;
    QMimeData* mimeData(const QModelIndexList& indexes) const override final;
-   bool canDropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column
-                        , const QModelIndex& parent) const;
    bool dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column
                      , const QModelIndex& parent) override final;
    void setRoot(Metadata* root) noexcept;
 private:
+   bool hasKey(const QString& key, QList<QPair<QString,Metadata*>>& list);
    Metadata* _root {nullptr};
 };
 }

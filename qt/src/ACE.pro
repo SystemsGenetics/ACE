@@ -13,4 +13,4 @@ example.depends = core gui
 
 # make OpenCLEvent NOTHROW exception class lolz(public EOpenCL)
 
-# add drag and drop for metadata model
+# integrate metadata and its model into data object

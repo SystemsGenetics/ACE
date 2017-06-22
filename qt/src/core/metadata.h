@@ -56,6 +56,8 @@ public:
    Metadata* getParent() const;
    int getChildIndex(Metadata* child) const;
    QString getTypeName() const;
+   void setKey(const QString& key);
+   QString getKey();
 private:
    void initialize(Type type);
    template<class T> T& toType(Type type);
@@ -64,6 +66,7 @@ private:
    Type _type {Null};
    void* _data {nullptr};
    Metadata* _parent {nullptr};
+   QString _key;
 };
 }
 

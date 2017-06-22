@@ -406,6 +406,26 @@ QString Ace::Metadata::getTypeName() const
 
 
 
+void Ace::Metadata::setKey(const QString& key)
+{
+   _key = key;
+}
+
+
+
+
+
+
+QString Ace::Metadata::getKey()
+{
+   return _key;
+}
+
+
+
+
+
+
 void Ace::Metadata::initialize(Type type)
 {
    // initialize new data depending on type

@@ -221,7 +221,9 @@ Qt::ItemFlags Ace::MetadataModel::flags(const QModelIndex& index) const
    Metadata* meta;
    if ( index.isValid() )
    {
+      // get pointer to valid index and add ability to drag it
       meta = reinterpret_cast<Metadata*>(index.internalPointer());
+      ret |= Qt::ItemIsDragEnabled;
    }
    else
    {
@@ -232,6 +234,12 @@ Qt::ItemFlags Ace::MetadataModel::flags(const QModelIndex& index) const
    if ( !meta->isArray() && !meta->isObject() && !meta->isNull() )
    {
       ret |= Qt::ItemIsEditable;
+   }
+
+   // if metadata type is array or object enable as drop target
+   if ( meta->isArray() || meta->isObject() )
+   {
+      ret |= Qt::ItemIsDropEnabled;
    }
 
    // return flags
@@ -365,6 +373,7 @@ bool Ace::MetadataModel::setData(const QModelIndex& index, const QVariant& value
 
 QStringList Ace::MetadataModel::mimeTypes() const
 {
+   return QStringList() << "application/metadata.pointer";
 }
 
 
@@ -374,6 +383,7 @@ QStringList Ace::MetadataModel::mimeTypes() const
 
 Qt::DropActions Ace::MetadataModel::supportedDropActions() const
 {
+   return Qt::MoveAction;
 }
 
 
@@ -381,18 +391,41 @@ Qt::DropActions Ace::MetadataModel::supportedDropActions() const
 
 
 
-QMimeData *Ace::MetadataModel::mimeData(const QModelIndexList& indexes) const
+QMimeData* Ace::MetadataModel::mimeData(const QModelIndexList& indexes) const
 {
-}
+   // if the indexes are empty return nothing
+   if ( indexes.isEmpty() )
+   {
+      return nullptr;
+   }
 
+   // initialize byte array and data stream
+   QByteArray pointers;
+   QDataStream stream(&pointers,QIODevice::WriteOnly);
+   pointers.reserve(sizeof(quint16)+(sizeof(quintptr)*indexes.size()));
 
+   // write number of pointers to byte array
+   quint16 size = indexes.size();
+   stream << size;
 
+   // go through list of all indexes and write metadata pointer to byte array for each one
+   for (auto i = indexes.constBegin(); i != indexes.constEnd() ;++i)
+   {
+      const QModelIndex& index {*i};
+      quintptr pointer = reinterpret_cast<quintptr>(index.internalPointer());
+      stream << pointer;
+   }
 
+   // make sure all writing to byte array was successful
+   if ( stream.status() != QDataStream::Ok )
+   {
+      return nullptr;
+   }
 
-
-bool Ace::MetadataModel::canDropMimeData(const QMimeData* data, Qt::DropAction action, int row
-                                         , int column, const QModelIndex& parent) const
-{
+   // create new mime data and return it with pointer byte array
+   QMimeData* data {new QMimeData};
+   data->setData("application/metadata.pointer",pointers);
+   return data;
 }
 
 
@@ -403,6 +436,115 @@ bool Ace::MetadataModel::canDropMimeData(const QMimeData* data, Qt::DropAction a
 bool Ace::MetadataModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row
                                       , int column, const QModelIndex& parent)
 {
+   // both column and action are unused
+   Q_UNUSED(column);
+   Q_UNUSED(action);
+
+   // get pointer byte array of mime data
+   QByteArray pointers = data->data("application/metadata.pointer");
+   QDataStream stream(pointers);
+
+   // get number of pointers
+   quint16 size;
+   stream >> size;
+
+   // generate and get list of pointers
+   QList<Metadata*> metadata;
+   for (int i = 0; i < size ;++i)
+   {
+      quintptr pointer;
+      stream >> pointer;
+      metadata.push_back(reinterpret_cast<Metadata*>(pointer));
+   }
+
+   // make sure stream was successful in getting all information
+   if ( stream.status() != QDataStream::Ok )
+   {
+      return false;
+   }
+
+   // go through list of pointers and remove them from their old parents
+   for (int i = 0; i < size ;++i)
+   {
+      Metadata* child {metadata.at(i)};
+      Metadata* parent {child->getParent()};
+      int row = parent->getChildIndex(child);
+      beginRemoveRows(MetadataModel::parent(createIndex(row,0,child)),row,row);
+      if ( parent->isArray() )
+      {
+         parent->toArray().removeAt(row);
+      }
+      else if ( parent->isObject() )
+      {
+         parent->toObject().removeAt(row);
+      }
+      else
+      {
+         // if parent is not an object or array report error
+         E_MAKE_EXCEPTION(e);
+         e.setLevel(EException::Critical);
+         e.setType(InvalidParent);
+         e.setTitle(tr("Metadata Model"));
+         e.setDetails(tr("Attempting to move rows of metadata that is not array or object."));
+         throw e;
+      }
+      endRemoveRows();
+   }
+
+   // if row is not specified start at beginning
+   if ( row == -1 )
+   {
+      row = 0;
+   }
+
+   // get new parent target for dropped children
+   Metadata* target;
+   if ( parent.isValid() )
+   {
+      target = reinterpret_cast<Metadata*>(parent.internalPointer());
+   }
+   else
+   {
+      target = _root;
+   }
+
+   // go through each pointer and add to to new parent target
+   beginInsertRows(parent,row,row+size-1);
+   for (int i = 0; i < size ;++i)
+   {
+      if ( target->isArray() )
+      {
+         target->toArray().insert(row,metadata.at(i));
+      }
+      else if ( target->isObject() )
+      {
+         // get child pointer and list of new parent target
+         Metadata* child {metadata.at(i)};
+         QList<QPair<QString,Metadata*>>& list {target->toObject()};
+
+         // make sure key of new child is unique
+         int count {0};
+         while ( hasKey(child->getKey(),list) )
+         {
+            child->setKey(child->getKey() + QString::number(count++));
+         }
+         list.insert(row,QPair<QString,Metadata*>(child->getKey(),child));
+      }
+      else
+      {
+         // if new parent is not array or object report error
+         E_MAKE_EXCEPTION(e);
+         e.setLevel(EException::Critical);
+         e.setType(InvalidParent);
+         e.setTitle(tr("Metadata Model"));
+         e.setDetails(tr("Attempting to move rows to metadata that is not array or object."));
+         throw e;
+      }
+   }
+
+   // end row insertion operation and return success
+   endInsertRows();
+   return true;
 }
 
 
@@ -412,4 +554,39 @@ bool Ace::MetadataModel::dropMimeData(const QMimeData* data, Qt::DropAction acti
 
 void Ace::MetadataModel::setRoot(Metadata* root) noexcept
 {
+   // if root is not null make sure it is correct object type
+   if ( root && !root->isObject() )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setLevel(EException::Critical);
+      e.setType(InvalidRoot);
+      e.setTitle(tr("Metadata Model"));
+      e.setDetails(tr("Attempting to root of metadata model that is not an object type."));
+      throw e;
+   }
+
+   // set new root
+   beginResetModel();
+   _root = root;
+   endResetModel();
+}
+
+
+
+
+
+
+bool Ace::MetadataModel::hasKey(const QString& key, QList<QPair<QString,Ace::Metadata*>>& list)
+{
+   // go through list and return true if key is found that matches one given
+   for (auto i = list.constBegin(); i != list.constEnd() ;++i)
+   {
+      if ( i->first == key )
+      {
+         return true;
+      }
+   }
+
+   // no matching key found return false
+   return false;
 }
