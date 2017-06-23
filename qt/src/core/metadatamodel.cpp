@@ -6,7 +6,7 @@
 
 
 
-
+/*
 Ace::MetadataModel::MetadataModel(QObject *parent) noexcept:
    QAbstractItemModel(parent)
 {}
@@ -590,3 +590,4 @@ bool Ace::MetadataModel::hasKey(const QString& key, QList<QPair<QString,Ace::Met
    // no matching key found return false
    return false;
 }
+*/

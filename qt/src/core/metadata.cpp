@@ -2,6 +2,7 @@
 
 #include "metadata.h"
 #include "exception.h"
+#include "datastream.h"
 
 
 
@@ -234,8 +235,8 @@ QVariant Ace::Metadata::toVariant() const
       QVariant(*reinterpret_cast<QString*>(_data));
       break;
    case Bytes:
-      // if type is bytes simply state it is an image
-      QVariant(QObject::tr("Image"));
+      // if type is bytes simply state it is a byte array
+      QVariant(QObject::tr("Byte Array"));
       break;
    case Array:
    case Object:
@@ -251,7 +252,7 @@ QVariant Ace::Metadata::toVariant() const
 
 
 
-void Ace::Metadata::setType(Type newType)
+void Ace::Metadata::setType(quint8 newType)
 {
    // clear any existing data
    clear();
@@ -266,7 +267,7 @@ void Ace::Metadata::setType(Type newType)
 
 
 
-Ace::Metadata::Type Ace::Metadata::getType() const
+quint8 Ace::Metadata::getType() const
 {
    return _type;
 }
@@ -309,7 +310,7 @@ void Ace::Metadata::clear()
       auto data = reinterpret_cast<Map*>(_data);
       for (auto i = data->constBegin(); i != data->constEnd() ;++i)
       {
-          delete i->second;
+          delete *i;
       }
 
       // delete object itself
@@ -357,18 +358,21 @@ int Ace::Metadata::getChildIndex(Metadata* child) const
    if ( _type == Array )
    {
       // get array and iterate through it until child pointer is found
-      QList<Metadata*>& list {*reinterpret_cast<QList<Metadata*>*>(_data)};
+      List& list {*reinterpret_cast<List*>(_data)};
       return list.lastIndexOf(child);
    }
 
    // check if data type is object
    else if ( _type == Object )
    {
-      // get array and iterate through it until child pointer is found
-      QList<QPair<QString,Metadata*>>& list {*reinterpret_cast<QList<QPair<QString,Metadata*>>*>(_data)};
+      // get map and extract list of values from it
+      Map& map {*reinterpret_cast<Map*>(_data)};
+      List list = map.values();
+
+      // iterate through list of values until child pointer is found
       for (int i = 0; i < list.size() ;++i)
       {
-         if ( list.at(i).second == child )
+         if ( list.at(i) == child )
          {
             return i;
          }
@@ -382,7 +386,8 @@ int Ace::Metadata::getChildIndex(Metadata* child) const
       e.setLevel(EException::Critical);
       e.setType(TypeMismatch);
       e.setTitle(QObject::tr("Metadata Type Mismatch"));
-      e.setDetails(QObject::tr("Attempting to access children of metadata object that is of type %1.")
+      e.setDetails(QObject::tr("Attempting to access children of metadata object that is of type"
+                               " %1.")
                    .arg(convertTypeName(_type)));
       throw e;
    }
@@ -406,27 +411,7 @@ QString Ace::Metadata::getTypeName() const
 
 
 
-void Ace::Metadata::setKey(const QString& key)
-{
-   _key = key;
-}
-
-
-
-
-
-
-QString Ace::Metadata::getKey()
-{
-   return _key;
-}
-
-
-
-
-
-
-void Ace::Metadata::initialize(Type type)
+void Ace::Metadata::initialize(quint8 type)
 {
    // initialize new data depending on type
    switch (type)
@@ -463,7 +448,7 @@ void Ace::Metadata::initialize(Type type)
 
 
 template<class T>
-T& Ace::Metadata::toType(Type type)
+T& Ace::Metadata::toType(quint8 type)
 {
    // make sure type is correct
    if ( _type != type )
@@ -487,7 +472,7 @@ T& Ace::Metadata::toType(Type type)
 
 
 template<class T>
-const T& Ace::Metadata::toType(Type type) const
+const T& Ace::Metadata::toType(quint8 type) const
 {
    // make sure type is correct
     if ( _type != type )
@@ -510,7 +495,7 @@ const T& Ace::Metadata::toType(Type type) const
 
 
 
-QString Ace::Metadata::convertTypeName(Ace::Metadata::Type type) const
+QString Ace::Metadata::convertTypeName(quint8 type) const
 {
    // determine which type object is and return name
    switch (type)
@@ -532,4 +517,158 @@ QString Ace::Metadata::convertTypeName(Ace::Metadata::Type type) const
    default:
       return QString();
    }
+}
+
+
+
+
+
+
+EDataStream& Ace::operator>>(EDataStream& stream, Ace::Metadata& meta)
+{
+   // clear the metadata, read new type, and initialize
+   meta.clear();
+   stream >> meta._type;
+   meta.initialize(meta._type);
+
+   // read the metadata value from stream depending on what type it is
+   switch (meta._type)
+   {
+   case Metadata::Bool:
+      stream >> meta.toBool();
+      break;
+   case Metadata::Double:
+      stream >> meta.toDouble();
+      break;
+   case Metadata::String:
+      stream >> meta.toString();
+      break;
+   case Metadata::Bytes:
+      //stream >> meta.toBytes();
+      break;
+   case Metadata::Array:
+   {
+      // if this is an array, get the array and read in the size
+      Metadata::List& list {meta.toArray()};
+      quint32 size;
+      stream >> size;
+
+      // go through total size adding new metadata objects to list and reading their values
+      for (quint32 i = 0; i < size ;++i)
+      {
+         list.push_back(new Metadata);
+         stream >> *(list.back());
+      }
+      break;
+   }
+   case Metadata::Object:
+   {
+      // if this is an object, get the map and read in the size
+      Metadata::Map& map {meta.toObject()};
+      quint32 size;
+      stream >> size;
+
+      // iterate through the total size
+      for (quint32 i = 0; i < size ;++i)
+      {
+         // initialize key and metadata variables
+         QString key;
+         Metadata* meta {new Metadata};
+
+         // read in key value and metadata and insert into map
+         stream >> key >> *meta;
+         map.insert(key,meta);
+      }
+      break;
+   }
+   case Metadata::Null:
+      break;
+   }
+
+   // make sure the stream encountered no errors
+   if ( !stream )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setLevel(EException::Critical);
+      e.setType(Metadata::CannotRead);
+      e.setTitle(QObject::tr("Metadata"));
+      e.setDetails(QObject::tr("Failed reading metadata."));
+      throw e;
+   }
+
+   // return reference ot stream object
+   return stream;
+}
+
+
+
+
+
+
+
+EDataStream& Ace::operator<<(EDataStream& stream, Ace::Metadata& meta)
+{
+   // write out metadata type
+   stream << meta._type;
+
+   // write out metadata value depending on what type it is
+   switch (meta._type)
+   {
+   case Metadata::Bool:
+      stream << meta.toBool();
+      break;
+   case Metadata::Double:
+      stream << meta.toDouble();
+      break;
+   case Metadata::String:
+      stream << meta.toString();
+      break;
+   case Metadata::Bytes:
+      //stream << meta.toBytes();
+      break;
+   case Metadata::Array:
+   {
+      // if this is an array get list and write out size
+      const Metadata::List& list {meta.toArray()};
+      quint32 size = list.size();
+      stream << size;
+
+      // iterate through list and write out each metadata object
+      for (auto i = list.constBegin(); i != list.constEnd() ;++i)
+      {
+         stream << **i;
+      }
+      break;
+   }
+   case Metadata::Object:
+   {
+      // if this is an object get map and write out size
+      const Metadata::Map& map {meta.toObject()};
+      quint32 size = map.size();
+      stream << size;
+
+      // iterate through map and write out each key and metadata object
+      for (auto i = map.constBegin(); i != map.constEnd() ;++i)
+      {
+         stream << i.key() << **i;
+      }
+      break;
+   }
+   case Metadata::Null:
+      break;
+   }
+
+   // make sure stream encountered no errors
+   if ( !stream )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setLevel(EException::Critical);
+      e.setType(Metadata::CannotRead);
+      e.setTitle(QObject::tr("Metadata"));
+      e.setDetails(QObject::tr("Failed writing metadata."));
+      throw e;
+   }
+
+   // return reference to stream
+   return stream;
 }
