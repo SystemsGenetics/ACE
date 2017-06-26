@@ -149,27 +149,21 @@ EDataStream& EDataStream::operator<<(const QString& value)
 
 
 
-EDataStream& EDataStream::operator<<(const QPixmap& value)
+EDataStream& EDataStream::operator<<(const QByteArray& value)
 {
    // make sure stream is in ok state
    if ( *this )
    {
-      // write out pixmap identifier type
-      quint8 type = Pixmap;
+      // write out byte array identifier type
+      quint8 type = ByteArray;
       if ( write(type) )
       {
-         // save pixmap to byte array in PNG format
-         QByteArray data;
-         QBuffer buffer(&data);
-         buffer.open(QIODevice::WriteOnly);
-         value.save(&buffer,"PNG");
-
-         // write size of PNG byte array
-         quint32 size = qToBigEndian(data.size());
+         // write out size of byte array
+         quint32 size = qToBigEndian(value.size());
          if ( write(size) )
          {
-            // write PNG byte array itself
-            write(data.data(),size);
+            // write out byte array
+            write(value.data(),size);
          }
       }
    }
@@ -347,53 +341,46 @@ EDataStream& EDataStream::operator>>(QString& value)
 
 
 
-EDataStream& EDataStream::operator>>(QPixmap& value)
+EDataStream& EDataStream::operator>>(QByteArray& value)
 {
-   // clear input pixmap
-   value = QPixmap();
+   // clear input
+   value.clear();
 
    // make sure stream is in ok state
    if ( *this )
    {
-
       // read type identifier
       quint8 type {0};
       if ( read(&type) )
       {
          // make sure it is correct type
-         if ( type != Pixmap )
+         if ( type != ByteArray )
          {
             E_MAKE_EXCEPTION(e);
             e.setLevel(EException::Critical);
             e.setType(CorruptData);
             e.setTitle(QObject::tr("Data Stream Read"));
-            e.setDetails(QObject::tr("Could not read image because data is corrupt"));
+            e.setDetails(QObject::tr("Could not read byte array because data is corrupt."));
             setException(e);
          }
          else
          {
-            // read size of pixmap data in bytes
+            // read size of byte array
             quint32 size;
             if ( read(&size) )
             {
                size = qFromBigEndian(size);
 
-               // read pixmap data into byte array
-               QByteArray buffer;
-               buffer.resize(size);
-               if ( read(buffer.data(),size) )
+               // read byte array and make sure it worked
+               value.resize(size);
+               if ( !read(value.data(),size) )
                {
-                  // load byte array data into pixmap
-                  if ( !value.loadFromData(buffer) )
-                  {
-                     // if byte array failed to load as pixmap report error
-                     E_MAKE_EXCEPTION(e);
-                     e.setLevel(EException::Critical);
-                     e.setType(CorruptData);
-                     e.setTitle(QObject::tr("Data Stream Read"));
-                     e.setDetails(QObject::tr("Could not read image because data is corrupt"));
-                     setException(e);
-                  }
+                  E_MAKE_EXCEPTION(e);
+                  e.setLevel(EException::Critical);
+                  e.setType(CorruptData);
+                  e.setTitle(QObject::tr("Data Stream Read"));
+                  e.setDetails(QObject::tr("Could not read byte array because data is corrupt."));
+                  setException(e);
                }
             }
          }

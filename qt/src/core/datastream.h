@@ -34,7 +34,7 @@ public:
    EDataStream& operator<<(float value);
    EDataStream& operator<<(double value);
    EDataStream& operator<<(const QString& value);
-   EDataStream& operator<<(const QPixmap& value);
+   EDataStream& operator<<(const QByteArray& value);
    EDataStream& operator>>(qint8& value);
    EDataStream& operator>>(quint8& value);
    EDataStream& operator>>(qint16& value);
@@ -46,12 +46,12 @@ public:
    EDataStream& operator>>(float& value);
    EDataStream& operator>>(double& value);
    EDataStream& operator>>(QString& value);
-   EDataStream& operator>>(QPixmap& value);
+   EDataStream& operator>>(QByteArray& value);
 private:
    enum
    {
       String = 85
-      ,Pixmap = 170
+      ,ByteArray = 170
    };
    constexpr static int _maxStringSize {65536};
    constexpr static int _stringBufferSize {1024};

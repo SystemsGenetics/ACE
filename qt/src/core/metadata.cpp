@@ -544,7 +544,7 @@ EDataStream& Ace::operator>>(EDataStream& stream, Ace::Metadata& meta)
       stream >> meta.toString();
       break;
    case Metadata::Bytes:
-      //stream >> meta.toBytes();
+      stream >> meta.toBytes();
       break;
    case Metadata::Array:
    {

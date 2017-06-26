@@ -13,4 +13,4 @@ example.depends = core gui
 
 # make OpenCLEvent NOTHROW exception class lolz(public EOpenCL)
 
-# change pixmap to bytearray for edatastream
+# redo metadata model code to work with new metadata (do NOT do any new functions yet!)
