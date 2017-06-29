@@ -7,15 +7,6 @@
 
 
 /*
-Ace::MetadataModel::MetadataModel(QObject *parent) noexcept:
-   QAbstractItemModel(parent)
-{}
-
-
-
-
-
-
 QVariant Ace::MetadataModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
    // make sure it is display role and horizontal orientation

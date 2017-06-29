@@ -9,6 +9,7 @@
 
 namespace Ace { class DataObject; }
 class EDataStream;
+class EMetadata;
 
 
 
@@ -40,6 +41,7 @@ public:
    virtual void finish() = 0;
    void initialize(Ace::DataObject* object, EDataStream* stream) noexcept;
 protected:
+   EMetadata& meta();
    /// Get reference to data stream of object's file.
    ///
    /// @return Reference to data stream.
@@ -58,6 +60,7 @@ protected:
 private:
    Ace::DataObject* _data {nullptr};
    EDataStream* _stream {nullptr};
+   EMetadata* _meta {nullptr};
 };
 
 

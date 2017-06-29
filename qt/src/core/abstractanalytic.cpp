@@ -1,4 +1,12 @@
 #include "abstractanalytic.h"
+#include "datamanager.h"
+#include "exception.h"
+#include "datareference.h"
+
+
+
+QMutex EAbstractAnalytic::_mutex;
+using namespace std;
 
 
 
@@ -35,4 +43,35 @@ void EAbstractAnalytic::run()
 
    // call finish function of analytic
    finish();
+}
+
+
+
+
+
+
+EAbstractData* EAbstractAnalytic::getExtraData(const QString &path)
+{
+   // lock mutex
+   _mutex.lock();
+
+   // get data reference to new data object requested
+   unique_ptr<Ace::DataReference> data;
+   try
+   {
+      data = Ace::DataManager::getInstance().open(path);
+   }
+   catch (...)
+   {
+      // if anything goes wrong unlock mutex and rethrow
+      _mutex.unlock();
+      throw;
+   }
+
+   // add data reference to list of extra data objects
+   _extraDatas.push_back(data.release());
+
+   // unlock mutex and return pointer to new data
+   _mutex.unlock();
+   return &(*_extraDatas.back())->data();
 }

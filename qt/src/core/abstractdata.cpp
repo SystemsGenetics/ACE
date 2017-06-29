@@ -12,6 +12,7 @@ void EAbstractData::initialize(Ace::DataObject* object, EDataStream* stream) noe
    // initialize data and stream pointers
    _data = object;
    _stream = stream;
+   _meta = &(object->getMeta());
 }
 
 

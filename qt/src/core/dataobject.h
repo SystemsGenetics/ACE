@@ -4,6 +4,7 @@
 
 #include "abstractdata.h"
 #include "datastream.h"
+#include "metadata.h"
 
 
 
@@ -30,6 +31,8 @@ namespace Ace
       void clear(quint16 newType);
       bool isNew() const noexcept;
       EAbstractData& data();
+      EMetadata& getMeta() { return _metaRoot; }
+      void writeMeta();
       operator bool() const noexcept;
    signals:
       void cleared();
@@ -40,8 +43,10 @@ namespace Ace
       std::unique_ptr<EDataStream> _stream {nullptr};
       std::unique_ptr<EAbstractData> _data {nullptr};
       quint64 _headerOffset {0};
+      quint64 _dataOffset {0};
       bool _isNew {true};
       bool _invalid {false};
+      EMetadata _metaRoot;
    };
 }
 

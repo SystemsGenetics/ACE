@@ -3,7 +3,7 @@
 #include <QtCore>
 
 
-
+/*
 namespace Ace
 {
 class Metadata;
@@ -21,7 +21,7 @@ public:
       ,InvalidVariant
       ,InvalidRoot
    };
-   explicit MetadataModel(QObject* parent = nullptr) noexcept;
+   explicit MetadataModel(QObject* parent = nullptr) noexcept: QAbstractItemModel(parent) {}
    MetadataModel(const MetadataModel&) = delete;
    MetadataModel(MetadataModel&&) = delete;
    QVariant headerData(int section, Qt::Orientation orientation, int role) const override final;
@@ -44,7 +44,7 @@ private:
    Metadata* _root {nullptr};
 };
 }
-
+*/
 
 
 #endif

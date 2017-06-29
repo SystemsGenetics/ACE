@@ -7,7 +7,8 @@
 
 
 
-Ace::DataObject::DataObject(const QString& path)
+Ace::DataObject::DataObject(const QString& path):
+   _metaRoot(EMetadata::Object)
 {
    try
    {
@@ -77,8 +78,13 @@ Ace::DataObject::DataObject(const QString& path)
       _data = EAbstractDataFactory::getInstance().make(dataType);
       _headerOffset = _file->pos();
 
-      // call abstract data initialize function and set object to not being new
+      // call data initialize function and get data offset
       _data->initialize(this,_stream.get());
+      _dataOffset = _data->getDataEnd();
+
+      // seek to data offset, read in metadata, and set object to not new
+      seek(_dataOffset);
+      *_stream >> _metaRoot;
       _isNew = false;
    }
    catch (EException e)
@@ -247,6 +253,18 @@ EAbstractData& Ace::DataObject::data()
       throw e;
    }
    return *_data;
+}
+
+
+
+
+
+
+void Ace::DataObject::writeMeta()
+{
+   // write out meta information after data
+   seek(_dataOffset);
+   *_stream << _metaRoot;
 }
 
 

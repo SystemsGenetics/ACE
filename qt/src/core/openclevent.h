@@ -2,9 +2,11 @@
 #define EOPENCLEVENT_H
 #include <CL/cl.h>
 
+#include "opencl.h"
 
 
-class EOpenCLEvent
+
+class EOpenCLEvent : public EOpenCL
 {
 public:
    EOpenCLEvent() = default;
@@ -14,10 +16,9 @@ public:
    EOpenCLEvent& operator=(const EOpenCLEvent& copy);
    EOpenCLEvent(EOpenCLEvent&& move);
    EOpenCLEvent& operator=(EOpenCLEvent&& move);
-   void wait() const;
-   bool isDone() const;
+   void wait();
+   bool isDone();
    bool isNull() const;
-   operator bool() const;
 private:
    cl_event* _id {nullptr};
 };

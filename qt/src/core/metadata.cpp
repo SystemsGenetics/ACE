@@ -9,7 +9,7 @@
 
 
 
-Ace::Metadata::Metadata(Type type):
+EMetadata::EMetadata(Type type):
    _type(type)
 {
    initialize(type);
@@ -20,7 +20,7 @@ Ace::Metadata::Metadata(Type type):
 
 
 
-Ace::Metadata::~Metadata()
+EMetadata::~EMetadata()
 {
    clear();
 }
@@ -30,7 +30,7 @@ Ace::Metadata::~Metadata()
 
 
 
-bool Ace::Metadata::isNull() const
+bool EMetadata::isNull() const
 {
    return _type == Null;
 }
@@ -40,7 +40,7 @@ bool Ace::Metadata::isNull() const
 
 
 
-bool Ace::Metadata::isBool() const
+bool EMetadata::isBool() const
 {
    return _type == Bool;
 }
@@ -50,7 +50,7 @@ bool Ace::Metadata::isBool() const
 
 
 
-bool Ace::Metadata::isDouble() const
+bool EMetadata::isDouble() const
 {
    return _type == Double;
 }
@@ -60,7 +60,7 @@ bool Ace::Metadata::isDouble() const
 
 
 
-bool Ace::Metadata::isString() const
+bool EMetadata::isString() const
 {
    return _type == String;
 }
@@ -70,7 +70,7 @@ bool Ace::Metadata::isString() const
 
 
 
-bool Ace::Metadata::isBytes() const
+bool EMetadata::isBytes() const
 {
    return _type == Bytes;
 }
@@ -80,7 +80,7 @@ bool Ace::Metadata::isBytes() const
 
 
 
-bool Ace::Metadata::isArray() const
+bool EMetadata::isArray() const
 {
    return _type == Array;
 }
@@ -90,7 +90,7 @@ bool Ace::Metadata::isArray() const
 
 
 
-bool Ace::Metadata::isObject() const
+bool EMetadata::isObject() const
 {
    return _type == Object;
 }
@@ -100,7 +100,7 @@ bool Ace::Metadata::isObject() const
 
 
 
-const bool& Ace::Metadata::toBool() const
+const bool* EMetadata::toBool() const
 {
    return toType<bool>(Bool);
 }
@@ -110,7 +110,7 @@ const bool& Ace::Metadata::toBool() const
 
 
 
-bool& Ace::Metadata::toBool()
+bool* EMetadata::toBool()
 {
    return toType<bool>(Bool);
 }
@@ -120,7 +120,7 @@ bool& Ace::Metadata::toBool()
 
 
 
-const double& Ace::Metadata::toDouble() const
+const double* EMetadata::toDouble() const
 {
    return toType<double>(Double);
 }
@@ -130,7 +130,7 @@ const double& Ace::Metadata::toDouble() const
 
 
 
-double& Ace::Metadata::toDouble()
+double* EMetadata::toDouble()
 {
    return toType<double>(Double);
 }
@@ -140,7 +140,7 @@ double& Ace::Metadata::toDouble()
 
 
 
-const QString& Ace::Metadata::toString() const
+const QString* EMetadata::toString() const
 {
    return toType<QString>(String);
 }
@@ -150,7 +150,7 @@ const QString& Ace::Metadata::toString() const
 
 
 
-QString& Ace::Metadata::toString()
+QString* EMetadata::toString()
 {
    return toType<QString>(String);
 }
@@ -160,7 +160,7 @@ QString& Ace::Metadata::toString()
 
 
 
-const QByteArray& Ace::Metadata::toBytes() const
+const QByteArray* EMetadata::toBytes() const
 {
    return toType<QByteArray>(Bytes);
 }
@@ -170,7 +170,7 @@ const QByteArray& Ace::Metadata::toBytes() const
 
 
 
-QByteArray& Ace::Metadata::toBytes()
+QByteArray* EMetadata::toBytes()
 {
    return toType<QByteArray>(Bytes);
 }
@@ -180,7 +180,7 @@ QByteArray& Ace::Metadata::toBytes()
 
 
 
-const Ace::Metadata::List& Ace::Metadata::toArray() const
+const EMetadata::List* EMetadata::toArray() const
 {
    return toType<List>(Array);
 }
@@ -190,7 +190,7 @@ const Ace::Metadata::List& Ace::Metadata::toArray() const
 
 
 
-Ace::Metadata::List& Ace::Metadata::toArray()
+EMetadata::List* EMetadata::toArray()
 {
    return toType<List>(Array);
 }
@@ -200,7 +200,7 @@ Ace::Metadata::List& Ace::Metadata::toArray()
 
 
 
-const Ace::Metadata::Map& Ace::Metadata::toObject() const
+const EMetadata::Map* EMetadata::toObject() const
 {
    return toType<Map>(Object);
 }
@@ -210,7 +210,7 @@ const Ace::Metadata::Map& Ace::Metadata::toObject() const
 
 
 
-Ace::Metadata::Map& Ace::Metadata::toObject()
+EMetadata::Map* EMetadata::toObject()
 {
    return toType<Map>(Object);
 }
@@ -220,7 +220,7 @@ Ace::Metadata::Map& Ace::Metadata::toObject()
 
 
 
-QVariant Ace::Metadata::toVariant() const
+QVariant EMetadata::toVariant() const
 {
    // figure out which type and return data wrapped in qt variant
    switch (_type)
@@ -252,7 +252,7 @@ QVariant Ace::Metadata::toVariant() const
 
 
 
-void Ace::Metadata::setType(quint8 newType)
+void EMetadata::setType(quint8 newType)
 {
    // clear any existing data
    clear();
@@ -267,7 +267,7 @@ void Ace::Metadata::setType(quint8 newType)
 
 
 
-quint8 Ace::Metadata::getType() const
+quint8 EMetadata::getType() const
 {
    return _type;
 }
@@ -277,7 +277,7 @@ quint8 Ace::Metadata::getType() const
 
 
 
-void Ace::Metadata::clear()
+void EMetadata::clear()
 {
    // delete data depending on which type
    switch (_type)
@@ -332,7 +332,7 @@ void Ace::Metadata::clear()
 
 
 
-void Ace::Metadata::setParent(Ace::Metadata *parent)
+void EMetadata::setParent(EMetadata *parent)
 {
    _parent = parent;
 }
@@ -342,7 +342,7 @@ void Ace::Metadata::setParent(Ace::Metadata *parent)
 
 
 
-Ace::Metadata *Ace::Metadata::getParent() const
+EMetadata *EMetadata::getParent() const
 {
    return _parent;
 }
@@ -352,7 +352,7 @@ Ace::Metadata *Ace::Metadata::getParent() const
 
 
 
-int Ace::Metadata::getChildIndex(Metadata* child) const
+int EMetadata::getChildIndex(EMetadata* child) const
 {
    // check if data type is array
    if ( _type == Array )
@@ -379,17 +379,10 @@ int Ace::Metadata::getChildIndex(Metadata* child) const
       }
    }
 
-   // if data type is not array or object then report exception
+   // if data type is not array or object then error
    else
    {
-      E_MAKE_EXCEPTION(e);
-      e.setLevel(EException::Critical);
-      e.setType(TypeMismatch);
-      e.setTitle(QObject::tr("Metadata Type Mismatch"));
-      e.setDetails(QObject::tr("Attempting to access children of metadata object that is of type"
-                               " %1.")
-                   .arg(convertTypeName(_type)));
-      throw e;
+      return -1;
    }
 
    // return invalid index if no child is found
@@ -401,7 +394,7 @@ int Ace::Metadata::getChildIndex(Metadata* child) const
 
 
 
-QString Ace::Metadata::getTypeName() const
+QString EMetadata::getTypeName() const
 {
    return convertTypeName(_type);
 }
@@ -411,18 +404,18 @@ QString Ace::Metadata::getTypeName() const
 
 
 
-void Ace::Metadata::initialize(quint8 type)
+void EMetadata::initialize(quint8 type)
 {
    // initialize new data depending on type
    switch (type)
    {
    case Bool:
       _data = reinterpret_cast<void*>(new bool);
-      toBool() = false;
+      *(toBool()) = false;
       break;
    case Double:
       _data = reinterpret_cast<void*>(new double);
-      toDouble() = 0.0;
+      *(toDouble()) = 0.0;
       break;
    case String:
       _data = reinterpret_cast<void*>(new QString);
@@ -448,22 +441,16 @@ void Ace::Metadata::initialize(quint8 type)
 
 
 template<class T>
-T& Ace::Metadata::toType(quint8 type)
+T* EMetadata::toType(quint8 type)
 {
    // make sure type is correct
    if ( _type != type )
    {
-      E_MAKE_EXCEPTION(e);
-      e.setLevel(EException::Critical);
-      e.setType(TypeMismatch);
-      e.setTitle(QObject::tr("Metadata Type Mismatch"));
-      e.setDetails(QObject::tr("Attempting to use metadata value of type %1 as type %2.")
-                   .arg(convertTypeName(_type)).arg(convertTypeName(type)));
-      throw e;
+      return nullptr;
    }
 
    // return reference to data
-   return *reinterpret_cast<T*>(_data);
+   return reinterpret_cast<T*>(_data);
 }
 
 
@@ -472,22 +459,16 @@ T& Ace::Metadata::toType(quint8 type)
 
 
 template<class T>
-const T& Ace::Metadata::toType(quint8 type) const
+const T* EMetadata::toType(quint8 type) const
 {
    // make sure type is correct
     if ( _type != type )
     {
-       E_MAKE_EXCEPTION(e);
-       e.setLevel(EException::Critical);
-       e.setType(TypeMismatch);
-       e.setTitle(QObject::tr("Metadata Type Mismatch"));
-       e.setDetails(QObject::tr("Attempting to use metadata value of type %1 as type %2.")
-                    .arg(convertTypeName(_type)).arg(convertTypeName(type)));
-       throw e;
+       return nullptr;
     }
 
     // return reference to data
-    return *reinterpret_cast<T*>(_data);
+    return reinterpret_cast<T*>(_data);
 }
 
 
@@ -495,7 +476,7 @@ const T& Ace::Metadata::toType(quint8 type) const
 
 
 
-QString Ace::Metadata::convertTypeName(quint8 type) const
+QString EMetadata::convertTypeName(quint8 type) const
 {
    // determine which type object is and return name
    switch (type)
@@ -524,76 +505,65 @@ QString Ace::Metadata::convertTypeName(quint8 type) const
 
 
 
-EDataStream& Ace::operator>>(EDataStream& stream, Ace::Metadata& meta)
+EDataStream& operator>>(EDataStream& stream, EMetadata& meta)
 {
-   // clear the metadata, read new type, and initialize
+   // clear the EMetadata, read new type, and initialize
    meta.clear();
    stream >> meta._type;
    meta.initialize(meta._type);
 
-   // read the metadata value from stream depending on what type it is
+   // read the EMetadata value from stream depending on what type it is
    switch (meta._type)
    {
-   case Metadata::Bool:
-      stream >> meta.toBool();
+   case EMetadata::Bool:
+      stream >> *(meta.toBool());
       break;
-   case Metadata::Double:
-      stream >> meta.toDouble();
+   case EMetadata::Double:
+      stream >> *(meta.toDouble());
       break;
-   case Metadata::String:
-      stream >> meta.toString();
+   case EMetadata::String:
+      stream >> *(meta.toString());
       break;
-   case Metadata::Bytes:
-      stream >> meta.toBytes();
+   case EMetadata::Bytes:
+      stream >> *(meta.toBytes());
       break;
-   case Metadata::Array:
+   case EMetadata::Array:
    {
       // if this is an array, get the array and read in the size
-      Metadata::List& list {meta.toArray()};
+      EMetadata::List& list {*(meta.toArray())};
       quint32 size;
       stream >> size;
 
-      // go through total size adding new metadata objects to list and reading their values
+      // go through total size adding new EMetadata objects to list and reading their values
       for (quint32 i = 0; i < size ;++i)
       {
-         list.push_back(new Metadata);
+         list.push_back(new EMetadata);
          stream >> *(list.back());
       }
       break;
    }
-   case Metadata::Object:
+   case EMetadata::Object:
    {
       // if this is an object, get the map and read in the size
-      Metadata::Map& map {meta.toObject()};
+      EMetadata::Map& map {*(meta.toObject())};
       quint32 size;
       stream >> size;
 
       // iterate through the total size
       for (quint32 i = 0; i < size ;++i)
       {
-         // initialize key and metadata variables
+         // initialize key and EMetadata variables
          QString key;
-         Metadata* meta {new Metadata};
+         EMetadata* meta {new EMetadata};
 
-         // read in key value and metadata and insert into map
+         // read in key value and EMetadata and insert into map
          stream >> key >> *meta;
          map.insert(key,meta);
       }
       break;
    }
-   case Metadata::Null:
+   case EMetadata::Null:
       break;
-   }
-
-   // make sure the stream encountered no errors
-   if ( !stream )
-   {
-      E_MAKE_EXCEPTION(e);
-      e.setLevel(EException::Critical);
-      e.setType(Metadata::CannotRead);
-      e.setTitle(QObject::tr("Metadata"));
-      e.setDetails(QObject::tr("Failed reading metadata."));
-      throw e;
    }
 
    // return reference ot stream object
@@ -606,67 +576,56 @@ EDataStream& Ace::operator>>(EDataStream& stream, Ace::Metadata& meta)
 
 
 
-EDataStream& Ace::operator<<(EDataStream& stream, Ace::Metadata& meta)
+EDataStream& operator<<(EDataStream& stream, EMetadata& meta)
 {
-   // write out metadata type
+   // write out EMetadata type
    stream << meta._type;
 
-   // write out metadata value depending on what type it is
+   // write out EMetadata value depending on what type it is
    switch (meta._type)
    {
-   case Metadata::Bool:
-      stream << meta.toBool();
+   case EMetadata::Bool:
+      stream << *(meta.toBool());
       break;
-   case Metadata::Double:
-      stream << meta.toDouble();
+   case EMetadata::Double:
+      stream << *(meta.toDouble());
       break;
-   case Metadata::String:
-      stream << meta.toString();
+   case EMetadata::String:
+      stream << *(meta.toString());
       break;
-   case Metadata::Bytes:
-      //stream << meta.toBytes();
+   case EMetadata::Bytes:
+      stream << *(meta.toBytes());
       break;
-   case Metadata::Array:
+   case EMetadata::Array:
    {
       // if this is an array get list and write out size
-      const Metadata::List& list {meta.toArray()};
+      const EMetadata::List& list {*(meta.toArray())};
       quint32 size = list.size();
       stream << size;
 
-      // iterate through list and write out each metadata object
+      // iterate through list and write out each EMetadata object
       for (auto i = list.constBegin(); i != list.constEnd() ;++i)
       {
          stream << **i;
       }
       break;
    }
-   case Metadata::Object:
+   case EMetadata::Object:
    {
       // if this is an object get map and write out size
-      const Metadata::Map& map {meta.toObject()};
+      const EMetadata::Map& map {*(meta.toObject())};
       quint32 size = map.size();
       stream << size;
 
-      // iterate through map and write out each key and metadata object
+      // iterate through map and write out each key and EMetadata object
       for (auto i = map.constBegin(); i != map.constEnd() ;++i)
       {
          stream << i.key() << **i;
       }
       break;
    }
-   case Metadata::Null:
+   case EMetadata::Null:
       break;
-   }
-
-   // make sure stream encountered no errors
-   if ( !stream )
-   {
-      E_MAKE_EXCEPTION(e);
-      e.setLevel(EException::Critical);
-      e.setType(Metadata::CannotRead);
-      e.setTitle(QObject::tr("Metadata"));
-      e.setDetails(QObject::tr("Failed writing metadata."));
-      throw e;
    }
 
    // return reference to stream
