@@ -14,8 +14,10 @@ TEMPLATE = app
 DEFINES += QT_DEPRECATED_WARNINGS
 
 HEADERS += \
-    testexception.h
+    testexception.h \
+    testdatastream.h
 
 SOURCES += \
     testexception.cpp \
-    main.cpp
+    main.cpp \
+    testdatastream.cpp

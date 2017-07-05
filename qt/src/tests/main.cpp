@@ -1,4 +1,5 @@
 #include "testexception.h"
+#include "testdatastream.h"
 
 #ifdef DUMMY_QTEST_APPLESS_MAIN_NEEDED_FOR_QTCREATOR_TO_RECOGNIZE_THIS_AS_QTTESTS
 QTEST_APPLESS_MAIN(TestException)
@@ -15,5 +16,6 @@ int main(int argc, char* argv[])
       delete object;
    };
    ASSERT_TEST(new TestException);
+   ASSERT_TEST(new TestDataStream);
    return status;
 }
