@@ -8,9 +8,13 @@ class TestDataStream : public QObject
 {
    Q_OBJECT
 private slots:
-   void testStreamOperators() {}
-   void testBadString() {}
-   void testBadBytes() {}
+   void initTestCase();
+   void testStreamOperators();
+   void testBadString();
+   void testBadBytes();
+   void cleanupTestCase();
+private:
+   QFile* _file;
 };
 
 

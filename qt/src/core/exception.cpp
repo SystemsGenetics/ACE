@@ -200,7 +200,7 @@ EException ESilent::getException() const noexcept
 
 void ESilent::setException(EException exception) noexcept
 {
-   *_exception = exception;
+   _exception.reset(new EException(exception));
    if ( !_critical && exception.getLevel() == EException::Critical )
    {
       _critical = true;
@@ -214,5 +214,5 @@ void ESilent::setException(EException exception) noexcept
 
 ESilent::operator bool() const noexcept
 {
-   return _critical;
+   return !_critical;
 }

@@ -128,15 +128,10 @@ EDataStream& EDataStream::operator<<(const QString& value)
    {
       // write out string identifier type
       quint8 type = String;
-      if ( write(type) )
+      if ( write(&type) )
       {
-         // write out size of string in bytes
-         quint16 size = qToBigEndian(value.size());
-         if ( write(size) )
-         {
-            // write out string itself
-            write(value.data(),size);
-         }
+         // write out string in UTF8 format
+         *this << value.toUtf8();
       }
    }
 
@@ -156,14 +151,14 @@ EDataStream& EDataStream::operator<<(const QByteArray& value)
    {
       // write out byte array identifier type
       quint8 type = ByteArray;
-      if ( write(type) )
+      if ( write(&type) )
       {
          // write out size of byte array
-         quint32 size = qToBigEndian(value.size());
-         if ( write(size) )
+         quint32 size = qToBigEndian((quint32)value.size());
+         if ( write(&size) )
          {
             // write out byte array
-            write(value.data(),size);
+            write(value.data(),value.size());
          }
       }
    }
@@ -301,33 +296,10 @@ EDataStream& EDataStream::operator>>(QString& value)
          }
          else
          {
-            // read size of string in bytes
-            quint16 size;
-            if ( read(&size) )
-            {
-               size = qFromBigEndian(size);
-               QChar* buffer;
-               unique_ptr<QChar> holder;
-               if ( (size+1) > _stringBufferSize )
-               {
-                  // if string size is greater than internal buffer set it dynamic buffer
-                  holder = unique_ptr<QChar>(new QChar[size+1]);
-                  buffer = holder.get();
-               }
-               else
-               {
-                  // else if string size can fit in internal buffer use it
-                  buffer = _stringBuffer;
-               }
-
-               // read string into buffer
-               if ( read(buffer,size) )
-               {
-                  // if read successful set input string to buffer
-                  buffer[size] = QChar('\0');
-                  value = QString(buffer,size);
-               }
-            }
+            // read in string in UTF8 format
+            QByteArray data;
+            *this >> data;
+            value = QString::fromUtf8(data);
          }
       }
    }
@@ -398,7 +370,7 @@ EDataStream& EDataStream::operator>>(QByteArray& value)
 
 
 template<class T>
-EDataStream& EDataStream::writeNumber(T value)
+EDataStream& EDataStream::writeNumber(T& value)
 {
    // make sure stream is in ok state
    if ( !*this )
@@ -413,7 +385,7 @@ EDataStream& EDataStream::writeNumber(T value)
    }
 
    // write to stream and return reference to stream
-   write(value);
+   write(&value);
    return *this;
 }
 
@@ -423,7 +395,7 @@ EDataStream& EDataStream::writeNumber(T value)
 
 
 template<class T>
-EDataStream& EDataStream::writeFloat(T value)
+EDataStream& EDataStream::writeFloat(T& value)
 {
    // make sure stream is in ok state
    if ( !*this )
@@ -432,7 +404,7 @@ EDataStream& EDataStream::writeFloat(T value)
    }
 
    // write to stream and return reference to stream
-   write(value);
+   write(&value);
    return *this;
 }
 
@@ -490,10 +462,10 @@ EDataStream& EDataStream::readFloat(T& value)
 
 
 template<class T>
-bool EDataStream::write(T value, quint64 size)
+bool EDataStream::write(T* value, quint64 size)
 {
    // write data to file
-   if ( static_cast<quint64>(_file->write(reinterpret_cast<char*>(&value),sizeof(T)*size))
+   if ( static_cast<quint64>(_file->write(reinterpret_cast<const char*>(value),sizeof(T)*size))
         != sizeof(T)*size )
    {
       // if write failed report error and return false
