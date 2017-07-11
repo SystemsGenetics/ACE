@@ -30,6 +30,7 @@ namespace Ace
       bool allocate(quint64 size) noexcept;
       void clear(quint16 newType);
       bool isNew() const noexcept;
+      quint64 size() const noexcept;
       EAbstractData& data();
       EMetadata& getMeta() { return _metaRoot; }
       void writeMeta();

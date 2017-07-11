@@ -15,9 +15,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 HEADERS += \
     testexception.h \
-    testdatastream.h
+    testdatastream.h \
+    testdataobject.h \
+    dummydata.h \
+    dummydatafactory.h
 
 SOURCES += \
     testexception.cpp \
     main.cpp \
-    testdatastream.cpp
+    testdatastream.cpp \
+    testdataobject.cpp \
+    dummydatafactory.cpp

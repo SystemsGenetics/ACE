@@ -1,0 +1,19 @@
+#ifndef DUMMYDATAFACTORY_H
+#define DUMMYDATAFACTORY_H
+#include "abstractdatafactory.h"
+
+
+
+class DummyDataFactory : public EAbstractDataFactory
+{
+public:
+   virtual quint16 getCount() noexcept override final { return 1; }
+   virtual QString getName(quint16 /*type*/) noexcept override final { return QString("Dummy"); }
+   virtual QString getFileExtension(quint16 /*type*/) noexcept override final
+      { return QString("dmy"); }
+   virtual std::unique_ptr<EAbstractData> make(quint16 type) noexcept override final;
+};
+
+
+
+#endif

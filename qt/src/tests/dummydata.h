@@ -1,0 +1,20 @@
+#ifndef DUMMYDATA_H
+#define DUMMYDATA_H
+#include "abstractdata.h"
+
+
+
+class DummyData : public EAbstractData
+{
+public:
+   virtual void readData() override final {}
+   virtual quint64 getDataEnd() const override final { return 0; }
+   virtual void newData() override final {}
+   virtual void prepare(bool /*preAllocate*/) override final {}
+   virtual void finish() override final {}
+   using EAbstractData::stream;
+};
+
+
+
+#endif

@@ -89,11 +89,10 @@ Ace::DataObject::DataObject(const QString& path):
    }
    catch (EException e)
    {
-      // make data object invalid if critical exception occured
-      if ( e.getLevel() == EException::Critical )
-      {
-         _invalid = true;
-      }
+      // clear any allocated objects
+      _file.reset();
+      _stream.reset();
+      _data.reset();
       throw;
    }
 }
@@ -119,7 +118,7 @@ Ace::DataObject::~DataObject() noexcept
 bool Ace::DataObject::seek(quint64 offset) noexcept
 {
    // make sure data object is not invalid or new
-   if ( _invalid || _isNew )
+   if ( _invalid || _isNew || offset >= (_file->size()-_headerOffset) )
    {
       return false;
    }
@@ -234,6 +233,23 @@ void Ace::DataObject::clear(quint16 newType)
 bool Ace::DataObject::isNew() const noexcept
 {
    return _isNew;
+}
+
+
+
+
+
+
+quint64 Ace::DataObject::size() const noexcept
+{
+   // make sure object is valid and not new
+   if ( _invalid || _isNew )
+   {
+      return -1;
+   }
+
+   // return size of file
+   return (quint64)_file->size()-_headerOffset;
 }
 
 
