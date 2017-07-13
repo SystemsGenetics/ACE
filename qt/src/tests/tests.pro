@@ -18,11 +18,13 @@ HEADERS += \
     testdatastream.h \
     testdataobject.h \
     dummydata.h \
-    dummydatafactory.h
+    dummydatafactory.h \
+    testdatamanager.h
 
 SOURCES += \
     testexception.cpp \
     main.cpp \
     testdatastream.cpp \
     testdataobject.cpp \
-    dummydatafactory.cpp
+    dummydatafactory.cpp \
+    testdatamanager.cpp

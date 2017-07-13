@@ -82,9 +82,22 @@ Ace::DataObject::DataObject(const QString& path):
       _data->initialize(this,_stream.get());
       _dataOffset = _data->getDataEnd();
 
-      // seek to data offset, read in metadata, and set object to not new
+      // seek to data offset and read in metadata
       seek(_dataOffset);
       *_stream >> _metaRoot;
+
+      // make sure reading ot metadata worked
+      if ( !*_stream )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setLevel(EException::Notice);
+         e.setType(CorruptFile);
+         e.setTitle(tr("Open Data Object"));
+         e.setDetails(tr("Cannot load file %1 because it's metadata is corrupt.").arg(path));
+         throw e;
+      }
+
+      // set data object to not new
       _isNew = false;
    }
    catch (EException e)
@@ -281,6 +294,17 @@ void Ace::DataObject::writeMeta()
    // write out meta information after data
    seek(_dataOffset);
    *_stream << _metaRoot;
+
+   // make sure writing was successful
+   if ( !*_stream )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setLevel(EException::Critical);
+      e.setType(CannotWrite);
+      e.setTitle(tr("Data Object I/O"));
+      e.setDetails(tr("Failed writing metadata of object."));
+      throw e;
+   }
 }
 
 

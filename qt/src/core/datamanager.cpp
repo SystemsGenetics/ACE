@@ -26,8 +26,21 @@ Ace::DataManager& Ace::DataManager::getInstance() noexcept
 
 
 
-unique_ptr<Ace::DataReference> Ace::DataManager::open(const QString& path)
+Ace::DataReference* Ace::DataManager::open(const QString& path)
 {
+   // touch the file to make sure it exists for absolute file pathfinding
+   QFile touchFile(path);
+   if ( !touchFile.open(QIODevice::ReadWrite) )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setLevel(EException::Critical);
+      e.setType(CannotOpen);
+      e.setTitle(QObject::tr("Data Manager"));
+      e.setDetails(QObject::tr("Cannot open file %1.").arg(path));
+      throw e;
+   }
+   touchFile.close();
+
    // get absolute file path and prepare pointer
    QFileInfo fileInfo(path);
    QString absolutePath = fileInfo.canonicalFilePath();
@@ -47,11 +60,9 @@ unique_ptr<Ace::DataReference> Ace::DataManager::open(const QString& path)
       _dataObjects.insert(absolutePath,data);
    }
 
-   // create new reference for data, connect released signal, and return it
+   // create new reference for data and return it
    unique_ptr<DataReference> reference(new DataReference(data,absolutePath));
-   connect(reference.get(),SIGNAL(released(const QString&)),this
-           ,SLOT(referenceReleased(const QString&)));
-   return unique_ptr<DataReference>(new DataReference(data,absolutePath));
+   return new DataReference(data,absolutePath);
 }
 
 
@@ -68,9 +79,9 @@ void Ace::DataManager::referenceReleased(const QString& absolutePath)
       E_MAKE_EXCEPTION(e);
       e.setLevel(EException::Critical);
       e.setType(NullReference);
-      e.setTitle(tr("Internal Data Reference"));
-      e.setDetails(tr("A data reference at path %1 was released when no data at that path exists"
-                      " within the data manager.").arg(absolutePath));
+      e.setTitle(QObject::tr("Internal Data Reference"));
+      e.setDetails(QObject::tr("A data reference at path %1 was released when no data at that path"
+                               " exists within the data manager.").arg(absolutePath));
       throw e;
    }
 

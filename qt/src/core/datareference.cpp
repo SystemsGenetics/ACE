@@ -1,4 +1,5 @@
 #include "datareference.h"
+#include "datamanager.h"
 
 
 
@@ -20,7 +21,7 @@ Ace::DataReference::~DataReference() noexcept
 {
    // shared pointer must be reset first before released signal emitted
    _data.reset();
-   emit released(_absolutePath);
+   DataManager::getInstance().referenceReleased(_absolutePath);
 }
 
 

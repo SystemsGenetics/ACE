@@ -13,17 +13,16 @@ namespace Ace { class DataReference; }
 
 namespace Ace
 {
-   class DataManager : public QObject
+   class DataManager
    {
-      Q_OBJECT
    public:
       enum Errors
       {
          NullReference = 0
+         ,CannotOpen
       };
       static DataManager& getInstance() noexcept;
-      std::unique_ptr<DataReference> open(const QString& path);
-   public slots:
+      DataReference* open(const QString& path);
       void referenceReleased(const QString& absolutePath);
    private:
       DataManager() = default;

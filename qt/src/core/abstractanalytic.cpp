@@ -59,7 +59,7 @@ EAbstractData* EAbstractAnalytic::getExtraData(const QString &path)
    unique_ptr<Ace::DataReference> data;
    try
    {
-      data = Ace::DataManager::getInstance().open(path);
+      data.reset(Ace::DataManager::getInstance().open(path));
    }
    catch (...)
    {

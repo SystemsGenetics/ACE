@@ -12,5 +12,3 @@ SUBDIRS += \
 tests.depends = core
 #gui.depends = core
 #example.depends = core gui
-
-# make unit testing project, do simple unit test of exception class

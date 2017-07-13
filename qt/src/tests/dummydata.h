@@ -13,6 +13,10 @@ public:
    virtual void prepare(bool /*preAllocate*/) override final {}
    virtual void finish() override final {}
    using EAbstractData::stream;
+   bool getTouch() { return _touch; }
+   void touch() { _touch = true; }
+private:
+   bool _touch {false};
 };
 
 
