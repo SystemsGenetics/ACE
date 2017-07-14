@@ -19,7 +19,8 @@ HEADERS += \
     testdataobject.h \
     dummydata.h \
     dummydatafactory.h \
-    testdatamanager.h
+    testdatamanager.h \
+    testmetadata.h
 
 SOURCES += \
     testexception.cpp \
@@ -27,4 +28,5 @@ SOURCES += \
     testdatastream.cpp \
     testdataobject.cpp \
     dummydatafactory.cpp \
-    testdatamanager.cpp
+    testdatamanager.cpp \
+    testmetadata.cpp

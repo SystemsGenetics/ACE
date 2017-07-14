@@ -3,6 +3,7 @@
 #include "testdatastream.h"
 #include "testdataobject.h"
 #include "testdatamanager.h"
+#include "testmetadata.h"
 
 #ifdef DUMMY_QTEST_APPLESS_MAIN_NEEDED_FOR_QTCREATOR_TO_RECOGNIZE_THIS_AS_QTTESTS
 QTEST_APPLESS_MAIN(TestException)
@@ -24,5 +25,6 @@ int main(int argc, char* argv[])
    ASSERT_TEST(new TestDataStream);
    ASSERT_TEST(new TestDataObject);
    ASSERT_TEST(new TestDataManager);
+   ASSERT_TEST(new TestMetadata);
    return status;
 }
