@@ -319,7 +319,7 @@ void TestMetadata::testFileInputOutput()
    Q_ASSERT( array->size() == 5 );
    Q_ASSERT( (*array)[0]->isNull() );
    Q_ASSERT( *((*array)[1]->toBool()) );
-   Q_ASSERT( *((*array)[2]->toDouble()) == 3.14 );
+   Q_ASSERT( *((*array)[2]->toDouble()) == 6.28 );
    Q_ASSERT( *((*array)[3]->toString()) == QString("array test string") );
    Q_ASSERT( *((*array)[4]->toBytes()) == QByteArray("array test bytes") );
 

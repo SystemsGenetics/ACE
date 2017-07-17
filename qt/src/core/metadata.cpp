@@ -4,6 +4,8 @@
 #include "exception.h"
 #include "datastream.h"
 
+#define TRUE_BOOL_VALUE 26
+
 
 
 
@@ -516,8 +518,12 @@ EDataStream& operator>>(EDataStream& stream, EMetadata& meta)
    switch (meta._type)
    {
    case EMetadata::Bool:
-      stream >> *(meta.toBool());
+   {
+      quint8 val;
+      stream >> val;
+      *(meta.toBool()) = ( val == TRUE_BOOL_VALUE );
       break;
+   }
    case EMetadata::Double:
       stream >> *(meta.toDouble());
       break;
@@ -585,8 +591,12 @@ EDataStream& operator<<(EDataStream& stream, EMetadata& meta)
    switch (meta._type)
    {
    case EMetadata::Bool:
-      stream << *(meta.toBool());
+   {
+      quint8 val;
+      *(meta.toBool()) ? val = TRUE_BOOL_VALUE : val = 0;
+      stream << val;
       break;
+   }
    case EMetadata::Double:
       stream << *(meta.toDouble());
       break;
