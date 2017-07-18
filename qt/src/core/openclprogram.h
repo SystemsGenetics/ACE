@@ -20,7 +20,7 @@ public:
    ACE_DISBALE_COPY_AND_MOVE(EOpenCLProgram)
    void addSource(const QString& source);
    bool addFile(const QString& filePath);
-   bool compile(const QString& options);
+   bool compile(const QString& options = "");
    std::unique_ptr<EOpenCLKernel> makeKernel(const QString& name);
    bool hasBuildError() const;
    QString getBuildError() const;

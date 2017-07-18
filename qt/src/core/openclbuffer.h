@@ -37,8 +37,8 @@ template<class T>
 EOpenCLBuffer<T>::EOpenCLBuffer(cl_context contextID, cl_command_queue commandQueueID
                                 , quint64 size):
    _commandQueueID(commandQueueID),
-   _size(size),
    _id(new cl_mem),
+   _size(size),
    _host(new T[size])
 {
    // retain the command queue
@@ -46,7 +46,7 @@ EOpenCLBuffer<T>::EOpenCLBuffer(cl_context contextID, cl_command_queue commandQu
 
    // create new buffer object
    cl_int code;
-   *_id = clCreateBuffer(contextID,CL_MEM_READ_WRITE,size*sizeof(T),_host,&code);
+   *_id = clCreateBuffer(contextID,CL_MEM_READ_WRITE,size*sizeof(T),_host.get(),&code);
    if ( code != CL_SUCCESS )
    {
       _id.reset();
@@ -154,7 +154,7 @@ EOpenCLEvent EOpenCLBuffer<T>::write()
 template<class T>
 cl_mem* EOpenCLBuffer<T>::getOpenCLMemory()
 {
-   return &_id;
+   return _id.get();
 }
 
 

@@ -4,6 +4,9 @@
 #include "testdataobject.h"
 #include "testdatamanager.h"
 #include "testmetadata.h"
+#include "testopencldevice.h"
+#include "testopenclprogram.h"
+#include "testopenclkernel.h"
 
 #ifdef DUMMY_QTEST_APPLESS_MAIN_NEEDED_FOR_QTCREATOR_TO_RECOGNIZE_THIS_AS_QTTESTS
 QTEST_APPLESS_MAIN(TestException)
@@ -26,5 +29,8 @@ int main(int argc, char* argv[])
    ASSERT_TEST(new TestDataObject);
    ASSERT_TEST(new TestDataManager);
    ASSERT_TEST(new TestMetadata);
+   ASSERT_TEST(new TestOpenCLDevice);
+   ASSERT_TEST(new TestOpenCLProgram);
+   ASSERT_TEST(new TestOpenCLKernel);
    return status;
 }

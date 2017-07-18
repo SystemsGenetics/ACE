@@ -20,7 +20,10 @@ HEADERS += \
     dummydata.h \
     dummydatafactory.h \
     testdatamanager.h \
-    testmetadata.h
+    testmetadata.h \
+    testopencldevice.h \
+    testopenclprogram.h \
+    testopenclkernel.h
 
 SOURCES += \
     testexception.cpp \
@@ -29,4 +32,10 @@ SOURCES += \
     testdataobject.cpp \
     dummydatafactory.cpp \
     testdatamanager.cpp \
-    testmetadata.cpp
+    testmetadata.cpp \
+    testopencldevice.cpp \
+    testopenclprogram.cpp \
+    testopenclkernel.cpp
+
+RESOURCES += \
+    resources.qrc
