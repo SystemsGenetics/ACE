@@ -166,7 +166,7 @@ bool EOpenCLEvent::isDone()
    // return if there is no event
    if ( !_id )
    {
-      return false;
+      return true;
    }
 
    // query event status

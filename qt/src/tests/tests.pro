@@ -23,7 +23,9 @@ HEADERS += \
     testmetadata.h \
     testopencldevice.h \
     testopenclprogram.h \
-    testopenclkernel.h
+    testopenclkernel.h \
+    testopenclbuffer.h \
+    testopenclevent.h
 
 SOURCES += \
     testexception.cpp \
@@ -35,7 +37,9 @@ SOURCES += \
     testmetadata.cpp \
     testopencldevice.cpp \
     testopenclprogram.cpp \
-    testopenclkernel.cpp
+    testopenclkernel.cpp \
+    testopenclbuffer.cpp \
+    testopenclevent.cpp
 
 RESOURCES += \
     resources.qrc

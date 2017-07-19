@@ -29,4 +29,20 @@ void TestOpenCLKernel::testRun()
    kernel->getWorkgroupMultiple();
    auto event {kernel->execute()};
    event.wait();
+   event = buffer->read();
+   event.wait();
+   Q_ASSERT( (*buffer)[0] == 'H' );
+   Q_ASSERT( (*buffer)[1] == 'e' );
+   Q_ASSERT( (*buffer)[2] == 'l' );
+   Q_ASSERT( (*buffer)[3] == 'l' );
+   Q_ASSERT( (*buffer)[4] == 'o' );
+   Q_ASSERT( (*buffer)[5] == ' ' );
+   Q_ASSERT( (*buffer)[6] == 'K' );
+   Q_ASSERT( (*buffer)[7] == 'e' );
+   Q_ASSERT( (*buffer)[8] == 'r' );
+   Q_ASSERT( (*buffer)[9] == 'n' );
+   Q_ASSERT( (*buffer)[10] == 'e' );
+   Q_ASSERT( (*buffer)[11] == 'l' );
+   Q_ASSERT( (*buffer)[12] == '!' );
+   Q_ASSERT( (*buffer)[13] == '\0' );
 }

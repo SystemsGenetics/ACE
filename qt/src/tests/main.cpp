@@ -7,6 +7,8 @@
 #include "testopencldevice.h"
 #include "testopenclprogram.h"
 #include "testopenclkernel.h"
+#include "testopenclbuffer.h"
+#include "testopenclevent.h"
 
 #ifdef DUMMY_QTEST_APPLESS_MAIN_NEEDED_FOR_QTCREATOR_TO_RECOGNIZE_THIS_AS_QTTESTS
 QTEST_APPLESS_MAIN(TestException)
@@ -32,5 +34,7 @@ int main(int argc, char* argv[])
    ASSERT_TEST(new TestOpenCLDevice);
    ASSERT_TEST(new TestOpenCLProgram);
    ASSERT_TEST(new TestOpenCLKernel);
+   ASSERT_TEST(new TestOpenCLBuffer);
+   ASSERT_TEST(new TestOpenCLEvent);
    return status;
 }

@@ -26,6 +26,7 @@ private:
    std::unique_ptr<cl_mem> _id {nullptr};
    int _size {0};
    std::unique_ptr<T[]> _host {nullptr};
+   T* _lala;
 };
 
 
@@ -41,6 +42,7 @@ EOpenCLBuffer<T>::EOpenCLBuffer(cl_context contextID, cl_command_queue commandQu
    _size(size),
    _host(new T[size])
 {
+   _lala = _host.get();
    // retain the command queue
    clRetainCommandQueue(commandQueueID);
 
@@ -108,8 +110,8 @@ EOpenCLEvent EOpenCLBuffer<T>::read()
 
    // add read buffer command to queue
    cl_event eventID;
-   cl_int code = clEnqueueReadBuffer(_commandQueueID,*_id,CL_FALSE,0,_size*sizeof(T),_host,0,nullptr
-                                     ,&eventID);
+   cl_int code = clEnqueueReadBuffer(_commandQueueID,*_id,CL_FALSE,0,_size*sizeof(T),_host.get(),0
+                                     ,nullptr,&eventID);
    if ( code != CL_SUCCESS )
    {
       reportError("clEnqueueReadBuffer",code);
@@ -136,7 +138,7 @@ EOpenCLEvent EOpenCLBuffer<T>::write()
 
    // add write buffer command to queue
    cl_event eventID;
-   cl_int code = clEnqueueWriteBuffer(_commandQueueID,*_id,CL_FALSE,0,_size*sizeof(T),_host,0
+   cl_int code = clEnqueueWriteBuffer(_commandQueueID,*_id,CL_FALSE,0,_size*sizeof(T),_host.get(),0
                                       ,nullptr,&eventID);
    if ( code != CL_SUCCESS )
    {
