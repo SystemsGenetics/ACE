@@ -33,6 +33,16 @@ Ace::MainWindow& Ace::MainWindow::getInstance()
 
 
 
+void Ace::MainWindow::addCommand(const QString &command)
+{
+   _console->setPlainText(_console->toPlainText().append(command + "\n"));
+}
+
+
+
+
+
+
 void Ace::MainWindow::open()
 {
 
@@ -84,7 +94,8 @@ Ace::MainWindow::MainWindow(QWidget *parent):
 {
    createActions();
    createMenus();
-   setCentralWidget(new QTextEdit(this));
+   _console = new QTextEdit(this);
+   setCentralWidget(_console);
 }
 
 

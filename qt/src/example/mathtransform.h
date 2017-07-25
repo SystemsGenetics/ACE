@@ -25,6 +25,7 @@ public:
       ,Total
    };
    int getArgumentCount() override final;
+   QString getCommandName() override final { return QString("math_transform"); }
    ArgumentType getArgumentData(int argument) override final;
    QVariant getArgumentData(int argument, Role role) override final;
    void setArgument(int argument, QVariant value) override final;

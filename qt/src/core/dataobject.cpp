@@ -9,6 +9,7 @@
 
 Ace::DataObject::DataObject(const QString& path):
    _metaRoot(EMetadata::Object)
+   ,_path(path)
 {
    try
    {
@@ -271,6 +272,7 @@ quint64 Ace::DataObject::size() const noexcept
 
 EAbstractData& Ace::DataObject::data()
 {
+   // make sure there is abstract data object to return
    if ( _invalid || _isNew )
    {
       E_MAKE_EXCEPTION(e);
@@ -280,6 +282,8 @@ EAbstractData& Ace::DataObject::data()
       e.setDetails(QObject::tr("Attempting to get data on failed/empty object with no data."));
       throw e;
    }
+
+   // return reference
    return *_data;
 }
 

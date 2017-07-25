@@ -119,48 +119,82 @@ void Ace::SetupAnalyticDialog::cancel()
 void Ace::SetupAnalyticDialog::executeButton()
 {
    using Type = EAbstractAnalytic::ArgumentType;
-   //using Role = EAbstractAnalytic::Role;
+   using Role = EAbstractAnalytic::Role;
+   QString command = _analytic->getCommandName();
    for (int i = 0; i < _analytic->getArgumentCount() ;++i)
    {
+      QString bit(" --%1=%2");
+      bit.arg(_analytic->getArgumentData(i,Role::CommandLineName).toString());
       switch (_analytic->getArgumentData(i))
       {
       case Type::Bool:
       {
          QCheckBox* edit = qobject_cast<QCheckBox*>(_inputs.at(i));
          _analytic->setArgument(i,QVariant(edit->isChecked()));
+         edit->isChecked() ? bit.arg("TRUE") : bit.arg("FALSE");
          break;
       }
       case Type::Integer:
       {
          QSpinBox* edit = qobject_cast<QSpinBox*>(_inputs.at(i));
          _analytic->setArgument(i,QVariant(edit->value()));
+         bit.arg(edit->value());
          break;
       }
       case Type::Double:
       {
          QLineEdit* edit = qobject_cast<QLineEdit*>(_inputs.at(i));
          _analytic->setArgument(i,QVariant(edit->text().toDouble()));
+         bit.arg(edit->text());
          break;
       }
       case Type::String:
       {
          QLineEdit* edit = qobject_cast<QLineEdit*>(_inputs.at(i));
          _analytic->setArgument(i,QVariant(edit->text()));
+         bit.arg(QString("\"%1\"").arg(edit->text().replace('"',"\\\"")));
          break;
       }
       case Type::Combo:
       {
          QComboBox* edit = qobject_cast<QComboBox*>(_inputs.at(i));
          _analytic->setArgument(i,QVariant(edit->currentText()));
+         bit.arg(QString("\"%1\"").arg(edit->currentText().replace('"',"\\\"")));
          break;
       }
       case Type::FileIn:
-      case Type::FileOut:
-      case Type::DataIn:
-      case Type::DataOut:
+      {
+         QLineEdit* edit = qobject_cast<QLineEdit*>(_inputs.at(i));
+         _analytic->addFileIn(i,edit->text());
+         bit.arg(QString("\"%1\"").arg(edit->text().replace('"',"\\\"")));
          break;
       }
+      case Type::FileOut:
+      {
+         QLineEdit* edit = qobject_cast<QLineEdit*>(_inputs.at(i));
+         _analytic->addFileOut(i,edit->text());
+         bit.arg(QString("\"%1\"").arg(edit->text().replace('"',"\\\"")));
+         break;
+      }
+      case Type::DataIn:
+      {
+         QLineEdit* edit = qobject_cast<QLineEdit*>(_inputs.at(i));
+         _analytic->addDataIn(i,edit->text(),_analytic->getArgumentData(i,Role::DataType).toUInt());
+         bit.arg(QString("\"%1\"").arg(edit->text().replace('"',"\\\"")));
+         break;
+      }
+      case Type::DataOut:
+      {
+         QLineEdit* edit = qobject_cast<QLineEdit*>(_inputs.at(i));
+         _analytic->addDataOut(i,edit->text()
+                               ,_analytic->getArgumentData(i,Role::DataType).toUInt());
+         bit.arg(QString("\"%1\"").arg(edit->text().replace('"',"\\\"")));
+         break;
+      }
+      }
+      command.append(bit);
    }
+   //Call main window to insert command
    accept();
 }
 

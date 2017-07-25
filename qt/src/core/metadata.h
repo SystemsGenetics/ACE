@@ -30,7 +30,7 @@ public:
    using List = QList<EMetadata*>;
    using Map = QMap<QString,EMetadata*>;
    EMetadata(Type type = Null);
-   EMetadata(const EMetadata&) = delete;
+   EMetadata(const EMetadata& copy);
    EMetadata(EMetadata&&) = delete;
    ~EMetadata();
    bool isNull() const;

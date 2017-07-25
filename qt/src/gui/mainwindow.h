@@ -4,6 +4,10 @@
 
 
 
+class QTextEdit;
+
+
+
 namespace Ace
 {
    class MainWindow : public QMainWindow
@@ -11,6 +15,7 @@ namespace Ace
       Q_OBJECT
    public:
       static MainWindow& getInstance();
+      void addCommand(const QString& command);
    private slots:
       void open();
       void exit();
@@ -28,6 +33,7 @@ namespace Ace
       QMenu* _fileMenu;
       QMenu* _analyticMenu;
       QMenu* _settingsMenu;
+      QTextEdit* _console;
    };
 }
 

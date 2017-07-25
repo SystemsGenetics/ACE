@@ -17,13 +17,16 @@ using namespace std;
 
 EAbstractAnalytic::~EAbstractAnalytic()
 {
-   for (auto i = _newData.constBegin(); i != _newData.constEnd() ;++i)
+   // go through any remaining new data objects and call their finish function
+   for (auto i = _dataOut.constBegin(); i != _dataOut.constEnd() ;++i)
    {
-      (*i)->finish();
+      (**i)->data().finish();
    }
-   qDeleteAll(_data);
+
+   // cleanup all open data objects and files
+   qDeleteAll(_dataIn);
+   qDeleteAll(_dataOut);
    qDeleteAll(_files);
-   qDeleteAll(_extraDatas);
 }
 
 
@@ -35,9 +38,11 @@ void EAbstractAnalytic::run()
 {
    // call initialize function of analytic
    bool preAllocate {initialize()};
-   for (auto i = _newData.constBegin(); i != _newData.constEnd() ;++i)
+
+   // go through all new data objects and call their prepare function
+   for (auto i = _dataOut.constBegin(); i != _dataOut.constEnd() ;++i)
    {
-      (*i)->prepare(preAllocate);
+      (**i)->data().prepare(preAllocate);
    }
 
    // initialize block info
@@ -65,6 +70,34 @@ void EAbstractAnalytic::run()
 
    // call finish function of analytic
    finish();
+
+   // create metadata history for each output data file
+   EMetadata history(EMetadata::Object);
+   for (auto i = _dataIn.constBegin(); i != _dataIn.constEnd() ;++i)
+   {
+      EMetadata* file = new EMetadata((**i)->getMeta());
+      QString path = (**i)->getPath();
+      while ( history.toObject()->contains(path) )
+      {
+         path.prepend('_');
+      }
+      history.toObject()->insert(path,file);
+   }
+
+   // iterate through all output data objects, removing each one from reference list
+   Ace::DataReference* data;
+   while ( ( data = _dataOut.takeAt(0) ) != nullptr )
+   {
+      // call finish function, add metadata history, and delete reference
+      (*data)->data().finish();
+      EMetadata::Map* object = (*data)->getMeta().toObject();
+      object->remove("history");
+      object->insert("history",new EMetadata(history));
+      delete data;
+   }
+
+   // emit finished signal
+   emit finished();
 }
 
 
@@ -74,11 +107,17 @@ void EAbstractAnalytic::run()
 
 void EAbstractAnalytic::addFileIn(int argument, const QString &path)
 {
+   // open file for read only and make sure it worked
    unique_ptr<QFile> file(new QFile(path));
    if ( !file->open(QIODevice::ReadOnly) )
    {
-      ;//ERROR
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Abstract Analytic"));
+      e.setDetails(tr("Failed opening file %1 for read only.").arg(path));
+      throw e;
    }
+
+   // call set argument function and append to list of files
    setArgument(argument,file.get());
    _files.append(file.release());
 }
@@ -90,11 +129,17 @@ void EAbstractAnalytic::addFileIn(int argument, const QString &path)
 
 void EAbstractAnalytic::addFileOut(int argument, const QString &path)
 {
+   // open file for write only and truncate, making sure it worked
    unique_ptr<QFile> file(new QFile(path));
    if ( !file->open(QIODevice::WriteOnly|QIODevice::Truncate) )
    {
-      ;//ERROR
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Abstract Analytic"));
+      e.setDetails(tr("Failed opening file %1 for write only and truncate.").arg(path));
+      throw e;
    }
+
+   // call set argument function and append to list of files
    setArgument(argument,file.get());
    _files.append(file.release());
 }
@@ -106,17 +151,31 @@ void EAbstractAnalytic::addFileOut(int argument, const QString &path)
 
 void EAbstractAnalytic::addDataIn(int argument, const QString &path, quint16 type)
 {
+   // open data object from manager
    unique_ptr<Ace::DataReference> data {Ace::DataManager::getInstance().open(path)};
+
+   // make sure it is not new
    if ( (*data)->isNew() )
    {
-      ;//ERROR!
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Abstract Analytic"));
+      e.setDetails(tr("Failed opening data object %1 for input; it is a new object.").arg(path));
+      throw e;
    }
+
+   // make sure it is the expected type
    if ( (*data)->getType() != type )
    {
-      ;//ERROR!
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Abstract Analytic"));
+      e.setDetails(tr("Failed opening data object %1 for input; expected type %2 when it is type"
+                      " %3.").arg(path).arg(type).arg((*data)->getType()));
+      throw e;
    }
+
+   // call set argument function and add to list of data objects
    setArgument(argument,&((*data)->data()));
-   _data.append(data.release());
+   _dataIn.append(data.release());
 }
 
 
@@ -126,11 +185,13 @@ void EAbstractAnalytic::addDataIn(int argument, const QString &path, quint16 typ
 
 void EAbstractAnalytic::addDataOut(int argument, const QString &path, quint16 type)
 {
+   // open data object and clear it of any data
    unique_ptr<Ace::DataReference> data {Ace::DataManager::getInstance().open(path)};
    (*data)->clear(type);
-   _newData.append(&((*data)->data()));
+
+   // call set argument function and add to list of data objects
    setArgument(argument,&((*data)->data()));
-   _data.append(data.release());
+   _dataOut.append(data.release());
 }
 
 
@@ -138,7 +199,7 @@ void EAbstractAnalytic::addDataOut(int argument, const QString &path, quint16 ty
 
 
 
-EAbstractData* EAbstractAnalytic::getExtraData(const QString &path, bool clear, quint16 type)
+EAbstractData* EAbstractAnalytic::getDataIn(const QString &path, quint16 type)
 {
    // lock mutex
    _mutex.lock();
@@ -147,10 +208,26 @@ EAbstractData* EAbstractAnalytic::getExtraData(const QString &path, bool clear, 
    unique_ptr<Ace::DataReference> data;
    try
    {
+      // open data object
       data.reset(Ace::DataManager::getInstance().open(path));
-      if ( clear )
+
+      // make sure it is not new
+      if ( (*data)->isNew() )
       {
-         (*data)->clear(type);
+         E_MAKE_EXCEPTION(e);
+         e.setTitle(tr("Abstract Analytic"));
+         e.setDetails(tr("Failed opening data object %1 for input; it is a new object.").arg(path));
+         throw e;
+      }
+
+      // make sure it is the expected type
+      if ( (*data)->getType() != type )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setTitle(tr("Abstract Analytic"));
+         e.setDetails(tr("Failed opening data object %1 for input; expected type %2 when it is type"
+                         " %3.").arg(path).arg(type).arg((*data)->getType()));
+         throw e;
       }
    }
    catch (...)
@@ -159,15 +236,44 @@ EAbstractData* EAbstractAnalytic::getExtraData(const QString &path, bool clear, 
       _mutex.unlock();
       throw;
    }
-   if ( clear )
-   {
-      _newData.append(&((*data)->data()));
-   }
 
    // add data reference to list of extra data objects
-   _extraDatas.push_back(data.release());
+   _dataIn.push_back(data.release());
 
    // unlock mutex and return pointer to new data
    _mutex.unlock();
-   return &(*_extraDatas.back())->data();
+   return &(*_dataIn.back())->data();
+}
+
+
+
+
+
+
+EAbstractData* EAbstractAnalytic::getDataOut(const QString &path, quint16 type)
+{
+   // lock mutex
+   _mutex.lock();
+
+   // get data reference to new data object requested
+   unique_ptr<Ace::DataReference> data;
+   try
+   {
+      // open data object and clear it
+      data.reset(Ace::DataManager::getInstance().open(path));
+      (*data)->clear(type);
+   }
+   catch (...)
+   {
+      // if anything goes wrong unlock mutex and rethrow
+      _mutex.unlock();
+      throw;
+   }
+
+   // add data reference to list of extra data objects
+   _dataOut.push_back(data.release());
+
+   // unlock mutex and return pointer to new data
+   _mutex.unlock();
+   return &(*_dataOut.back())->data();
 }

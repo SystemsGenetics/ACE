@@ -13,4 +13,4 @@ tests.depends = core
 gui.depends = core
 example.depends = core gui
 
-# TODO: finish adding to abstract analytic, from that go back to GUI
+# TODO: make sanity checks for analytic command name / command line names when adding factory

@@ -22,6 +22,62 @@ EMetadata::EMetadata(Type type):
 
 
 
+EMetadata::EMetadata(const EMetadata& copy)
+{
+   // initialize metadata
+   initialize(copy._type);
+
+   // copy data depending on what type it is
+   switch(_type)
+   {
+   case Bool:
+      *toBool() = *copy.toBool();
+      break;
+   case Double:
+      *toDouble() = *copy.toDouble();
+      break;
+   case String:
+      *toString() = *copy.toString();
+      break;
+   case Bytes:
+      *toBytes() = *copy.toBytes();
+      break;
+   case Array:
+   {
+      // get lists
+      List* copyList {reinterpret_cast<List*>(copy._data)};
+      List* list {reinterpret_cast<List*>(_data)};
+
+      // make copy of all metadata on copy's list
+      for (auto i = copyList->constBegin(); i != copyList->constEnd() ;++i)
+      {
+         list->append(new EMetadata(**i));
+      }
+      break;
+   }
+   case Object:
+   {
+      // get maps
+      Map* copyMap {reinterpret_cast<Map*>(copy._data)};
+      Map* map {reinterpret_cast<Map*>(_data)};
+
+      // make copy of all metadata on copy's map
+      for (auto i = copyMap->constBegin(); i != copyMap->constEnd() ;++i)
+      {
+         map->insert(i.key(),new EMetadata(**i));
+      }
+      break;
+   }
+   case Null:
+      break;
+   }
+}
+
+
+
+
+
+
 EMetadata::~EMetadata()
 {
    clear();

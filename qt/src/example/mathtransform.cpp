@@ -292,6 +292,5 @@ bool MathTransform::runBlock(int /*block*/)
 
 void MathTransform::finish()
 {
-   // Emit the finished signal
-   emit finished();
+   // do nothing
 }

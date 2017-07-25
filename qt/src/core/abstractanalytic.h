@@ -46,6 +46,7 @@ public:
    EAbstractAnalytic() = default;
    virtual ~EAbstractAnalytic();
    virtual int getArgumentCount() = 0;
+   virtual QString getCommandName() = 0;
    virtual ArgumentType getArgumentData(int argument) = 0;
    virtual QVariant getArgumentData(int argument, Role role) = 0;
    virtual void setArgument(int argument, QVariant value) = 0;
@@ -64,13 +65,13 @@ signals:
    void progressed(int perceptComplete);
    void finished();
 protected:
-   EAbstractData* getExtraData(const QString& path, bool clear, quint16 type);
+   EAbstractData* getDataIn(const QString& path, quint16 type);
+   EAbstractData* getDataOut(const QString& path, quint16 type);
 private:
    static QMutex _mutex;
-   QList<Ace::DataReference*> _extraDatas;
-   QList<Ace::DataReference*> _data;
+   QList<Ace::DataReference*> _dataIn;
+   QList<Ace::DataReference*> _dataOut;
    QList<QFile*> _files;
-   QList<EAbstractData*> _newData;
 };
 
 

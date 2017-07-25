@@ -35,6 +35,7 @@ namespace Ace
       EMetadata& getMeta() { return _metaRoot; }
       void writeMeta();
       quint16 getType() { return _type; }
+      QString getPath() { return _path; }
       operator bool() const noexcept;
    signals:
       void cleared();
@@ -50,6 +51,7 @@ namespace Ace
       bool _invalid {false};
       EMetadata _metaRoot;
       quint16 _type {0};
+      QString _path;
    };
 }
 
