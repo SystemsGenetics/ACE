@@ -23,34 +23,7 @@ int MathTransform::getArgumentCount()
 
 
 
-QString MathTransform::getCommandLineName(int argument)
-{
-   switch (argument)
-   {
-   case InputData:
-      // This is input data, return string
-      return QString("in");
-   case OutputData:
-      // This is output data, return string
-      return QString("out");
-   case OperationType:
-      // This is operation type, return string
-      return QString("type");
-   case Amount:
-      // This is amount, return string
-      return QString("amount");
-   default:
-      // Unknown argument, return empty string
-      return QString();
-   }
-}
-
-
-
-
-
-
-EAbstractAnalytic::ArgumentType MathTransform::getArgumentType(int argument)
+EAbstractAnalytic::ArgumentType MathTransform::getArgumentData(int argument)
 {
    using Type = EAbstractAnalytic::ArgumentType;
    switch (argument)
@@ -78,92 +51,90 @@ EAbstractAnalytic::ArgumentType MathTransform::getArgumentType(int argument)
 
 
 
-QString MathTransform::getArgumentTitle(int argument)
+QVariant MathTransform::getArgumentData(int argument, EAbstractAnalytic::Role role)
 {
-   switch (argument)
+   using Role = EAbstractAnalytic::Role;
+   switch (role)
    {
-   case InputData:
-      // This is input data, return title
-      return QString("Input:");
-   case OutputData:
-      // This is output data, return title
-      return QString("Output:");
-   case OperationType:
-      // This is operation type, return title
-      return QString("Operation Type:");
-   case Amount:
-      // This is amount, return title
-      return QString("Amount:");
+   case Role::CommandLineName:
+      switch (argument)
+      {
+      case InputData:
+         // This is input data, return string
+         return QString("in");
+      case OutputData:
+         // This is output data, return string
+         return QString("out");
+      case OperationType:
+         // This is operation type, return string
+         return QString("type");
+      case Amount:
+         // This is amount, return string
+         return QString("amount");
+      default:
+         // Unknown argument, return empty string
+         return QString();
+      }
+   case Role::Title:
+      switch (argument)
+      {
+      case InputData:
+         // This is input data, return title
+         return QString("Input:");
+      case OutputData:
+         // This is output data, return title
+         return QString("Output:");
+      case OperationType:
+         // This is operation type, return title
+         return QString("Operation Type:");
+      case Amount:
+         // This is amount, return title
+         return QString("Amount:");
+      default:
+         return QString();
+      }
+   case Role::WhatsThis:
+      switch (argument)
+      {
+      case InputData:
+         // This is input data, return help
+         return QString("Input data object of type Integer Array.");
+      case OutputData:
+         // This is output data, return help
+         return QString("Output data object of type Integer Array.");
+      case OperationType:
+         // This is operation type, return help
+         return QString("The type of operation to be done to output values.");
+      case Amount:
+         // This is amount, return help
+         return QString("The number used for the given type of operation.");
+      default:
+         // Unknown argument, return empty string
+         return QString();
+      }
+   case Role::ComboValues:
+      switch (argument)
+      {
+      case OperationType:
+         // This is operation type, return list of combo box options
+         return QStringList() << ADDITION << SUBTRACTION << MULTIPLICATION << DIVISION;
+      default:
+         // Any other argument is not combo box so return empty list
+         return QStringList();
+      }
+      break;
+   case Role::DataType:
+      switch (argument)
+      {
+      case InputData:
+      case OutputData:
+         return DataFactory::IntegerArrayType;
+      default:
+         return QVariant();
+      }
    default:
-      return QString();
+      return QVariant();
    }
-}
-
-
-
-
-
-
-QStringList MathTransform::getComboValues(int argument)
-{
-   switch (argument)
-   {
-   case OperationType:
-      // This is operation type, return list of combo box options
-      return QStringList() << ADDITION << SUBTRACTION << MULTIPLICATION << DIVISION;
-   default:
-      // Any other argument is not combo box so return empty list
-      return QStringList();
-   }
-}
-
-
-
-
-
-
-QString MathTransform::getArgumentWhatsThis(int argument)
-{
-   switch (argument)
-   {
-   case InputData:
-      // This is input data, return help
-      return QString("Input data object of type Integer Array.");
-   case OutputData:
-      // This is output data, return help
-      return QString("Output data object of type Integer Array.");
-   case OperationType:
-      // This is operation type, return help
-      return QString("The type of operation to be done to output values.");
-   case Amount:
-      // This is amount, return help
-      return QString("The number used for the given type of operation.");
-   default:
-      // Unknown argument, return empty string
-      return QString();
-   }
-}
-
-
-
-
-
-
-QString MathTransform::getFileArgumentFilters(int /*argument*/)
-{
-   // This analytic uses no files arguments, always return empty list
-   return QString();
-}
-
-
-
-
-
-
-quint16 MathTransform::getDataArgumentType(int /*argument*/)
-{
-   // Because this analytic uses only one data type, always return that type identifier
-   return DataFactory::IntegerArrayType;
 }
 
 

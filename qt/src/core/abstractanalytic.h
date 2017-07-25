@@ -21,7 +21,6 @@ public:
    {
       Bool
       ,Integer
-      ,Float
       ,Double
       ,String
       ,Combo
@@ -35,19 +34,20 @@ public:
       Type
       ,Title
       ,WhatsThis
-      ,Required
       ,DefaultValue
       ,Minimum
       ,Maximum
+      ,Decimals
       ,CommandLineName
       ,ComboValues
       ,FileFilters
       ,DataType
    };
    EAbstractAnalytic() = default;
-   virtual ~EAbstractAnalytic() { qDeleteAll(_extraDatas); }
+   virtual ~EAbstractAnalytic();
    virtual int getArgumentCount() = 0;
-   virtual QVariant getArgumentData(Role role) = 0;
+   virtual ArgumentType getArgumentData(int argument) = 0;
+   virtual QVariant getArgumentData(int argument, Role role) = 0;
    virtual void setArgument(int argument, QVariant value) = 0;
    virtual void setArgument(int argument, QFile* file) = 0;
    virtual void setArgument(int argument, EAbstractData* data) = 0;
@@ -56,15 +56,21 @@ public:
    virtual bool runBlock(int block) = 0;
    virtual void finish() = 0;
    void run() override final;
-   QList<Ace::DataReference*> getExtraDatas() { return _extraDatas; }
+   void addFileIn(int argument, const QString& path);
+   void addFileOut(int argument, const QString& path);
+   void addDataIn(int argument, const QString& path, quint16 type);
+   void addDataOut(int argument, const QString& path, quint16 type);
 signals:
    void progressed(int perceptComplete);
    void finished();
 protected:
-   EAbstractData* getExtraData(const QString& path);
+   EAbstractData* getExtraData(const QString& path, bool clear, quint16 type);
 private:
    static QMutex _mutex;
    QList<Ace::DataReference*> _extraDatas;
+   QList<Ace::DataReference*> _data;
+   QList<QFile*> _files;
+   QList<EAbstractData*> _newData;
 };
 
 

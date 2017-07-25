@@ -44,10 +44,9 @@ Ace::DataObject::DataObject(const QString& path):
       }
 
       // read data type, name, and extension
-      quint16 dataType;
       QString name;
       QString extension;
-      *_stream >> dataType >> name >> extension;
+      *_stream >> _type >> name >> extension;
 
       // make sure read was successful
       if ( !*_stream )
@@ -62,8 +61,8 @@ Ace::DataObject::DataObject(const QString& path):
 
       // make sure data type in header is valid
       EAbstractDataFactory& factory {EAbstractDataFactory::getInstance()};
-      if ( dataType >= factory.getCount() || name != factory.getName(dataType)
-           || extension != factory.getFileExtension(dataType) )
+      if ( _type >= factory.getCount() || name != factory.getName(_type)
+           || extension != factory.getFileExtension(_type) )
       {
          E_MAKE_EXCEPTION(e);
          e.setLevel(EException::Notice);
@@ -75,7 +74,7 @@ Ace::DataObject::DataObject(const QString& path):
       }
 
       // create new abstract data object of type given in header and get header offset
-      _data = EAbstractDataFactory::getInstance().make(dataType);
+      _data = EAbstractDataFactory::getInstance().make(_type);
       _headerOffset = _file->pos();
 
       // call data initialize function and get data offset
@@ -206,8 +205,8 @@ void Ace::DataObject::clear(quint16 newType)
 
       // write new header with information about new data type
       quint64 value = _specialValue;
-      quint16 type = newType;
-      *_stream << value << type << factory.getName(newType) << factory.getFileExtension(newType);
+      _type = newType;
+      *_stream << value << _type << factory.getName(newType) << factory.getFileExtension(newType);
       if ( !*_stream )
       {
          E_MAKE_EXCEPTION(e);

@@ -60,15 +60,13 @@ bool EApplication::notify(QObject *receiver, QEvent *event)
 void EApplication::showException(const EException &e)
 {
    // generate the message box's textual information
-   QString message;
-   QTextStream stream(&message);
-   QString function = e.getFunction();
-   function.replace(" ","&nbsp;");
-   stream << "<h4>" << QObject::tr("An unexpected error has occured.") << "</h4>";
-   stream << "<p><b>" << QObject::tr("Title:") << "</b> " << e.getTitle() << "<br/>";
-   stream << "<b>" << QObject::tr("File:") << "</b> " << e.getFile() << "<br/>";
-   stream << "<b>" << QObject::tr("Function:") << "</b>&nbsp;" << function << "<br/>";
-   stream << "<b>" << QObject::tr("Line:") << "</b> " << e.getLine() << "</p>";
+   QString message = QString("<h3>%1</h3><p>%2</p><ol>%3</ol>").arg(e.getTitle())
+         .arg(e.getDetails());
+   QString function = e.getFunction().replace(" ","&nbsp;");
+   QString location = QString("<li><b>File:</b> %1</li>").arg(e.getFile());
+   location += QString("<li><b>Function:</b> %1</li>").arg(function);
+   location += QString("<li><b>Line:</b> %1</li>").arg(e.getLine());
+   message.arg(location);
 
    // create the message box, set all exception information for the user, and modally display the
    // dialog
@@ -76,6 +74,5 @@ void EApplication::showException(const EException &e)
    critical.setWindowTitle(QObject::tr("Critical Error"));
    critical.setIcon(QMessageBox::Critical);
    critical.setText(message);
-   critical.setDetailedText(e.getDetails());
    critical.exec();
 }

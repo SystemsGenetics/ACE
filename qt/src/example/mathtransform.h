@@ -24,18 +24,9 @@ public:
       ,Amount
       ,Total
    };
-   virtual bool isArgumentRequired(int argument) override final { Q_UNUSED(argument); }
-   virtual QVariant getNumberMinimum() override final {}
-   virtual QVariant getNumberMaximum() override final {}
-   virtual QRegExp getStringValidator() override final {}
    int getArgumentCount() override final;
-   QString getCommandLineName(int argument) override final;
-   ArgumentType getArgumentType(int argument) override final;
-   QString getArgumentTitle(int argument) override final;
-   QStringList getComboValues(int argument) override final;
-   QString getArgumentWhatsThis(int argument) override final;
-   QString getFileArgumentFilters(int argument) override final;
-   quint16 getDataArgumentType(int argument) override final;
+   ArgumentType getArgumentData(int argument) override final;
+   QVariant getArgumentData(int argument, Role role) override final;
    void setArgument(int argument, QVariant value) override final;
    void setArgument(int argument, QFile* file) override final;
    void setArgument(int argument, EAbstractData* data) override final;

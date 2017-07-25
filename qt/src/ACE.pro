@@ -5,10 +5,12 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     core \
-    tests #\
-    #gui \
-    #example
+    tests \
+    gui \
+    example
 
 tests.depends = core
-#gui.depends = core
-#example.depends = core gui
+gui.depends = core
+example.depends = core gui
+
+# TODO: finish adding to abstract analytic, from that go back to GUI

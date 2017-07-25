@@ -34,6 +34,7 @@ namespace Ace
       EAbstractData& data();
       EMetadata& getMeta() { return _metaRoot; }
       void writeMeta();
+      quint16 getType() { return _type; }
       operator bool() const noexcept;
    signals:
       void cleared();
@@ -48,6 +49,7 @@ namespace Ace
       bool _isNew {true};
       bool _invalid {false};
       EMetadata _metaRoot;
+      quint16 _type {0};
    };
 }
 

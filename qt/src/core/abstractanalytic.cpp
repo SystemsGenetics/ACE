@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "abstractanalytic.h"
 #include "datamanager.h"
 #include "exception.h"
@@ -13,10 +15,30 @@ using namespace std;
 
 
 
+EAbstractAnalytic::~EAbstractAnalytic()
+{
+   for (auto i = _newData.constBegin(); i != _newData.constEnd() ;++i)
+   {
+      (*i)->finish();
+   }
+   qDeleteAll(_data);
+   qDeleteAll(_files);
+   qDeleteAll(_extraDatas);
+}
+
+
+
+
+
+
 void EAbstractAnalytic::run()
 {
    // call initialize function of analytic
-   initialize();
+   bool preAllocate {initialize()};
+   for (auto i = _newData.constBegin(); i != _newData.constEnd() ;++i)
+   {
+      (*i)->prepare(preAllocate);
+   }
 
    // initialize block info
    int blockSize {getBlockSize()};
@@ -50,7 +72,73 @@ void EAbstractAnalytic::run()
 
 
 
-EAbstractData* EAbstractAnalytic::getExtraData(const QString &path)
+void EAbstractAnalytic::addFileIn(int argument, const QString &path)
+{
+   unique_ptr<QFile> file(new QFile(path));
+   if ( !file->open(QIODevice::ReadOnly) )
+   {
+      ;//ERROR
+   }
+   setArgument(argument,file.get());
+   _files.append(file.release());
+}
+
+
+
+
+
+
+void EAbstractAnalytic::addFileOut(int argument, const QString &path)
+{
+   unique_ptr<QFile> file(new QFile(path));
+   if ( !file->open(QIODevice::WriteOnly|QIODevice::Truncate) )
+   {
+      ;//ERROR
+   }
+   setArgument(argument,file.get());
+   _files.append(file.release());
+}
+
+
+
+
+
+
+void EAbstractAnalytic::addDataIn(int argument, const QString &path, quint16 type)
+{
+   unique_ptr<Ace::DataReference> data {Ace::DataManager::getInstance().open(path)};
+   if ( (*data)->isNew() )
+   {
+      ;//ERROR!
+   }
+   if ( (*data)->getType() != type )
+   {
+      ;//ERROR!
+   }
+   setArgument(argument,&((*data)->data()));
+   _data.append(data.release());
+}
+
+
+
+
+
+
+void EAbstractAnalytic::addDataOut(int argument, const QString &path, quint16 type)
+{
+   unique_ptr<Ace::DataReference> data {Ace::DataManager::getInstance().open(path)};
+   (*data)->clear(type);
+   _newData.append(&((*data)->data()));
+   setArgument(argument,&((*data)->data()));
+   _data.append(data.release());
+}
+
+
+
+
+
+
+EAbstractData* EAbstractAnalytic::getExtraData(const QString &path, bool clear, quint16 type)
 {
    // lock mutex
    _mutex.lock();
@@ -60,12 +148,20 @@ EAbstractData* EAbstractAnalytic::getExtraData(const QString &path)
    try
    {
       data.reset(Ace::DataManager::getInstance().open(path));
+      if ( clear )
+      {
+         (*data)->clear(type);
+      }
    }
    catch (...)
    {
       // if anything goes wrong unlock mutex and rethrow
       _mutex.unlock();
       throw;
+   }
+   if ( clear )
+   {
+      _newData.append(&((*data)->data()));
    }
 
    // add data reference to list of extra data objects

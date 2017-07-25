@@ -57,8 +57,10 @@ void Ace::MainWindow::runAnalytic()
 {
    QAction* from = qobject_cast<QAction*>(sender());
    EAbstractAnalyticFactory& factory = EAbstractAnalyticFactory::getInstance();
-   unique_ptr<EAbstractAnalytic> analytic(factory.make(from->data().toInt()));
+   quint16 type = from->data().toInt();
+   unique_ptr<EAbstractAnalytic> analytic(factory.make(type));
    SetupAnalyticDialog dialog(analytic.get());
+   dialog.setWindowTitle(tr("Execute %1").arg(factory.getName(type)));
    dialog.exec();
 }
 
