@@ -25,7 +25,8 @@ EMetadata::EMetadata(Type type):
 EMetadata::EMetadata(const EMetadata& copy)
 {
    // initialize metadata
-   initialize(copy._type);
+   _type = copy._type;
+   initialize(_type);
 
    // copy data depending on what type it is
    switch(_type)

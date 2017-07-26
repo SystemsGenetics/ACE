@@ -16,6 +16,7 @@ private slots:
    void testObject();
    void testNull();
    void testFileInputOutput();
+   void testCopyConstructor();
 };
 
 

@@ -328,3 +328,53 @@ void TestMetadata::testFileInputOutput()
    file.close();
    file.remove();
 }
+
+
+
+
+
+
+void TestMetadata::testCopyConstructor()
+{
+   // create metadata structure that will be written
+   EMetadata in(EMetadata::Object);
+   in.toObject()->insert("null",new EMetadata);
+   in.toObject()->insert("bool",new EMetadata(EMetadata::Bool));
+   *((*(in.toObject()))["bool"]->toBool()) = true;
+   in.toObject()->insert("double",new EMetadata(EMetadata::Double));
+   *((*(in.toObject()))["double"]->toDouble()) = 3.14;
+   in.toObject()->insert("string",new EMetadata(EMetadata::String));
+   *((*(in.toObject()))["string"]->toString()) = QString("test string");
+   in.toObject()->insert("bytes",new EMetadata(EMetadata::Bytes));
+   *((*(in.toObject()))["bytes"]->toBytes()) = QByteArray("test bytes");
+   in.toObject()->insert("array",new EMetadata(EMetadata::Array));
+   QList<EMetadata*>* array = (*(in.toObject()))["array"]->toArray();
+   array->append(new EMetadata);
+   array->append(new EMetadata(EMetadata::Bool));
+   *(array->back()->toBool()) = true;
+   array->append(new EMetadata(EMetadata::Double));
+   *(array->back()->toDouble()) = 6.28;
+   array->append(new EMetadata(EMetadata::String));
+   *(array->back()->toString()) = QString("array test string");
+   array->append(new EMetadata(EMetadata::Bytes));
+   *(array->back()->toBytes()) = QByteArray("array test bytes");
+
+   // make copy of the metadata
+   EMetadata out(in);
+
+   // confirm copy is the same
+   Q_ASSERT( out.isObject() );
+   Q_ASSERT( out.toObject()->size() == 6 );
+   Q_ASSERT( (*(out.toObject()))["null"]->isNull() );
+   Q_ASSERT( *((*(out.toObject()))["bool"]->toBool()) );
+   Q_ASSERT( *((*(out.toObject()))["double"]->toDouble()) == 3.14 );
+   Q_ASSERT( *((*(out.toObject()))["string"]->toString()) == QString("test string") );
+   Q_ASSERT( *((*(out.toObject()))["bytes"]->toBytes()) == QByteArray("test bytes") );
+   array = (*(out.toObject()))["array"]->toArray();
+   Q_ASSERT( array->size() == 5 );
+   Q_ASSERT( (*array)[0]->isNull() );
+   Q_ASSERT( *((*array)[1]->toBool()) );
+   Q_ASSERT( *((*array)[2]->toDouble()) == 6.28 );
+   Q_ASSERT( *((*array)[3]->toString()) == QString("array test string") );
+   Q_ASSERT( *((*array)[4]->toBytes()) == QByteArray("array test bytes") );
+}
