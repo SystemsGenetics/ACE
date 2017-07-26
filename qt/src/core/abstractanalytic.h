@@ -61,6 +61,7 @@ public:
    void addFileOut(int argument, const QString& path);
    void addDataIn(int argument, const QString& path, quint16 type);
    void addDataOut(int argument, const QString& path, quint16 type);
+   void setCommand(const QString& command) { _command = command; }
 signals:
    void progressed(int perceptComplete);
    void finished();
@@ -72,6 +73,7 @@ private:
    QList<Ace::DataReference*> _dataIn;
    QList<Ace::DataReference*> _dataOut;
    QList<QFile*> _files;
+   QString _command;
 };
 
 

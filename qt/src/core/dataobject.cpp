@@ -130,8 +130,8 @@ Ace::DataObject::~DataObject() noexcept
 
 bool Ace::DataObject::seek(quint64 offset) noexcept
 {
-   // make sure data object is not invalid or new
-   if ( _invalid || _isNew || offset >= (_file->size()-_headerOffset) )
+   // make sure data object is not invalid
+   if ( _invalid || offset > (_file->size()-_headerOffset) )
    {
       return false;
    }

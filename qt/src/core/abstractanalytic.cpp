@@ -21,6 +21,7 @@ EAbstractAnalytic::~EAbstractAnalytic()
    for (auto i = _dataOut.constBegin(); i != _dataOut.constEnd() ;++i)
    {
       (**i)->data().finish();
+      (**i)->writeMeta();
    }
 
    // cleanup all open data objects and files
@@ -84,15 +85,22 @@ void EAbstractAnalytic::run()
       history.toObject()->insert(path,file);
    }
 
+   // create command metadata that created new data objects
+   EMetadata command(EMetadata::String);
+   *command.toString() = _command;
+
    // iterate through all output data objects, removing each one from reference list
    Ace::DataReference* data;
    while ( ( data = _dataOut.takeAt(0) ) != nullptr )
    {
-      // call finish function, add metadata history, and delete reference
+      // call finish function, add metadata history and command, and delete reference
       (*data)->data().finish();
       EMetadata::Map* object = (*data)->getMeta().toObject();
       object->remove("history");
+      object->remove("command");
       object->insert("history",new EMetadata(history));
+      object->insert("command",new EMetadata(command));
+      (*data)->writeMeta();
       delete data;
    }
 

@@ -18,12 +18,16 @@ SOURCES += \
    analyticfactory.cpp \
    datafactory.cpp \
    integerarray.cpp \
-   mathtransform.cpp
+   mathtransform.cpp \
+    importintegerarray.cpp \
+    exportintegerarray.cpp
 
 HEADERS += \
    analyticfactory.h \
    datafactory.h \
    integerarray.h \
-   mathtransform.h
+   mathtransform.h \
+    importintegerarray.h \
+    exportintegerarray.h
 
 DEFINES += QT_DEPRECATED_WARNINGS

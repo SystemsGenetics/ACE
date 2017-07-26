@@ -60,13 +60,11 @@ bool EApplication::notify(QObject *receiver, QEvent *event)
 void EApplication::showException(const EException &e)
 {
    // generate the message box's textual information
-   QString message = QString("<h3>%1</h3><p>%2</p><ol>%3</ol>").arg(e.getTitle())
-         .arg(e.getDetails());
+   QString message = QString("<h3>%1</h3><p>%2</p>").arg(e.getTitle()).arg(e.getDetails());
    QString function = e.getFunction().replace(" ","&nbsp;");
-   QString location = QString("<li><b>File:</b> %1</li>").arg(e.getFile());
-   location += QString("<li><b>Function:</b> %1</li>").arg(function);
-   location += QString("<li><b>Line:</b> %1</li>").arg(e.getLine());
-   message.arg(location);
+   message += QString("<ol><li><b>File:</b>&nbsp;%1</li>").arg(e.getFile());
+   message += QString("<li><b>Function:</b>&nbsp;%1</li>").arg(function);
+   message += QString("<li><b>Line:</b>&nbsp;%1</li></ol>").arg(e.getLine());
 
    // create the message box, set all exception information for the user, and modally display the
    // dialog

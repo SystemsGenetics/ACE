@@ -1,3 +1,5 @@
+#include <limits>
+
 #include "mathtransform.h"
 #include "integerarray.h"
 #include "datafactory.h"
@@ -6,6 +8,10 @@
 #define SUBTRACTION "Subtraction"
 #define MULTIPLICATION "Multiplication"
 #define DIVISION "Division"
+
+
+
+using namespace std;
 
 
 
@@ -111,6 +117,22 @@ QVariant MathTransform::getArgumentData(int argument, EAbstractAnalytic::Role ro
       default:
          // Unknown argument, return empty string
          return QString();
+      }
+   case Role::Minimum:
+      switch (argument)
+      {
+      case Amount:
+         return numeric_limits<int>::min();
+      default:
+         return QVariant();
+      }
+   case Role::Maximum:
+      switch (argument)
+      {
+      case Amount:
+         return numeric_limits<int>::max();
+      default:
+         return QVariant();
       }
    case Role::ComboValues:
       switch (argument)

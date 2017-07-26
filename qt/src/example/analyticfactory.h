@@ -11,8 +11,9 @@ public:
    // Make enumeration of all possible analytic types
    enum Types
    {
-      MathTransformType = 0,
-      Total
+      ImportIntegerArrayType = 0
+      ,MathTransformType
+      ,Total
    };
    quint16 getCount() override final;
    QString getName(quint16 type) override final;
