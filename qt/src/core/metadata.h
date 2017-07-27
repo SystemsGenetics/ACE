@@ -11,12 +11,6 @@ class EDataStream;
 class EMetadata
 {
 public:
-   enum Errors
-   {
-      TypeMismatch = 0
-      ,CannotWrite
-      ,CannotRead
-   };
    enum Type
    {
       Null = 0
