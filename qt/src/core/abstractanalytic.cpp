@@ -90,19 +90,19 @@ void EAbstractAnalytic::run()
    *command.toString() = _command;
 
    // iterate through all output data objects, removing each one from reference list
-   Ace::DataReference* data;
-   while ( ( data = _dataOut.takeAt(0) ) != nullptr )
+   for (auto i = _dataOut.constBegin(); i != _dataOut.constEnd() ;++i)
    {
       // call finish function, add metadata history and command, and delete reference
-      (*data)->data().finish();
-      EMetadata::Map* object = (*data)->getMeta().toObject();
+      (**i)->data().finish();
+      EMetadata::Map* object = (**i)->getMeta().toObject();
       object->remove("history");
       object->remove("command");
       object->insert("history",new EMetadata(history));
       object->insert("command",new EMetadata(command));
-      (*data)->writeMeta();
-      delete data;
+      (**i)->writeMeta();
+      delete *i;
    }
+   _dataOut.clear();
 
    // emit finished signal
    emit finished();

@@ -148,7 +148,7 @@ void Ace::SetupAnalyticDialog::executeButton()
    for (int i = 0; i < _analytic->getArgumentCount() ;++i)
    {
       // add beginning of command line argument
-      QString bit(" --");
+      QString bit(" ");
       bit.append(_analytic->getArgumentData(i,Role::CommandLineName).toString());
       bit.append("=");
 

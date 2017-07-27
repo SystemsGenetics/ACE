@@ -8,6 +8,7 @@
 #include "abstractanalyticfactory.h"
 #include "setupanalyticdialog.h"
 #include "abstractanalytic.h"
+#include "analyticdialog.h"
 
 
 
@@ -71,7 +72,12 @@ void Ace::MainWindow::runAnalytic()
    unique_ptr<EAbstractAnalytic> analytic(factory.make(type));
    SetupAnalyticDialog dialog(analytic.get());
    dialog.setWindowTitle(tr("Execute %1").arg(factory.getName(type)));
-   dialog.exec();
+   if ( dialog.exec() )
+   {
+      AnalyticDialog runDialog(analytic.release());
+      runDialog.setWindowTitle(tr("Executing %1").arg(factory.getName(type)));
+      runDialog.exec();
+   }
 }
 
 

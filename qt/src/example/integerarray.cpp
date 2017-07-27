@@ -7,6 +7,16 @@
 
 void IntegerArray::readData()
 {
+   // Seek to beginning of file, making sure it was successful
+   if ( !seek(0) )
+   {
+      // If failure occured create exception to report failure
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(QObject::tr("IO Error"));
+      e.setDetails(QObject::tr("Error setting cursor position in file."));
+      throw e;
+   }
+
    // Read size of integer array in file
    quint32 amount {0};
    stream() >> amount;

@@ -1,4 +1,5 @@
 #include <limits>
+#include <QThread>
 
 #include "mathtransform.h"
 #include "integerarray.h"
@@ -292,7 +293,7 @@ bool MathTransform::runBlock(int /*block*/)
 
       // Increment done counter and calculate new percentage complete
       ++done;
-      int newPercent = 100*total/done;
+      int newPercent = 100*done/total;
 
       // If percentage complete has changed emit progressed(int) signal
       if ( newPercent != lastPercent )
@@ -300,6 +301,9 @@ bool MathTransform::runBlock(int /*block*/)
          lastPercent = newPercent;
          emit progressed(newPercent);
       }
+
+      // sleep to make this appear to take a lot time
+      QThread::msleep(100);
    }
 
    // Because this is a simple analytic the one block it runs only does so once, so return false

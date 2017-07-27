@@ -13,4 +13,5 @@ tests.depends = core
 gui.depends = core
 example.depends = core gui
 
-# TODO: make sanity checks for analytic command name / command line names when adding factory
+# TODO(after release): change dataobject to NOT read file in constructor, but have open and openNew
+# functions (where openNew replaces clear and open is for an existing data object)

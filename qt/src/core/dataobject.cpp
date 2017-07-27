@@ -78,12 +78,12 @@ Ace::DataObject::DataObject(const QString& path):
       _data = EAbstractDataFactory::getInstance().make(_type);
       _headerOffset = _file->pos();
 
-      // call data initialize function and get data offset
+      // call data initialize function, read data function, and get data offset
       _data->initialize(this,_stream.get());
-      _dataOffset = _data->getDataEnd();
+      _data->readData();
 
       // seek to data offset and read in metadata
-      seek(_dataOffset);
+      seek(_data->getDataEnd());
       *_stream >> _metaRoot;
 
       // make sure reading ot metadata worked
@@ -226,6 +226,8 @@ void Ace::DataObject::clear(quint16 newType)
       _data->initialize(this,_stream.get());
       _data->newData();
       _isNew = false;
+
+      _metaRoot.setType(EMetadata::Object);
    }
    catch (EException e)
    {
@@ -295,7 +297,7 @@ EAbstractData& Ace::DataObject::data()
 void Ace::DataObject::writeMeta()
 {
    // write out meta information after data
-   seek(_dataOffset);
+   seek(_data->getDataEnd());
    *_stream << _metaRoot;
 
    // make sure writing was successful

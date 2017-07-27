@@ -46,7 +46,6 @@ namespace Ace
       std::unique_ptr<EDataStream> _stream {nullptr};
       std::unique_ptr<EAbstractData> _data {nullptr};
       quint64 _headerOffset {0};
-      quint64 _dataOffset {0};
       bool _isNew {true};
       bool _invalid {false};
       EMetadata _metaRoot;
