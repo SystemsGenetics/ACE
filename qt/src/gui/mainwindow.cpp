@@ -66,14 +66,18 @@ void Ace::MainWindow::exit()
 
 void Ace::MainWindow::runAnalytic()
 {
+   // get analytic type from action and create new analytic of that type
    QAction* from = qobject_cast<QAction*>(sender());
    EAbstractAnalyticFactory& factory = EAbstractAnalyticFactory::getInstance();
    quint16 type = from->data().toInt();
    unique_ptr<EAbstractAnalytic> analytic(factory.make(type));
+
+   // create setup analytic dialog and run it
    SetupAnalyticDialog dialog(analytic.get());
    dialog.setWindowTitle(tr("Execute %1").arg(factory.getName(type)));
    if ( dialog.exec() )
    {
+      // if setup analytic dialog is successful run analytic through analytic dialog
       AnalyticDialog runDialog(analytic.release());
       runDialog.setWindowTitle(tr("Executing %1").arg(factory.getName(type)));
       runDialog.exec();
@@ -112,7 +116,7 @@ Ace::MainWindow::MainWindow(QWidget *parent):
 void Ace::MainWindow::createActions()
 {
    // create open action
-   _openAction = new QAction(tr("&Open"),this);
+   _openAction = new QAction(tr("&Open Data"),this);
    _openAction->setShortcut(QKeySequence::Open);
    _openAction->setStatusTip(tr("Open an existing data object file."));
    connect(_openAction,SIGNAL(triggered(bool)),this,SLOT(open()));
@@ -124,7 +128,7 @@ void Ace::MainWindow::createActions()
    connect(_exitAction,SIGNAL(triggered(bool)),this,SLOT(exit()));
 
    // create set opencl device action
-   _setOpenCLAction = new QAction(tr("&Set Device"),this);
+   _setOpenCLAction = new QAction(tr("&Set OpenCL Device"),this);
    _setOpenCLAction->setStatusTip(tr("Set the active OpenCL device to a new one."));
    connect(_setOpenCLAction,SIGNAL(triggered(bool)),this,SLOT(setOpenCL()));
 
@@ -145,19 +149,19 @@ void Ace::MainWindow::createActions()
 
 void Ace::MainWindow::createMenus()
 {
-   // create file menu
+   // add file menu and open action
    _fileMenu = menuBar()->addMenu(tr("&File"));
    _fileMenu->addAction(_openAction);
-   _fileMenu->addAction(_exitAction);
 
-   // create analytic menu
-   _analyticMenu = menuBar()->addMenu(tr("&Analytics"));
+   // add analytic submenu with all analytics
+   _analyticMenu = _fileMenu->addMenu(tr("&Analytics"));
    for (int i = 0; i < EAbstractAnalyticFactory::getInstance().getCount() ;++i)
    {
       _analyticMenu->addAction(_analyticActions[i]);
    }
 
-   // create OpenCL menu
-   _settingsMenu = menuBar()->addMenu(tr("&OpenCL"));
+   // add exit action to file menu and settings submenu
+   _fileMenu->addAction(_exitAction);
+   _settingsMenu = menuBar()->addMenu(tr("&Settings"));
    _settingsMenu->addAction(_setOpenCLAction);
 }
