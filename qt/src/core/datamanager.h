@@ -16,11 +16,6 @@ namespace Ace
    class DataManager
    {
    public:
-      enum Errors
-      {
-         NullReference = 0
-         ,CannotOpen
-      };
       static DataManager& getInstance() noexcept;
       DataReference* open(const QString& path);
       void referenceReleased(const QString& absolutePath);

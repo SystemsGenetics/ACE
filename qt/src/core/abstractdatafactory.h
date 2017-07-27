@@ -14,10 +14,6 @@ class EAbstractData;
 class EAbstractDataFactory
 {
 public:
-   enum Errors
-   {
-      NoFactorySet = 0
-   };
    EAbstractDataFactory() = default;
    virtual ~EAbstractDataFactory() = default;
    ACE_DISBALE_COPY_AND_MOVE(EAbstractDataFactory)

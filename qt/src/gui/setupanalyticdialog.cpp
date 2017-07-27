@@ -94,7 +94,6 @@ void Ace::SetupAnalyticDialog::findFile(int argument)
       if ( type >= factory.getCount() )
       {
          E_MAKE_EXCEPTION(e);
-         e.setLevel(EException::Critical);
          e.setTitle(tr("Setup Analytic Dialog"));
          e.setDetails(tr("Analytic requesting data type %1 that does not exist(%2 is max).")
                       .arg(type).arg(factory.getCount()-1));

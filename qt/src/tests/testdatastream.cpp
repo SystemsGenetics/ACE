@@ -82,7 +82,6 @@ void TestDataStream::testBadString()
    // make sure it failed
    Q_ASSERT( value.isEmpty() );
    Q_ASSERT( !stream );
-   Q_ASSERT( stream.getException().getType() == EDataStream::CorruptData );
 }
 
 
@@ -103,7 +102,6 @@ void TestDataStream::testBadBytes()
    // make sure it failed
    Q_ASSERT( value.isEmpty() );
    Q_ASSERT( !stream );
-   Q_ASSERT( stream.getException().getType() == EDataStream::CorruptData );
 }
 
 

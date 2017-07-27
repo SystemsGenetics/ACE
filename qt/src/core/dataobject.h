@@ -14,16 +14,6 @@ namespace Ace
    {
       Q_OBJECT
    public:
-      enum Errors
-      {
-         Ok = 0
-         ,CannotOpen
-         ,CannotWrite
-         ,InvalidDataType
-         ,CorruptFile
-         ,DataException
-         ,NullReference
-      };
       explicit DataObject(const QString& path);
       ~DataObject() noexcept;
       void open();

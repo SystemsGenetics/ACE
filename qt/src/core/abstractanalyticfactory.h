@@ -15,10 +15,6 @@ class EAbstractAnalytic;
 class EAbstractAnalyticFactory
 {
 public:
-   enum Errors
-   {
-      NoFactorySet = 0
-   };
    EAbstractAnalyticFactory() = default;
    virtual ~EAbstractAnalyticFactory() = default;
    ACE_DISBALE_COPY_AND_MOVE(EAbstractAnalyticFactory)

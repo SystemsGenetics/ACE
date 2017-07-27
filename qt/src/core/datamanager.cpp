@@ -33,8 +33,6 @@ Ace::DataReference* Ace::DataManager::open(const QString& path)
    if ( !touchFile.open(QIODevice::ReadWrite) )
    {
       E_MAKE_EXCEPTION(e);
-      e.setLevel(EException::Critical);
-      e.setType(CannotOpen);
       e.setTitle(QObject::tr("Data Manager"));
       e.setDetails(QObject::tr("Cannot open file %1.").arg(path));
       throw e;
@@ -77,8 +75,6 @@ void Ace::DataManager::referenceReleased(const QString& absolutePath)
    if ( i == _dataObjects.end() )
    {
       E_MAKE_EXCEPTION(e);
-      e.setLevel(EException::Critical);
-      e.setType(NullReference);
       e.setTitle(QObject::tr("Internal Data Reference"));
       e.setDetails(QObject::tr("A data reference at path %1 was released when no data at that path"
                                " exists within the data manager.").arg(absolutePath));

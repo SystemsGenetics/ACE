@@ -25,8 +25,6 @@ EDataStream& EAbstractData::stream()
    if ( !_stream )
    {
       E_MAKE_EXCEPTION(e);
-      e.setLevel(EException::Critical);
-      e.setType(NullReference);
       e.setTitle(QObject::tr("Abstract Data Interface"));
       e.setDetails(QObject::tr("Requesting reference to stream object of uninitialized abstract data"
                                " object."));

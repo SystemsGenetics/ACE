@@ -88,8 +88,6 @@ EDataStream& EDataStream::operator>>(QString& value)
          if ( type != String )
          {
             E_MAKE_EXCEPTION(e);
-            e.setLevel(EException::Critical);
-            e.setType(CorruptData);
             e.setTitle(QObject::tr("Data Stream Read"));
             e.setDetails(QObject::tr("Could not read string because data is corrupt"));
             setException(e);
@@ -129,8 +127,6 @@ EDataStream& EDataStream::operator>>(QByteArray& value)
          if ( type != ByteArray )
          {
             E_MAKE_EXCEPTION(e);
-            e.setLevel(EException::Critical);
-            e.setType(CorruptData);
             e.setTitle(QObject::tr("Data Stream Read"));
             e.setDetails(QObject::tr("Could not read byte array because data is corrupt."));
             setException(e);
@@ -148,8 +144,6 @@ EDataStream& EDataStream::operator>>(QByteArray& value)
                if ( !read(value.data(),size) )
                {
                   E_MAKE_EXCEPTION(e);
-                  e.setLevel(EException::Critical);
-                  e.setType(CorruptData);
                   e.setTitle(QObject::tr("Data Stream Read"));
                   e.setDetails(QObject::tr("Could not read byte array because data is corrupt."));
                   setException(e);

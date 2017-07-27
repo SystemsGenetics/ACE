@@ -17,10 +17,6 @@ class EMetadata;
 class EAbstractData
 {
 public:
-   enum Errors
-   {
-      NullReference = 0
-   };
    EAbstractData() = default;
    virtual ~EAbstractData() = default;
    ACE_DISBALE_COPY_AND_MOVE(EAbstractData)

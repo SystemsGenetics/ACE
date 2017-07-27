@@ -13,14 +13,6 @@
 class EDataStream : public ESilent
 {
 public:
-   enum Errors
-   {
-      Ok = 0
-      ,ReadFailed
-      ,CorruptData
-      ,WriteFailed
-      ,StringTooBig
-   };
    EDataStream(QFile* file);
    ACE_DISBALE_COPY_AND_MOVE(EDataStream)
    EDataStream& operator<<(qint8 value) { return writeNumber(value); }
@@ -168,8 +160,6 @@ bool EDataStream::write(T* value, quint64 size)
    {
       // if write failed report error and return false
       E_MAKE_EXCEPTION(e);
-      e.setLevel(EException::Critical);
-      e.setType(WriteFailed);
       e.setTitle(QObject::tr("Data Stream Write"));
       e.setDetails(QObject::tr("Failed writing to file: %1").arg(_file->errorString()));
       setException(e);
@@ -194,8 +184,6 @@ bool EDataStream::read(T* value, quint64 size)
    {
       // if read failed report error and return false
       E_MAKE_EXCEPTION(e);
-      e.setLevel(EException::Critical);
-      e.setType(ReadFailed);
       e.setTitle(QObject::tr("Data Stream Read"));
       e.setDetails(QObject::tr("Failed reading from file: %1").arg(_file->errorString()));
       setException(e);

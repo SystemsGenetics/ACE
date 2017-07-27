@@ -11,34 +11,22 @@
 class EException
 {
 public:
-   enum Level
-   {
-      Notice
-      ,Critical
-   };
-   void setFunction(const QString& function) noexcept;
-   void setFile(const QString& file) noexcept;
-   void setLine(unsigned int line) noexcept;
-   void setTitle(const QString& title) noexcept;
-   void setDetails(const QString& details) noexcept;
-   void setType(int type) noexcept;
-   void setLevel(Level level) noexcept;
-   QString getFunction() const noexcept;
-   QString getFile() const noexcept;
-   int getLine() const noexcept;
-   QString getTitle() const noexcept;
-   QString getDetails() const noexcept;
-   int getType() const noexcept;
-   Level getLevel() const noexcept;
+   void setFunction(const QString& function) noexcept { _function = function; }
+   void setFile(const QString& file) noexcept { _file = file; }
+   void setLine(unsigned int line) noexcept { _line = line; }
+   void setTitle(const QString& title) noexcept { _title = title; }
+   void setDetails(const QString& details) noexcept { _details = details; }
+   QString getFunction() const noexcept { return _function; }
+   QString getFile() const noexcept { return _file; }
+   int getLine() const noexcept { return _line; }
+   QString getTitle() const noexcept { return _title; }
+   QString getDetails() const noexcept { return _details; }
 private:
    QString _function;
    QString _file;
    int _line {-1};
    QString _title;
-   QString _description;
    QString _details;
-   int _type {-1};
-   Level _level {Critical};
 };
 
 
@@ -46,14 +34,13 @@ private:
 class ESilent
 {
 public:
-   bool hasException() const noexcept;
    EException getException() const noexcept;
-   operator bool() const noexcept;
+   operator bool() const noexcept { return !_hasException; }
 protected:
    void setException(EException exception) noexcept;
 private:
    std::unique_ptr<EException> _exception {nullptr};
-   bool _critical {false};
+   bool _hasException {false};
 };
 
 

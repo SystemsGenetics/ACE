@@ -18,8 +18,6 @@ Ace::DataObject::DataObject(const QString& path):
       if ( !_file->open(QIODevice::ReadWrite) )
       {
          E_MAKE_EXCEPTION(e);
-         e.setLevel(EException::Critical);
-         e.setType(CannotOpen);
          e.setTitle(tr("Open Data Object"));
          e.setDetails(tr("Cannot open file %1.").arg(path));
          throw e;
@@ -88,8 +86,6 @@ void Ace::DataObject::open()
       if ( !*_stream )
       {
          E_MAKE_EXCEPTION(e);
-         e.setLevel(EException::Notice);
-         e.setType(CorruptFile);
          e.setTitle(tr("Open Data Object"));
          e.setDetails(tr("Cannot load file because it's header is corrupt."));
          throw e;
@@ -101,8 +97,6 @@ void Ace::DataObject::open()
            || extension != factory.getFileExtension(_type) )
       {
          E_MAKE_EXCEPTION(e);
-         e.setLevel(EException::Notice);
-         e.setType(InvalidDataType);
          e.setTitle(tr("Open Data Object"));
          e.setDetails(tr("Cannot load file because it's header specifies an invalid data type."));
          throw e;
@@ -124,8 +118,6 @@ void Ace::DataObject::open()
       if ( !*_stream )
       {
          E_MAKE_EXCEPTION(e);
-         e.setLevel(EException::Notice);
-         e.setType(CorruptFile);
          e.setTitle(tr("Open Data Object"));
          e.setDetails(tr("Cannot load file because it's metadata is corrupt."));
          throw e;
@@ -197,8 +189,6 @@ void Ace::DataObject::clear(quint16 newType)
       if ( newType >= factory.getCount() )
       {
          E_MAKE_EXCEPTION(e);
-         e.setLevel(EException::Notice);
-         e.setType(InvalidDataType);
          e.setTitle(tr("Clear Data Object"));
          e.setDetails(tr("Cannot initialize data object with unknown type %1.").arg(newType));
          throw e;
@@ -217,8 +207,6 @@ void Ace::DataObject::clear(quint16 newType)
       if ( !_file->seek(0) )
       {
          E_MAKE_EXCEPTION(e);
-         e.setLevel(EException::Critical);
-         e.setType(CannotWrite);
          e.setTitle(tr("Data Object I/O"));
          e.setDetails(tr("Cannot write to data object file."));
          throw e;
@@ -231,8 +219,6 @@ void Ace::DataObject::clear(quint16 newType)
       if ( !*_stream )
       {
          E_MAKE_EXCEPTION(e);
-         e.setLevel(EException::Critical);
-         e.setType(CannotWrite);
          e.setTitle(tr("Data Object I/O"));
          e.setDetails(tr("Cannot write to data object file."));
          throw e;
@@ -294,10 +280,8 @@ EAbstractData& Ace::DataObject::data()
    if ( _invalid || _isNew )
    {
       E_MAKE_EXCEPTION(e);
-      e.setLevel(EException::Critical);
-      e.setType(NullReference);
-      e.setTitle(QObject::tr("Data Object Reference"));
-      e.setDetails(QObject::tr("Attempting to get data on failed/empty object with no data."));
+      e.setTitle(tr("Data Object Reference"));
+      e.setDetails(tr("Attempting to get data on failed/empty object with no data."));
       throw e;
    }
 
@@ -320,8 +304,6 @@ void Ace::DataObject::writeMeta()
    if ( !*_stream )
    {
       E_MAKE_EXCEPTION(e);
-      e.setLevel(EException::Critical);
-      e.setType(CannotWrite);
       e.setTitle(tr("Data Object I/O"));
       e.setDetails(tr("Failed writing metadata of object."));
       throw e;
