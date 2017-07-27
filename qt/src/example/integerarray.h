@@ -15,6 +15,7 @@ public:
    void newData() override final;
    void prepare(bool preAllocate) override final;
    void finish() override final;
+   virtual QAbstractItemModel* getModel() override final { return nullptr; }
    // This is a contrived example, data should be private and iterator classes defined to access
    // it
    QList<int> _numbers;

@@ -1,7 +1,7 @@
 #include <QAction>
 #include <QMenuBar>
 #include <QTextEdit>
-#include <iostream>
+#include <QFileDialog>
 
 #include "mainwindow.h"
 #include "opencldevicedialog.h"
@@ -9,6 +9,10 @@
 #include "setupanalyticdialog.h"
 #include "abstractanalytic.h"
 #include "analyticdialog.h"
+#include "abstractdatafactory.h"
+#include "datawindow.h"
+#include "datamanager.h"
+#include "datareference.h"
 
 
 
@@ -36,7 +40,7 @@ Ace::MainWindow& Ace::MainWindow::getInstance()
 
 void Ace::MainWindow::addCommand(const QString &command)
 {
-   _console->setPlainText(_console->toPlainText().append(command + "\n"));
+   _console->setPlainText(_console->toPlainText().append(_commandName + " run " + command + "\n"));
 }
 
 
@@ -44,9 +48,24 @@ void Ace::MainWindow::addCommand(const QString &command)
 
 
 
-void Ace::MainWindow::open()
+void Ace::MainWindow::openData()
 {
-
+   QAction* from = qobject_cast<QAction*>(sender());
+   quint16 type = from->data().toInt();
+   QFileDialog dialog(nullptr,tr("Select File"));
+   dialog.setAcceptMode(QFileDialog::AcceptOpen);
+   EAbstractDataFactory& factory = EAbstractDataFactory::getInstance();
+   QString filter = tr("%1 data object (*.%2)").arg(factory.getName(type))
+         .arg(factory.getFileExtension(type));
+   dialog.setNameFilter(filter);
+   if ( dialog.exec() )
+   {
+      QStringList files = dialog.selectedFiles();
+      DataWindow* window {new DataWindow(Ace::DataManager::getInstance().open(files.at(0)),this)};
+      QFileInfo file(files.at(0));
+      window->setWindowTitle(file.fileName());
+      window->show();
+   }
 }
 
 
@@ -115,11 +134,17 @@ Ace::MainWindow::MainWindow(QWidget *parent):
 
 void Ace::MainWindow::createActions()
 {
-   // create open action
-   _openAction = new QAction(tr("&Open Data"),this);
-   _openAction->setShortcut(QKeySequence::Open);
-   _openAction->setStatusTip(tr("Open an existing data object file."));
-   connect(_openAction,SIGNAL(triggered(bool)),this,SLOT(open()));
+   // create data actions
+   {
+      EAbstractDataFactory& factory {EAbstractDataFactory::getInstance()};
+      _dataActions.reserve(factory.getCount());
+      for (quint16 i = 0; i < factory.getCount() ;++i)
+      {
+         _dataActions.append(new QAction(factory.getName(i),this));
+         _dataActions.back()->setData(i);
+         connect(_dataActions.back(),SIGNAL(triggered(bool)),this,SLOT(openData()));
+      }
+   }
 
    // create exit action
    _exitAction = new QAction(tr("&Exit"),this);
@@ -133,12 +158,15 @@ void Ace::MainWindow::createActions()
    connect(_setOpenCLAction,SIGNAL(triggered(bool)),this,SLOT(setOpenCL()));
 
    // create analytic actions
-   _analyticActions.reserve(EAbstractAnalyticFactory::getInstance().getCount());
-   for (quint16 i = 0; i < EAbstractAnalyticFactory::getInstance().getCount() ;++i)
    {
-      _analyticActions.append(new QAction(EAbstractAnalyticFactory::getInstance().getName(i),this));
-      _analyticActions.back()->setData(QVariant(i));
-      connect(_analyticActions.back(),SIGNAL(triggered(bool)),this,SLOT(runAnalytic()));
+      EAbstractAnalyticFactory& factory {EAbstractAnalyticFactory::getInstance()};
+      _analyticActions.reserve(factory.getCount());
+      for (quint16 i = 0; i < factory.getCount() ;++i)
+      {
+         _analyticActions.append(new QAction(factory.getName(i),this));
+         _analyticActions.back()->setData(i);
+         connect(_analyticActions.back(),SIGNAL(triggered(bool)),this,SLOT(runAnalytic()));
+      }
    }
 }
 
@@ -151,7 +179,13 @@ void Ace::MainWindow::createMenus()
 {
    // add file menu and open action
    _fileMenu = menuBar()->addMenu(tr("&File"));
-   _fileMenu->addAction(_openAction);
+
+   // add data submenu with all data
+   _dataMenu = _fileMenu->addMenu(tr("&Data"));
+   for (int i = 0; i < _dataActions.size() ;++i)
+   {
+      _dataMenu->addAction(_dataActions[i]);
+   }
 
    // add analytic submenu with all analytics
    _analyticMenu = _fileMenu->addMenu(tr("&Analytics"));

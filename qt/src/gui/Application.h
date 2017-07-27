@@ -12,7 +12,7 @@ class EApplication : public QApplication
 {
    Q_OBJECT
 public:
-   explicit EApplication(int& argc, char** argv, const QString& title);
+   explicit EApplication(int& argc, char** argv, const QString& title, const QString& commandName);
    bool notify(QObject* receiver, QEvent* event) override final;
 private:
    void showException(const EException& e);

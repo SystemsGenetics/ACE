@@ -28,6 +28,6 @@ int main(int argc, char *argv[])
    EAbstractDataFactory::setInstance(move(dataFactory));
 
    // Start ACE application and execute it
-   EApplication application(argc,argv,"KINC");
+   EApplication application(argc,argv,"KINC","kinc");
    return application.exec();
 }

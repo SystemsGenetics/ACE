@@ -10,13 +10,15 @@
 
 
 
-EApplication::EApplication(int& argc, char** argv, const QString& title):
+EApplication::EApplication(int& argc, char** argv, const QString& title
+                           , const QString& commandName):
    QApplication(argc,argv)
 {
    try
    {
       Ace::MainWindow& window {Ace::MainWindow::getInstance()};
       window.setWindowTitle(title);
+      window.setCommandName(commandName);
       window.show();
    }
    catch (EException e)

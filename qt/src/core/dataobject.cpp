@@ -27,78 +27,6 @@ Ace::DataObject::DataObject(const QString& path):
 
       // create a new data stream from the open file
       _stream.reset(new EDataStream(_file.get()));
-
-      // if file size is less than minimum size return as new object
-      if ( _file->size() <= _mininumFileSize )
-      {
-         return;
-      }
-
-      // read special identificaiton value
-      quint64 value {0};
-      *_stream >> value;
-
-      // if read failed for value is wrong return as new object
-      if ( !*_stream || value != _specialValue )
-      {
-         return;
-      }
-
-      // read data type, name, and extension
-      QString name;
-      QString extension;
-      *_stream >> _type >> name >> extension;
-
-      // make sure read was successful
-      if ( !*_stream )
-      {
-         E_MAKE_EXCEPTION(e);
-         e.setLevel(EException::Notice);
-         e.setType(CorruptFile);
-         e.setTitle(tr("Open Data Object"));
-         e.setDetails(tr("Cannot load file %1 because it's header is corrupt.").arg(path));
-         throw e;
-      }
-
-      // make sure data type in header is valid
-      EAbstractDataFactory& factory {EAbstractDataFactory::getInstance()};
-      if ( _type >= factory.getCount() || name != factory.getName(_type)
-           || extension != factory.getFileExtension(_type) )
-      {
-         E_MAKE_EXCEPTION(e);
-         e.setLevel(EException::Notice);
-         e.setType(InvalidDataType);
-         e.setTitle(tr("Open Data Object"));
-         e.setDetails(tr("Cannot load file %1 because it's header specifies an invalid data type.")
-                      .arg(path));
-         throw e;
-      }
-
-      // create new abstract data object of type given in header and get header offset
-      _data = EAbstractDataFactory::getInstance().make(_type);
-      _headerOffset = _file->pos();
-
-      // call data initialize function, read data function, and get data offset
-      _data->initialize(this,_stream.get());
-      _data->readData();
-
-      // seek to data offset and read in metadata
-      seek(_data->getDataEnd());
-      *_stream >> _metaRoot;
-
-      // make sure reading ot metadata worked
-      if ( !*_stream )
-      {
-         E_MAKE_EXCEPTION(e);
-         e.setLevel(EException::Notice);
-         e.setType(CorruptFile);
-         e.setTitle(tr("Open Data Object"));
-         e.setDetails(tr("Cannot load file %1 because it's metadata is corrupt.").arg(path));
-         throw e;
-      }
-
-      // set data object to not new
-      _isNew = false;
    }
    catch (EException e)
    {
@@ -128,6 +56,98 @@ Ace::DataObject::~DataObject() noexcept
 
 
 
+void Ace::DataObject::open()
+{
+   try
+   {
+      // seek to beginning of file
+      if ( !_file->seek(0) )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setTitle(tr("Open Data Object"));
+         e.setDetails(tr("Cannot seek to beginning of data file."));
+         throw e;
+      }
+
+      // read special identificaiton value
+      quint64 value {0};
+      *_stream >> value;
+
+      // if read failed for value is wrong return as new object
+      if ( !*_stream || value != _specialValue )
+      {
+         return;
+      }
+
+      // read data type, name, and extension
+      QString name;
+      QString extension;
+      *_stream >> _type >> name >> extension;
+
+      // make sure read was successful
+      if ( !*_stream )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setLevel(EException::Notice);
+         e.setType(CorruptFile);
+         e.setTitle(tr("Open Data Object"));
+         e.setDetails(tr("Cannot load file because it's header is corrupt."));
+         throw e;
+      }
+
+      // make sure data type in header is valid
+      EAbstractDataFactory& factory {EAbstractDataFactory::getInstance()};
+      if ( _type >= factory.getCount() || name != factory.getName(_type)
+           || extension != factory.getFileExtension(_type) )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setLevel(EException::Notice);
+         e.setType(InvalidDataType);
+         e.setTitle(tr("Open Data Object"));
+         e.setDetails(tr("Cannot load file because it's header specifies an invalid data type."));
+         throw e;
+      }
+
+      // create new abstract data object of type given in header and get header offset
+      _data = EAbstractDataFactory::getInstance().make(_type);
+      _headerOffset = _file->pos();
+
+      // call data initialize function, read data function, and get data offset
+      _data->initialize(this,_stream.get());
+      _data->readData();
+
+      // seek to data offset and read in metadata
+      seek(_data->getDataEnd());
+      *_stream >> _metaRoot;
+
+      // make sure reading ot metadata worked
+      if ( !*_stream )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setLevel(EException::Notice);
+         e.setType(CorruptFile);
+         e.setTitle(tr("Open Data Object"));
+         e.setDetails(tr("Cannot load file because it's metadata is corrupt."));
+         throw e;
+      }
+
+      // set data object to not new
+      _isNew = false;
+   }
+   catch (...)
+   {
+      // clear any allocated data object and set to new
+      _data.reset();
+      _isNew = true;
+      throw;
+   }
+}
+
+
+
+
+
+
 bool Ace::DataObject::seek(quint64 offset) noexcept
 {
    // make sure data object is not invalid
@@ -148,7 +168,7 @@ bool Ace::DataObject::seek(quint64 offset) noexcept
 bool Ace::DataObject::allocate(quint64 size) noexcept
 {
    // make sure data object is not invalid or new
-   if ( _invalid || _isNew )
+   if ( _invalid )
    {
       return false;
    }
@@ -229,13 +249,9 @@ void Ace::DataObject::clear(quint16 newType)
 
       _metaRoot.setType(EMetadata::Object);
    }
-   catch (EException e)
+   catch (...)
    {
-      // if any critical exception occurs while clearing make data object invalid
-      if ( e.getLevel() == EException::Critical )
-      {
-         _invalid = true;
-      }
+      _invalid = true;
       throw;
    }
 }

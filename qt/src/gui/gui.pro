@@ -18,13 +18,15 @@ SOURCES += \
    mainwindow.cpp \
    setupanalyticdialog.cpp \
    Application.cpp \
-    analyticdialog.cpp
+    analyticdialog.cpp \
+    datawindow.cpp
 
 HEADERS += \
    opencldevicedialog.h \
    mainwindow.h \
    setupanalyticdialog.h \
    Application.h \
-    analyticdialog.h
+    analyticdialog.h \
+    datawindow.h
 
 DEFINES += QT_DEPRECATED_WARNINGS

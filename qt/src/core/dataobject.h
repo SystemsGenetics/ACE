@@ -26,6 +26,7 @@ namespace Ace
       };
       explicit DataObject(const QString& path);
       ~DataObject() noexcept;
+      void open();
       bool seek(quint64 offset) noexcept;
       bool allocate(quint64 size) noexcept;
       void clear(quint16 newType);

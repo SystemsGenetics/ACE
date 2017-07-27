@@ -39,6 +39,7 @@ public:
    virtual void prepare(bool preAllocate) = 0;
    /// Finalize new data object after being given all input.
    virtual void finish() = 0;
+   virtual QAbstractItemModel* getModel() = 0;
    void initialize(Ace::DataObject* object, EDataStream* stream) noexcept;
 protected:
    EMetadata& meta();

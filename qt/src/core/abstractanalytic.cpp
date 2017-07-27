@@ -161,6 +161,7 @@ void EAbstractAnalytic::addDataIn(int argument, const QString &path, quint16 typ
 {
    // open data object from manager
    unique_ptr<Ace::DataReference> data {Ace::DataManager::getInstance().open(path)};
+   (*data)->open();
 
    // make sure it is not new
    if ( (*data)->isNew() )
@@ -218,6 +219,7 @@ EAbstractData* EAbstractAnalytic::getDataIn(const QString &path, quint16 type)
    {
       // open data object
       data.reset(Ace::DataManager::getInstance().open(path));
+      (*data)->open();
 
       // make sure it is not new
       if ( (*data)->isNew() )
