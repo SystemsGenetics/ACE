@@ -3,10 +3,10 @@
 #include <QtCore>
 
 
-/*
+
+class EMetadata;
 namespace Ace
 {
-class Metadata;
 
 
 
@@ -14,13 +14,6 @@ class MetadataModel : public QAbstractItemModel
 {
    Q_OBJECT
 public:
-   enum Errors
-   {
-      InvalidParent = 0
-      ,InvalidIndex
-      ,InvalidVariant
-      ,InvalidRoot
-   };
    explicit MetadataModel(QObject* parent = nullptr) noexcept: QAbstractItemModel(parent) {}
    MetadataModel(const MetadataModel&) = delete;
    MetadataModel(MetadataModel&&) = delete;
@@ -33,18 +26,12 @@ public:
    Qt::ItemFlags flags(const QModelIndex& index) const override final;
    bool removeRows(int row, int count, const QModelIndex& parent) override final;
    bool setData(const QModelIndex& index, const QVariant& value, int role) override final;
-   QStringList mimeTypes() const override final;
-   Qt::DropActions supportedDropActions() const override final;
-   QMimeData* mimeData(const QModelIndexList& indexes) const override final;
-   bool dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column
-                     , const QModelIndex& parent) override final;
-   void setRoot(Metadata* root) noexcept;
+   void setRoot(EMetadata* root) noexcept;
 private:
-   bool hasKey(const QString& key, QList<QPair<QString,Metadata*>>& list);
-   Metadata* _root {nullptr};
+   EMetadata* _root {nullptr};
 };
 }
-*/
+
 
 
 #endif
