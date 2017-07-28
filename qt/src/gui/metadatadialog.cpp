@@ -1,0 +1,1 @@
+#include "metadatadialog.h"
