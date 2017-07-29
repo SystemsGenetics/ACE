@@ -26,6 +26,7 @@ namespace Ace
       EAbstractData& data();
       EMetadata& getMeta() { return _metaRoot; }
       void writeMeta();
+      void reloadMeta();
       quint16 getType() { return _type; }
       QString getPath() { return _path; }
       MetadataModel* getModel() { return &_metaModel; }

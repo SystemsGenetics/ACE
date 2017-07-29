@@ -13,7 +13,6 @@ Ace::DataObject::DataObject(const QString& path):
 {
    try
    {
-      _metaModel.setRoot(&_metaRoot);
       // open file from given path and make sure it opened for read/write
       _file.reset(new QFile(path));
       if ( !_file->open(QIODevice::ReadWrite) )
@@ -114,6 +113,7 @@ void Ace::DataObject::open()
       // seek to data offset and read in metadata
       seek(_data->getDataEnd());
       *_stream >> _metaRoot;
+      _metaModel.setRoot(&_metaRoot);
 
       // make sure reading ot metadata worked
       if ( !*_stream )
@@ -185,6 +185,7 @@ void Ace::DataObject::clear(quint16 newType)
    }
    try
    {
+      _metaModel.setRoot(nullptr);
       // make sure type given is valid
       EAbstractDataFactory& factory {EAbstractDataFactory::getInstance()};
       if ( newType >= factory.getCount() )
@@ -235,6 +236,7 @@ void Ace::DataObject::clear(quint16 newType)
       _isNew = false;
 
       _metaRoot.setType(EMetadata::Object);
+      _metaModel.setRoot(&_metaRoot);
    }
    catch (...)
    {
@@ -309,6 +311,19 @@ void Ace::DataObject::writeMeta()
       e.setDetails(tr("Failed writing metadata of object."));
       throw e;
    }
+}
+
+
+
+
+
+
+void Ace::DataObject::reloadMeta()
+{
+   _metaModel.setRoot(nullptr);
+   seek(_data->getDataEnd());
+   *_stream >> _metaRoot;
+   _metaModel.setRoot(&_metaRoot);
 }
 
 

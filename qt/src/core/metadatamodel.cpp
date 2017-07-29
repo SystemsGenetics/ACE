@@ -162,8 +162,16 @@ int Ace::MetadataModel::columnCount(const QModelIndex& parent) const
 
 QVariant Ace::MetadataModel::data(const QModelIndex& index, int role) const
 {
-   // return nothing if role is not for display
-   if ( role != Qt::DisplayRole )
+   if ( role == RawImageData )
+   {
+      EMetadata* meta = reinterpret_cast<EMetadata*>(index.internalPointer());
+      if ( meta->isBytes() )
+      {
+         return *meta->toBytes();
+      }
+      return QVariant();
+   }
+   else if ( role != Qt::DisplayRole )
    {
       return QVariant();
    }
@@ -216,13 +224,16 @@ Qt::ItemFlags Ace::MetadataModel::flags(const QModelIndex& index) const
    EMetadata* meta;
    if ( index.isValid() )
    {
-      meta = reinterpret_cast<EMetadata*>(index.internalPointer());
+      // if this is not root index is draggable
       ret |= Qt::ItemIsDragEnabled;
+      meta = reinterpret_cast<EMetadata*>(index.internalPointer());
    }
    else
    {
       meta = _root;
    }
+
+   // if metadata is array or object is can accept drops
    if ( meta->isArray() || meta->isObject() )
    {
       ret |= Qt::ItemIsDropEnabled;
@@ -230,11 +241,13 @@ Qt::ItemFlags Ace::MetadataModel::flags(const QModelIndex& index) const
    switch (index.column())
    {
    case 0:
+      // if this is first column it is editable if parent is object
       if ( meta->getParent() && meta->getParent()->isObject() )
       {
          ret |= Qt::ItemIsEditable;
       }
    case 2:
+      // if this is third column it is editable if it is bool/double/string
       if ( !meta->isArray() && !meta->isObject() && !meta->isNull() && !meta->isBytes() )
       {
          ret |= Qt::ItemIsEditable;
@@ -251,8 +264,24 @@ Qt::ItemFlags Ace::MetadataModel::flags(const QModelIndex& index) const
 
 
 
+bool Ace::MetadataModel::isImage(const QModelIndex &index) const
+{
+   // return true if this index is of type bytes
+   if ( index.isValid() )
+   {
+      return reinterpret_cast<EMetadata*>(index.internalPointer())->isBytes();
+   }
+   return false;
+}
+
+
+
+
+
+
 bool Ace::MetadataModel::isInsertable(const QModelIndex &index) const
 {
+   // get pointer to metadata of index
    EMetadata* meta;
    if ( index.isValid() )
    {
@@ -262,6 +291,8 @@ bool Ace::MetadataModel::isInsertable(const QModelIndex &index) const
    {
       meta = _root;
    }
+
+   // return true if metadata is array or object
    return ( meta->isArray() || meta->isObject() );
 }
 
@@ -272,6 +303,7 @@ bool Ace::MetadataModel::isInsertable(const QModelIndex &index) const
 
 bool Ace::MetadataModel::insertRow(int row, EMetadata *data, const QModelIndex& parent)
 {
+   // get metadata pointer of parent index
    EMetadata* metaParent;
    if ( parent.isValid() )
    {
@@ -283,11 +315,14 @@ bool Ace::MetadataModel::insertRow(int row, EMetadata *data, const QModelIndex& 
    }
    if ( metaParent->isArray() )
    {
+      // get list of array and make sure row is within bounds
       EMetadata::List* list {metaParent->toArray()};
       if ( row > list->size() || row < 0 )
       {
          row = list->size();
       }
+
+      // insert new metadata value into array at given row
       beginInsertRows(parent,row,row);
       list->insert(row,data);
       data->setParent(metaParent);
@@ -295,12 +330,15 @@ bool Ace::MetadataModel::insertRow(int row, EMetadata *data, const QModelIndex& 
    }
    else if ( metaParent->isObject() )
    {
+      // get map of object and make sure new key is unique
       EMetadata::Map* map {metaParent->toObject()};
       QString key("unnamed");
       while ( map->contains(key) )
       {
          key.prepend('_');
       }
+
+      // insert new metadata value into map with new key
       map->insert(key,data);
       int i = metaParent->getChildIndex(data);
       data->setParent(metaParent);
@@ -309,8 +347,11 @@ bool Ace::MetadataModel::insertRow(int row, EMetadata *data, const QModelIndex& 
    }
    else
    {
+      // this is not an array or object so return failure
       return false;
    }
+
+   // return success
    return true;
 }
 
@@ -393,18 +434,24 @@ bool Ace::MetadataModel::setData(const QModelIndex& index, const QVariant& value
    {
    case 0:
    {
+      // this is for the first column which means a key value is being changed
       EMetadata* parent = meta->getParent();
+
+      // make sure parent exists, it is an object, and the new key is unique
       if ( parent && parent->isObject() )
       {
          EMetadata::Map* parentMap = parent->toObject();
          QString newKey = value.toString();
          if ( !parentMap->contains(newKey) )
          {
+            // found out the old keys position and remove it
             auto keys = parent->toObject()->keys();
             int i = parent->getChildIndex(meta);
             beginRemoveRows(MetadataModel::parent(index),i,i);
             parentMap->remove(keys.at(i));
             endRemoveRows();
+
+            // insert new key with same metadata
             parentMap->insert(newKey,meta);
             int j = parent->getChildIndex(meta);
             beginInsertRows(MetadataModel::parent(index),j,j);
@@ -461,11 +508,20 @@ bool Ace::MetadataModel::setData(const QModelIndex& index, const QVariant& value
 
 QMimeData* Ace::MetadataModel::mimeData(const QModelIndexList& indexes) const
 {
+   // write pointer to metadata to byte array
    QByteArray pointers;
    QDataStream stream(&pointers,QIODevice::WriteOnly);
    pointers.reserve(sizeof(quintptr));
    quintptr pointer = reinterpret_cast<quintptr>(indexes.at(0).internalPointer());
    stream << pointer;
+
+   // make sure write was successful
+   if ( stream.status() != QDataStream::Ok )
+   {
+      return nullptr;
+   }
+
+   // make new mime data with byte array and return
    QMimeData* data = new QMimeData;
    data->setData("ace/metadata.pointer",pointers);
    return data;
@@ -479,12 +535,17 @@ QMimeData* Ace::MetadataModel::mimeData(const QModelIndexList& indexes) const
 bool Ace::MetadataModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row
                                       , int column, const QModelIndex& parent)
 {
+   // column is unused
    Q_UNUSED(column);
+
+   // read pointer to metadata to copy/move from byte array
    QByteArray pointers = data->data("ace/metadata.pointer");
    QDataStream stream(pointers);
    quintptr pointer;
    stream >> pointer;
    EMetadata* meta = reinterpret_cast<EMetadata*>(pointer);
+
+   // make sure reading of byte array was successful
    if ( stream.status() != QDataStream::Ok )
    {
       return false;
@@ -492,10 +553,12 @@ bool Ace::MetadataModel::dropMimeData(const QMimeData* data, Qt::DropAction acti
    switch (action)
    {
    case Qt::CopyAction:
+      // this is copy action, simply make new metadata that is copy of pointer
       meta = new EMetadata(*meta);
       break;
    case Qt::MoveAction:
    {
+      // this is move action, remove old index of metadata
       EMetadata* parent = meta->getParent();
       int row = parent->getChildIndex(meta);
       MetadataModel::removeRows(row,1,MetadataModel::parent(createIndex(row,0,meta)));
@@ -505,8 +568,11 @@ bool Ace::MetadataModel::dropMimeData(const QMimeData* data, Qt::DropAction acti
    case Qt::ActionMask:
    case Qt::TargetMoveAction:
    case Qt::IgnoreAction:
-         break;
+      // this is unknown action, return failure
+      return false;
    }
+
+   // insert metadata to new position within model and return success
    MetadataModel::insertRow(row,meta,parent);
    return true;
 }

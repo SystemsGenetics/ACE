@@ -58,7 +58,7 @@ void Ace::MainWindow::openData()
    quint16 type = from->data().toInt();
 
    // open file dialog for selecting data object file of given type
-   QFileDialog dialog(nullptr,tr("Select File"));
+   QFileDialog dialog(this,tr("Select File"));
    dialog.setAcceptMode(QFileDialog::AcceptOpen);
    EAbstractDataFactory& factory = EAbstractDataFactory::getInstance();
    QString filter = tr("%1 data object (*.%2)").arg(factory.getName(type))
@@ -74,7 +74,7 @@ void Ace::MainWindow::openData()
 
       // set title to file name and show data window
       QFileInfo file(files.at(0));
-      window->setWindowTitle(file.fileName());
+      window->setWindowTitle(QString("%1 (%2)").arg(file.fileName()).arg(factory.getName(type)));
       window->show();
    }
 }
@@ -93,12 +93,12 @@ void Ace::MainWindow::runAnalytic()
    unique_ptr<EAbstractAnalytic> analytic(factory.make(type));
 
    // create setup analytic dialog and run it
-   SetupAnalyticDialog dialog(analytic.get());
+   SetupAnalyticDialog dialog(analytic.get(),this);
    dialog.setWindowTitle(tr("Execute %1").arg(factory.getName(type)));
    if ( dialog.exec() )
    {
       // if setup analytic dialog is successful run analytic through analytic dialog
-      AnalyticDialog runDialog(analytic.release());
+      AnalyticDialog runDialog(analytic.release(),this);
       runDialog.setWindowTitle(tr("Executing %1").arg(factory.getName(type)));
       runDialog.exec();
    }
