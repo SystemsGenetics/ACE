@@ -270,7 +270,7 @@ bool Ace::MetadataModel::isInsertable(const QModelIndex &index) const
 
 
 
-bool Ace::MetadataModel::insertRow(EMetadata *data, const QModelIndex& parent)
+bool Ace::MetadataModel::insertRow(int row, EMetadata *data, const QModelIndex& parent)
 {
    EMetadata* metaParent;
    if ( parent.isValid() )
@@ -284,8 +284,12 @@ bool Ace::MetadataModel::insertRow(EMetadata *data, const QModelIndex& parent)
    if ( metaParent->isArray() )
    {
       EMetadata::List* list {metaParent->toArray()};
-      beginInsertRows(parent,list->size(),list->size());
-      list->append(data);
+      if ( row > list->size() || row < 0 )
+      {
+         row = list->size();
+      }
+      beginInsertRows(parent,row,row);
+      list->insert(row,data);
       data->setParent(metaParent);
       endInsertRows();
    }
@@ -457,6 +461,14 @@ bool Ace::MetadataModel::setData(const QModelIndex& index, const QVariant& value
 
 QMimeData* Ace::MetadataModel::mimeData(const QModelIndexList& indexes) const
 {
+   QByteArray pointers;
+   QDataStream stream(&pointers,QIODevice::WriteOnly);
+   pointers.reserve(sizeof(quintptr));
+   quintptr pointer = reinterpret_cast<quintptr>(indexes.at(0).internalPointer());
+   stream << pointer;
+   QMimeData* data = new QMimeData;
+   data->setData("ace/metadata.pointer",pointers);
+   return data;
 }
 
 
@@ -467,6 +479,36 @@ QMimeData* Ace::MetadataModel::mimeData(const QModelIndexList& indexes) const
 bool Ace::MetadataModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row
                                       , int column, const QModelIndex& parent)
 {
+   Q_UNUSED(column);
+   QByteArray pointers = data->data("ace/metadata.pointer");
+   QDataStream stream(pointers);
+   quintptr pointer;
+   stream >> pointer;
+   EMetadata* meta = reinterpret_cast<EMetadata*>(pointer);
+   if ( stream.status() != QDataStream::Ok )
+   {
+      return false;
+   }
+   switch (action)
+   {
+   case Qt::CopyAction:
+      meta = new EMetadata(*meta);
+      break;
+   case Qt::MoveAction:
+   {
+      EMetadata* parent = meta->getParent();
+      int row = parent->getChildIndex(meta);
+      MetadataModel::removeRows(row,1,MetadataModel::parent(createIndex(row,0,meta)));
+      break;
+   }
+   case Qt::LinkAction:
+   case Qt::ActionMask:
+   case Qt::TargetMoveAction:
+   case Qt::IgnoreAction:
+         break;
+   }
+   MetadataModel::insertRow(row,meta,parent);
+   return true;
 }
 
 

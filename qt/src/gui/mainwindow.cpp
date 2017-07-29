@@ -26,10 +26,13 @@ Ace::MainWindow* Ace::MainWindow::_instance {nullptr};
 
 Ace::MainWindow& Ace::MainWindow::getInstance()
 {
+   // make new instance if none yet exists
    if ( !_instance )
    {
       _instance = new MainWindow;
    }
+
+   // return reference
    return *_instance;
 }
 
@@ -50,18 +53,26 @@ void Ace::MainWindow::addCommand(const QString &command)
 
 void Ace::MainWindow::openData()
 {
+   // get data type from action
    QAction* from = qobject_cast<QAction*>(sender());
    quint16 type = from->data().toInt();
+
+   // open file dialog for selecting data object file of given type
    QFileDialog dialog(nullptr,tr("Select File"));
    dialog.setAcceptMode(QFileDialog::AcceptOpen);
    EAbstractDataFactory& factory = EAbstractDataFactory::getInstance();
    QString filter = tr("%1 data object (*.%2)").arg(factory.getName(type))
          .arg(factory.getFileExtension(type));
    dialog.setNameFilter(filter);
+
+   // run file dialog modally
    if ( dialog.exec() )
    {
+      // make new data window from opened data object
       QStringList files = dialog.selectedFiles();
       DataWindow* window {new DataWindow(Ace::DataManager::getInstance().open(files.at(0)),this)};
+
+      // set title to file name and show data window
       QFileInfo file(files.at(0));
       window->setWindowTitle(file.fileName());
       window->show();
@@ -111,8 +122,11 @@ void Ace::MainWindow::setOpenCL()
 Ace::MainWindow::MainWindow(QWidget *parent):
    QMainWindow(parent)
 {
+   // create actions and menus
    createActions();
    createMenus();
+
+   // create central console widget
    _console = new QTextEdit(this);
    setCentralWidget(_console);
 }
@@ -171,14 +185,14 @@ void Ace::MainWindow::createMenus()
    _fileMenu = menuBar()->addMenu(tr("&File"));
 
    // add data submenu with all data
-   _dataMenu = _fileMenu->addMenu(tr("&Data"));
+   _dataMenu = _fileMenu->addMenu(tr("&Open"));
    for (int i = 0; i < _dataActions.size() ;++i)
    {
       _dataMenu->addAction(_dataActions[i]);
    }
 
    // add analytic submenu with all analytics
-   _analyticMenu = _fileMenu->addMenu(tr("&Analytics"));
+   _analyticMenu = _fileMenu->addMenu(tr("&Execute"));
    for (int i = 0; i < EAbstractAnalyticFactory::getInstance().getCount() ;++i)
    {
       _analyticMenu->addAction(_analyticActions[i]);

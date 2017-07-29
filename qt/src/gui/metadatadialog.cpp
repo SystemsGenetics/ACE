@@ -19,6 +19,11 @@ MetadataDialog::MetadataDialog(MetadataModel *model, QWidget *parent):
    QVBoxLayout* layout = new QVBoxLayout;
    _view = new QTreeView;
    _view->setModel(_model);
+   _view->setSelectionMode(QAbstractItemView::ExtendedSelection);
+   _view->setDragEnabled(true);
+   _view->setAcceptDrops(true);
+   _view->setDropIndicatorShown(true);
+   _view->setDefaultDropAction(Qt::MoveAction);
    _view->setContextMenuPolicy(Qt::CustomContextMenu);
    connect(_view,SIGNAL(customContextMenuRequested(QPoint)),this
            ,SLOT(metadataContextMenuRequested(QPoint)));
@@ -49,7 +54,8 @@ void MetadataDialog::metadataContextMenuRequested(const QPoint &point)
 void MetadataDialog::addTriggered()
 {
    QAction* from = qobject_cast<QAction*>(sender());
-   _model->insertRow(new EMetadata(static_cast<EMetadata::Type>(from->data().toInt())),_lastIndex);
+   _model->insertRow(-1,new EMetadata(static_cast<EMetadata::Type>(from->data().toInt()))
+                     ,_lastIndex);
 }
 
 
