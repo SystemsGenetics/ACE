@@ -339,10 +339,10 @@ bool Ace::MetadataModel::insertRow(int row, EMetadata *data, const QModelIndex& 
       }
 
       // insert new metadata value into map with new key
-      map->insert(key,data);
-      int i = metaParent->getChildIndex(data);
-      data->setParent(metaParent);
+      int i = std::distance(map->begin(),map->lowerBound(key));
       beginInsertRows(parent,i,i);
+      map->insert(key,data);
+      data->setParent(metaParent);
       endInsertRows();
    }
    else
@@ -452,9 +452,9 @@ bool Ace::MetadataModel::setData(const QModelIndex& index, const QVariant& value
             endRemoveRows();
 
             // insert new key with same metadata
-            parentMap->insert(newKey,meta);
-            int j = parent->getChildIndex(meta);
+            int j = std::distance(parentMap->begin(),parentMap->lowerBound(newKey));
             beginInsertRows(MetadataModel::parent(index),j,j);
+            parentMap->insert(newKey,meta);
             endInsertRows();
             return true;
          }
