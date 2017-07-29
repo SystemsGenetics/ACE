@@ -5,6 +5,7 @@
 #include "abstractdata.h"
 #include "datastream.h"
 #include "metadata.h"
+#include "metadatamodel.h"
 
 
 
@@ -27,6 +28,7 @@ namespace Ace
       void writeMeta();
       quint16 getType() { return _type; }
       QString getPath() { return _path; }
+      MetadataModel* getModel() { return &_metaModel; }
       operator bool() const noexcept;
    signals:
       void cleared();
@@ -40,6 +42,7 @@ namespace Ace
       bool _isNew {true};
       bool _invalid {false};
       EMetadata _metaRoot;
+      MetadataModel _metaModel;
       quint16 _type {0};
       QString _path;
    };

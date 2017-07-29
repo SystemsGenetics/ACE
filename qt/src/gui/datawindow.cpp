@@ -6,6 +6,7 @@
 #include "abstractdata.h"
 #include "datareference.h"
 #include "dataobject.h"
+#include "metadatadialog.h"
 
 
 
@@ -46,8 +47,24 @@ DataWindow::~DataWindow()
 
 
 
+void DataWindow::setWindowTitle(const QString& title)
+{
+   // save title then set it
+   _title = title;
+   QWidget::setWindowTitle(title);
+}
+
+
+
+
+
+
 void DataWindow::metadataTriggered()
 {
+   // create metadata dialog editor and modally run it
+   MetadataDialog dialog((*_data)->getModel(),this);
+   dialog.setWindowTitle(tr("%1 Metadata").arg(_title));
+   dialog.exec();
 }
 
 
@@ -65,7 +82,7 @@ void DataWindow::createActions()
    // create metadata action
    _closeAction = new QAction(tr("&Close"),this);
    _closeAction->setStatusTip(tr("Close this data object's window."));
-   connect(_closeAction,SIGNAL(triggered(bool)),this,SLOT(closeTriggered()));
+   connect(_closeAction,SIGNAL(triggered(bool)),this,SLOT(close()));
 }
 
 

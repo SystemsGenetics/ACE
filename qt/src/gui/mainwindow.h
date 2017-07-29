@@ -19,7 +19,6 @@ namespace Ace
       void addCommand(const QString& command);
    private slots:
       void openData();
-      void exit();
       void runAnalytic();
       void setOpenCL();
    private:

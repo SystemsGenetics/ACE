@@ -13,6 +13,7 @@ Ace::DataObject::DataObject(const QString& path):
 {
    try
    {
+      _metaModel.setRoot(&_metaRoot);
       // open file from given path and make sure it opened for read/write
       _file.reset(new QFile(path));
       if ( !_file->open(QIODevice::ReadWrite) )

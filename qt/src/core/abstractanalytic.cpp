@@ -73,16 +73,18 @@ void EAbstractAnalytic::run()
    finish();
 
    // create metadata history for each output data file
-   EMetadata history(EMetadata::Object);
+   EMetadata inputs(EMetadata::Object);
    for (auto i = _dataIn.constBegin(); i != _dataIn.constEnd() ;++i)
    {
       EMetadata* file = new EMetadata((**i)->getMeta());
-      QString path = (**i)->getPath();
-      while ( history.toObject()->contains(path) )
+      QFileInfo fileInfo((**i)->getPath());
+      QString path = fileInfo.fileName();
+      while ( inputs.toObject()->contains(path) )
       {
          path.prepend('_');
       }
-      history.toObject()->insert(path,file);
+      file->setParent(&inputs);
+      inputs.toObject()->insert(path,file);
    }
 
    // create command metadata that created new data objects
@@ -95,10 +97,14 @@ void EAbstractAnalytic::run()
       // call finish function, add metadata history and command, and delete reference
       (**i)->data().finish();
       EMetadata::Map* object = (**i)->getMeta().toObject();
-      object->remove("history");
+      EMetadata* newInputs = new EMetadata(inputs);
+      EMetadata* newCommand = new EMetadata(command);
+      object->remove("inputs");
       object->remove("command");
-      object->insert("history",new EMetadata(history));
-      object->insert("command",new EMetadata(command));
+      object->insert("inputs",newInputs);
+      object->insert("command",newCommand);
+      newInputs->setParent(&((**i)->getMeta()));
+      newCommand->setParent(&((**i)->getMeta()));
       (**i)->writeMeta();
       delete *i;
    }

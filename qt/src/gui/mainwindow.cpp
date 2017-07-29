@@ -73,16 +73,6 @@ void Ace::MainWindow::openData()
 
 
 
-void Ace::MainWindow::exit()
-{
-
-}
-
-
-
-
-
-
 void Ace::MainWindow::runAnalytic()
 {
    // get analytic type from action and create new analytic of that type
@@ -150,7 +140,7 @@ void Ace::MainWindow::createActions()
    _exitAction = new QAction(tr("&Exit"),this);
    _exitAction->setShortcut(QKeySequence::Close);
    _exitAction->setStatusTip(tr("Exit the application."));
-   connect(_exitAction,SIGNAL(triggered(bool)),this,SLOT(exit()));
+   connect(_exitAction,SIGNAL(triggered(bool)),this,SLOT(close()));
 
    // create set opencl device action
    _setOpenCLAction = new QAction(tr("&Set OpenCL Device"),this);

@@ -15,10 +15,9 @@ class DataWindow : public QMainWindow
 public:
    DataWindow(Ace::DataReference* data, QWidget *parent = nullptr);
    ~DataWindow();
+   void setWindowTitle(const QString& title);
 private slots:
-   void dataCleared() { deleteLater(); }
    void metadataTriggered();
-   void closeTriggered() { deleteLater(); }
 private:
    void createActions();
    void createMenus();
@@ -26,6 +25,7 @@ private:
    QMenu* _fileMenu;
    QAction* _metadataAction;
    QAction* _closeAction;
+   QString _title;
 };
 }
 

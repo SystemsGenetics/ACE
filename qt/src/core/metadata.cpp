@@ -53,6 +53,7 @@ EMetadata::EMetadata(const EMetadata& copy)
       for (auto i = copyList->constBegin(); i != copyList->constEnd() ;++i)
       {
          list->append(new EMetadata(**i));
+         list->back()->setParent(this);
       }
       break;
    }
@@ -65,7 +66,9 @@ EMetadata::EMetadata(const EMetadata& copy)
       // make copy of all metadata on copy's map
       for (auto i = copyMap->constBegin(); i != copyMap->constEnd() ;++i)
       {
-         map->insert(i.key(),new EMetadata(**i));
+         EMetadata* child = new EMetadata(**i);
+         child->setParent(this);
+         map->insert(i.key(),child);
       }
       break;
    }
@@ -285,25 +288,21 @@ QVariant EMetadata::toVariant() const
    switch (_type)
    {
    case Bool:
-      QVariant(*reinterpret_cast<bool*>(_data));
-      break;
+      return QVariant(*reinterpret_cast<bool*>(_data));
    case Double:
-      QVariant(*reinterpret_cast<double*>(_data));
-      break;
+      return QVariant(*reinterpret_cast<double*>(_data));
    case String:
-      QVariant(*reinterpret_cast<QString*>(_data));
-      break;
+      return QVariant(*reinterpret_cast<QString*>(_data));
    case Bytes:
       // if type is bytes simply state it is a byte array
-      QVariant(QObject::tr("Byte Array"));
-      break;
+      return QVariant(QObject::tr("Byte Array"));
    case Array:
    case Object:
    case Null:
+   default:
       // if type is array, object, or null return nothing
       return QVariant();
    }
-   return QVariant();
 }
 
 
@@ -427,15 +426,7 @@ int EMetadata::getChildIndex(EMetadata* child) const
       // get map and extract list of values from it
       Map& map {*reinterpret_cast<Map*>(_data)};
       List list = map.values();
-
-      // iterate through list of values until child pointer is found
-      for (int i = 0; i < list.size() ;++i)
-      {
-         if ( list.at(i) == child )
-         {
-            return i;
-         }
-      }
+      return list.lastIndexOf(child);
    }
 
    // if data type is not array or object then error
@@ -602,6 +593,7 @@ EDataStream& operator>>(EDataStream& stream, EMetadata& meta)
       {
          list.push_back(new EMetadata);
          stream >> *(list.back());
+         list.back()->setParent(&meta);
       }
       break;
    }
@@ -617,11 +609,12 @@ EDataStream& operator>>(EDataStream& stream, EMetadata& meta)
       {
          // initialize key and EMetadata variables
          QString key;
-         EMetadata* meta {new EMetadata};
+         EMetadata* newMeta {new EMetadata};
 
          // read in key value and EMetadata and insert into map
-         stream >> key >> *meta;
-         map.insert(key,meta);
+         stream >> key >> *newMeta;
+         newMeta->setParent(&meta);
+         map.insert(key,newMeta);
       }
       break;
    }
