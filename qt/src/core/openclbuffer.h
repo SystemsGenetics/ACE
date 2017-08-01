@@ -9,17 +9,26 @@
 
 
 
+/// Holds a single OpenCL buffer.
 template<class T>
 class EOpenCLBuffer : public EOpenCL
 {
 public:
+   /// Internal command DO NOT USE.
    EOpenCLBuffer(cl_context contextID, cl_command_queue commandQueueID, quint64 size);
    ~EOpenCLBuffer();
    ACE_DISBALE2_COPY_AND_MOVE(EOpenCLBuffer,EOpenCLBuffer<T>)
    T& operator[](int index);
    const T& operator[](int index) const;
+   /// Read data from the OpenCL device buffer to system memory.
+   ///
+   /// @return OpenCL event.
    EOpenCLEvent read();
+   /// Write data from system memory to the OpenCL device buffer.
+   ///
+   /// @return OpenCL event.
    EOpenCLEvent write();
+   /// Internal command DO NOT USE.
    cl_mem* getOpenCLMemory();
 private:
    cl_command_queue _commandQueueID;

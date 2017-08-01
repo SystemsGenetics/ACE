@@ -8,21 +8,59 @@
 
 
 
+/// Holds a single kernel that can be used for execution on OpenCL device.
 class EOpenCLKernel : public EOpenCL
 {
 public:
+   /// Internal command DO NOT USE.
    EOpenCLKernel(cl_program programID, cl_command_queue commandQueueID, cl_device_id deviceID
                 , const QString& name);
    ~EOpenCLKernel();
    ACE_DISBALE_COPY_AND_MOVE(EOpenCLKernel)
+   /// Set kernel private argument.
+   ///
+   /// @param index Argument index.
+   /// @param value Argument value.
    template<class T> void setArgument(cl_uint index, T value);
+   /// Set kernel buffer argument.
+   ///
+   /// @param index Argument index.
+   /// @param buffer Pointer to buffer object.
    template<class T> void setBuffer(cl_uint index, EOpenCLBuffer<T>* buffer);
+   /// Allocate local memory to kernel argument.
+   ///
+   /// @param index Argument index.
+   /// @param size Size of local memory in bytes.
    template<class T> void addLocalMemory(cl_uint index, cl_uint size);
+   /// Set number of dimenions for kernel.
+   ///
+   /// @param count Number of dimenions.
    void setDimensionCount(cl_uint count);
+   /// Set global size of kernel for given dimension.
+   ///
+   /// @param dimension Dimension index.
+   /// @param size Number of kernels.
+   ///
+   /// @return True if successful.
    bool setGlobalSize(cl_uint dimension, cl_uint size);
+   /// Set workgroup size of kernel for given dimension.
+   ///
+   /// @param dimension Dimension index.
+   /// @param size Number of kernels per workgroup.
+   ///
+   /// @return True if successful.
    bool setWorkgroupSize(cl_uint dimension, cl_uint size);
+   /// Get maximum workgroup size for kernel object.
+   ///
+   /// @return Maximum workgroup size.
    size_t getMaxWorkgroupSize();
+   /// Get recommended workgroup multiple for kernel object.
+   ///
+   /// @return Recommended workgroup multiple.
    size_t getWorkgroupMultiple();
+   /// Execute kernel on OpenCL device.
+   ///
+   /// @return OpenCL event for kernel execution.
    EOpenCLEvent execute();
 private:
    std::unique_ptr<cl_kernel> _id {nullptr};
