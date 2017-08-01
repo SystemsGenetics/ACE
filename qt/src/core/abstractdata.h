@@ -35,9 +35,14 @@ public:
    virtual void prepare(bool preAllocate) = 0;
    /// Finalize new data object after being given all input.
    virtual void finish() = 0;
+   /// Internal command DO NOT USE.
    virtual QAbstractItemModel* getModel() = 0;
+   /// Internal command DO NOT USE.
    void initialize(Ace::DataObject* object, EDataStream* stream) noexcept;
 protected:
+   /// Get reference to root metadata object.
+   ///
+   /// @return Reference to metadata root.
    EMetadata& meta();
    /// Get reference to data stream of object's file.
    ///
