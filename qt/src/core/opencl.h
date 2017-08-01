@@ -7,18 +7,32 @@
 
 
 
+/// Base opencl class that all other opencl classes inherit. Used for error handling.
 class EOpenCL
 {
 public:
+   /// Status of opencl object.
    enum Status
    {
-      Ok = 0
-      ,NoOpenCL
-      ,OpenCLError
+      Ok = 0 ///< Ok
+      ,NoOpenCL ///< There is no OpenCL support on current system
+      ,OpenCLError ///< An OpenCL error occured
    };
+   /// Get status of opencl object.
+   ///
+   /// @return Status.
    Status getStatus() const;
+   /// Get name of OpenCL function that failed, if any.
+   ///
+   /// @return Function name.
    QString getErrorFunction() const;
+   /// Get error code description, if any.
+   ///
+   /// @return Error code description.
    QString getErrorCode() const;
+   /// Determine if object is in an OK state.
+   ///
+   /// @return True if object is in the Ok state.
    operator bool() const;
 protected:
    EOpenCL() = default;

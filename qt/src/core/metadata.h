@@ -8,6 +8,9 @@ class EDataStream;
 
 
 
+/// Class for storing metadata of data objects. This class works much like Qt's variant class where
+/// it can store different data types. An object can only store a single data type at any single
+/// time.
 class EMetadata
 {
 public:
