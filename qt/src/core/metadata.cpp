@@ -295,7 +295,7 @@ QVariant EMetadata::toVariant() const
       return QVariant(*reinterpret_cast<QString*>(_data));
    case Bytes:
       // if type is bytes simply state it is a byte array
-      return QVariant(QObject::tr("Byte Array"));
+      return QVariant(QObject::tr("IMAGE"));
    case Array:
    case Object:
    case Null:
@@ -532,13 +532,13 @@ QString EMetadata::convertTypeName(quint8 type) const
    switch (type)
    {
    case Bool:
-      return QString("Bool");
+      return QString("Boolean");
    case Double:
-      return QString("Double");
+      return QString("Real");
    case String:
       return QString("String");
    case Bytes:
-      return QString("Bytes");
+      return QString("Image");
    case Array:
       return QString("Array");
    case Object:

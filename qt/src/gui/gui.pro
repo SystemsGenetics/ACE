@@ -20,7 +20,8 @@ SOURCES += \
    Application.cpp \
     analyticdialog.cpp \
     datawindow.cpp \
-    metadatadialog.cpp
+    metadatadialog.cpp \
+    imageviewer.cpp
 
 HEADERS += \
    opencldevicedialog.h \
@@ -29,6 +30,10 @@ HEADERS += \
    Application.h \
     analyticdialog.h \
     datawindow.h \
-    metadatadialog.h
+    metadatadialog.h \
+    imageviewer.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
+
+RESOURCES += \
+    resources.qrc

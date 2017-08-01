@@ -14,6 +14,10 @@ class MetadataModel : public QAbstractItemModel
 {
    Q_OBJECT
 public:
+   enum Roles
+   {
+      RawImageData = 10000
+   };
    explicit MetadataModel(QObject* parent = nullptr) noexcept: QAbstractItemModel(parent) {}
    MetadataModel(const MetadataModel&) = delete;
    MetadataModel(MetadataModel&&) = delete;
@@ -24,6 +28,7 @@ public:
    int columnCount(const QModelIndex& parent) const override final;
    QVariant data(const QModelIndex& index, int role) const override final;
    Qt::ItemFlags flags(const QModelIndex& index) const override final;
+   bool isImage(const QModelIndex& index) const;
    bool isInsertable(const QModelIndex& index) const;
    bool insertRow(int row, EMetadata* data, const QModelIndex& parent);
    bool removeRows(int row, int count, const QModelIndex& parent) override final;

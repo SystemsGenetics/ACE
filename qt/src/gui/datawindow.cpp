@@ -62,7 +62,7 @@ void DataWindow::setWindowTitle(const QString& title)
 void DataWindow::metadataTriggered()
 {
    // create metadata dialog editor and modally run it
-   MetadataDialog dialog((*_data)->getModel(),this);
+   MetadataDialog dialog(&(**_data),this);
    dialog.setWindowTitle(tr("%1 Metadata").arg(_title));
    dialog.exec();
 }
