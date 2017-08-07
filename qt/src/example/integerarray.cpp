@@ -5,6 +5,25 @@
 
 
 
+IntegerArray::IntegerArray():
+   _model(new Model(&_numbers))
+{}
+
+
+
+
+
+
+IntegerArray::~IntegerArray()
+{
+   delete _model;
+}
+
+
+
+
+
+
 void IntegerArray::readData()
 {
    // Seek to beginning of file, making sure it was successful
@@ -176,4 +195,77 @@ void IntegerArray::finish()
          throw e;
       }
    }
+}
+
+
+
+
+
+
+QAbstractTableModel* IntegerArray::getModel()
+{
+   return _model;
+}
+
+
+
+
+
+
+QVariant IntegerArray::Model::headerData(int section, Qt::Orientation orientation, int role) const
+{
+   if ( role != Qt::DisplayRole )
+   {
+      return QVariant();
+   }
+   if ( orientation == Qt::Vertical )
+   {
+      return section;
+   }
+   else
+   {
+      return tr("Integers");
+   }
+}
+
+
+
+
+
+
+int IntegerArray::Model::rowCount(const QModelIndex& parent) const
+{
+   if ( parent.isValid() )
+   {
+      return 0;
+   }
+   else
+   {
+      return _root->size();
+   }
+}
+
+
+
+
+
+
+int IntegerArray::Model::columnCount(const QModelIndex& parent) const
+{
+   Q_UNUSED(parent);
+   return 1;
+}
+
+
+
+
+
+
+QVariant IntegerArray::Model::data(const QModelIndex &index, int role) const
+{
+   if ( role != Qt::DisplayRole )
+   {
+      return QVariant();
+   }
+   return _root->at(index.row());
 }

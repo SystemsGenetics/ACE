@@ -1,4 +1,4 @@
-#include <QTreeView>
+#include <QTableView>
 #include <QAction>
 #include <QMenuBar>
 
@@ -27,9 +27,12 @@ DataWindow::DataWindow(Ace::DataReference* data, QWidget *parent):
    createMenus();
 
    // create central tree view widget and set model to data's
-   QTreeView* _view = new QTreeView;
+   QTableView* _view = new QTableView;
    _view->setModel((*_data)->data().getModel());
    setCentralWidget(_view);
+
+   // connect cleared signal for closing window
+   connect(data->get(),SIGNAL(cleared()),this,SLOT(close()));
 }
 
 

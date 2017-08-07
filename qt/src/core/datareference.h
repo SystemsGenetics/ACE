@@ -16,6 +16,7 @@ namespace Ace
    public:
       DataReference(std::shared_ptr<DataObject> data, const QString& absolutePath) noexcept;
       ~DataReference() noexcept;
+      DataObject* get() { return _data.get(); }
       DataObject& operator*() noexcept;
       DataObject* operator->() noexcept;
    private:

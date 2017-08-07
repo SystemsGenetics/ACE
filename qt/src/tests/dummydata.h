@@ -12,7 +12,7 @@ public:
    virtual void newData() override final {}
    virtual void prepare(bool /*preAllocate*/) override final {}
    virtual void finish() override final {}
-   virtual QAbstractItemModel* getModel() { return nullptr; }
+   virtual QAbstractTableModel* getModel() { return nullptr; }
    using EAbstractData::stream;
    bool getTouch() { return _touch; }
    void touch() { _touch = true; }
