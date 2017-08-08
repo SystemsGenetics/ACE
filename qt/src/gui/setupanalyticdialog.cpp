@@ -24,9 +24,11 @@
 
 
 
-Ace::SetupAnalyticDialog::SetupAnalyticDialog(EAbstractAnalytic* analytic, QWidget* parent):
+Ace::SetupAnalyticDialog::SetupAnalyticDialog(EAbstractAnalytic* analytic, QString commandName
+                                              , QWidget* parent):
    QDialog(parent),
-   _analytic(analytic)
+   _analytic(analytic),
+   _commandName(commandName)
 {
    // create buttons and connect signals
    _cancelButton = new QPushButton(tr("&Cancel"),this);
@@ -143,7 +145,7 @@ void Ace::SetupAnalyticDialog::executeButton()
    using Role = EAbstractAnalytic::Role;
 
    // initialize console command and iterate through all arguments
-   QString command = _analytic->getCommandName();
+   QString command = _commandName;
    for (int i = 0; i < _analytic->getArgumentCount() ;++i)
    {
       // add beginning of command line argument

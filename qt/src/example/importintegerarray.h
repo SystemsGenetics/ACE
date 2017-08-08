@@ -19,7 +19,6 @@ public:
       ,Total
    };
    int getArgumentCount() override final { return Total; }
-   QString getCommandName() override final { return QString("import_integer_array"); }
    ArgumentType getArgumentData(int argument) override final;
    QVariant getArgumentData(int argument, Role role) override final;
    void setArgument(int /*argument*/, QVariant /*value*/) override final {}

@@ -18,6 +18,7 @@ public:
    };
    quint16 getCount() override final;
    QString getName(quint16 type) override final;
+   virtual QString getCommandName(quint16 type) override final;
    std::unique_ptr<EAbstractAnalytic> make(quint16 type);
 };
 

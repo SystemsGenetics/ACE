@@ -26,6 +26,16 @@ EApplication::EApplication(int& argc, char** argv, const QString& title
       showException(e);
       ::exit(-1);
    }
+   catch (std::exception e)
+   {
+      qDebug() << tr("STD exception %1 caught!\n").arg(e.what());
+      ::exit(-1);
+   }
+   catch (...)
+   {
+      qDebug() << tr("Unknown exception caught!\n");
+      ::exit(-1);
+   }
 }
 
 

@@ -47,6 +47,30 @@ QString AnalyticFactory::getName(quint16 type)
 
 
 
+QString AnalyticFactory::getCommandName(quint16 type)
+{
+   switch (type)
+   {
+   case ImportIntegerArrayType:
+      // This is import integer array type, return command
+      return QString("import");
+   case MathTransformType:
+      // This is math transform type, return command
+      return QString("transform");
+   case ExportIntegerArrayType:
+      // This is export integer array type, return command
+      return QString("export");
+   default:
+      // This is unknown type, return empty command string
+      return QString();
+   }
+}
+
+
+
+
+
+
 unique_ptr<EAbstractAnalytic> AnalyticFactory::make(quint16 type)
 {
    switch (type)

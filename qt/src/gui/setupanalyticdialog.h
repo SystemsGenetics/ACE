@@ -16,7 +16,8 @@ namespace Ace
    {
       Q_OBJECT
    public:
-      SetupAnalyticDialog(EAbstractAnalytic* analytic, QWidget* parent = nullptr);
+      SetupAnalyticDialog(EAbstractAnalytic* analytic, QString commandName
+                          , QWidget* parent = nullptr);
    private slots:
       void findFile(int argument);
       void cancel();
@@ -27,6 +28,7 @@ namespace Ace
       EAbstractAnalytic* _analytic;
       QPushButton* _cancelButton;
       QPushButton* _executeButton;
+      QString _commandName;
    };
 }
 

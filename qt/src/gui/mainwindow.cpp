@@ -93,7 +93,7 @@ void Ace::MainWindow::runAnalytic()
    unique_ptr<EAbstractAnalytic> analytic(factory.make(type));
 
    // create setup analytic dialog and run it
-   SetupAnalyticDialog dialog(analytic.get(),this);
+   SetupAnalyticDialog dialog(analytic.get(),factory.getCommandName(type),this);
    dialog.setWindowTitle(tr("Execute %1").arg(factory.getName(type)));
    if ( dialog.exec() )
    {

@@ -28,6 +28,11 @@ public:
    static void setInstance(std::unique_ptr<EAbstractAnalyticFactory>&& factory);
    /// Get total number of possible analytic types.
    virtual quint16 getCount() = 0;
+   /// Get the command line name of an analytic. It must be unique among all other analytic
+   /// commands.
+   ///
+   /// @return Command line name.
+   virtual QString getCommandName(quint16 type) = 0;
    /// Get name of specific analytic type.
    ///
    /// @param type Analytic type identifier.

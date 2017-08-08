@@ -48,11 +48,6 @@ public:
    virtual ~EAbstractAnalytic();
    /// Get total number of arguments of an analytic.
    virtual int getArgumentCount() = 0;
-   /// Get the command line name of an analytic. It must be unique among all other analytic
-   /// commands.
-   ///
-   /// @return Command line name.
-   virtual QString getCommandName() = 0;
    /// Get argument type.
    ///
    /// @param argument Index of argument.
