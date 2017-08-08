@@ -16,6 +16,7 @@ class MathTransform : public EAbstractAnalytic
 {
    Q_OBJECT
 public:
+   // make enumeration of all analytic's arguments
    enum Arguments
    {
       InputData = 0

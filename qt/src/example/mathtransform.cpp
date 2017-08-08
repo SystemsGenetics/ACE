@@ -33,6 +33,8 @@ int MathTransform::getArgumentCount()
 EAbstractAnalytic::ArgumentType MathTransform::getArgumentData(int argument)
 {
    using Type = EAbstractAnalytic::ArgumentType;
+
+   // determine which argument is being queried
    switch (argument)
    {
    case InputData:
@@ -61,9 +63,12 @@ EAbstractAnalytic::ArgumentType MathTransform::getArgumentData(int argument)
 QVariant MathTransform::getArgumentData(int argument, EAbstractAnalytic::Role role)
 {
    using Role = EAbstractAnalytic::Role;
+
+   // determine which argument role is being queried
    switch (role)
    {
    case Role::CommandLineName:
+      // determine which argument is being queried
       switch (argument)
       {
       case InputData:
@@ -83,6 +88,7 @@ QVariant MathTransform::getArgumentData(int argument, EAbstractAnalytic::Role ro
          return QString();
       }
    case Role::Title:
+      // determine which argument is being queried
       switch (argument)
       {
       case InputData:
@@ -101,6 +107,7 @@ QVariant MathTransform::getArgumentData(int argument, EAbstractAnalytic::Role ro
          return QString();
       }
    case Role::WhatsThis:
+      // determine which argument is being queried
       switch (argument)
       {
       case InputData:
@@ -120,6 +127,7 @@ QVariant MathTransform::getArgumentData(int argument, EAbstractAnalytic::Role ro
          return QString();
       }
    case Role::Minimum:
+      // determine which argument is being queried
       switch (argument)
       {
       case Amount:
@@ -128,6 +136,7 @@ QVariant MathTransform::getArgumentData(int argument, EAbstractAnalytic::Role ro
          return QVariant();
       }
    case Role::Maximum:
+      // determine which argument is being queried
       switch (argument)
       {
       case Amount:
@@ -136,6 +145,7 @@ QVariant MathTransform::getArgumentData(int argument, EAbstractAnalytic::Role ro
          return QVariant();
       }
    case Role::ComboValues:
+      // determine which argument is being queried
       switch (argument)
       {
       case OperationType:
@@ -147,6 +157,7 @@ QVariant MathTransform::getArgumentData(int argument, EAbstractAnalytic::Role ro
       }
       break;
    case Role::DataType:
+      // determine which argument is being queried
       switch (argument)
       {
       case InputData:
@@ -156,6 +167,7 @@ QVariant MathTransform::getArgumentData(int argument, EAbstractAnalytic::Role ro
          return QVariant();
       }
    default:
+      // unknown role is being queried simply return empty variant
       return QVariant();
    }
 }
@@ -167,6 +179,7 @@ QVariant MathTransform::getArgumentData(int argument, EAbstractAnalytic::Role ro
 
 void MathTransform::setArgument(int argument, QVariant value)
 {
+   // determine which argument is being queried
    switch (argument)
    {
    case OperationType:

@@ -28,6 +28,7 @@ public:
 
 
 
+// Qt model class used to represent the data of an integer array
 class IntegerArray::Model : public QAbstractTableModel
 {
    Q_OBJECT

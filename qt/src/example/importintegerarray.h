@@ -11,6 +11,7 @@ class IntegerArray;
 class ImportIntegerArray : public EAbstractAnalytic
 {
 public:
+   // make enumeration of all analytic's arguments
    enum Arguments
    {
       InputFile = 0
@@ -25,6 +26,8 @@ public:
    void setArgument(int argument, QFile* file) override final;
    void setArgument(int argument, EAbstractData* data) override final;
    bool initialize() override final;
+
+   // return block size of 1
    int getBlockSize() override final { return 1; }
    bool runBlock(int block) override final;
    void finish() override final {}
