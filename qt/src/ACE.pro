@@ -7,6 +7,7 @@ SUBDIRS += \
     core \
     tests \
     gui \
+    console \
     example
 
 tests.depends = core
