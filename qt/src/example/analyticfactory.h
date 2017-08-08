@@ -13,6 +13,7 @@ public:
    {
       ImportIntegerArrayType = 0
       ,MathTransformType
+      ,ExportIntegerArrayType
       ,Total
    };
    quint16 getCount() override final;
