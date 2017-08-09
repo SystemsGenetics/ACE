@@ -139,6 +139,16 @@ void ExportIntegerArray::setArgument(int argument, EAbstractData *data)
 
 bool ExportIntegerArray::initialize()
 {
+   // make sure we have valid inputs and outputs
+   if ( !_input || !_output )
+   {
+      // If failure occured create exception to report failure
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(QObject::tr("Argument Error"));
+      e.setDetails(QObject::tr("Did not get valid input and/or output arguments."));
+      throw e;
+   }
+
    // no initialization for simple analytic
    return false;
 }

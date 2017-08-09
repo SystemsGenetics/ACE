@@ -3,6 +3,7 @@
 #include <QtCore>
 
 #include "utilities.h"
+#include "exception.h"
 
 
 
@@ -112,6 +113,8 @@ signals:
    void progressed(int perceptComplete);
    /// Internal command DO NOT USE.
    void finished();
+   /// Internal command DO NOT USE.
+   void exceptionThrown(QString file, int line, QString function, QString title, QString details);
 protected:
    /// Get extra input data object. WARNING CAN ONLY BE CALLED WITHIN INITIALIZE FUNCTION.
    ///

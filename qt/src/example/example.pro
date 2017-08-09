@@ -1,12 +1,12 @@
 
-QT += core gui widgets
+QT += core
 
 TARGET = example
 CONFIG += c++11
 
 unix|win32: LIBS += -lOpenCL
 
-LIBS += -lOpenCL -L$$PWD/../../build/libs -lacecore -lacegui
+LIBS += -lOpenCL -L$$PWD/../../build/libs -lacecore -laceconsole
 
 INCLUDEPATH += $$PWD/../
 DEPENDPATH += $$PWD/../

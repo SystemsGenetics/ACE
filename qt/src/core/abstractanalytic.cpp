@@ -37,81 +37,89 @@ EAbstractAnalytic::~EAbstractAnalytic()
 
 void EAbstractAnalytic::run()
 {
-   // call initialize function of analytic
-   bool preAllocate {initialize()};
-
-   // go through all new data objects and call their prepare function
-   for (auto i = _dataOut.constBegin(); i != _dataOut.constEnd() ;++i)
+   try
    {
-      (**i)->data().prepare(preAllocate);
-   }
+      // call initialize function of analytic
+      bool preAllocate {initialize()};
 
-   // initialize block info
-   int blockSize {getBlockSize()};
-   int done {0};
-   bool blocks[blockSize] {true};
-
-   // begin block while loop
-   while ( done < blockSize )
-   {
-      for (int i = 0; i < blockSize ;++i)
+      // go through all new data objects and call their prepare function
+      for (auto i = _dataOut.constBegin(); i != _dataOut.constEnd() ;++i)
       {
-         if ( blocks[i] )
+         (**i)->data().prepare(preAllocate);
+      }
+
+      // initialize block info
+      int blockSize {getBlockSize()};
+      int done {0};
+      bool blocks[blockSize] {true};
+
+      // begin block while loop
+      while ( done < blockSize )
+      {
+         for (int i = 0; i < blockSize ;++i)
          {
-            // if block is still alive run it
-            if ( !runBlock(i) )
+            if ( blocks[i] )
             {
-               // block is done, remove it from active list
-               blocks[i] = false;
-               ++done;
+               // if block is still alive run it
+               if ( !runBlock(i) )
+               {
+                  // block is done, remove it from active list
+                  blocks[i] = false;
+                  ++done;
+               }
             }
          }
       }
-   }
 
-   // call finish function of analytic
-   finish();
+      // call finish function of analytic
+      finish();
 
-   // create metadata history for each output data file
-   EMetadata inputs(EMetadata::Object);
-   for (auto i = _dataIn.constBegin(); i != _dataIn.constEnd() ;++i)
-   {
-      EMetadata* file = new EMetadata((**i)->getMeta());
-      QFileInfo fileInfo((**i)->getPath());
-      QString path = fileInfo.fileName();
-      while ( inputs.toObject()->contains(path) )
+      // create metadata history for each output data file
+      EMetadata inputs(EMetadata::Object);
+      for (auto i = _dataIn.constBegin(); i != _dataIn.constEnd() ;++i)
       {
-         path.prepend('_');
+         EMetadata* file = new EMetadata((**i)->getMeta());
+         QFileInfo fileInfo((**i)->getPath());
+         QString path = fileInfo.fileName();
+         while ( inputs.toObject()->contains(path) )
+         {
+            path.prepend('_');
+         }
+         file->setParent(&inputs);
+         inputs.toObject()->insert(path,file);
       }
-      file->setParent(&inputs);
-      inputs.toObject()->insert(path,file);
+
+      // create command metadata that created new data objects
+      EMetadata command(EMetadata::String);
+      *command.toString() = _command;
+
+      // iterate through all output data objects, removing each one from reference list
+      for (auto i = _dataOut.constBegin(); i != _dataOut.constEnd() ;++i)
+      {
+         // call finish function, add metadata history and command, and delete reference
+         (**i)->data().finish();
+         EMetadata::Map* object = (**i)->getMeta().toObject();
+         EMetadata* newInputs = new EMetadata(inputs);
+         EMetadata* newCommand = new EMetadata(command);
+         object->remove("inputs");
+         object->remove("command");
+         object->insert("inputs",newInputs);
+         object->insert("command",newCommand);
+         newInputs->setParent(&((**i)->getMeta()));
+         newCommand->setParent(&((**i)->getMeta()));
+         (**i)->writeMeta();
+         delete *i;
+      }
+      _dataOut.clear();
+
+      // emit finished signal
+      emit finished();
    }
-
-   // create command metadata that created new data objects
-   EMetadata command(EMetadata::String);
-   *command.toString() = _command;
-
-   // iterate through all output data objects, removing each one from reference list
-   for (auto i = _dataOut.constBegin(); i != _dataOut.constEnd() ;++i)
+   catch (EException e)
    {
-      // call finish function, add metadata history and command, and delete reference
-      (**i)->data().finish();
-      EMetadata::Map* object = (**i)->getMeta().toObject();
-      EMetadata* newInputs = new EMetadata(inputs);
-      EMetadata* newCommand = new EMetadata(command);
-      object->remove("inputs");
-      object->remove("command");
-      object->insert("inputs",newInputs);
-      object->insert("command",newCommand);
-      newInputs->setParent(&((**i)->getMeta()));
-      newCommand->setParent(&((**i)->getMeta()));
-      (**i)->writeMeta();
-      delete *i;
+      // If exception occured report it to the main thread
+      emit exceptionThrown(e.getFile(),e.getLine(),e.getFunction(),e.getTitle(),e.getDetails());
    }
-   _dataOut.clear();
-
-   // emit finished signal
-   emit finished();
 }
 
 

@@ -22,6 +22,14 @@ EApplication::EApplication(int& argc, char** argv, const QString& title
 {
    Q_UNUSED(title);
    Q_UNUSED(commandName);
+   for (int i = 0; i < argc ;++i)
+   {
+      if ( i )
+      {
+         _command.append(' ');
+      }
+      _command.append(argv[i]);
+   }
 }
 
 
@@ -95,6 +103,24 @@ int EApplication::exec()
 
 
 
+void EApplication::exceptionThrown(QString file, int line, QString function, QString title
+                                   , QString details)
+{
+   EException e;
+   e.setFile(file);
+   e.setLine(line);
+   e.setFunction(function);
+   e.setTitle(title);
+   e.setDetails(details);
+   showException(e);
+   quit();
+}
+
+
+
+
+
+
 void EApplication::showException(const EException& e)
 {
    QTextStream stream(stdout);
@@ -157,14 +183,14 @@ int EApplication::run(int argc, char** argv)
          return -1;
       }
       QString value(argv[i+1]);
-      name.remove(0,1);
+      name.remove(0,2);
       auto j = argumentMap.constFind(name);
       if ( j == argumentMap.constEnd() )
       {
-         stream << tr("Cannot find analytic argument \"--%1\", exiting.\n").arg(analyticName);
+         stream << tr("Cannot find analytic argument \"--%1\", exiting.\n").arg(name);
          return -1;
       }
-      switch (analytic->getArgumentData(i))
+      switch (analytic->getArgumentData(*j))
       {
       case Type::Bool:
       {
@@ -173,7 +199,7 @@ int EApplication::run(int argc, char** argv)
          {
             val = true;
          }
-         analytic->setArgument(i,val);
+         analytic->setArgument(*j,val);
          break;
       }
       case Type::Integer:
@@ -186,13 +212,13 @@ int EApplication::run(int argc, char** argv)
             stream << tr("Expected argument \"%1\" to be an integer, exiting.").arg(name);
             return -1;
          }
-         if ( val < analytic->getArgumentData(i,Role::Minimum).toInt()
-              || val > analytic->getArgumentData(i,Role::Maximum).toInt() )
+         if ( val < analytic->getArgumentData(*j,Role::Minimum).toInt()
+              || val > analytic->getArgumentData(*j,Role::Maximum).toInt() )
          {
             stream << tr("Integer argument \"%1\" is out of bounds, exiting.").arg(name);
             return -1;
          }
-         analytic->setArgument(i,val);
+         analytic->setArgument(*j,val);
          break;
       }
       case Type::Double:
@@ -205,41 +231,45 @@ int EApplication::run(int argc, char** argv)
             stream << tr("Expected argument \"%1\" to be a real number, exiting.").arg(name);
             return -1;
          }
-         if ( val < analytic->getArgumentData(i,Role::Minimum).toDouble()
-              || val > analytic->getArgumentData(i,Role::Maximum).toDouble() )
+         if ( val < analytic->getArgumentData(*j,Role::Minimum).toDouble()
+              || val > analytic->getArgumentData(*j,Role::Maximum).toDouble() )
          {
             stream << tr("Real number argument \"%1\" is out of bounds, exiting.").arg(name);
             return -1;
          }
-         analytic->setArgument(i,val);
+         analytic->setArgument(*j,val);
          break;
       }
       case Type::String:
-         analytic->setArgument(i,value);
+         analytic->setArgument(*j,value);
          break;
       case Type::Combo:
-         if ( !analytic->getArgumentData(i,Role::ComboValues).toStringList().contains(value) )
+         if ( !analytic->getArgumentData(*j,Role::ComboValues).toStringList().contains(value) )
          {
             stream << tr("Combo argument \"%1\" contains illegal value, exiting.").arg(name);
             return -1;
          }
-         analytic->setArgument(i,value);
+         analytic->setArgument(*j,value);
          break;
       case Type::FileIn:
-         analytic->addFileIn(i,value);
+         analytic->addFileIn(*j,value);
          break;
       case Type::FileOut:
-         analytic->addFileOut(i,value);
+         analytic->addFileOut(*j,value);
          break;
       case Type::DataIn:
-         analytic->addDataIn(i,value,analytic->getArgumentData(i,Role::DataType).toUInt());
+         analytic->addDataIn(*j,value,analytic->getArgumentData(i,Role::DataType).toUInt());
          break;
       case Type::DataOut:
-         analytic->addDataOut(i,value,analytic->getArgumentData(i,Role::DataType).toUInt());
+         analytic->addDataOut(*j,value,analytic->getArgumentData(i,Role::DataType).toUInt());
          break;
       }
    }
+   analytic->setCommand(_command);
    analytic->start();
+   connect(analytic.get(),SIGNAL(exceptionThrown(QString,int,QString,QString,QString)),this
+           ,SLOT(exceptionThrown(QString,int,QString,QString,QString)));
+   connect(analytic.get(),SIGNAL(finished()),this,SLOT(quit()));
    return QCoreApplication::exec();
 }
 

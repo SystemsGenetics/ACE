@@ -14,5 +14,4 @@ tests.depends = core
 gui.depends = core
 example.depends = core gui
 
-# TODO(after release): change dataobject to NOT read file in constructor, but have open and openNew
-# functions (where openNew replaces clear and open is for an existing data object)
+#TODO: Add exception thrown passthrough for GUI for analytic thread

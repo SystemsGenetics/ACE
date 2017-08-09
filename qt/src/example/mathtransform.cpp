@@ -248,6 +248,16 @@ void MathTransform::setArgument(int argument, EAbstractData* data)
 
 bool MathTransform::initialize()
 {
+   // make sure we have valid inputs and outputs
+   if ( !_in || !_out )
+   {
+      // If failure occured create exception to report failure
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(QObject::tr("Argument Error"));
+      e.setDetails(QObject::tr("Did not get valid input and/or output arguments."));
+      throw e;
+   }
+
    // Clear any numbers the output data may hold
    _out->_numbers.clear();
 

@@ -139,6 +139,16 @@ void ImportIntegerArray::setArgument(int argument, EAbstractData *data)
 
 bool ImportIntegerArray::initialize()
 {
+   // make sure we have valid inputs and outputs
+   if ( !_input || !_output )
+   {
+      // If failure occured create exception to report failure
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(QObject::tr("Argument Error"));
+      e.setDetails(QObject::tr("Did not get valid input and/or output arguments."));
+      throw e;
+   }
+
    // clear the output data object and do not pre-allocate by returning false
    _output->_numbers.clear();
    return false;
