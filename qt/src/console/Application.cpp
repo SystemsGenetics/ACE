@@ -1,9 +1,14 @@
 #include <memory>
+#include <QJsonDocument>
 
 #include "Application.h"
 #include "exception.h"
 #include "abstractanalyticfactory.h"
 #include "abstractanalytic.h"
+#include "datamanager.h"
+#include "datareference.h"
+#include "dataobject.h"
+#include "metadata.h"
 
 
 
@@ -280,4 +285,56 @@ int EApplication::run(int argc, char** argv)
 
 int EApplication::dump(int argc, char** argv)
 {
+   QTextStream stream(stdout);
+   if ( argc <= 0 )
+   {
+      stream << tr("No arguments given for dump command, exiting.\n");
+      return -1;
+   }
+   Ace::DataReference* ref = Ace::DataManager::getInstance().open(argv[0]);
+   (*ref)->open();
+   QJsonValue root = grabMetaValues((*ref)->getMeta());
+   QJsonDocument doc(root.toObject());
+   stream << doc.toJson();
+   return 0;
+}
+
+
+
+
+
+
+QJsonValue EApplication::grabMetaValues(const EMetadata &meta)
+{
+   switch (meta.getType())
+   {
+   case EMetadata::Bool:
+      return QJsonValue(*meta.toBool());
+   case EMetadata::Double:
+      return QJsonValue(*meta.toDouble());
+   case EMetadata::String:
+      return QJsonValue(*meta.toString());
+   case EMetadata::Array:
+   {
+      QJsonArray ret;
+      const EMetadata::List* list = meta.toArray();
+      for (auto i = list->constBegin(); i != list->constEnd() ;++i)
+      {
+         ret.append(grabMetaValues(**i));
+      }
+      return QJsonValue(ret);
+   }
+   case EMetadata::Object:
+   {
+      QJsonObject ret;
+      const EMetadata::Map* map = meta.toObject();
+      for (auto i = map->constBegin(); i != map->constEnd() ;++i)
+      {
+         ret.insert(i.key(),grabMetaValues(**i));
+      }
+      return QJsonValue(ret);
+   }
+   default:
+      return QJsonValue();
+   }
 }
