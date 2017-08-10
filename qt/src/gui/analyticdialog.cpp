@@ -33,6 +33,8 @@ AnalyticDialog::AnalyticDialog(EAbstractAnalytic *analytic, QWidget *parent):
    // connect all signals
    connect(_analytic,SIGNAL(progressed(int)),this,SLOT(completeUpated(int)));
    connect(_analytic,SIGNAL(finished()),this,SLOT(analyticFinished()));
+   connect(_analytic,SIGNAL(exceptionThrown(QString,int,QString,QString,QString)),this
+           ,SLOT(exceptionThrown(QString,int,QString,QString,QString)));
    connect(_button,SIGNAL(clicked(bool)),this,SLOT(accept()));
 
    // create main layout for dialog and set it to dialog's layout
@@ -95,6 +97,26 @@ void AnalyticDialog::analyticFinished()
    // report total time it took in status and enable done button
    _status->setText(tr("Finished in %1.").arg(getTime(_time.elapsed()/1000)));
    _button->setDisabled(false);
+}
+
+
+
+
+
+
+void AnalyticDialog::exceptionThrown(QString file, int line, QString function, QString title
+                                     , QString details)
+{
+   // reconstitute exception that was thrown in analytic thread
+   EException e;
+   e.setFile(file);
+   e.setLine(line);
+   e.setFunction(function);
+   e.setTitle(title);
+   e.setDetails(details);
+
+   // throw exception in main gui thread
+   throw e;
 }
 
 

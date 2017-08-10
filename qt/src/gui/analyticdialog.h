@@ -23,6 +23,7 @@ public:
 private slots:
    void completeUpated(int percent);
    void analyticFinished();
+   void exceptionThrown(QString file, int line, QString function, QString title, QString details);
 private:
    QString getTime(int seconds);
    int getSeconds(int total);
