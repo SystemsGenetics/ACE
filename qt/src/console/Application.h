@@ -17,7 +17,9 @@ public:
    virtual bool notify(QObject* receiver, QEvent* event) override final;
    int exec();
 private slots:
+   void completeUpdated(int percentComplete);
    void exceptionThrown(QString file, int line, QString function, QString title, QString details);
+   void finished();
 private:
    void showException(const EException& e);
    int run(int argc, char** argv);
@@ -26,6 +28,7 @@ private:
    int _argc;
    char** _argv;
    QString _command;
+   int _percentComplete;
 };
 
 

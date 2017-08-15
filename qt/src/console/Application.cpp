@@ -108,6 +108,21 @@ int EApplication::exec()
 
 
 
+void EApplication::completeUpdated(int percentComplete)
+{
+   if ( percentComplete > _percentComplete )
+   {
+      QTextStream stream(stdout);
+      stream << "\r" << percentComplete << "%";
+      _percentComplete = percentComplete;
+   }
+}
+
+
+
+
+
+
 void EApplication::exceptionThrown(QString file, int line, QString function, QString title
                                    , QString details)
 {
@@ -118,6 +133,18 @@ void EApplication::exceptionThrown(QString file, int line, QString function, QSt
    e.setTitle(title);
    e.setDetails(details);
    showException(e);
+   quit();
+}
+
+
+
+
+
+
+void EApplication::finished()
+{
+   QTextStream stream(stdout);
+   stream << "\r100%\n";
    quit();
 }
 
@@ -270,11 +297,16 @@ int EApplication::run(int argc, char** argv)
          break;
       }
    }
+   _percentComplete = 0;
+   stream << "0%";
+   stream.flush();
    analytic->setCommand(_command);
    analytic->start();
+   connect(analytic.get(),SIGNAL(progressed(int)),SLOT(completeUpdated(int)));
    connect(analytic.get(),SIGNAL(exceptionThrown(QString,int,QString,QString,QString)),this
            ,SLOT(exceptionThrown(QString,int,QString,QString,QString)));
-   connect(analytic.get(),SIGNAL(finished()),this,SLOT(quit()));
+   connect(analytic.get(),SIGNAL(finished()),this,SLOT(finished()));
+   analytic.reset();
    return QCoreApplication::exec();
 }
 
