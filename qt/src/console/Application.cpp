@@ -376,7 +376,6 @@ int EApplication::run(int argc, char** argv)
 
    // start analytic and begin Qt's main loop execution
    analytic->start();
-   analytic.reset();
    return QCoreApplication::exec();
 }
 
