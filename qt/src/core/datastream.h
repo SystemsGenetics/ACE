@@ -15,6 +15,8 @@ class EDataStream : public ESilent
 public:
    EDataStream(QFile* file);
    ACE_DISBALE_COPY_AND_MOVE(EDataStream)
+   template<class T> bool write(const T* value, quint64 size = 1);
+   template<class T> bool read(T* value, quint64 size = 1);
    EDataStream& operator<<(qint8 value) { return writeNumber(value); }
    EDataStream& operator<<(quint8 value) { return writeNumber(value); }
    EDataStream& operator<<(qint16 value) { return writeNumber(value); }
@@ -49,10 +51,56 @@ private:
    template<class T> EDataStream& writeFloat(T& value);
    template<class T> EDataStream& readNumber(T& value);
    template<class T> EDataStream& readFloat(T& value);
-   template<class T> bool write(T* value, quint64 size = 1);
-   template<class T> bool read(T* value, quint64 size = 1);
    QFile* _file;
 };
+
+
+
+
+
+
+template<class T>
+bool EDataStream::write(const T* value, quint64 size)
+{
+   // write data to file
+   if ( static_cast<quint64>(_file->write(reinterpret_cast<const char*>(value),sizeof(T)*size))
+        != sizeof(T)*size )
+   {
+      // if write failed report error and return false
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(QObject::tr("Data Stream Write"));
+      e.setDetails(QObject::tr("Failed writing to file: %1").arg(_file->errorString()));
+      setException(e);
+      return false;
+   }
+
+   // return true on write success
+   return true;
+}
+
+
+
+
+
+
+template<class T>
+bool EDataStream::read(T* value, quint64 size)
+{
+   // read data from file
+   if ( static_cast<quint64>(_file->read(reinterpret_cast<char*>(value),sizeof(T)*size))
+        != sizeof(T)*size )
+   {
+      // if read failed report error and return false
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(QObject::tr("Data Stream Read"));
+      e.setDetails(QObject::tr("Failed reading from file: %1").arg(_file->errorString()));
+      setException(e);
+      return false;
+   }
+
+   // return true on read success
+   return true;
+}
 
 
 
@@ -144,54 +192,6 @@ EDataStream& EDataStream::readFloat(T& value)
 
    // return reference to stream
    return *this;
-}
-
-
-
-
-
-
-template<class T>
-bool EDataStream::write(T* value, quint64 size)
-{
-   // write data to file
-   if ( static_cast<quint64>(_file->write(reinterpret_cast<const char*>(value),sizeof(T)*size))
-        != sizeof(T)*size )
-   {
-      // if write failed report error and return false
-      E_MAKE_EXCEPTION(e);
-      e.setTitle(QObject::tr("Data Stream Write"));
-      e.setDetails(QObject::tr("Failed writing to file: %1").arg(_file->errorString()));
-      setException(e);
-      return false;
-   }
-
-   // return true on write success
-   return true;
-}
-
-
-
-
-
-
-template<class T>
-bool EDataStream::read(T* value, quint64 size)
-{
-   // read data from file
-   if ( static_cast<quint64>(_file->read(reinterpret_cast<char*>(value),sizeof(T)*size))
-        != sizeof(T)*size )
-   {
-      // if read failed report error and return false
-      E_MAKE_EXCEPTION(e);
-      e.setTitle(QObject::tr("Data Stream Read"));
-      e.setDetails(QObject::tr("Failed reading from file: %1").arg(_file->errorString()));
-      setException(e);
-      return false;
-   }
-
-   // return true on read success
-   return true;
 }
 
 

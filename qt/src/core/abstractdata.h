@@ -43,7 +43,7 @@ protected:
    /// Get reference to root metadata object.
    ///
    /// @return Reference to metadata root.
-   EMetadata& meta();
+   EMetadata& meta() { return *_meta; }
    /// Get reference to data stream of object's file.
    ///
    /// @return Reference to data stream.
