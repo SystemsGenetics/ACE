@@ -73,10 +73,10 @@ public:
    /// @return False if an exception has occured.
    operator bool() const noexcept { return !_hasException; }
 protected:
-   void setException(EException exception) noexcept;
+   void setException(EException exception) const noexcept;
 private:
-   std::unique_ptr<EException> _exception {nullptr};
-   bool _hasException {false};
+   mutable std::unique_ptr<EException> _exception {nullptr};
+   mutable bool _hasException {false};
 };
 
 

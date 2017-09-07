@@ -11,11 +11,7 @@
 
 
 
-EMetadata::EMetadata(Type type):
-   _type(type)
-{
-   initialize(type);
-}
+
 
 
 
@@ -82,10 +78,7 @@ EMetadata::EMetadata(const EMetadata& copy)
 
 
 
-EMetadata::~EMetadata()
-{
-   clear();
-}
+
 
 
 
@@ -555,7 +548,7 @@ QString EMetadata::convertTypeName(quint8 type) const
 
 
 
-EDataStream& operator>>(EDataStream& stream, EMetadata& meta)
+const EDataStream& operator>>(const EDataStream& stream, EMetadata& meta)
 {
    // clear the EMetadata, read new type, and initialize
    meta.clear();

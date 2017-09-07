@@ -18,11 +18,11 @@ namespace Ace
       explicit DataObject(const QString& path);
       ~DataObject() noexcept;
       void open();
-      bool seek(quint64 offset) noexcept;
-      bool allocate(quint64 size) noexcept;
+      bool seek(qint64 offset) const noexcept;
+      bool allocate(qint64 size) noexcept;
       void clear(quint16 newType);
       bool isNew() const noexcept;
-      quint64 size() const noexcept;
+      qint64 size() const noexcept;
       EAbstractData& data();
       EMetadata& getMeta() { return _metaRoot; }
       void writeMeta();
@@ -39,7 +39,7 @@ namespace Ace
       std::unique_ptr<QFile> _file {nullptr};
       std::unique_ptr<EDataStream> _stream {nullptr};
       std::unique_ptr<EAbstractData> _data {nullptr};
-      quint64 _headerOffset {0};
+      qint64 _headerOffset {0};
       bool _isNew {true};
       bool _invalid {false};
       EMetadata _metaRoot;

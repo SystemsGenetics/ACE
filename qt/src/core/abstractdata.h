@@ -44,21 +44,23 @@ protected:
    ///
    /// @return Reference to metadata root.
    EMetadata& meta() { return *_meta; }
+   const EMetadata& meta() const { return *_meta; }
    /// Get reference to data stream of object's file.
    ///
    /// @return Reference to data stream.
    EDataStream& stream();
+   const EDataStream& stream() const { return stream(); }
    /// Seek to new offset within data object's file.
    ///
    /// @param offset New offset.
    /// @return True if successful or false if error occured.
-   bool seek(quint64 offset) noexcept;
+   bool seek(qint64 offset) const noexcept;
    /// Allocate new space in object's file in bytes based off current seek value. If new size is
    /// smaller than current size of file it will be shrinked.
    ///
    /// @param size Space to allocate in bytes.
    /// @return True if successful or false if error occured.
-   bool allocate(quint64 size) noexcept;
+   bool allocate(qint64 size) noexcept;
 private:
    Ace::DataObject* _data {nullptr};
    EDataStream* _stream {nullptr};

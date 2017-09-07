@@ -30,10 +30,10 @@ public:
    /// create a new metadata object of given type.
    ///
    /// @param type Type.
-   EMetadata(Type type = Null);
+   EMetadata(Type type = Null): _type(type) { initialize(type); }
    EMetadata(const EMetadata& copy);
    EMetadata(EMetadata&&) = delete;
-   ~EMetadata();
+   ~EMetadata() { clear(); }
    /// Test if metadata object is of type Null.
    ///
    /// @return True if metadata is of type Null.
@@ -135,7 +135,7 @@ public:
    ///
    /// @return Type.
    QString getTypeName() const;
-   friend EDataStream& operator>>(EDataStream& stream, EMetadata& meta);
+   friend const EDataStream& operator>>(const EDataStream& stream, EMetadata& meta);
    friend EDataStream& operator<<(EDataStream& stream, EMetadata& meta);
 private:
    void initialize(quint8 type);
@@ -149,7 +149,7 @@ private:
 
 
 
-EDataStream& operator>>(EDataStream& stream, EMetadata& meta);
+const EDataStream& operator>>(const EDataStream& stream, EMetadata& meta);
 EDataStream& operator<<(EDataStream& stream, EMetadata& meta);
 
 

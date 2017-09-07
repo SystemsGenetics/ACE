@@ -38,7 +38,7 @@ EDataStream& EAbstractData::stream()
 
 
 
-bool EAbstractData::seek(quint64 offset) noexcept
+bool EAbstractData::seek(qint64 offset) const noexcept
 {
    // make sure data reference exists
    if ( !_data )
@@ -55,7 +55,7 @@ bool EAbstractData::seek(quint64 offset) noexcept
 
 
 
-bool EAbstractData::allocate(quint64 size) noexcept
+bool EAbstractData::allocate(qint64 size) noexcept
 {
    // make sure data reference exists
    if ( !_data )

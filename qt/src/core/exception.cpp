@@ -19,7 +19,7 @@ EException ESilent::getException() const noexcept
 
 
 
-void ESilent::setException(EException exception) noexcept
+void ESilent::setException(EException exception) const noexcept
 {
    _exception.reset(new EException(exception));
    _hasException = true;

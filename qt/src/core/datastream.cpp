@@ -72,7 +72,7 @@ EDataStream& EDataStream::operator<<(const QByteArray& value)
 
 
 
-EDataStream& EDataStream::operator>>(QString& value)
+const EDataStream& EDataStream::operator>>(QString& value) const
 {
    // clear input string
    value.clear();
@@ -111,7 +111,7 @@ EDataStream& EDataStream::operator>>(QString& value)
 
 
 
-EDataStream& EDataStream::operator>>(QByteArray& value)
+const EDataStream& EDataStream::operator>>(QByteArray& value) const
 {
    // clear input
    value.clear();

@@ -16,7 +16,7 @@ public:
    EDataStream(QFile* file);
    ACE_DISBALE_COPY_AND_MOVE(EDataStream)
    template<class T> bool write(const T* value, quint64 size = 1);
-   template<class T> bool read(T* value, quint64 size = 1);
+   template<class T> bool read(T* value, quint64 size = 1) const;
    EDataStream& operator<<(qint8 value) { return writeNumber(value); }
    EDataStream& operator<<(quint8 value) { return writeNumber(value); }
    EDataStream& operator<<(qint16 value) { return writeNumber(value); }
@@ -29,18 +29,18 @@ public:
    EDataStream& operator<<(double value) { return writeFloat(value); }
    EDataStream& operator<<(const QString& value);
    EDataStream& operator<<(const QByteArray& value);
-   EDataStream& operator>>(qint8& value) { return readNumber(value); }
-   EDataStream& operator>>(quint8& value) { return readNumber(value); }
-   EDataStream& operator>>(qint16& value) { return readNumber(value); }
-   EDataStream& operator>>(quint16& value) { return readNumber(value); }
-   EDataStream& operator>>(qint32& value) { return readNumber(value); }
-   EDataStream& operator>>(quint32& value) { return readNumber(value); }
-   EDataStream& operator>>(qint64& value) { return readNumber(value); }
-   EDataStream& operator>>(quint64& value) { return readNumber(value); }
-   EDataStream& operator>>(float& value) { return readFloat(value); }
-   EDataStream& operator>>(double& value) { return readFloat(value); }
-   EDataStream& operator>>(QString& value);
-   EDataStream& operator>>(QByteArray& value);
+   const EDataStream& operator>>(qint8& value) const { return readNumber(value); }
+   const EDataStream& operator>>(quint8& value) const { return readNumber(value); }
+   const EDataStream& operator>>(qint16& value) const { return readNumber(value); }
+   const EDataStream& operator>>(quint16& value) const { return readNumber(value); }
+   const EDataStream& operator>>(qint32& value) const { return readNumber(value); }
+   const EDataStream& operator>>(quint32& value) const { return readNumber(value); }
+   const EDataStream& operator>>(qint64& value) const { return readNumber(value); }
+   const EDataStream& operator>>(quint64& value) const { return readNumber(value); }
+   const EDataStream& operator>>(float& value) const { return readFloat(value); }
+   const EDataStream& operator>>(double& value) const { return readFloat(value); }
+   const EDataStream& operator>>(QString& value) const;
+   const EDataStream& operator>>(QByteArray& value) const;
 private:
    enum
    {
@@ -49,8 +49,8 @@ private:
    };
    template<class T> EDataStream& writeNumber(T& value);
    template<class T> EDataStream& writeFloat(T& value);
-   template<class T> EDataStream& readNumber(T& value);
-   template<class T> EDataStream& readFloat(T& value);
+   template<class T> const EDataStream& readNumber(T& value) const;
+   template<class T> const EDataStream& readFloat(T& value) const;
    QFile* _file;
 };
 
@@ -84,7 +84,7 @@ bool EDataStream::write(const T* value, quint64 size)
 
 
 template<class T>
-bool EDataStream::read(T* value, quint64 size)
+bool EDataStream::read(T* value, quint64 size) const
 {
    // read data from file
    if ( static_cast<quint64>(_file->read(reinterpret_cast<char*>(value),sizeof(T)*size))
@@ -152,7 +152,7 @@ EDataStream& EDataStream::writeFloat(T& value)
 
 
 template<class T>
-EDataStream& EDataStream::readNumber(T& value)
+const EDataStream& EDataStream::readNumber(T& value) const
 {
    // make sure stream is in ok state
    if ( !*this )
@@ -178,7 +178,7 @@ EDataStream& EDataStream::readNumber(T& value)
 
 
 template<class T>
-EDataStream& EDataStream::readFloat(T& value)
+const EDataStream& EDataStream::readFloat(T& value) const
 {
    // make sure stream is in ok state
    if ( !*this )

@@ -141,10 +141,10 @@ void Ace::DataObject::open()
 
 
 
-bool Ace::DataObject::seek(quint64 offset) noexcept
+bool Ace::DataObject::seek(qint64 offset) const noexcept
 {
    // make sure data object is not invalid
-   if ( _invalid || offset > (_file->size()-_headerOffset) )
+   if ( _invalid || offset < 0 || offset > (_file->size()-_headerOffset) )
    {
       return false;
    }
@@ -158,10 +158,10 @@ bool Ace::DataObject::seek(quint64 offset) noexcept
 
 
 
-bool Ace::DataObject::allocate(quint64 size) noexcept
+bool Ace::DataObject::allocate(qint64 size) noexcept
 {
    // make sure data object is not invalid or new
-   if ( _invalid )
+   if ( _invalid || size < 0 )
    {
       return false;
    }
@@ -260,7 +260,7 @@ bool Ace::DataObject::isNew() const noexcept
 
 
 
-quint64 Ace::DataObject::size() const noexcept
+qint64 Ace::DataObject::size() const noexcept
 {
    // make sure object is valid and not new
    if ( _invalid || _isNew )
@@ -269,7 +269,7 @@ quint64 Ace::DataObject::size() const noexcept
    }
 
    // return size of file
-   return (quint64)_file->size()-_headerOffset;
+   return (qint64)_file->size()-_headerOffset;
 }
 
 
