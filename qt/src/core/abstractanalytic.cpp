@@ -101,8 +101,14 @@ void EAbstractAnalytic::run()
          EMetadata::Map* object = (**i)->getMeta().toObject();
          EMetadata* newInputs = new EMetadata(inputs);
          EMetadata* newCommand = new EMetadata(command);
-         object->remove("inputs");
-         object->remove("command");
+         if ( object->contains("inputs") )
+         {
+            delete object->take("inputs");
+         }
+         if ( object->contains("command") )
+         {
+            delete object->take("command");
+         }
          object->insert("inputs",newInputs);
          object->insert("command",newCommand);
          newInputs->setParent(&((**i)->getMeta()));
