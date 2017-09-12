@@ -8,38 +8,42 @@
 
 
 
+template <> inline float qbswap<float>(float source) { return source; }
+template <> inline double qbswap<double>(double source) { return source; }
+
+
+
 /// Data stream used for input/output of data objects. All output stream operators will do nothing
 /// if the stream is in an error state and input stream operators will set their values to null.
 class EDataStream : public ESilent
 {
 public:
-   EDataStream(QFile* file);
+   EDataStream(QFile* file): _file(file) {}
    ACE_DISBALE_COPY_AND_MOVE(EDataStream)
-   void ohmy(const char* data, int size);
-   template<class T> bool write(const T* value, quint64 size = 1);
-   template<class T> bool read(T* value, quint64 size = 1) const;
-   EDataStream& operator<<(qint8 value) { return writeNumber(value); }
-   EDataStream& operator<<(quint8 value) { return writeNumber(value); }
-   EDataStream& operator<<(qint16 value) { return writeNumber(value); }
-   EDataStream& operator<<(quint16 value) { return writeNumber(value); }
-   EDataStream& operator<<(qint32 value) { return writeNumber(value); }
-   EDataStream& operator<<(quint32 value) { return writeNumber(value); }
-   EDataStream& operator<<(qint64 value) { return writeNumber(value); }
-   EDataStream& operator<<(quint64 value) { return writeNumber(value); }
-   EDataStream& operator<<(float value) { return writeFloat(value); }
-   EDataStream& operator<<(double value) { return writeFloat(value); }
+   template<class T> void write(const T* data, int size) { rawWrite(data,size*sizeof(T)); }
+   template<class T> void read(T* data, int size) const { rawRead(data,size*sizeof(T)); }
+   EDataStream& operator<<(qint8 value) { return writeValue(value); }
+   EDataStream& operator<<(quint8 value) { return writeValue(value); }
+   EDataStream& operator<<(qint16 value) { return writeValue(value,true); }
+   EDataStream& operator<<(quint16 value) { return writeValue(value,true); }
+   EDataStream& operator<<(qint32 value) { return writeValue(value,true); }
+   EDataStream& operator<<(quint32 value) { return writeValue(value,true); }
+   EDataStream& operator<<(qint64 value) { return writeValue(value,true); }
+   EDataStream& operator<<(quint64 value) { return writeValue(value,true); }
+   EDataStream& operator<<(float value) { return writeValue(value); }
+   EDataStream& operator<<(double value) { return writeValue(value); }
    EDataStream& operator<<(const QString& value);
    EDataStream& operator<<(const QByteArray& value);
-   const EDataStream& operator>>(qint8& value) const { return readNumber(value); }
-   const EDataStream& operator>>(quint8& value) const { return readNumber(value); }
-   const EDataStream& operator>>(qint16& value) const { return readNumber(value); }
-   const EDataStream& operator>>(quint16& value) const { return readNumber(value); }
-   const EDataStream& operator>>(qint32& value) const { return readNumber(value); }
-   const EDataStream& operator>>(quint32& value) const { return readNumber(value); }
-   const EDataStream& operator>>(qint64& value) const { return readNumber(value); }
-   const EDataStream& operator>>(quint64& value) const { return readNumber(value); }
-   const EDataStream& operator>>(float& value) const { return readFloat(value); }
-   const EDataStream& operator>>(double& value) const { return readFloat(value); }
+   const EDataStream& operator>>(qint8& value) const { return readValue(value); }
+   const EDataStream& operator>>(quint8& value) const { return readValue(value); }
+   const EDataStream& operator>>(qint16& value) const { return readValue(value,true); }
+   const EDataStream& operator>>(quint16& value) const { return readValue(value,true); }
+   const EDataStream& operator>>(qint32& value) const { return readValue(value,true); }
+   const EDataStream& operator>>(quint32& value) const { return readValue(value,true); }
+   const EDataStream& operator>>(qint64& value) const { return readValue(value,true); }
+   const EDataStream& operator>>(quint64& value) const { return readValue(value,true); }
+   const EDataStream& operator>>(float& value) const { return readValue(value); }
+   const EDataStream& operator>>(double& value) const { return readValue(value); }
    const EDataStream& operator>>(QString& value) const;
    const EDataStream& operator>>(QByteArray& value) const;
 private:
@@ -48,10 +52,10 @@ private:
       String = 85
       ,ByteArray = 170
    };
-   template<class T> EDataStream& writeNumber(T& value);
-   template<class T> EDataStream& writeFloat(T& value);
-   template<class T> const EDataStream& readNumber(T& value) const;
-   template<class T> const EDataStream& readFloat(T& value) const;
+   template<class T> EDataStream& writeValue(T value, bool endian = false);
+   template<class T> const EDataStream& readValue(T& value, bool endian = false) const;
+   bool rawWrite(const void* data, int size);
+   bool rawRead(void* data, int size) const;
    QFile* _file;
 };
 
@@ -61,70 +65,22 @@ private:
 
 
 template<class T>
-bool EDataStream::write(const T* value, quint64 size)
-{
-   // write data to file
-   if ( static_cast<quint64>(_file->write(reinterpret_cast<const char*>(value),sizeof(T)*size))
-        != sizeof(T)*size )
-   {
-      // if write failed report error and return false
-      E_MAKE_EXCEPTION(e);
-      e.setTitle(QObject::tr("Data Stream Write"));
-      e.setDetails(QObject::tr("Failed writing to file: %1").arg(_file->errorString()));
-      setException(e);
-      return false;
-   } _file->flush();
-
-   // return true on write success
-   return true;
-}
-
-
-
-
-
-
-template<class T>
-bool EDataStream::read(T* value, quint64 size) const
-{
-   // read data from file
-   if ( static_cast<quint64>(_file->read(reinterpret_cast<char*>(value),sizeof(T)*size))
-        != sizeof(T)*size )
-   {
-      // if read failed report error and return false
-      E_MAKE_EXCEPTION(e);
-      e.setTitle(QObject::tr("Data Stream Read"));
-      e.setDetails(QObject::tr("Failed reading from file: %1").arg(_file->errorString()));
-      setException(e);
-      return false;
-   }
-
-   // return true on read success
-   return true;
-}
-
-
-
-
-
-
-template<class T>
-EDataStream& EDataStream::writeNumber(T& value)
+inline EDataStream& EDataStream::writeValue(T value, bool endian)
 {
    // make sure stream is in ok state
-   if ( !*this )
+   if ( *this )
    {
-      return *this;
+      // if value needs endian switching do so
+      if ( endian )
+      {
+         value = qToBigEndian(value);
+      }
+
+      // write value to file
+      rawWrite(&value,sizeof(T));
    }
 
-   // change endianness to file format if required
-   if ( sizeof(T) > 1 )
-   {
-      value = qToBigEndian(value);
-   }
-
-   // write to stream and return reference to stream
-   write(&value);
+   // return reference
    return *this;
 }
 
@@ -134,64 +90,26 @@ EDataStream& EDataStream::writeNumber(T& value)
 
 
 template<class T>
-EDataStream& EDataStream::writeFloat(T& value)
+inline const EDataStream& EDataStream::readValue(T& value, bool endian) const
 {
    // make sure stream is in ok state
-   if ( !*this )
+   if ( *this )
    {
-      return *this;
+      // read value and make sure it was successful
+      if ( !rawRead(&value,sizeof(T)) )
+      {
+         value = 0;
+         return *this;
+      }
+
+      // if value needs endian switching do so
+      if ( endian )
+      {
+         value = qToBigEndian(value);
+      }
    }
 
-   // write to stream and return reference to stream
-   write(&value);
-   return *this;
-}
-
-
-
-
-
-
-template<class T>
-const EDataStream& EDataStream::readNumber(T& value) const
-{
-   // make sure stream is in ok state
-   if ( !*this )
-   {
-      value = 0;
-      return *this;
-   }
-
-   // read value from stream
-   if ( read(&value) && sizeof(T) > 1 )
-   {
-      // if read successfull and endian matters convert endianness to local
-      value = qFromBigEndian(value);
-   }
-
-   // return reference to stream
-   return *this;
-}
-
-
-
-
-
-
-template<class T>
-const EDataStream& EDataStream::readFloat(T& value) const
-{
-   // make sure stream is in ok state
-   if ( !*this )
-   {
-      value = 0.0;
-      return *this;
-   }
-
-   // read value from stream
-   read(&value);
-
-   // return reference to stream
+   // return reference
    return *this;
 }
 
