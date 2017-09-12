@@ -16,7 +16,7 @@ public:
    EOpenCLKernel(cl_program programID, cl_command_queue commandQueueID, cl_device_id deviceID
                 , const QString& name);
    ~EOpenCLKernel();
-   ACE_DISBALE_COPY_AND_MOVE(EOpenCLKernel)
+   EOpenCLKernel(const EOpenCLKernel&) = delete;
    /// Set kernel private argument.
    ///
    /// @param index Argument index.

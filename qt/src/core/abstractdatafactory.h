@@ -16,7 +16,7 @@ class EAbstractDataFactory
 public:
    EAbstractDataFactory() = default;
    virtual ~EAbstractDataFactory() = default;
-   ACE_DISBALE_COPY_AND_MOVE(EAbstractDataFactory)
+   EAbstractDataFactory(const EAbstractDataFactory&) = delete;
    /// Get instance of data factory.
    ///
    /// @return Reference to factory.

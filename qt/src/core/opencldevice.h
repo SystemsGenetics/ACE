@@ -19,7 +19,7 @@ class EOpenCLDevice : public EOpenCL
 {
 public:
    ~EOpenCLDevice();
-   ACE_DISBALE_COPY_AND_MOVE(EOpenCLDevice)
+   EOpenCLDevice(const EOpenCLDevice&) = delete;
    static EOpenCLDevice& getInstance();
    /// Internal command DO NOT USE.
    bool setDevice(cl_platform_id platformID, cl_device_id deviceID);

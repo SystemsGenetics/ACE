@@ -19,7 +19,7 @@ public:
    /// Internal command DO NOT USE.
    EOpenCLProgram(cl_device_id deviceID, cl_context contextID, cl_command_queue commandQueueID);
    ~EOpenCLProgram();
-   ACE_DISBALE_COPY_AND_MOVE(EOpenCLProgram)
+   EOpenCLProgram(const EOpenCLProgram&) = delete;
    /// Add OpenCL C source code.
    ///
    /// @param source Source code.

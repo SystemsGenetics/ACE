@@ -17,7 +17,7 @@ class EAbstractAnalyticFactory
 public:
    EAbstractAnalyticFactory() = default;
    virtual ~EAbstractAnalyticFactory() = default;
-   ACE_DISBALE_COPY_AND_MOVE(EAbstractAnalyticFactory)
+   EAbstractAnalyticFactory(const EAbstractAnalyticFactory&) = delete;
    /// Get instance of analytic factory.
    ///
    /// @return Reference to factory.

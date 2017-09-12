@@ -17,7 +17,7 @@ public:
    /// Internal command DO NOT USE.
    EOpenCLBuffer(cl_context contextID, cl_command_queue commandQueueID, quint64 size);
    ~EOpenCLBuffer();
-   ACE_DISBALE2_COPY_AND_MOVE(EOpenCLBuffer,EOpenCLBuffer<T>)
+   EOpenCLBuffer(const EOpenCLBuffer<T>&) = delete;
    T& operator[](int index);
    const T& operator[](int index) const;
    /// Read data from the OpenCL device buffer to system memory.

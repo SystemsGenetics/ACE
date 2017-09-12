@@ -19,7 +19,7 @@ class EDataStream : public ESilent
 {
 public:
    EDataStream(QFile* file): _file(file) {}
-   ACE_DISBALE_COPY_AND_MOVE(EDataStream)
+   EDataStream(const EDataStream&) = delete;
    template<class T> void write(const T* data, int size) { rawWrite(data,size*sizeof(T)); }
    template<class T> void read(T* data, int size) const { rawRead(data,size*sizeof(T)); }
    EDataStream& operator<<(qint8 value) { return writeValue(value); }

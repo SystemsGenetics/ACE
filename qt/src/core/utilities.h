@@ -3,11 +3,6 @@
 #include <CL/cl.h>
 #include <QtCore>
 #include <memory>
-#define ACE_DISBALE_COPY_AND_MOVE(name) name(const name&) = delete;\
-   name& operator=(const name&) = delete;name(name&&) = delete;name& operator=(name&&) = delete;
-#define ACE_DISBALE2_COPY_AND_MOVE(first,second) first(const second&) = delete;\
-   first& operator=(const second&) = delete;first(second&&) = delete;\
-   first& operator=(second&&) = delete;
 
 
 

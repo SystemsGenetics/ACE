@@ -19,7 +19,7 @@ class EAbstractData
 public:
    EAbstractData() = default;
    virtual ~EAbstractData() = default;
-   ACE_DISBALE_COPY_AND_MOVE(EAbstractData)
+   EAbstractData(const EAbstractData&) = delete;
    /// Read data for object.
    virtual void readData() = 0;
    /// Report offset where data for object ends.
