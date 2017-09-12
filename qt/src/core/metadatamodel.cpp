@@ -582,7 +582,7 @@ bool Ace::MetadataModel::dropMimeData(const QMimeData* data, Qt::DropAction acti
 
 
 
-void Ace::MetadataModel::setRoot(EMetadata* root) noexcept
+void Ace::MetadataModel::setRoot(EMetadata* root)
 {
    // if root is not null make sure it is correct object type
    if ( root && !root->isObject() )

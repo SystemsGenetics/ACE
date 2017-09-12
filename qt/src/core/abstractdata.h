@@ -38,7 +38,7 @@ public:
    /// Internal command DO NOT USE.
    virtual QAbstractTableModel* getModel() = 0;
    /// Internal command DO NOT USE.
-   void initialize(Ace::DataObject* object, EDataStream* stream) noexcept;
+   void initialize(Ace::DataObject* object, EDataStream* stream);
 protected:
    /// Get reference to root metadata object.
    ///
@@ -49,18 +49,18 @@ protected:
    ///
    /// @return Reference to data stream.
    EDataStream& stream();
-   const EDataStream& stream() const { return stream(); }
+   const EDataStream& stream() const;
    /// Seek to new offset within data object's file.
    ///
    /// @param offset New offset.
    /// @return True if successful or false if error occured.
-   bool seek(qint64 offset) const noexcept;
+   bool seek(qint64 offset) const;
    /// Allocate new space in object's file in bytes based off current seek value. If new size is
    /// smaller than current size of file it will be shrinked.
    ///
    /// @param size Space to allocate in bytes.
    /// @return True if successful or false if error occured.
-   bool allocate(qint64 size) noexcept;
+   bool allocate(qint64 size);
 private:
    Ace::DataObject* _data {nullptr};
    EDataStream* _stream {nullptr};

@@ -18,7 +18,7 @@ public:
    {
       RawImageData = 10000
    };
-   explicit MetadataModel(QObject* parent = nullptr) noexcept: QAbstractItemModel(parent) {}
+   explicit MetadataModel(QObject* parent = nullptr): QAbstractItemModel(parent) {}
    MetadataModel(const MetadataModel&) = delete;
    MetadataModel(MetadataModel&&) = delete;
    QVariant headerData(int section, Qt::Orientation orientation, int role) const override final;
@@ -40,7 +40,7 @@ public:
    QMimeData* mimeData(const QModelIndexList& indexes) const override final;
    bool dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column
                      , const QModelIndex& parent) override final;
-   void setRoot(EMetadata* root) noexcept;
+   void setRoot(EMetadata* root);
 private:
    EMetadata* _root {nullptr};
 };

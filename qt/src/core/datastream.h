@@ -15,6 +15,7 @@ class EDataStream : public ESilent
 public:
    EDataStream(QFile* file);
    ACE_DISBALE_COPY_AND_MOVE(EDataStream)
+   void ohmy(const char* data, int size);
    template<class T> bool write(const T* value, quint64 size = 1);
    template<class T> bool read(T* value, quint64 size = 1) const;
    EDataStream& operator<<(qint8 value) { return writeNumber(value); }
@@ -72,7 +73,7 @@ bool EDataStream::write(const T* value, quint64 size)
       e.setDetails(QObject::tr("Failed writing to file: %1").arg(_file->errorString()));
       setException(e);
       return false;
-   }
+   } _file->flush();
 
    // return true on write success
    return true;

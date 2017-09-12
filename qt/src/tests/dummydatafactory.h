@@ -7,11 +7,11 @@
 class DummyDataFactory : public EAbstractDataFactory
 {
 public:
-   virtual quint16 getCount() noexcept override final { return 1; }
-   virtual QString getName(quint16 /*type*/) noexcept override final { return QString("Dummy"); }
-   virtual QString getFileExtension(quint16 /*type*/) noexcept override final
+   virtual quint16 getCount() override final { return 1; }
+   virtual QString getName(quint16 /*type*/) override final { return QString("Dummy"); }
+   virtual QString getFileExtension(quint16 /*type*/) override final
       { return QString("dmy"); }
-   virtual std::unique_ptr<EAbstractData> make(quint16 type) noexcept override final;
+   virtual std::unique_ptr<EAbstractData> make(quint16 type) override final;
 };
 
 

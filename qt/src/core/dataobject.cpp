@@ -41,7 +41,7 @@ Ace::DataObject::DataObject(const QString& path):
 
 
 
-Ace::DataObject::~DataObject() noexcept
+Ace::DataObject::~DataObject()
 {
    // order is important data must be cleared before stream, stream before file
    _data.reset();
@@ -141,7 +141,7 @@ void Ace::DataObject::open()
 
 
 
-bool Ace::DataObject::seek(qint64 offset) const noexcept
+bool Ace::DataObject::seek(qint64 offset) const
 {
    // make sure data object is not invalid
    if ( _invalid || offset < 0 || offset > (_file->size()-_headerOffset) )
@@ -158,7 +158,7 @@ bool Ace::DataObject::seek(qint64 offset) const noexcept
 
 
 
-bool Ace::DataObject::allocate(qint64 size) noexcept
+bool Ace::DataObject::allocate(qint64 size)
 {
    // make sure data object is not invalid or new
    if ( _invalid || size < 0 )
@@ -250,7 +250,7 @@ void Ace::DataObject::clear(quint16 newType)
 
 
 
-bool Ace::DataObject::isNew() const noexcept
+bool Ace::DataObject::isNew() const
 {
    return _isNew;
 }
@@ -260,7 +260,7 @@ bool Ace::DataObject::isNew() const noexcept
 
 
 
-qint64 Ace::DataObject::size() const noexcept
+qint64 Ace::DataObject::size() const
 {
    // make sure object is valid and not new
    if ( _invalid || _isNew )
@@ -331,7 +331,7 @@ void Ace::DataObject::reloadMeta()
 
 
 
-Ace::DataObject::operator bool() const noexcept
+Ace::DataObject::operator bool() const
 {
    return !_invalid;
 }

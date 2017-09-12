@@ -16,7 +16,7 @@ namespace Ace
    class DataManager
    {
    public:
-      static DataManager& getInstance() noexcept;
+      static DataManager& getInstance();
       DataReference* open(const QString& path);
       void referenceReleased(const QString& absolutePath);
    private:

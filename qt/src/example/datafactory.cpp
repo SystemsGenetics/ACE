@@ -10,7 +10,7 @@ using namespace std;
 
 
 
-quint16 DataFactory::getCount() noexcept
+quint16 DataFactory::getCount()
 {
    // Return final enumeration value which is size.
    return Total;
@@ -21,7 +21,7 @@ quint16 DataFactory::getCount() noexcept
 
 
 
-QString DataFactory::getName(quint16 type) noexcept
+QString DataFactory::getName(quint16 type)
 {
    switch (type)
    {
@@ -39,7 +39,7 @@ QString DataFactory::getName(quint16 type) noexcept
 
 
 
-QString DataFactory::getFileExtension(quint16 type) noexcept
+QString DataFactory::getFileExtension(quint16 type)
 {
    switch (type)
    {
@@ -57,7 +57,7 @@ QString DataFactory::getFileExtension(quint16 type) noexcept
 
 
 
-std::unique_ptr<EAbstractData> DataFactory::make(quint16 type) noexcept
+std::unique_ptr<EAbstractData> DataFactory::make(quint16 type)
 {
    switch (type)
    {

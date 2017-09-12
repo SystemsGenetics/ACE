@@ -16,6 +16,12 @@ EDataStream::EDataStream(QFile *file):
    _file(file)
 {}
 
+void EDataStream::ohmy(const char *data, int size)
+{
+   _file->write(data,size);
+   _file->flush();
+}
+
 
 
 

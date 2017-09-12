@@ -12,7 +12,7 @@ unique_ptr<Ace::DataManager> Ace::DataManager::_instance {nullptr};
 
 
 
-Ace::DataManager& Ace::DataManager::getInstance() noexcept
+Ace::DataManager& Ace::DataManager::getInstance()
 {
    if ( !_instance )
    {

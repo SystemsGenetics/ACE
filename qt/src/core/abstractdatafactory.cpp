@@ -17,7 +17,8 @@ EAbstractDataFactory& EAbstractDataFactory::getInstance()
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(QObject::tr("Analytic Factory Error"));
-      e.setDetails(QObject::tr("Attempting to get abstract analytic factory when none has been set."));
+      e.setDetails(QObject::tr("Attempting to get abstract analytic factory when none has been "
+                               "set."));
       throw e;
    }
    return *_instance;
@@ -28,7 +29,7 @@ EAbstractDataFactory& EAbstractDataFactory::getInstance()
 
 
 
-void EAbstractDataFactory::setInstance(unique_ptr<EAbstractDataFactory>&& factory) noexcept
+void EAbstractDataFactory::setInstance(unique_ptr<EAbstractDataFactory>&& factory)
 {
    _instance = move(factory);
 }
