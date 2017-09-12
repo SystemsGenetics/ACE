@@ -109,7 +109,10 @@ void EAbstractAnalytic::run()
          {
             delete object->take("command");
          }
-         object->insert("inputs",newInputs);
+         if ( newInputs->toObject()->size() > 0 )
+         {
+            object->insert("inputs",newInputs);
+         }
          object->insert("command",newCommand);
          newInputs->setParent(&((**i)->getMeta()));
          newCommand->setParent(&((**i)->getMeta()));
