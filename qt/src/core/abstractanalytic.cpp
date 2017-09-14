@@ -86,7 +86,10 @@ void EAbstractAnalytic::run()
       // else analytic cannot run and throw failure
       else
       {
-         ;//ERRPR
+         E_MAKE_EXCEPTION(e);
+         e.setTitle(tr("Failed Analytic Execution."));
+         e.setDetails(tr("Could not execute analytic because it lacks any applicable capability."));
+         throw e;
       }
 
       // call finish function of analytic
