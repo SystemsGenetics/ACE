@@ -17,6 +17,16 @@ class EAbstractAnalytic : public QThread
 {
    Q_OBJECT
 public:
+   /// Contains capabiliites enumeration.
+   struct Capabilities
+   {
+      /// Specifies capabilities of an analytic.
+      enum
+      {
+         Serial = 1 ///< Serial execution
+         ,OpenCL = 2 ///< OpenCL execution
+      };
+   };
    /// All possible argument types.
    enum class ArgumentType
    {
@@ -78,6 +88,12 @@ public:
    /// @param argument Index of argument.
    /// @param data Pointer to abstract data object.
    virtual void setArgument(int argument, EAbstractData* data) = 0;
+   /// Get capabilities of analytic.
+   ///
+   /// @return Returns bitmask of capabilities.
+   virtual quint32 getCapabilities() const = 0;
+   /// Run serial execution of analytic.
+   virtual void runSerial() = 0;
    /// Called at very beginning of analytic execution.
    ///
    /// @return Returns true if output data objects should pre allocate space on file.

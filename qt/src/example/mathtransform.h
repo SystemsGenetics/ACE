@@ -31,10 +31,12 @@ public:
    void setArgument(int argument, QVariant value) override final;
    void setArgument(int argument, QFile* file) override final;
    void setArgument(int argument, EAbstractData* data) override final;
+   quint32 getCapabilities() const override final { return Capabilities::Serial; }
    bool initialize() override final;
-   int getBlockSize() override final;
-   bool runBlock(int block) override final;
-   void finish() override final;
+   void runSerial() override final;
+   int getBlockSize() override final { return 0; }
+   bool runBlock(int /*block*/) override final { return false; }
+   void finish() override final {}
 private:
    // Enumerated types to define all possible operations
    enum class OperType

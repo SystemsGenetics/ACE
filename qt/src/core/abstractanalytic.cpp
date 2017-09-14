@@ -4,6 +4,7 @@
 #include "datamanager.h"
 #include "exception.h"
 #include "datareference.h"
+#include "opencldevice.h"
 
 
 
@@ -48,27 +49,44 @@ void EAbstractAnalytic::run()
          (**i)->data().prepare(preAllocate);
       }
 
-      // initialize block info
-      int blockSize {getBlockSize()};
-      int done {0};
-      bool blocks[blockSize] {true};
-
-      // begin block while loop
-      while ( done < blockSize )
+      // check to see if analytic can run OpenCL and there is a device to use
+      if ( getCapabilities()&Capabilities::OpenCL
+           && EOpenCLDevice::getInstance().getStatus() == EOpenCLDevice::Ok )
       {
-         for (int i = 0; i < blockSize ;++i)
+         // initialize block info
+         int blockSize {getBlockSize()};
+         int done {0};
+         bool blocks[blockSize] {true};
+
+         // begin block while loop
+         while ( done < blockSize )
          {
-            if ( blocks[i] )
+            for (int i = 0; i < blockSize ;++i)
             {
-               // if block is still alive run it
-               if ( !runBlock(i) )
+               if ( blocks[i] )
                {
-                  // block is done, remove it from active list
-                  blocks[i] = false;
-                  ++done;
+                  // if block is still alive run it
+                  if ( !runBlock(i) )
+                  {
+                     // block is done, remove it from active list
+                     blocks[i] = false;
+                     ++done;
+                  }
                }
             }
          }
+      }
+
+      // else just run serial if possible
+      else if ( getCapabilities()&Capabilities::Serial )
+      {
+         runSerial();
+      }
+
+      // else analytic cannot run and throw failure
+      else
+      {
+         ;//ERRPR
       }
 
       // call finish function of analytic

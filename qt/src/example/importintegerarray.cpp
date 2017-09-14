@@ -159,11 +159,8 @@ bool ImportIntegerArray::initialize()
 
 
 
-bool ImportIntegerArray::runBlock(int block)
+void ImportIntegerArray::runSerial()
 {
-   // do not use block because there is only one
-   Q_UNUSED(block);
-
    // open input file and read all integers, adding them to output integer array as they are being
    // read
    QTextStream stream(_input);
@@ -174,7 +171,4 @@ bool ImportIntegerArray::runBlock(int block)
       _output->_numbers.append(value);
       stream >> value;
    }
-
-   // signal block is finished with execution
-   return false;
 }

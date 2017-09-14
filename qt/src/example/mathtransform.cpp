@@ -274,18 +274,7 @@ bool MathTransform::initialize()
 
 
 
-int MathTransform::getBlockSize()
-{
-   // Because this is a simple analytic simply return 1
-   return 1;
-}
-
-
-
-
-
-
-bool MathTransform::runBlock(int /*block*/)
+void MathTransform::runSerial()
 {
    // Get total amount of numbers to process
    int total {_in->_numbers.size()};
@@ -328,18 +317,4 @@ bool MathTransform::runBlock(int /*block*/)
       // sleep to make this appear to take a lot time
       QThread::msleep(100);
    }
-
-   // Because this is a simple analytic the one block it runs only does so once, so return false
-   // to signal to ACE this block is done with execution
-   return false;
-}
-
-
-
-
-
-
-void MathTransform::finish()
-{
-   // do nothing
 }

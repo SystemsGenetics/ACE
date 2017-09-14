@@ -158,18 +158,12 @@ bool ExportIntegerArray::initialize()
 
 
 
-bool ExportIntegerArray::runBlock(int block)
+void ExportIntegerArray::runSerial()
 {
-   // block is unused
-   Q_UNUSED(block);
-
    // iterate through input data and write out all integers to output file
    QTextStream stream(_output);
    for (auto i = _input->_numbers.constBegin(); i != _input->_numbers.constEnd() ;++i)
    {
       stream << *i << "\n";
    }
-
-   // return that this block is finished
-   return false;
 }

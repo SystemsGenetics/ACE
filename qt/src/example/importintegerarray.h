@@ -24,11 +24,11 @@ public:
    void setArgument(int /*argument*/, QVariant /*value*/) override final {}
    void setArgument(int argument, QFile* file) override final;
    void setArgument(int argument, EAbstractData* data) override final;
+   quint32 getCapabilities() const override final { return Capabilities::Serial; }
    bool initialize() override final;
-
-   // return block size of 1
+   void runSerial() override final;
    int getBlockSize() override final { return 1; }
-   bool runBlock(int block) override final;
+   bool runBlock(int /*block*/) override final { return false; }
    void finish() override final {}
 private:
    QFile* _input;
