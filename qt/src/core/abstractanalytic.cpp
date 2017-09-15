@@ -56,7 +56,11 @@ void EAbstractAnalytic::run()
          // initialize block info
          int blockSize {getBlockSize()};
          int done {0};
-         bool blocks[blockSize] {true};
+         bool blocks[blockSize];
+         for (int i = 0; i < blockSize ;++i)
+         {
+            blocks[i] = true;
+         }
 
          // begin block while loop
          while ( done < blockSize )

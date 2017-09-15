@@ -275,9 +275,9 @@ QFormLayout* Ace::SetupAnalyticDialog::createInputs()
       {
          // create new spin box field for integer argument, getting min and max value
          QSpinBox* edit = new QSpinBox;
-         edit->setValue(_analytic->getArgumentData(i,Role::DefaultValue).toInt());
          edit->setMinimum(_analytic->getArgumentData(i,Role::Minimum).toInt());
          edit->setMaximum(_analytic->getArgumentData(i,Role::Maximum).toInt());
+         edit->setValue(_analytic->getArgumentData(i,Role::DefaultValue).toInt());
          _inputs.append(edit);
          field = edit;
          break;
