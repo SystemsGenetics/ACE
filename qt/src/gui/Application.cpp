@@ -4,6 +4,7 @@
 #include "exception.h"
 #include "opencldevice.h"
 #include "mainwindow.h"
+#include "analyticdialog.h"
 
 
 
@@ -60,6 +61,10 @@ bool EApplication::notify(QObject *receiver, QEvent *event)
    catch (...)
    {
       qDebug() << tr("Unknown exception caught!\n");
+   }
+   if ( Ace::AnalyticDialog* dialog = qobject_cast<Ace::AnalyticDialog*>(receiver) )
+   {
+      dialog->fail();
    }
    return false;
 }

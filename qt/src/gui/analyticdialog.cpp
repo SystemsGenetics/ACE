@@ -52,6 +52,7 @@ AnalyticDialog::AnalyticDialog(EAbstractAnalytic *analytic, QWidget *parent):
 
 AnalyticDialog::~AnalyticDialog()
 {
+   _analytic->stop();
    delete _analytic;
 }
 
@@ -62,7 +63,8 @@ AnalyticDialog::~AnalyticDialog()
 
 int AnalyticDialog::exec()
 {
-   // start timer, analytic, and call dialog exec function
+   // start timers, analytic, and call dialog exec function
+   _id = startTimer(1000);
    _time.start();
    _analytic->start();
    return QDialog::exec();
@@ -77,8 +79,7 @@ void AnalyticDialog::completeUpated(int percent)
 {
    // update time remaining status label
    int elapsed {_time.elapsed()};
-   int remaining = ((elapsed*100/percent)-elapsed)/1000;
-   _status->setText(tr("%1 remaining.").arg(getTime(remaining)));
+   _secondsLeft = ((elapsed*100/percent)-elapsed)/1000;
 
    // update progress bar
    _bar->setValue(percent);
@@ -91,8 +92,9 @@ void AnalyticDialog::completeUpated(int percent)
 
 void AnalyticDialog::analyticFinished()
 {
-   // set progress bar to complete
+   // set progress bar to complete and kill timer
    _bar->setValue(100);
+   killTimer(_id);
 
    // report total time it took in status and enable done button
    _status->setText(tr("Finished in %1.").arg(getTime(_time.elapsed()/1000)));
@@ -117,6 +119,33 @@ void AnalyticDialog::exceptionThrown(QString file, int line, QString function, Q
 
    // throw exception in main gui thread
    throw e;
+}
+
+
+
+
+
+
+void AnalyticDialog::timerEvent(QTimerEvent* event)
+{
+   // only one timer is used so ignore event
+   Q_UNUSED(event);
+
+   // if seconds is less than zero say time unknown
+   if ( _secondsLeft < 0 )
+   {
+      _status->setText(tr("Remaining Time Unknown."));
+   }
+
+   // else decrement seconds left and report estimated time left
+   else
+   {
+      if ( _secondsLeft > 0 )
+      {
+         --_secondsLeft;
+      }
+      _status->setText(tr("%1 remaining.").arg(getTime(_secondsLeft)));
+   }
 }
 
 

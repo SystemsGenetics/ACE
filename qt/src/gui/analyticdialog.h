@@ -19,11 +19,13 @@ class AnalyticDialog : public QDialog
 public:
    AnalyticDialog(EAbstractAnalytic* analytic, QWidget* parent = nullptr);
    ~AnalyticDialog();
+   void fail() { reject(); }
    int exec() override final;
 private slots:
    void completeUpated(int percent);
    void analyticFinished();
    void exceptionThrown(QString file, int line, QString function, QString title, QString details);
+   virtual void timerEvent(QTimerEvent *event) override final;
 private:
    QString getTime(int seconds);
    int getSeconds(int total);
@@ -36,6 +38,8 @@ private:
    QPushButton* _button;
    QTime _time;
    QLabel* _status;
+   int _secondsLeft {-1};
+   int _id;
 };
 }
 

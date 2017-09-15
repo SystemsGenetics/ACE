@@ -113,6 +113,8 @@ public:
    /// Internal command DO NOT USE.
    void run() override final;
    /// Internal command DO NOT USE.
+   void stop();
+   /// Internal command DO NOT USE.
    void addFileIn(int argument, const QString& path);
    /// Internal command DO NOT USE.
    void addFileOut(int argument, const QString& path);

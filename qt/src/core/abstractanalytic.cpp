@@ -18,13 +18,6 @@ using namespace std;
 
 EAbstractAnalytic::~EAbstractAnalytic()
 {
-   // go through any remaining new data objects and call their finish function
-   for (auto i = _dataOut.constBegin(); i != _dataOut.constEnd() ;++i)
-   {
-      (**i)->data().finish();
-      (**i)->writeMeta();
-   }
-
    // cleanup all open data objects and files
    qDeleteAll(_dataIn);
    qDeleteAll(_dataOut);
@@ -67,6 +60,13 @@ void EAbstractAnalytic::run()
          {
             for (int i = 0; i < blockSize ;++i)
             {
+               // if interruption is requested exit
+               if ( isInterruptionRequested() )
+               {
+                  return;
+               }
+
+               // make sure block is still alive
                if ( blocks[i] )
                {
                   // if block is still alive run it
@@ -153,6 +153,21 @@ void EAbstractAnalytic::run()
    {
       // If exception occured report it to the main thread
       emit exceptionThrown(e.getFile(),e.getLine(),e.getFunction(),e.getTitle(),e.getDetails());
+   }
+}
+
+
+
+
+
+
+void EAbstractAnalytic::stop()
+{
+   // kill the thread if it is still running
+   if ( isRunning() )
+   {
+      requestInterruption();
+      wait();
    }
 }
 
