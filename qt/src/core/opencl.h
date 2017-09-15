@@ -4,6 +4,7 @@
 #include <CL/cl.h>
 
 #include "utilities.h"
+#include "exception.h"
 
 
 
@@ -30,6 +31,10 @@ public:
    ///
    /// @return Error code description.
    QString getErrorCode() const;
+   /// Write description of error in given exception.
+   ///
+   /// @param e Exception to have error description written to.
+   void fillException(EException& e) const;
    /// Determine if object is in an OK state.
    ///
    /// @return True if object is in the Ok state.

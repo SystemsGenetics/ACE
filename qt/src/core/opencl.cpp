@@ -35,6 +35,17 @@ QString EOpenCL::getErrorCode() const
 
 
 
+void EOpenCL::fillException(EException& e) const
+{
+   e.setTitle(QObject::tr("OpenCL Error"));
+   e.setDetails(QString("%1: %2").arg(getErrorFunction()).arg(getErrorCode()));
+}
+
+
+
+
+
+
 void EOpenCL::setNoOpenCL()
 {
    if ( _status == Ok )
