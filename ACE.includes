@@ -1,0 +1,8 @@
+.
+qt/src/console
+qt/src/core
+qt/src/example
+qt/src/gui
+qt/src/tests
+src
+unit
