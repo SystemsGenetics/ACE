@@ -95,6 +95,10 @@ int EApplication::exec()
          {
             return dump(_argc-2,&_argv[2]);
          }
+         else if ( which == QString("inject") )
+         {
+            return inject(_argc-2,&_argv[2]);
+         }
       }
       return -1;
    }
@@ -425,15 +429,15 @@ int EApplication::inject(int argc, char **argv)
 
    // open json file and make sure it worked
    QFile jsonFile(argv[0]);
-   if ( !jsonFile.open(QIODevice::ReadOnly) )
+   if ( !jsonFile.open(QIODevice::ReadOnly|QIODevice::Text) )
    {
       outStream << tr("Failed to open json file for injection, exiting.") << "\n";
       return -1;
    }
 
    // read json from file
-   QByteArray jsonBytes = jsonFile.readAll();
-   QJsonDocument document = QJsonDocument::fromBinaryData(jsonBytes);
+   QString json = jsonFile.readAll();
+   QJsonDocument document = QJsonDocument::fromBinaryData(json.toUtf8());
 
    // convert read in json to generic json value and make sure it worked
    QJsonValue root;
@@ -458,6 +462,14 @@ int EApplication::inject(int argc, char **argv)
    unique_ptr<Ace::DataReference> ref {Ace::DataManager::getInstance().open(argv[1])};
    Ace::DataObject* data {ref.get()->get()};
    data->open();
+
+   // make sure key does not already exist
+   if ( data->getMeta().toObject()->contains(argv[2]) )
+   {
+      outStream << tr("Key '%1' already exists in given data object file, new metadata NOT inserted"
+                      " and exiting.").arg(argv[2]) << "\n";
+      return -1;
+   }
 
    // insert new metadata into data object and write to file
    data->getMeta().toObject()->insert(argv[2],newMeta);
