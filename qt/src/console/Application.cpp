@@ -395,15 +395,75 @@ int EApplication::dump(int argc, char** argv)
    }
 
    // open data object file
-   Ace::DataReference* ref = Ace::DataManager::getInstance().open(argv[0]);
-   (*ref)->open();
+   unique_ptr<Ace::DataReference> ref {Ace::DataManager::getInstance().open(argv[0])};
+   Ace::DataObject* data {ref.get()->get()};
+   data->open();
 
    // grab metadata of data object as JSON
-   QJsonValue root = grabMetaValues((*ref)->getMeta());
+   QJsonValue root = grabMetaValues(data->getMeta());
    QJsonDocument doc(root.toObject());
 
    // output JSON metadata and finish
    stream << doc.toJson();
+   return 0;
+}
+
+
+
+
+
+
+int EApplication::inject(int argc, char **argv)
+{
+   // initialize stream for std output and make sure there is enough arguments
+   QTextStream outStream(stdout);
+   if ( argc <= 2 )
+   {
+      outStream << tr("Not enough arguments given for inject command, exiting.") << "\n";
+      return -1;
+   }
+
+   // open json file and make sure it worked
+   QFile jsonFile(argv[0]);
+   if ( !jsonFile.open(QIODevice::ReadOnly) )
+   {
+      outStream << tr("Failed to open json file for injection, exiting.") << "\n";
+      return -1;
+   }
+
+   // read json from file
+   QByteArray jsonBytes = jsonFile.readAll();
+   QJsonDocument document = QJsonDocument::fromBinaryData(jsonBytes);
+
+   // convert read in json to generic json value and make sure it worked
+   QJsonValue root;
+   if ( document.isArray() )
+   {
+      root = document.array();
+   }
+   else if ( document.isObject() )
+   {
+      root = document.object();
+   }
+   else
+   {
+      outStream << tr("Failed reading json file provided for injection, exiting.") << "\n";
+      return -1;
+   }
+
+   // build new metadata from json data
+   EMetadata* newMeta {buildMetaValues(root)};
+
+   // open data object
+   unique_ptr<Ace::DataReference> ref {Ace::DataManager::getInstance().open(argv[1])};
+   Ace::DataObject* data {ref.get()->get()};
+   data->open();
+
+   // insert new metadata into data object and write to file
+   data->getMeta().toObject()->insert(argv[2],newMeta);
+   data->writeMeta();
+
+   // return success
    return 0;
 }
 
@@ -455,5 +515,77 @@ QJsonValue EApplication::grabMetaValues(const EMetadata &meta)
    }
    default:
       return QJsonValue();
+   }
+}
+
+
+
+
+
+
+EMetadata* EApplication::buildMetaValues(QJsonValue json)
+{
+   // figure out what type of data the json value is
+   if ( json.isBool() )
+   {
+      // copy json value to new metadata object and return
+      EMetadata* ret {new EMetadata(EMetadata::Bool)};
+      *(ret->toBool()) = json.toBool();
+      return ret;
+   }
+   else if ( json.isDouble() )
+   {
+      // copy json value to new metadata object and return
+      EMetadata* ret {new EMetadata(EMetadata::Double)};
+      *(ret->toDouble()) = json.toDouble();
+      return ret;
+   }
+   else if ( json.isString() )
+   {
+      // copy json value to new metadata object and return
+      EMetadata* ret {new EMetadata(EMetadata::String)};
+      *(ret->toString()) = json.toString();
+      return ret;
+   }
+   else if ( json.isArray() )
+   {
+      // convert json to array and create empty metadata array
+      QJsonArray values {json.toArray()};
+      EMetadata* ret {new EMetadata(EMetadata::Array)};
+
+      // copy all values from json array to metadata and return
+      for (auto i = values.constBegin(); i != values.constEnd() ;++i)
+      {
+         // only append metadata if it is not null
+         EMetadata* meta {buildMetaValues(*i)};
+         if ( meta )
+         {
+            ret->toArray()->append(meta);
+         }
+      }
+      return ret;
+   }
+   else if ( json.isObject() )
+   {
+      // convert json to object and create empty metadata object
+      QJsonObject values {json.toObject()};
+      EMetadata* ret {new EMetadata(EMetadata::Object)};
+
+      // copy all key/value pairs from json object to metadata and return
+      for (auto i = values.constBegin(); i != values.constEnd() ;++i)
+      {
+         // only insert metadata if it is not null
+         EMetadata* meta {buildMetaValues(*i)};
+         if ( meta )
+         {
+            ret->toObject()->insert(i.key(),meta);
+         }
+      }
+      return ret;
+   }
+   else
+   {
+      // json is of an unsupported type, return null
+      return nullptr;
    }
 }

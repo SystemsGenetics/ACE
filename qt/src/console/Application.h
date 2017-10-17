@@ -24,7 +24,9 @@ private:
    void showException(const EException& e);
    int run(int argc, char** argv);
    int dump(int argc, char** argv);
+   int inject(int argc, char** argv);
    QJsonValue grabMetaValues(const EMetadata& meta);
+   EMetadata* buildMetaValues(QJsonValue json);
    int _argc;
    char** _argv;
    QString _command;
