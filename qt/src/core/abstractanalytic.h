@@ -76,40 +76,40 @@ public:
    ///
    /// @param argument Index of argument.
    /// @param value Value for argument.
-   virtual void setArgument(int argument, QVariant value) = 0;
+   virtual void setArgument(int /*argument*/, QVariant /*value*/) {}
    /// Set argument data. This is for file input/output arguments.
    ///
    /// @param argument Index of argument.
    /// @param file Pointer to opened Qt file. For input it is Qt::ReadOnly and for output it is
    /// Qt::WriteOnly|Qt::Truncate.
-   virtual void setArgument(int argument, QFile* file) = 0;
+   virtual void setArgument(int /*argument*/, QFile* /*file*/) {}
    /// Set argument data. This is for data input/output arguments.
    ///
    /// @param argument Index of argument.
    /// @param data Pointer to abstract data object.
-   virtual void setArgument(int argument, EAbstractData* data) = 0;
+   virtual void setArgument(int /*argument*/, EAbstractData* /*data*/) {}
    /// Get capabilities of analytic.
    ///
    /// @return Returns bitmask of capabilities.
    virtual quint32 getCapabilities() const = 0;
-   /// Run serial execution of analytic.
-   virtual void runSerial() = 0;
    /// Called at very beginning of analytic execution.
    ///
    /// @return Returns true if output data objects should pre allocate space on file.
    virtual bool initialize() = 0;
+   /// Run serial execution of analytic.
+   virtual void runSerial() {}
    /// Gets number of blocks for execution.
    ///
    /// @return Number of blocks.
-   virtual int getBlockSize() = 0;
+   virtual int getBlockSize() { return 0; }
    /// Runs a block for execution.
    ///
    /// @param block Index of block.
    ///
    /// @return Returns false if this block is done with execution.
-   virtual bool runBlock(int block) = 0;
+   virtual bool runBlock(int /*block*/) { return false; }
    /// Called after all blocks are done with execution.
-   virtual void finish() = 0;
+   virtual void finish() {}
    /// Internal command DO NOT USE.
    void run() override final;
    /// Internal command DO NOT USE.
