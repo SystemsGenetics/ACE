@@ -437,7 +437,7 @@ int EApplication::inject(int argc, char **argv)
 
    // read json from file
    QString json = jsonFile.readAll();
-   QJsonDocument document = QJsonDocument::fromBinaryData(json.toUtf8());
+   QJsonDocument document = QJsonDocument::fromJson(json.toUtf8());
 
    // convert read in json to generic json value and make sure it worked
    QJsonValue root;
