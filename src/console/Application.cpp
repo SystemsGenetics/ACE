@@ -356,10 +356,10 @@ int EApplication::run(int argc, char** argv)
          analytic->addFileOut(*j,value);
          break;
       case Type::DataIn:
-         analytic->addDataIn(*j,value,analytic->getArgumentData(i,Role::DataType).toUInt());
+         analytic->addDataIn(*j,value,analytic->getArgumentData(*j,Role::DataType).toUInt());
          break;
       case Type::DataOut:
-         analytic->addDataOut(*j,value,analytic->getArgumentData(i,Role::DataType).toUInt());
+         analytic->addDataOut(*j,value,analytic->getArgumentData(*j,Role::DataType).toUInt());
          break;
       }
    }
