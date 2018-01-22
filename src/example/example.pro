@@ -6,7 +6,7 @@ CONFIG += c++11
 
 unix|win32: LIBS += -lOpenCL
 
-LIBS += -lOpenCL -L$$PWD/../../build/libs -lacecore -laceconsole
+LIBS += -lmpi -lmpi_cxx -lOpenCL -L$$PWD/../../build/libs -lacecore -laceconsole
 
 INCLUDEPATH += $$PWD/../
 DEPENDPATH += $$PWD/../
@@ -31,3 +31,5 @@ HEADERS += \
     exportintegerarray.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
+
+QMAKE_CXX = mpic++

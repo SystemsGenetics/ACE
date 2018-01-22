@@ -25,6 +25,7 @@ public:
       {
          Serial = 1 ///< Serial execution
          ,OpenCL = 2 ///< OpenCL execution
+         ,MPI = 3 ///< MPI execution
       };
    };
    /// All possible argument types.
@@ -108,10 +109,29 @@ public:
    ///
    /// @return Returns false if this block is done with execution.
    virtual bool runBlock(int /*block*/) { return false; }
+   /// Builds a new work block by the master node that will be processed by a slave node.
+   ///
+   /// @return New block that contains information to work on.
+   virtual QByteArray buildMPIBlock() { return QByteArray(); }
+   /// Read in an information block produced from a slave node working on a work block.
+   ///
+   /// @param block Information block produced from the finished work of a slave node.
+   ///
+   /// @return Returns true if the block was processed and saved or false if it was not ready to be
+   /// processed.
+   virtual bool readMPIBlock(const QByteArray& /*block*/) { return false; }
+   /// Process a work block as a slave node returning an information block.
+   ///
+   /// @param block Work block to be processed.
+   ///
+   /// @return Information block that holds the results of processing the work block.
+   virtual QByteArray processMPIBlock(const QByteArray& /*block*/) { return QByteArray(); }
    /// Called after all blocks are done with execution.
    virtual void finish() {}
    /// Internal command DO NOT USE.
    void run() override final;
+   /// Internal command DO NOT USE.
+   void mpiRun(/*Ace::MPI& mpi*/);
    /// Internal command DO NOT USE.
    void stop();
    /// Internal command DO NOT USE.
@@ -149,6 +169,8 @@ protected:
    /// @return Pointer to abstract data object.
    EAbstractData* getDataOut(const QString& path, quint16 type);
 private:
+   void prepareRun();
+   void finishRun();
    static QMutex _mutex;
    QList<Ace::DataReference*> _dataIn;
    QList<Ace::DataReference*> _dataOut;

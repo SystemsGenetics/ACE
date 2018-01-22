@@ -33,14 +33,8 @@ void EAbstractAnalytic::run()
 {
    try
    {
-      // call initialize function of analytic
-      bool preAllocate {initialize()};
-
-      // go through all new data objects and call their prepare function
-      for (auto i = _dataOut.constBegin(); i != _dataOut.constEnd() ;++i)
-      {
-         (**i)->data().prepare(preAllocate);
-      }
+      // call prepare run for analytic
+      prepareRun();
 
       // check to see if analytic can run OpenCL and there is a device to use
       if ( getCapabilities()&Capabilities::OpenCL
@@ -96,55 +90,8 @@ void EAbstractAnalytic::run()
          throw e;
       }
 
-      // call finish function of analytic
-      finish();
-
-      // create metadata history for each output data file
-      EMetadata inputs(EMetadata::Object);
-      for (auto i = _dataIn.constBegin(); i != _dataIn.constEnd() ;++i)
-      {
-         EMetadata* file = new EMetadata((**i)->getMeta());
-         QFileInfo fileInfo((**i)->getPath());
-         QString path = fileInfo.fileName();
-         while ( inputs.toObject()->contains(path) )
-         {
-            path.prepend('_');
-         }
-         file->setParent(&inputs);
-         inputs.toObject()->insert(path,file);
-      }
-
-      // create command metadata that created new data objects
-      EMetadata command(EMetadata::String);
-      *command.toString() = _command;
-
-      // iterate through all output data objects, removing each one from reference list
-      for (auto i = _dataOut.constBegin(); i != _dataOut.constEnd() ;++i)
-      {
-         // call finish function, add metadata history and command, and delete reference
-         (**i)->data().finish();
-         EMetadata::Map* object = (**i)->getMeta().toObject();
-         EMetadata* newInputs = new EMetadata(inputs);
-         EMetadata* newCommand = new EMetadata(command);
-         if ( object->contains("inputs") )
-         {
-            delete object->take("inputs");
-         }
-         if ( object->contains("command") )
-         {
-            delete object->take("command");
-         }
-         if ( newInputs->toObject()->size() > 0 )
-         {
-            object->insert("inputs",newInputs);
-         }
-         object->insert("command",newCommand);
-         newInputs->setParent(&((**i)->getMeta()));
-         newCommand->setParent(&((**i)->getMeta()));
-         (**i)->writeMeta();
-         delete *i;
-      }
-      _dataOut.clear();
+      // call finish analytic run
+      finishRun();
 
       // emit finished signal
       emit finished();
@@ -154,6 +101,16 @@ void EAbstractAnalytic::run()
       // If exception occured report it to the main thread
       emit exceptionThrown(e.getFile(),e.getLine(),e.getFunction(),e.getTitle(),e.getDetails());
    }
+}
+
+
+
+
+
+
+void EAbstractAnalytic::mpiRun(/*Ace::MPI& mpi*/)
+{
+   // MUST complete new MPI class before I can do this
 }
 
 
@@ -349,4 +306,79 @@ EAbstractData* EAbstractAnalytic::getDataOut(const QString &path, quint16 type)
    // unlock mutex and return pointer to new data
    _mutex.unlock();
    return &(*_dataOut.back())->data();
+}
+
+
+
+
+
+
+void EAbstractAnalytic::prepareRun()
+{
+   // call initialize function of analytic
+   bool preAllocate {initialize()};
+
+   // go through all new data objects and call their prepare function
+   for (auto dataOut : qAsConst(_dataOut))
+   {
+      dataOut->get()->data().prepare(preAllocate);
+   }
+}
+
+
+
+
+
+
+void EAbstractAnalytic::finishRun()
+{
+   // call finish function of analytic
+   finish();
+
+   // create metadata history for each output data file
+   EMetadata inputs(EMetadata::Object);
+   for (auto i = _dataIn.constBegin(); i != _dataIn.constEnd() ;++i)
+   {
+      EMetadata* file = new EMetadata((**i)->getMeta());
+      QFileInfo fileInfo((**i)->getPath());
+      QString path = fileInfo.fileName();
+      while ( inputs.toObject()->contains(path) )
+      {
+         path.prepend('_');
+      }
+      file->setParent(&inputs);
+      inputs.toObject()->insert(path,file);
+   }
+
+   // create command metadata that created new data objects
+   EMetadata command(EMetadata::String);
+   *command.toString() = _command;
+
+   // iterate through all output data objects, removing each one from reference list
+   for (auto i = _dataOut.constBegin(); i != _dataOut.constEnd() ;++i)
+   {
+      // call finish function, add metadata history and command, and delete reference
+      (**i)->data().finish();
+      EMetadata::Map* object = (**i)->getMeta().toObject();
+      EMetadata* newInputs = new EMetadata(inputs);
+      EMetadata* newCommand = new EMetadata(command);
+      if ( object->contains("inputs") )
+      {
+         delete object->take("inputs");
+      }
+      if ( object->contains("command") )
+      {
+         delete object->take("command");
+      }
+      if ( newInputs->toObject()->size() > 0 )
+      {
+         object->insert("inputs",newInputs);
+      }
+      object->insert("command",newCommand);
+      newInputs->setParent(&((**i)->getMeta()));
+      newCommand->setParent(&((**i)->getMeta()));
+      (**i)->writeMeta();
+      delete *i;
+   }
+   _dataOut.clear();
 }

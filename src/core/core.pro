@@ -4,9 +4,7 @@ QT += core
 DESTDIR = $$PWD/../../build/libs/
 TARGET = acecore
 CONFIG += c++11
-VERSION = 0.0.999
-
-unix|win32: LIBS += -lOpenCL
+VERSION = 3.0.0
 
 TEMPLATE = lib
 
@@ -54,3 +52,5 @@ HEADERS += \
     metadata.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
+
+QMAKE_CXX = mpic++

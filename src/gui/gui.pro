@@ -4,9 +4,7 @@ QT += core gui widgets
 DESTDIR = $$PWD/../../build/libs/
 TARGET = acegui
 CONFIG += c++11
-VERSION = 0.0.999
-
-LIBS += -lOpenCL -L$$PWD/../../build/libs -lacecore
+VERSION = 3.0.0
 
 INCLUDEPATH += $$PWD/../core/
 DEPENDPATH += $$PWD/../core/
@@ -37,3 +35,5 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 RESOURCES += \
     resources.qrc
+
+QMAKE_CXX = mpic++

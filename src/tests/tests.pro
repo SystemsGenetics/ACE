@@ -4,7 +4,7 @@ QT += core testlib
 TARGET = tests
 CONFIG += c++11
 
-LIBS += -lOpenCL -L$$PWD/../../build/libs -lacecore
+LIBS += -lmpi -lmpi_cxx -lOpenCL -L$$PWD/../../build/libs -lacecore
 
 INCLUDEPATH += $$PWD/../core/
 DEPENDPATH += $$PWD/../core/
@@ -43,3 +43,5 @@ SOURCES += \
 
 RESOURCES += \
     resources.qrc
+
+QMAKE_CXX = mpic++
