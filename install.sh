@@ -5,9 +5,9 @@ INSTALL_PREFIX=/usr/local
 
 if [ $1 == "--local" ]; then
 	INSTALL_PREFIX=$HOME/software
-	if [ ! -e $INSTALL_PREFIX/include ]; then
-		mkdir -p $INSTALL_PREFIX/include
-	fi
+
+	mkdir -p $INSTALL_PREFIX/include
+	mkdir -p $INSTALL_PREFIX/lib
 fi
 
 rsync -a ./build/libs/ $INSTALL_PREFIX/lib/

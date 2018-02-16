@@ -7,7 +7,7 @@ ACE is a generic framework for creating GPU-accelerated applications.
 To build ACE:
 ```
 cd build
-qmake ../src/ACE.pro
+qmake ../src
 make
 cd ..
 ```

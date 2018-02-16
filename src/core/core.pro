@@ -6,6 +6,8 @@ TARGET = acecore
 CONFIG += c++11
 VERSION = 3.0.0
 
+LIBS += -lmpi -lmpi_cxx -lOpenCL
+
 TEMPLATE = lib
 
 SOURCES += \
@@ -25,9 +27,9 @@ SOURCES += \
    datamanager.cpp \
    datareference.cpp \
    abstractanalytic.cpp \
-    metadatamodel.cpp \
-    metadata.cpp \
-    ace_qmpi.cpp
+   metadatamodel.cpp \
+   metadata.cpp \
+   ace_qmpi.cpp
 
 HEADERS += \
    opencldevicemodel.h \
@@ -49,9 +51,9 @@ HEADERS += \
    datareference.h \
    AceCore.h \
    AceOpenCL.h \
-    metadatamodel.h \
-    metadata.h \
-    ace_qmpi.h
+   metadatamodel.h \
+   metadata.h \
+   ace_qmpi.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
