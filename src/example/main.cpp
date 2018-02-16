@@ -1,5 +1,10 @@
 #include <core/AceCore.h>
-#include <console/Application.h>
+
+#ifdef ACE_GUI
+   #include <ace/gui/Application.h>
+#else
+   #include <ace/console/Application.h>
+#endif
 
 #include "analyticfactory.h"
 #include "datafactory.h"
