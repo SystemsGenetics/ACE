@@ -1,5 +1,5 @@
 
-QT += core
+QT += core gui widgets
 
 TARGET = example
 CONFIG += c++11

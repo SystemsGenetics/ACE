@@ -9,6 +9,12 @@ using namespace Ace;
 
 
 /*!
+ * Keeps track if an instance of this class has already been created then 
+ * destroyed in shutdown. This is so a second instance is never made after the 
+ * MPI system was shutdown with finalize. 
+ */
+bool QMPI::_hasShutdown {false};
+/*!
  * This is a pointer to the single instance of this class. 
  */
 QMPI* QMPI::_instance {nullptr};
@@ -19,25 +25,62 @@ QMPI* QMPI::_instance {nullptr};
 
 
 /*!
- * This returns a reference to the singleton instance of this class. 
+ * This returns a reference to the singleton instance of this class if shutdown 
+ * of another instance has not occurred. If MPI was already initialized it 
+ * simply returns a reference to the instance. 
  *
  * @return Reference to the singleton instance of this class. 
  *
  *
  * Steps of Operation: 
  *
- * 1. If the instance pointer is null then create new instance of the class and 
+ * 1. If shutdown has already been called on another instance of this class 
+ *    throw an exception about this fact. 
+ *
+ * 2. If the instance pointer is null then create new instance of the class and 
  *    set pointer to its address. 
  *
- * 2. Return reference to instance pointed to by the instance pointer. 
+ * 3. Return reference to instance pointed to by the instance pointer. 
  */
-QMPI& QMPI::instance()
+QMPI& QMPI::initialize()
 {
+   if ( _hasShutdown )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("MPI Initialize Failed"));
+      e.setDetails(tr("An instance of QMPI already existed and as shutdown."));
+      throw e;
+   }
    if ( !_instance )
    {
       _instance = new QMPI;
    }
    return *_instance;
+}
+
+
+
+
+
+
+/*!
+ * This deletes the singleton instance of this class thereby shutting down the 
+ * MPI system. After calling this another instance cannot be initialized or 
+ * referenced. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If an instance of this class exists in the static pointer delete it and 
+ *    set the shutdown flag to true to prevent initializing another instance. 
+ */
+void QMPI::shutdown()
+{
+   if ( _instance )
+   {
+      delete _instance;
+      _hasShutdown = true;
+   }
 }
 
 
@@ -228,5 +271,23 @@ QMPI::QMPI()
       throw e;
    }
    startTimer(_timerPeriod);
+}
+
+
+
+
+
+
+/*!
+ * This simply calls the finalize function for MPI to shutdown the system. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Call MPI finalize. 
+ */
+QMPI::~QMPI()
+{
+   MPI_Finalize();
 }
 

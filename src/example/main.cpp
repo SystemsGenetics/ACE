@@ -1,10 +1,6 @@
 #include <core/AceCore.h>
 
-#ifdef ACE_GUI
-   #include <ace/gui/Application.h>
-#else
-   #include <ace/console/Application.h>
-#endif
+#include "../gui/Application.h"
 
 #include "analyticfactory.h"
 #include "datafactory.h"

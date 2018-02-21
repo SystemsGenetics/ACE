@@ -12,13 +12,16 @@ namespace Ace
     * and receiving data. This provides sending and receiving of data by using Qt 
     * slots and signals to allow for event handling through Qt's event handling 
     * system. This is a singleton class which only has a single instance you can 
-    * access through a special static function. 
+    * access through a special static function. This singleton class is however 
+    * special in it has to be shutdown before exiting the program and cannot be 
+    * initialized more than once. This requirement is due to how MPI works. 
     */
    class QMPI : public QObject
    {
       Q_OBJECT
    public:
-      static QMPI& instance();
+      static QMPI& initialize();
+      static void shutdown();
       int size() const;
       int rank() const;
       bool isMaster() const;
@@ -37,6 +40,7 @@ namespace Ace
       virtual void timerEvent(QTimerEvent* event) override final;
    private:
       explicit QMPI();
+      ~QMPI();
       /*!
        * This is the total size of the MPI run representing the total number of 
        * processes part of it. 
@@ -52,6 +56,12 @@ namespace Ace
        * new data received from other MPI processes. 
        */
       constexpr static int _timerPeriod {50};
+      /*!
+       * Keeps track if an instance of this class has already been created then 
+       * destroyed in shutdown. This is so a second instance is never made after the 
+       * MPI system was shutdown with finalize. 
+       */
+      static bool _hasShutdown;
       /*!
        * This is a pointer to the single instance of this class. 
        */
