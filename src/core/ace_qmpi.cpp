@@ -131,7 +131,43 @@ void QMPI::sendData(int toRank, const QByteArray& data)
  */
 void QMPI::timerEvent(QTimerEvent* event)
 {
-   //TODO; poll if there are in MPI recv events
+   Q_UNUSED(event)
+   for (int i = 0; i < _size ;++i)
+   {
+      if ( i != _rank )
+      {
+         int flag;
+         MPI_Status status;
+         if ( MPI_Iprobe(i,0,MPI_COMM_WORLD,&flag,&status) )
+         {
+            E_MAKE_EXCEPTION(e);
+            e.setTitle(tr("MPI_Iprobe Failed"));
+            e.setDetails(tr("MPI_Iprobe failed."));
+            throw e;
+         }
+         if ( flag )
+         {
+            int count;
+            if ( MPI_Get_count(&status,MPI_CHAR,&count) )
+            {
+               E_MAKE_EXCEPTION(e);
+               e.setTitle(tr("MPI_Get_count Failed"));
+               e.setDetails(tr("MPI_Get_count failed."));
+               throw e;
+            }
+            QByteArray data;
+            data.resize(count);
+            if ( MPI_Recv(data.data(),count,MPI_CHAR,i,0,MPI_COMM_WORLD,MPI_STATUS_IGNORE) )
+            {
+               E_MAKE_EXCEPTION(e);
+               e.setTitle(tr("MPI_Recv Failed"));
+               e.setDetails(tr("MPI_Recv failed."));
+               throw e;
+            }
+            emit dataReceived(data,i);
+         }
+      }
+   }
 }
 
 
@@ -164,18 +200,11 @@ QMPI::QMPI()
       e.setDetails(tr("MPI_Init failed."));
       throw e;
    }
-   if ( MPI_Comm_size(MPI_COMM_WORLD,&_size) )
+   if ( MPI_Comm_size(MPI_COMM_WORLD,&_size) || MPI_Comm_rank(MPI_COMM_WORLD,&_rank) )
    {
       E_MAKE_EXCEPTION(e);
-      e.setTitle(tr("MPI_Comm_size Failed"));
-      e.setDetails(tr("MPI_Comm_size failed."));
-      throw e;
-   }
-   if ( MPI_Comm_rank(MPI_COMM_WORLD,&_rank) )
-   {
-      E_MAKE_EXCEPTION(e);
-      e.setTitle(tr("MPI_Comm_rank Failed"));
-      e.setDetails(tr("MPI_Comm_rank failed."));
+      e.setTitle(tr("MPI_Comm Failed"));
+      e.setDetails(tr("MPI_Comm failed."));
       throw e;
    }
    startTimer(_timerPeriod);
