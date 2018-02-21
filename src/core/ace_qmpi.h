@@ -24,7 +24,7 @@ namespace Ace
       bool isMaster() const;
    signals:
       /*!
-       * This is signaled whenever new data is received by another MPI process. 
+       * This is emitted whenever new data is received by another MPI process. 
        *
        * @param data Stores the raw data received from another process. 
        *

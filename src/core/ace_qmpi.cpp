@@ -93,9 +93,9 @@ bool QMPI::isMaster() const
 /*!
  * This slot is called to send data to another process within the MPI run. 
  *
- * @param toRank  
+ * @param toRank The rank of the process to send this data to. 
  *
- * @param data  
+ * @param data Stores the raw data that will be sent to the given process. 
  *
  *
  * Steps of Operation: 
@@ -127,7 +127,27 @@ void QMPI::sendData(int toRank, const QByteArray& data)
  * for new data from other MPI processes without blocking and firing signals for 
  * any new data received. 
  *
- * @param event  
+ * @param event Ignored Qt event data since this class only has a single timer 
+ *              event active. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Iterate through all ranks, excluding this process's rank, going to step 2 
+ *    for each iteration. 
+ *
+ * 2. Probe for incoming data from given rank using MPI system, throwing an 
+ *    exception if it fails. If the probe indicates there is a pending block of 
+ *    data proceed to step 3 else do nothing. 
+ *
+ * 3. Use the MPI system to get the size of the incoming data, throwing an 
+ *    exception it if fails. 
+ *
+ * 4. Receive the data block using the MPI system, storing it in a Qt byte 
+ *    array. If the MPI system fails throw an exception. 
+ *
+ * 5. Emit the data received signal with the byte array and what process it came 
+ *    from identified by rank. 
  */
 void QMPI::timerEvent(QTimerEvent* event)
 {
