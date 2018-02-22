@@ -144,7 +144,7 @@ bool QMPI::isMaster() const
  * Steps of Operation: 
  *
  * 1. Call the MPI system to send new byte data to the specified rank. If the 
- *    call was successful then control is returned else go to step 2. 
+ *    call was successful then end operation else go to step 2. 
  *
  * 2. Create exception detailing failure and throw it. 
  */
@@ -177,20 +177,19 @@ void QMPI::sendData(int toRank, const QByteArray& data)
  * Steps of Operation: 
  *
  * 1. Iterate through all ranks, excluding this process's rank, going to step 2 
- *    for each iteration. 
+ *    for each iteration. Once iteration is complete end operation. 
  *
- * 2. Probe for incoming data from given rank using MPI system, throwing an 
- *    exception if it fails. If the probe indicates there is a pending block of 
- *    data proceed to step 3 else do nothing. 
+ * 2. Probe for incoming data from given rank using MPI system. If MPI calls 
+ *    fail go to step 5. If the probe indicates there is a pending block of data 
+ *    proceed else go back to step 1. 
  *
- * 3. Use the MPI system to get the size of the incoming data, throwing an 
- *    exception it if fails. 
+ * 3. Receive the data block using the MPI system, storing it in a Qt byte 
+ *    array. If the MPI system fails go to step 5. 
  *
- * 4. Receive the data block using the MPI system, storing it in a Qt byte 
- *    array. If the MPI system fails throw an exception. 
+ * 4. Emit the data received signal with the byte array and what process it came 
+ *    from identified by rank. Go back to step 1. 
  *
- * 5. Emit the data received signal with the byte array and what process it came 
- *    from identified by rank. 
+ * 5. Throw an exception detailing the error that occurred. 
  */
 void QMPI::timerEvent(QTimerEvent* event)
 {
@@ -246,13 +245,15 @@ void QMPI::timerEvent(QTimerEvent* event)
  *
  * Steps of Operation: 
  *
- * 1. Initialize the MPI system and if it failed throw an exception detailing 
- *    the error. 
+ * 1. Initialize the MPI system. If it failed go to step 4. 
  *
- * 2. Querying the MPI system for the size and rank. If the query failed throw 
- *    an exception detailing the error. 
+ * 2. Query the MPI system for the size and rank. If the query failed go to step 
+ *    4. 
  *
- * 3. Initialize a QObject timer event used for polling of new data received. 
+ * 3. Initialize a QObject timer event used for polling of new data received and 
+ *    end operation. 
+ *
+ * 4. Throw an exception detailing the error that occurred. 
  */
 QMPI::QMPI()
 {

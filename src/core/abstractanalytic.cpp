@@ -5,6 +5,7 @@
 #include "exception.h"
 #include "datareference.h"
 #include "opencldevice.h"
+#include "ace_qmpi.h"
 
 
 
@@ -228,6 +229,23 @@ void EAbstractAnalytic::addDataOut(int argument, const QString &path, quint16 ty
 
 
 
+void EAbstractAnalytic::startMPI()
+{
+   Ace::QMPI& mpi {Ace::QMPI::initialize()};
+   connect(&mpi,&Ace::QMPI::dataReceived,this,&EAbstractAnalytic::receiveData);
+   connect(this,&EAbstractAnalytic::sendData,&mpi,&Ace::QMPI::sendData);
+   if ( mpi.isMaster() )
+   {
+      prepareRun();
+      processMPI();
+   }
+}
+
+
+
+
+
+
 EAbstractData* EAbstractAnalytic::getDataIn(const QString &path, quint16 type)
 {
    // lock mutex
@@ -306,6 +324,59 @@ EAbstractData* EAbstractAnalytic::getDataOut(const QString &path, quint16 type)
    // unlock mutex and return pointer to new data
    _mutex.unlock();
    return &(*_dataOut.back())->data();
+}
+
+
+
+
+
+
+void EAbstractAnalytic::receiveData(const QByteArray& data, int fromRank)
+{
+   Q_UNUSED(fromRank)
+   Ace::QMPI& mpi {Ace::QMPI::initialize()};
+   if ( mpi.isMaster() )
+   {
+      _mpiBlocks << data;
+      --_mpiOut;
+      processMPI();
+   }
+   else
+   {
+      emit sendData(0,processMPIBlock(data));
+   }
+}
+
+
+
+
+
+
+void EAbstractAnalytic::processMPI()
+{
+   Ace::QMPI& mpi {Ace::QMPI::initialize()};
+   for (auto block = _mpiBlocks.begin(); block != _mpiBlocks.end() ;)
+   {
+      if ( readMPIBlock(*block) ) block = _mpiBlocks.erase(block);
+      else ++block;
+   }
+   while ( _mpiOut < (mpi.size()*8) )
+   {
+      QByteArray data {buildMPIBlock()};
+      if ( !data.isEmpty() )
+      {
+         emit sendData(_nextOut++,data);
+         ++_mpiOut;
+         if ( _nextOut == mpi.size() ) _nextOut = 1;
+      }
+      else if ( _mpiBlocks.isEmpty() && _mpiOut == 0 )
+      {
+         finishRun();
+         emit finished();
+         break;
+      }
+      else break;
+   }
 }
 
 

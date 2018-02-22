@@ -37,6 +37,9 @@ public:
    int getBlockSize() override final { return 0; }
    bool runBlock(int /*block*/) override final { return false; }
    void finish() override final {}
+   virtual QByteArray buildMPIBlock();
+   virtual bool readMPIBlock(const QByteArray& block);
+   virtual QByteArray processMPIBlock(const QByteArray& block);
 private:
    // Enumerated types to define all possible operations
    enum class OperType
@@ -54,6 +57,7 @@ private:
    OperType _type {OperType::Addition};
    // Value that will be used for operation
    int _amount {0};
+   int _index {0};
 };
 
 

@@ -144,7 +144,9 @@ public:
    void addDataOut(int argument, const QString& path, quint16 type);
    /// Internal command DO NOT USE.
    void setCommand(const QString& command) { _command = command; }
+   void startMPI();
 signals:
+   void sendData(int toRank, const QByteArray& data);
    /// Signal that is emitted whenever the percentage complete of the analytic has changed.
    ///
    /// @param percentComplete Percentage complete from 0 to 100.
@@ -168,7 +170,10 @@ protected:
    ///
    /// @return Pointer to abstract data object.
    EAbstractData* getDataOut(const QString& path, quint16 type);
+private slots:
+   void receiveData(const QByteArray& data, int fromRank);
 private:
+   void processMPI();
    void prepareRun();
    void finishRun();
    static QMutex _mutex;
@@ -176,6 +181,9 @@ private:
    QList<Ace::DataReference*> _dataOut;
    QList<QFile*> _files;
    QString _command;
+   QList<QByteArray> _mpiBlocks;
+   int _mpiOut {0};
+   int _nextOut {1};
 };
 
 

@@ -318,3 +318,70 @@ void MathTransform::runSerial()
       QThread::msleep(100);
    }
 }
+
+
+
+
+
+
+QByteArray MathTransform::buildMPIBlock()
+{
+   if ( _index < _in->_numbers.size() )
+   {
+      QByteArray data;
+      QDataStream stream(&data,QIODevice::WriteOnly);
+      stream << static_cast<int>(_type);
+      stream << _in->_numbers.at(_index++);
+      stream << _amount;
+      return data;
+   }
+   else return QByteArray();
+}
+
+
+
+
+
+
+bool MathTransform::readMPIBlock(const QByteArray &block)
+{
+   QDataStream stream(block);
+   int number;
+   stream >> number;
+   _out->_numbers.append(number);
+   return true;
+}
+
+
+
+
+
+
+QByteArray MathTransform::processMPIBlock(const QByteArray &block)
+{
+   QDataStream in(block);
+   QByteArray data;
+   QDataStream out(&data,QIODevice::WriteOnly);
+   OperType type;
+   int a;
+   int number;
+   int amount;
+   in >> a >> number >> amount;
+   type = static_cast<OperType>(a);
+   switch (type)
+   {
+   case OperType::Addition:
+      out << (number + _amount);
+      break;
+   case OperType::Subtraction:
+      out << (number - _amount);
+      break;
+   case OperType::Multiplication:
+      out << (number*_amount);
+      break;
+   case OperType::Division:
+      out << (number/_amount);
+      break;
+   }
+   return data;
+}

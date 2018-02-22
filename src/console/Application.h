@@ -6,6 +6,7 @@
 
 class EException;
 class EMetadata;
+class AbstractAnalytic;
 
 
 
