@@ -5,6 +5,7 @@
 
 class QString;
 class QByteArray;
+class EDataStream;
 class EMetaArray;
 class EMetaObject;
 
@@ -83,8 +84,9 @@ public:
    EMetaObject& toObject();
    const EMetaObject& toObject() const;
    EMetadata::Type type() const;
-   QString typeName() const;
+   static QString typeName(Type type);
 private:
+   void checkType(Type type) const;
    void clear();
    void copy(const void* data);
    /*!
@@ -97,5 +99,6 @@ private:
    void* _data;
 };
 
-#endif
 
+
+#endif

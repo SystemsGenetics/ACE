@@ -1,6 +1,7 @@
 #include "emetadata.h"
 #include <QString>
 #include <QByteArray>
+#include "exception.h"
 
 
 
@@ -109,6 +110,7 @@ EMetadata& EMetadata::operator=(const EMetadata& object)
    clear();
    _type = object._type;
    copy(object._data);
+   return *this;
 }
 
 
@@ -139,6 +141,7 @@ EMetadata& EMetadata::operator=(EMetadata&& object)
    _data = object._data;
    object._type = Null;
    object._data = nullptr;
+   return *this;
 }
 
 
@@ -149,7 +152,9 @@ EMetadata& EMetadata::operator=(EMetadata&& object)
 /*!
  */
 EMetadata::~EMetadata()
-{}
+{
+   clear();
+}
 
 
 
@@ -159,7 +164,9 @@ EMetadata::~EMetadata()
 /*!
  */
 bool EMetadata::isNull() const
-{}
+{
+   return _type == Null;
+}
 
 
 
@@ -169,7 +176,9 @@ bool EMetadata::isNull() const
 /*!
  */
 bool EMetadata::isBool() const
-{}
+{
+   return _type == Bool;
+}
 
 
 
@@ -179,7 +188,9 @@ bool EMetadata::isBool() const
 /*!
  */
 bool EMetadata::isDouble() const
-{}
+{
+   return _type == Double;
+}
 
 
 
@@ -189,7 +200,9 @@ bool EMetadata::isDouble() const
 /*!
  */
 bool EMetadata::isString() const
-{}
+{
+   return _type == String;
+}
 
 
 
@@ -199,7 +212,9 @@ bool EMetadata::isString() const
 /*!
  */
 bool EMetadata::isBytes() const
-{}
+{
+   return _type == Bytes;
+}
 
 
 
@@ -209,7 +224,9 @@ bool EMetadata::isBytes() const
 /*!
  */
 bool EMetadata::isArray() const
-{}
+{
+   return _type == Array;
+}
 
 
 
@@ -219,7 +236,9 @@ bool EMetadata::isArray() const
 /*!
  */
 bool EMetadata::isObject() const
-{}
+{
+   return _type == Object;
+}
 
 
 
@@ -229,7 +248,10 @@ bool EMetadata::isObject() const
 /*!
  */
 bool& EMetadata::toBool()
-{}
+{
+   checkType(Bool);
+   return *static_cast<bool*>(_data);
+}
 
 
 
@@ -239,7 +261,10 @@ bool& EMetadata::toBool()
 /*!
  */
 const bool& EMetadata::toBool() const
-{}
+{
+   checkType(Bool);
+   return *static_cast<bool*>(_data);
+}
 
 
 
@@ -249,7 +274,10 @@ const bool& EMetadata::toBool() const
 /*!
  */
 double& EMetadata::toDouble()
-{}
+{
+   checkType(Double);
+   return *static_cast<double*>(_data);
+}
 
 
 
@@ -259,7 +287,10 @@ double& EMetadata::toDouble()
 /*!
  */
 const double& EMetadata::toDouble() const
-{}
+{
+   checkType(Double);
+   return *static_cast<double*>(_data);
+}
 
 
 
@@ -269,7 +300,10 @@ const double& EMetadata::toDouble() const
 /*!
  */
 QString& EMetadata::toString()
-{}
+{
+   checkType(String);
+   return *static_cast<QString*>(_data);
+}
 
 
 
@@ -279,7 +313,10 @@ QString& EMetadata::toString()
 /*!
  */
 const QString& EMetadata::toString() const
-{}
+{
+   checkType(String);
+   return *static_cast<QString*>(_data);
+}
 
 
 
@@ -289,7 +326,10 @@ const QString& EMetadata::toString() const
 /*!
  */
 QByteArray& EMetadata::toBytes()
-{}
+{
+   checkType(Bytes);
+   return *static_cast<QByteArray*>(_data);
+}
 
 
 
@@ -299,7 +339,10 @@ QByteArray& EMetadata::toBytes()
 /*!
  */
 const QByteArray& EMetadata::toBytes() const
-{}
+{
+   checkType(Bytes);
+   return *static_cast<QByteArray*>(_data);
+}
 
 
 
@@ -309,7 +352,10 @@ const QByteArray& EMetadata::toBytes() const
 /*!
  */
 EMetaArray& EMetadata::toArray()
-{}
+{
+   checkType(Array);
+   return *static_cast<EMetaArray*>(_data);
+}
 
 
 
@@ -319,7 +365,10 @@ EMetaArray& EMetadata::toArray()
 /*!
  */
 const EMetaArray& EMetadata::toArray() const
-{}
+{
+   checkType(Array);
+   return *static_cast<EMetaArray*>(_data);
+}
 
 
 
@@ -329,7 +378,10 @@ const EMetaArray& EMetadata::toArray() const
 /*!
  */
 EMetaObject& EMetadata::toObject()
-{}
+{
+   checkType(Object);
+   return *static_cast<EMetaObject*>(_data);
+}
 
 
 
@@ -339,7 +391,10 @@ EMetaObject& EMetadata::toObject()
 /*!
  */
 const EMetaObject& EMetadata::toObject() const
-{}
+{
+   checkType(Object);
+   return *static_cast<EMetaObject*>(_data);
+}
 
 
 
@@ -349,7 +404,9 @@ const EMetaObject& EMetadata::toObject() const
 /*!
  */
 EMetadata::Type EMetadata::type() const
-{}
+{
+   return _type;
+}
 
 
 
@@ -358,8 +415,40 @@ EMetadata::Type EMetadata::type() const
 
 /*!
  */
-QString EMetadata::typeName() const
-{}
+QString EMetadata::typeName(Type type)
+{
+   switch (type)
+   {
+   case Null: return "null";
+   case Bool: return "bool";
+   case Double: return "double";
+   case String: return "string";
+   case Bytes: return "bytes";
+   case Array: return "array";
+   case Object: return "object";
+   default: return QString();
+   }
+}
+
+
+
+
+
+
+
+void EMetadata::checkType(EMetadata::Type type) const
+{
+   if ( _type != type )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(QObject::tr("Logical Error"));
+      e.setDetails(
+               QObject::tr("Cannot convert metadata to %1 type when it is %2 type.")
+               .arg(typeName(type))
+               .arg(typeName(_type)));
+      throw e;
+   }
+}
 
 
 
@@ -420,6 +509,7 @@ void EMetadata::copy(const void* data)
    {
    case Null:
       _data = nullptr;
+      break;
    case Bool:
       *static_cast<bool*>(_data) = *static_cast<const bool*>(data);
       break;
