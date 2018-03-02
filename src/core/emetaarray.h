@@ -1,7 +1,10 @@
 #ifndef EMETAARRAY_H
 #define EMETAARRAY_H
 #include <QList>
-#include "emetadata.h"
+
+
+
+class EMetadata;
 
 
 

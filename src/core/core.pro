@@ -32,7 +32,8 @@ SOURCES += \
    emetadata.cpp \
    ace_qmpi.cpp \
     common.cpp \
-    emetaarray.cpp
+    emetaarray.cpp \
+    emetaobject.cpp
 
 HEADERS += \
    opencldevicemodel.h \
@@ -59,7 +60,8 @@ HEADERS += \
    emetadata.h \
    ace_qmpi.h \
     common.h \
-    emetaarray.h
+    emetaarray.h \
+    emetaobject.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
