@@ -7,6 +7,32 @@
 
 
 /*!
+ * Assign this mapping to the one given. The map will not be copied until a 
+ * write operation is performed. 
+ *
+ * @param object Map that this object will be assigned to. 
+ *
+ * @return Reference to this object. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Assign this object to the given mapping. 
+ *
+ * 2. Return reference to this object. 
+ */
+EMetaObject& EMetaObject::operator=(const EMetaObject& object)
+{
+   QMap<QString,EMetadata>::operator=(object);
+   return *this;
+}
+
+
+
+
+
+
+/*!
  * Tests if the mapping is empty or not. 
  *
  * @return Returns true of the mapping is empty else returns false. 

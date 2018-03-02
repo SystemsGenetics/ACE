@@ -2,6 +2,8 @@
 #include <QString>
 #include <QByteArray>
 #include "exception.h"
+#include "emetaarray.h"
+#include "emetaobject.h"
 
 
 
@@ -35,6 +37,14 @@ EMetadata::EMetadata(Type type):
       break;
    case Bytes:
       _data = new QByteArray;
+      break;
+   case Array:
+      _data = new EMetaArray;
+      break;
+   case Object:
+      _data = new EMetaObject;
+      break;
+   default:
       break;
    }
 }
@@ -505,6 +515,14 @@ void EMetadata::clear()
    case Bytes:
       delete static_cast<QByteArray*>(_data);
       break;
+   case Array:
+      delete static_cast<EMetaArray*>(_data);
+      break;
+   case Object:
+      delete static_cast<EMetaObject*>(_data);
+      break;
+   default:
+      break;
    }
 }
 
@@ -546,6 +564,12 @@ void EMetadata::copy(const void* data)
       break;
    case Bytes:
       *static_cast<QByteArray*>(_data) = *static_cast<const QByteArray*>(data);
+      break;
+   case Array:
+      *static_cast<EMetaArray*>(_data) = *static_cast<const EMetaArray*>(data);
+      break;
+   case Object:
+      *static_cast<EMetaObject*>(_data) = *static_cast<const EMetaObject*>(data);
       break;
    }
 }

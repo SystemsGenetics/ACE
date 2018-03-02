@@ -14,9 +14,10 @@ class EMetadata;
  * single metadata value. Refer to EMetadata for more information about the 
  * metadata system. 
  */
-class EMetaObject : public QMap<QString,EMetadata>
+class EMetaObject : private QMap<QString,EMetadata>
 {
 public:
+   EMetaObject& operator=(const EMetaObject& object);
    bool isEmpty() const;
    int size() const;
    QMap<QString,EMetadata>::iterator begin();

@@ -7,6 +7,32 @@
 
 
 /*!
+ * Assign this array to the one given. The array will not be copied until a 
+ * write operation is performed. 
+ *
+ * @param object Array that this object will be assigned to. 
+ *
+ * @return Reference to this object. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Assign this object to the given array. 
+ *
+ * 2. Return reference to this object. 
+ */
+EMetaArray& EMetaArray::operator=(const EMetaArray& object)
+{
+   QList<EMetadata>::operator=(object);
+   return *this;
+}
+
+
+
+
+
+
+/*!
  * Tests if the array is empty or not. 
  *
  * @return Returns true of the array is empty else returns false. 

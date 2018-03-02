@@ -12,9 +12,10 @@ class EMetadata;
  * This holds a list of metadata objects. It inherits from Qt so it is copy on 
  * write. Refer to EMetadata for more information about the metadata system. 
  */
-class EMetaArray : public QList<EMetadata>
+class EMetaArray : private QList<EMetadata>
 {
 public:
+   EMetaArray& operator=(const EMetaArray& object);
    bool isEmpty() const;
    int size() const;
    QList<EMetadata>::iterator begin();
