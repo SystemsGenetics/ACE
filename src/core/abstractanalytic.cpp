@@ -375,7 +375,11 @@ void EAbstractAnalytic::processMPI()
          emit finished();
          break;
       }
-      else break;
+      else
+      {
+         QTimer::singleShot(1000, this, SLOT(processMPI()));
+         break;
+      }
    }
 }
 

@@ -172,8 +172,8 @@ protected:
    EAbstractData* getDataOut(const QString& path, quint16 type);
 private slots:
    void receiveData(const QByteArray& data, int fromRank);
-private:
    void processMPI();
+private:
    void prepareRun();
    void finishRun();
    static QMutex _mutex;

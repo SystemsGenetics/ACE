@@ -200,174 +200,174 @@ int EApplication::run(int argc, char** argv)
    using Type = EAbstractAnalytic::ArgumentType;
    unique_ptr<EAbstractAnalytic> analytic;
 
+   // setup std out stream and make sure there are arguments
+   QTextStream stream(stdout);
+   if ( argc <= 0 )
+   {
+      stream << tr("No arguments given for run command, exiting.\n");
+      return -1;
+   }
+
+   // get analytic name from first argument
+   QString analyticName(argv[0]);
+   --argc;
+   argv = &argv[1];
+
+   // go through analytics and find the one that matches the command line name given
+   EAbstractAnalyticFactory& factory {EAbstractAnalyticFactory::getInstance()};
+   for (int i = 0; i < factory.getCount() ;++i)
+   {
+      if ( factory.getCommandName(i) == analyticName )
+      {
+         analytic = factory.make(i);
+         break;
+      }
+   }
+
+   // make sure an analytic was found with given command line name
+   if ( !analytic )
+   {
+      stream << tr("Cannot find analytic by the name \"%1\", exiting.\n").arg(analyticName);
+      return -1;
+   }
+
+   // make sure the remaining number of arguments is even
+   if ( argc%2 )
+   {
+      stream << tr("Invalid number of analytic arguments, exiting.\n");
+      return -1;
+   }
+
+   // build a mapping of all analytic arguments and their command line name
+   QMap<QString,int> argumentMap;
+   for (int i = 0; i < analytic->getArgumentCount() ;++i)
+   {
+      argumentMap.insert(analytic->getArgumentData(i,Role::CommandLineName).toString(),i);
+   }
+
+   // iterate through all remaining arguments, taking two at a time, the first being the argument
+   // name and the second being the value
+   for (int i = 0; i < argc ;i+=2)
+   {
+      // get the argument name and make sure it is valid
+      QString name(argv[i]);
+      if ( name.at(0) != QChar('-') || name.at(1) != QChar('-') )
+      {
+         stream << tr("Invalid analytic argument \"%1\", exiting.\n").arg(name);
+         return -1;
+      }
+      name.remove(0,2);
+
+      // get the argument value
+      QString value(argv[i+1]);
+
+      // using analytic's argument map get which argument number this is, making sure one is found
+      auto j = argumentMap.constFind(name);
+      if ( j == argumentMap.constEnd() )
+      {
+         stream << tr("Cannot find analytic argument \"--%1\", exiting.\n").arg(name);
+         return -1;
+      }
+
+      // now set analytic's argument depending on what type it is
+      switch (analytic->getArgumentData(*j))
+      {
+      case Type::Bool:
+      {
+         // get boolean value
+         bool val {false};
+         if ( value == QString("true") )
+         {
+            val = true;
+         }
+
+         // set argument
+         analytic->setArgument(*j,val);
+         break;
+      }
+      case Type::Integer:
+      {
+         // get integer value
+         bool ok {false};
+         int val;
+         val = value.toInt(&ok);
+
+         // make sure integer value was grabbed
+         if ( !ok )
+         {
+            stream << tr("Expected argument \"%1\" to be an integer, exiting.").arg(name);
+            return -1;
+         }
+
+         // make sure integer value is within limits
+         if ( val < analytic->getArgumentData(*j,Role::Minimum).toInt()
+              || val > analytic->getArgumentData(*j,Role::Maximum).toInt() )
+         {
+            stream << tr("Integer argument \"%1\" is out of bounds, exiting.").arg(name);
+            return -1;
+         }
+
+         // set argument
+         analytic->setArgument(*j,val);
+         break;
+      }
+      case Type::Double:
+      {
+         // get floating point value
+         bool ok {false};
+         double val;
+         val = value.toDouble(&ok);
+
+         // make sure floating point was grabbed
+         if ( !ok )
+         {
+            stream << tr("Expected argument \"%1\" to be a real number, exiting.").arg(name);
+            return -1;
+         }
+
+         // make sure floating point is within limits
+         if ( val < analytic->getArgumentData(*j,Role::Minimum).toDouble()
+              || val > analytic->getArgumentData(*j,Role::Maximum).toDouble() )
+         {
+            stream << tr("Real number argument \"%1\" is out of bounds, exiting.").arg(name);
+            return -1;
+         }
+
+         // set argument
+         analytic->setArgument(*j,val);
+         break;
+      }
+      case Type::String:
+         analytic->setArgument(*j,value);
+         break;
+      case Type::Combo:
+         // make sure combo value is legal combo option
+         if ( !analytic->getArgumentData(*j,Role::ComboValues).toStringList().contains(value) )
+         {
+            stream << tr("Combo argument \"%1\" contains illegal value, exiting.").arg(name);
+            return -1;
+         }
+
+         // set argument
+         analytic->setArgument(*j,value);
+         break;
+      case Type::FileIn:
+         analytic->addFileIn(*j,value);
+         break;
+      case Type::FileOut:
+         analytic->addFileOut(*j,value);
+         break;
+      case Type::DataIn:
+         analytic->addDataIn(*j,value,analytic->getArgumentData(*j,Role::DataType).toUInt());
+         break;
+      case Type::DataOut:
+         analytic->addDataOut(*j,value,analytic->getArgumentData(*j,Role::DataType).toUInt());
+         break;
+      }
+   }
+
    if ( mpi.isMaster() )
    {
-      // setup std out stream and make sure there are arguments
-      QTextStream stream(stdout);
-      if ( argc <= 0 )
-      {
-         stream << tr("No arguments given for run command, exiting.\n");
-         return -1;
-      }
-
-      // get analytic name from first argument
-      QString analyticName(argv[0]);
-      --argc;
-      argv = &argv[1];
-
-      // go through analytics and find the one that matches the command line name given
-      EAbstractAnalyticFactory& factory {EAbstractAnalyticFactory::getInstance()};
-      for (int i = 0; i < factory.getCount() ;++i)
-      {
-         if ( factory.getCommandName(i) == analyticName )
-         {
-            analytic = factory.make(i);
-            break;
-         }
-      }
-
-      // make sure an analytic was found with given command line name
-      if ( !analytic )
-      {
-         stream << tr("Cannot find analytic by the name \"%1\", exiting.\n").arg(analyticName);
-         return -1;
-      }
-
-      // make sure the remaining number of arguments is even
-      if ( argc%2 )
-      {
-         stream << tr("Invalid number of analytic arguments, exiting.\n");
-         return -1;
-      }
-
-      // build a mapping of all analytic arguments and their command line name
-      QMap<QString,int> argumentMap;
-      for (int i = 0; i < analytic->getArgumentCount() ;++i)
-      {
-         argumentMap.insert(analytic->getArgumentData(i,Role::CommandLineName).toString(),i);
-      }
-
-      // iterate through all remaining arguments, taking two at a time, the first being the argument
-      // name and the second being the value
-      for (int i = 0; i < argc ;i+=2)
-      {
-         // get the argument name and make sure it is valid
-         QString name(argv[i]);
-         if ( name.at(0) != QChar('-') || name.at(1) != QChar('-') )
-         {
-            stream << tr("Invalid analytic argument \"%1\", exiting.\n").arg(name);
-            return -1;
-         }
-         name.remove(0,2);
-
-         // get the argument value
-         QString value(argv[i+1]);
-
-         // using analytic's argument map get which argument number this is, making sure one is found
-         auto j = argumentMap.constFind(name);
-         if ( j == argumentMap.constEnd() )
-         {
-            stream << tr("Cannot find analytic argument \"--%1\", exiting.\n").arg(name);
-            return -1;
-         }
-
-         // now set analytic's argument depending on what type it is
-         switch (analytic->getArgumentData(*j))
-         {
-         case Type::Bool:
-         {
-            // get boolean value
-            bool val {false};
-            if ( value == QString("true") )
-            {
-               val = true;
-            }
-
-            // set argument
-            analytic->setArgument(*j,val);
-            break;
-         }
-         case Type::Integer:
-         {
-            // get integer value
-            bool ok {false};
-            int val;
-            val = value.toInt(&ok);
-
-            // make sure integer value was grabbed
-            if ( !ok )
-            {
-               stream << tr("Expected argument \"%1\" to be an integer, exiting.").arg(name);
-               return -1;
-            }
-
-            // make sure integer value is within limits
-            if ( val < analytic->getArgumentData(*j,Role::Minimum).toInt()
-                 || val > analytic->getArgumentData(*j,Role::Maximum).toInt() )
-            {
-               stream << tr("Integer argument \"%1\" is out of bounds, exiting.").arg(name);
-               return -1;
-            }
-
-            // set argument
-            analytic->setArgument(*j,val);
-            break;
-         }
-         case Type::Double:
-         {
-            // get floating point value
-            bool ok {false};
-            double val;
-            val = value.toDouble(&ok);
-
-            // make sure floating point was grabbed
-            if ( !ok )
-            {
-               stream << tr("Expected argument \"%1\" to be a real number, exiting.").arg(name);
-               return -1;
-            }
-
-            // make sure floating point is within limits
-            if ( val < analytic->getArgumentData(*j,Role::Minimum).toDouble()
-                 || val > analytic->getArgumentData(*j,Role::Maximum).toDouble() )
-            {
-               stream << tr("Real number argument \"%1\" is out of bounds, exiting.").arg(name);
-               return -1;
-            }
-
-            // set argument
-            analytic->setArgument(*j,val);
-            break;
-         }
-         case Type::String:
-            analytic->setArgument(*j,value);
-            break;
-         case Type::Combo:
-            // make sure combo value is legal combo option
-            if ( !analytic->getArgumentData(*j,Role::ComboValues).toStringList().contains(value) )
-            {
-               stream << tr("Combo argument \"%1\" contains illegal value, exiting.").arg(name);
-               return -1;
-            }
-
-            // set argument
-            analytic->setArgument(*j,value);
-            break;
-         case Type::FileIn:
-            analytic->addFileIn(*j,value);
-            break;
-         case Type::FileOut:
-            analytic->addFileOut(*j,value);
-            break;
-         case Type::DataIn:
-            analytic->addDataIn(*j,value,analytic->getArgumentData(*j,Role::DataType).toUInt());
-            break;
-         case Type::DataOut:
-            analytic->addDataOut(*j,value,analytic->getArgumentData(*j,Role::DataType).toUInt());
-            break;
-         }
-      }
-
       // initialize percent complete reporting
       _percentComplete = 0;
       stream << "0%";
