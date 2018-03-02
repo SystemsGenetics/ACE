@@ -96,7 +96,7 @@ private:
    /*!
     * This is a pointer to the actual data, if any, that this object contains. 
     */
-   void* _data;
+   void* _data {nullptr};
 };
 
 

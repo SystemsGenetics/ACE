@@ -104,6 +104,8 @@ EMetadata::EMetadata(EMetadata&& object):
  * 1. Delete any data this object contains. 
  *
  * 2. Copy the type and data of the supplied metadata object. 
+ *
+ * 3. Return reference to this object. 
  */
 EMetadata& EMetadata::operator=(const EMetadata& object)
 {
@@ -133,6 +135,8 @@ EMetadata& EMetadata::operator=(const EMetadata& object)
  * 2. Copy the type and data pointer of the supplied metadata object. 
  *
  * 3. Set the supplied metadata object to Null. 
+ *
+ * 4. Return reference to this object. 
  */
 EMetadata& EMetadata::operator=(EMetadata&& object)
 {
@@ -414,6 +418,16 @@ EMetadata::Type EMetadata::type() const
 
 
 /*!
+ * Returns the name of the given type as a string. 
+ *
+ * @param type Type to be given name of. 
+ *
+ * @return Name of the given type. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Return constant string of correct type name from given type. 
  */
 QString EMetadata::typeName(Type type)
 {
@@ -435,8 +449,19 @@ QString EMetadata::typeName(Type type)
 
 
 
-
-void EMetadata::checkType(EMetadata::Type type) const
+/*!
+ * Makes sure given type matches the type this object contains. If it does not 
+ * match an exception is thrown saying so. 
+ *
+ * @param type Given type to verify it is this object's type. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the given type does not match with this object's type then throw an 
+ *    exception, else return from operation. 
+ */
+void EMetadata::checkType(Type type) const
 {
    if ( _type != type )
    {
@@ -524,4 +549,3 @@ void EMetadata::copy(const void* data)
       break;
    }
 }
-

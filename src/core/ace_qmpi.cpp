@@ -291,4 +291,3 @@ QMPI::~QMPI()
 {
    MPI_Finalize();
 }
-
