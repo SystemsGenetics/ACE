@@ -5,7 +5,7 @@
 #include "abstractdata.h"
 #include "datastream.h"
 #include "metadata.h"
-#include "metadatamodel.h"
+#include "old_metadatamodel.h"
 
 
 

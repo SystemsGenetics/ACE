@@ -6,7 +6,7 @@
 #include <QPushButton>
 
 #include "metadatadialog.h"
-#include "metadatamodel.h"
+#include "old_metadatamodel.h"
 #include "metadata.h"
 #include "dataobject.h"
 #include "imageviewer.h"

@@ -5,7 +5,7 @@
 #include <QMessageBox>
 
 #include "imageviewer.h"
-#include "metadatamodel.h"
+#include "old_metadatamodel.h"
 
 
 

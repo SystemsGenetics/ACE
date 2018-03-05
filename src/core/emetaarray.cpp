@@ -110,7 +110,7 @@ QList<EMetadata>::const_iterator EMetaArray::cbegin() const
 /*!
  * Returns end of array iterator. 
  *
- * @return End of array. 
+ * @return End of array iterator. 
  */
 QList<EMetadata>::iterator EMetaArray::end()
 {
@@ -125,7 +125,7 @@ QList<EMetadata>::iterator EMetaArray::end()
 /*!
  * Returns end of array constant iterator. 
  *
- * @return End of array. 
+ * @return End of array constant iterator. 
  */
 QList<EMetadata>::const_iterator EMetaArray::end() const
 {
@@ -140,7 +140,7 @@ QList<EMetadata>::const_iterator EMetaArray::end() const
 /*!
  * Returns end of array constant iterator. 
  *
- * @return End of array. 
+ * @return End of array constant iterator. 
  */
 QList<EMetadata>::const_iterator EMetaArray::cend() const
 {

@@ -110,7 +110,7 @@ QMap<QString,EMetadata>::const_iterator EMetaObject::cbegin() const
 /*!
  * Returns end of mapping iterator. 
  *
- * @return End of map. 
+ * @return End of map iterator. 
  */
 QMap<QString,EMetadata>::iterator EMetaObject::end()
 {
@@ -125,7 +125,7 @@ QMap<QString,EMetadata>::iterator EMetaObject::end()
 /*!
  * Returns end of mapping constant iterator. 
  *
- * @return End of map. 
+ * @return End of map constant iterator. 
  */
 QMap<QString,EMetadata>::const_iterator EMetaObject::end() const
 {
@@ -140,7 +140,7 @@ QMap<QString,EMetadata>::const_iterator EMetaObject::end() const
 /*!
  * Returns end of mapping constant iterator. 
  *
- * @return End of map. 
+ * @return End of map constant iterator. 
  */
 QMap<QString,EMetadata>::const_iterator EMetaObject::cend() const
 {

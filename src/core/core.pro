@@ -27,13 +27,15 @@ SOURCES += \
    datamanager.cpp \
    datareference.cpp \
    abstractanalytic.cpp \
-   metadatamodel.cpp \
    metadata.cpp \
    emetadata.cpp \
    ace_qmpi.cpp \
     common.cpp \
     emetaarray.cpp \
-    emetaobject.cpp
+    emetaobject.cpp \
+    old_metadatamodel.cpp \
+    ace_metadatamodel.cpp \
+    ace_metadatamodel_node.cpp
 
 HEADERS += \
    opencldevicemodel.h \
@@ -55,13 +57,15 @@ HEADERS += \
    datareference.h \
    AceCore.h \
    AceOpenCL.h \
-   metadatamodel.h \
    metadata.h \
    emetadata.h \
    ace_qmpi.h \
     common.h \
     emetaarray.h \
-    emetaobject.h
+    emetaobject.h \
+    old_metadatamodel.h \
+    ace_metadatamodel.h \
+    ace_metadatamodel_node.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
