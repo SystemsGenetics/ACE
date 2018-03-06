@@ -4,6 +4,7 @@
 #include <QList>
 #include <QMap>
 #include <QVariant>
+#include "ace_metadatamodel.h"
 #include "emetadata.h"
 
 
@@ -23,7 +24,8 @@ namespace Ace
    {
       Q_OBJECT
    public:
-      explicit Node(QObject* parent = nullptr);
+      explicit Node(EMetadata::Type type = EMetadata::Null, QObject* parent = nullptr);
+      Node(const Node& object);
       bool isContainer() const;
       bool isArray() const;
       bool isObject() const;
@@ -32,15 +34,15 @@ namespace Ace
       QString type() const;
       QVariant value() const;
       void setValue(const QVariant& value);
-      QList<Node*>::const_iterator arrayBegin() const;
-      QList<Node*>::const_iterator arrayEnd() const;
-      QMap<QString,Node*>::const_iterator objectBegin() const;
-      QMap<QString,Node*>::const_iterator objectEnd() const;
-      int indexOf(Node* pointer) const;
+      QList<MetadataModel::Node*>::const_iterator arrayBegin() const;
+      QList<MetadataModel::Node*>::const_iterator arrayEnd() const;
+      QMap<QString,MetadataModel::Node*>::const_iterator objectBegin() const;
+      QMap<QString,MetadataModel::Node*>::const_iterator objectEnd() const;
+      int indexOf(const Node* pointer) const;
       bool contains(const QString& key) const;
       int getFutureIndex(const QString& key) const;
-      std::unique_ptr<Node> copy(int index);
-      std::unique_ptr<Node> cut(int index);
+      std::unique_ptr<MetadataModel::Node> copy(int index);
+      std::unique_ptr<MetadataModel::Node> cut(int index);
       void insertArray(int index, std::unique_ptr<Node>&& node);
       void insertObject(const QString& key, std::unique_ptr<Node>&& node);
       void remove(int index);
@@ -50,7 +52,7 @@ namespace Ace
        * if it is an array type. If this node is not an array type this will always be 
        * empty. 
        */
-      QList<Node*> _list;
+      QList<Node*> _array;
       /*!
        * Internal mapping of node pointers that is used to contain this node's 
        * children if it is an object type. If this node is not an object type this 
