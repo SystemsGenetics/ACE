@@ -241,17 +241,14 @@ QString MetadataModel::Node::type() const
  * 1. If this node is not a container type simply return the metadata value, 
  *    else proceed to the next step. 
  *
- * 2. If this node is a byte array type then return a string informing the user 
- *    this is an image, else proceed to the next step. 
- *
- * 3. If this node is an array type then return a string reporting the number of 
+ * 2. If this node is an array type then return a string reporting the number of 
  *    nodes this node's array contains, else proceed to the next step. 
  *
- * 4. If this node is an object type then return a string reporting the number 
+ * 3. If this node is an object type then return a string reporting the number 
  *    of nodes this node's map contains, else proceed to the next step. 
  *
- * 5. If this step is reached then the node's metadata type must be null so 
- *    return a string stating that fact. 
+ * 4. If this step is reached then the node's metadata type must be null so 
+ *    return an empty qt variant. 
  */
 QVariant MetadataModel::Node::value() const
 {
@@ -264,13 +261,13 @@ QVariant MetadataModel::Node::value() const
    case EMetadata::String:
       return _meta.toString();
    case EMetadata::Bytes:
-      return QString("IMAGE");
+      return _meta.toBytes();
    case EMetadata::Array:
       return QString::number(_array.size()).append(" items");
    case EMetadata::Object:
       return QString::number(_map.size()).append(" items");
    default:
-      return QString("NULL");
+      return QVariant();
    }
 }
 
@@ -495,36 +492,31 @@ int MetadataModel::Node::getFutureIndex(const QString& key) const
  *
  * Steps of Operation: 
  *
- * 1. If the index is within range and this node is a container type then get 
- *    the node pointer contained within the given index from this node's 
- *    internal array or map depending on its container type. 
+ * 1. Initialize the return smart pointer to null. 
  *
- * 2. If a node pointer was retrieved from the previous step create and return a 
- *    new node that is a copy of that node pointed to, else return a null 
- *    pointer. 
+ * 2. If the index is within range and this node is a container type then make a 
+ *    new node, setting its pointer to the return smart pointer, that is a copy 
+ *    of the node pointed to at the given index from this node's internal array 
+ *    or map depending on its container type. 
+ *
+ * 3. Return the return smart pointer which is null or set to a copy of the node 
+ *    pointed to at the given index. 
  */
 std::unique_ptr<MetadataModel::Node> MetadataModel::Node::copy(int index)
 {
-   Node* object {nullptr};
+   unique_ptr<Node> ret;
    if ( index > 0 )
    {
       if ( isArray() && index < _array.size() )
       {
-         object = _array.at(index);
+         ret.reset(new Node(*_array.at(index)));
       }
       else if ( isObject() && index < _map.size() )
       {
-         object = _map.values().at(index);
+         ret.reset(new Node(*_map.values().at(index)));
       }
    }
-   if ( object )
-   {
-      return unique_ptr<Node>(new Node(*object));
-   }
-   else
-   {
-      return nullptr;
-   }
+   return ret;
 }
 
 
@@ -541,9 +533,42 @@ std::unique_ptr<MetadataModel::Node> MetadataModel::Node::copy(int index)
  *
  * @return Pointer to child node removed or null pointer if no such child 
  *         exists. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Initialize the return smart pointer to null. 
+ *
+ * 2. If the index is within range and this node is a container type then take 
+ *    the node pointer from this node's array or map, depending on what type 
+ *    this node is, and set the return smart pointer to the taken pointer. 
+ *
+ * 3. If the return smart pointer is not null then set the pointed to node's 
+ *    parent to null. 
+ *
+ * 4. Return the return smart pointer which is null or set to the node pointer 
+ *    found at the given index. 
  */
 std::unique_ptr<MetadataModel::Node> MetadataModel::Node::cut(int index)
-{}
+{
+   unique_ptr<Node> ret;
+   if ( index > 0 )
+   {
+      if ( isArray() && index < _array.size() )
+      {
+         ret.reset(_array.takeAt(index));
+      }
+      else if ( isObject() && index < _map.size() )
+      {
+         ret.reset(_map.take(_map.keys().at(index)));
+      }
+   }
+   if ( ret )
+   {
+      ret->setParent(nullptr);
+   }
+   return ret;
+}
 
 
 
@@ -553,16 +578,33 @@ std::unique_ptr<MetadataModel::Node> MetadataModel::Node::cut(int index)
 /*!
  * Inserts a new node with the given pointer into this node's internal array at 
  * the given index if this node is an array type. If this node is not an array 
- * type this does nothing. If the index is less than 0 the new node is prepended 
- * to the array. If the index is greater than or equal to its size it is 
- * appended to the array. 
+ * type this does nothing but free then given node pointer. If the index is less 
+ * than 0 the new node is prepended to the array. If the index is greater than 
+ * or equal to its size it is appended to the array. 
  *
  * @param index Index where the new node is inserted. 
  *
  * @param node Pointer to the new node that is inserted. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If this node is an array type then insert the given node pointer into this 
+ *    node's internal array setting the new node's parent to this node, else 
+ *    delete the node pointed to. 
  */
 void MetadataModel::Node::insertArray(int index, std::unique_ptr<Node>&& node)
-{}
+{
+   if ( isArray() )
+   {
+      node->setParent(this);
+      _array.insert(index,node.release());
+   }
+   else
+   {
+      node.reset();
+   }
+}
 
 
 
@@ -573,14 +615,35 @@ void MetadataModel::Node::insertArray(int index, std::unique_ptr<Node>&& node)
  * Inserts a new node with the given pointer into this node's internal mapping 
  * with the given key. If the key already exists the node pointer is overwritten 
  * with the new node pointer, freeing the old node's memory. If this node is not 
- * an object type this does nothing. 
+ * an object type this does nothing but free the given node pointer. 
  *
  * @param key The key where the new node that is inserted to in the map. 
  *
  * @param node The pointer to the new node that is inserted into the map. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If this node is an object type then go to the next step, else delete the 
+ *    node pointed to and exit. 
+ *
+ * 2. If a node pointer already exists with the given key delete the node 
+ *    pointed to. Insert the new node pointer with the given key setting the new 
+ *    node's parent to this node. 
  */
 void MetadataModel::Node::insertObject(const QString& key, std::unique_ptr<Node>&& node)
-{}
+{
+   if ( isObject() )
+   {
+      node->setParent(this);
+      delete _map[key];
+      _map[key] = node.release();
+   }
+   else
+   {
+      node.reset();
+   }
+}
 
 
 
@@ -593,6 +656,36 @@ void MetadataModel::Node::insertObject(const QString& key, std::unique_ptr<Node>
  * or the index is out of range this does nothing. 
  *
  * @param index Index of the child node to be removed and deleted. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the index is greater then 0 go to the next step, else exit the 
+ *    function. 
+ *
+ * 2. If the node is an array type and the index is less than the size of the 
+ *    array then go to the next step, else go to step 4. 
+ *
+ * 3. Remove the node pointer from this node's internal array at the given index 
+ *    and delete the node it points to. Exit the function. 
+ *
+ * 4. If this node is an object and the index is less than the size of the map 
+ *    then go to the next step, else exit the function. 
+ *
+ * 5. Remove the node pointer from this node's internal mapping at the given 
+ *    index and delete the node it points to. 
  */
 void MetadataModel::Node::remove(int index)
-{}
+{
+   if ( index > 0 )
+   {
+      if ( isArray() && index < _array.size() )
+      {
+         delete _array.takeAt(index);
+      }
+      else if ( isObject() && index < _map.size() )
+      {
+         delete _map.take(_map.keys().at(index));
+      }
+   }
+}
