@@ -6,6 +6,7 @@
 #include <QVariant>
 #include "ace_metadatamodel.h"
 #include "emetadata.h"
+//
 
 
 
@@ -26,18 +27,24 @@ namespace Ace
    public:
       explicit Node(EMetadata::Type type = EMetadata::Null, QObject* parent = nullptr);
       Node(const Node& object);
+      bool isBytes() const;
+      bool isEditable() const;
       bool isContainer() const;
       bool isArray() const;
       bool isObject() const;
       int size() const;
+      MetadataModel::Node* parent() const;
       QString key() const;
+      bool setKey(const QString& newKey);
       QString type() const;
+      QByteArray bytes() const;
       QVariant value() const;
-      void setValue(const QVariant& value);
+      bool setValue(const QVariant& value);
       QList<MetadataModel::Node*>::const_iterator arrayBegin() const;
       QList<MetadataModel::Node*>::const_iterator arrayEnd() const;
       QMap<QString,MetadataModel::Node*>::const_iterator objectBegin() const;
       QMap<QString,MetadataModel::Node*>::const_iterator objectEnd() const;
+      MetadataModel::Node* get(int index) const;
       int indexOf(const Node* pointer) const;
       bool contains(const QString& key) const;
       int getFutureIndex(const QString& key) const;

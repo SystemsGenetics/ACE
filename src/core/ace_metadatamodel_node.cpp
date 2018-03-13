@@ -5,6 +5,7 @@
 
 using namespace std;
 using namespace Ace;
+//
 
 
 
@@ -61,6 +62,36 @@ MetadataModel::Node::Node(const Node& object):
       child->setParent(this);
       _map.insert(i.key(),child);
    }
+}
+
+
+
+
+
+
+/*!
+ * Tests if this node is a bytes type. 
+ *
+ * @return Returns true of this node is a bytes type else returns false. 
+ */
+bool MetadataModel::Node::isBytes() const
+{
+   return _meta.isBytes();
+}
+
+
+
+
+
+
+/*!
+ * Tests if this node's metadata is editable as a string. 
+ *
+ * @return Returns true if this node is editable else returns false. 
+ */
+bool MetadataModel::Node::isEditable() const
+{
+   return _meta.isBool() || _meta.isDouble() || _meta.isString();
 }
 
 
@@ -153,6 +184,21 @@ int MetadataModel::Node::size() const
 
 
 /*!
+ * Returns this node's parent. If this is the root node then null is returned. 
+ *
+ * @return Pointer to this node's parent unless this node is root. 
+ */
+MetadataModel::Node* MetadataModel::Node::parent() const
+{
+   return qobject_cast<Node*>(QObject::parent());
+}
+
+
+
+
+
+
+/*!
  * Returns the key or name for this node in relation to its parent. If its 
  * parent is an array the index is returned as a string. 
  *
@@ -215,6 +261,46 @@ QString MetadataModel::Node::key() const
 
 
 /*!
+ * This will set the key of this node to a new value. If this node's parent is 
+ * not an object type or the key already exists then false is returned. 
+ *
+ * @param newKey The new key for this node. 
+ *
+ * @return Returns true on success or false on failure. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Get pointer to this node's parent. 
+ *
+ * 2. If this node has no parent, this node's parent is not an object, or this 
+ *    node's parent already contains a node with the new key then return false 
+ *    for failure. Else go to the next step. 
+ *
+ * 3. Remove the old key this node was contained in its parent and add it back 
+ *    with the new key. 
+ *
+ * 4. Return true for success. 
+ */
+bool MetadataModel::Node::setKey(const QString& newKey)
+{
+   Node* parent_ {parent()};
+   if ( !parent_ || parent_->isObject() || parent_->contains(newKey) )
+   {
+      return false;
+   }
+   QMap<QString,Node*>& map_ {parent_->_map};
+   map_.remove(map_.keys().at(parent_->indexOf(this)));
+   map_.insert(newKey,this);
+   return true;
+}
+
+
+
+
+
+
+/*!
  * Returns the metadata type for this node as a string. 
  *
  * @return Metadata type of this node. 
@@ -230,24 +316,61 @@ QString MetadataModel::Node::type() const
 
 
 /*!
- * Returns the metadata value of this node if it is not a container type. If it 
- * is a container type a null Qt variant is returned. 
+ * Returns the byte array of this node. If this node is not a bytes type then an 
+ * empty byte array is returned. 
  *
- * @return Value of this node's metadata, if any. 
+ * @return Byte array of this node, if any. 
  *
  *
  * Steps of Operation: 
  *
- * 1. If this node is not a container type simply return the metadata value, 
- *    else proceed to the next step. 
+ * 1. Initialize return byte array variable to an empty array. 
  *
- * 2. If this node is an array type then return a string reporting the number of 
+ * 2. If this node's metadata is a byte array set return variable to said byte 
+ *    array. 
+ *
+ * 3. Return the return byte array variable. 
+ */
+QByteArray MetadataModel::Node::bytes() const
+{
+   QByteArray ret;
+   if ( _meta.isBytes() )
+   {
+      ret = _meta.toBytes();
+   }
+   return ret;
+}
+
+
+
+
+
+
+/*!
+ * Returns the metadata value of this node if it is not a container or bytes 
+ * type. If this node is a container type then a string reporting the number of 
+ * nodes it holds is returned. If this node is a bytes type then a string 
+ * informing the user this is an image is returned. 
+ *
+ * @return Value of this node's metadata, or information about what it contains, 
+ *         or a plain string stating it is a bytes(image) type. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If this node is not a container or bytes type simply return the metadata 
+ *    value, else proceed to the next step. 
+ *
+ * 2. If this node is a bytes type then return a plain string informing the user 
+ *    this is a byte array, else go to the next step. 
+ *
+ * 3. If this node is an array type then return a string reporting the number of 
  *    nodes this node's array contains, else proceed to the next step. 
  *
- * 3. If this node is an object type then return a string reporting the number 
+ * 4. If this node is an object type then return a string reporting the number 
  *    of nodes this node's map contains, else proceed to the next step. 
  *
- * 4. If this step is reached then the node's metadata type must be null so 
+ * 5. If this step is reached then the node's metadata type must be null so 
  *    return an empty qt variant. 
  */
 QVariant MetadataModel::Node::value() const
@@ -261,11 +384,11 @@ QVariant MetadataModel::Node::value() const
    case EMetadata::String:
       return _meta.toString();
    case EMetadata::Bytes:
-      return _meta.toBytes();
+      return tr("IMAGE");
    case EMetadata::Array:
-      return QString::number(_array.size()).append(" items");
+      return tr("%1 items").arg(QString::number(_array.size()));
    case EMetadata::Object:
-      return QString::number(_map.size()).append(" items");
+      return tr("%1 items").arg(QString::number(_map.size()));
    default:
       return QVariant();
    }
@@ -283,30 +406,33 @@ QVariant MetadataModel::Node::value() const
  * @param value New value this node's metadata will be set to if it is not a 
  *              container type. 
  *
+ * @return Returns true if value was successfully set else returns false if no 
+ *         value was set. 
+ *
  *
  * Steps of Operation: 
  *
- * 1. Set this node's metadata to the given value depending on its type. If it 
- *    is a container or null type then do nothing. 
+ * 1. If this node is not a container type then set its value and return true, 
+ *    else do nothing and return false. 
  */
-void MetadataModel::Node::setValue(const QVariant& value)
+bool MetadataModel::Node::setValue(const QVariant& value)
 {
    switch (_meta.type())
    {
    case EMetadata::Bool:
       _meta.toBool() = value.toBool();
-      break;
+      return true;
    case EMetadata::Double:
       _meta.toDouble() = value.toDouble();
-      break;
+      return true;
    case EMetadata::String:
       _meta.toString() = value.toString();
-      break;
+      return true;
    case EMetadata::Bytes:
       _meta.toBytes() = value.toByteArray();
-      break;
+      return true;
    default:
-      break;
+      return false;
    }
 }
 
@@ -374,6 +500,48 @@ QMap<QString,MetadataModel::Node*>::const_iterator MetadataModel::Node::objectBe
 QMap<QString,MetadataModel::Node*>::const_iterator MetadataModel::Node::objectEnd() const
 {
    return _map.end();
+}
+
+
+
+
+
+
+/*!
+ * Returns the node pointer contains in this node's internal container, map or 
+ * array, with the given index. If this node is not a container type or the 
+ * index is out of range then null is returned. 
+ *
+ * @param index The index of the requested node pointer. 
+ *
+ * @return Node pointer with given index, if any. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Initialize return pointer variable to null. 
+ *
+ * 2. If the index is within range and this node is a container type then set 
+ *    the return pointer variable to the node pointer contained with the given 
+ *    index. 
+ *
+ * 3. Return the return pointer variable. 
+ */
+MetadataModel::Node* MetadataModel::Node::get(int index) const
+{
+   Node* ret {nullptr};
+   if ( index > 0 )
+   {
+      if ( isArray() && index < _array.size() )
+      {
+         ret = _array.at(index);
+      }
+      else if ( isObject() && index < _map.size() )
+      {
+         ret = _map.values().at(index);
+      }
+   }
+   return ret;
 }
 
 
