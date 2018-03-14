@@ -23,10 +23,13 @@ namespace Ace
       Q_OBJECT
    public:
       /*!
+       * This contains custom data roles for this model. 
        */
       enum Roles
       {
          /*!
+          * This is for the data role of getting the byte array of a bytes metadata type. 
+          * The normal display role for a bytes type will just return an "IMAGE" string. 
           */
          RawImageData = 10000
       };
@@ -54,15 +57,17 @@ namespace Ace
       MetadataModel::Node* pointer(const QModelIndex& index) const;
       bool setKey(const QModelIndex& index, const QString& newKey);
       std::unique_ptr<MetadataModel::Node> take(Node* node);
-      void insert(const QModelIndex& parent, int row, std::unique_ptr<Node>&& node);
+      bool insert(const QModelIndex& parent, int row, std::unique_ptr<Node>&& node);
       EMetadata buildMeta(const Node* node) const;
       std::unique_ptr<MetadataModel::Node> buildNode(const EMetadata& meta);
       /*!
+       * This stores the string identifier for the custom mime type used for this 
+       * model to have drag and drop functionality. 
        */
       static const char* _mimeType;
       /*!
-       * The root node of the metadata this model contains. The node must be the 
-       * metadata object type. 
+       * This stores the root node of the metadata this model contains. The node must 
+       * be the an object type. 
        */
       Node* _root;
    };

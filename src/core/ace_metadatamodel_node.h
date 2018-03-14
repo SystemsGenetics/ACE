@@ -26,6 +26,7 @@ namespace Ace
       Q_OBJECT
    public:
       explicit Node(EMetadata::Type type = EMetadata::Null, QObject* parent = nullptr);
+      explicit Node(const EMetadata& meta, QObject* parent = nullptr);
       Node(const Node& object);
       bool isBytes() const;
       bool isEditable() const;
@@ -38,6 +39,7 @@ namespace Ace
       bool setKey(const QString& newKey);
       QString type() const;
       QByteArray bytes() const;
+      EMetadata meta() const;
       QVariant value() const;
       bool setValue(const QVariant& value);
       QList<MetadataModel::Node*>::const_iterator arrayBegin() const;

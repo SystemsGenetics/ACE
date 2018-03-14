@@ -1,6 +1,8 @@
 #include "ace_metadatamodel.h"
 #include "ace_metadatamodel_node.h"
 #include "emetadata.h"
+#include "emetaarray.h"
+#include "emetaobject.h"
 #include "exception.h"
 
 
@@ -12,6 +14,8 @@ using namespace Ace;
 
 
 /*!
+ * This stores the string identifier for the custom mime type used for this 
+ * model to have drag and drop functionality. 
  */
 const char* MetadataModel::_mimeType {"ace/metadatamodel.node.pointer"};
 
@@ -21,8 +25,9 @@ const char* MetadataModel::_mimeType {"ace/metadatamodel.node.pointer"};
 
 
 /*!
+ * This constructs a new metadata model with the given parent, if any. 
  *
- * @param parent  
+ * @param parent The parent for this new model. 
  */
 MetadataModel::MetadataModel(QObject* parent):
    QAbstractItemModel(parent),
@@ -35,6 +40,10 @@ MetadataModel::MetadataModel(QObject* parent):
 
 
 /*!
+ * This implements the interface that informs Qt what mime types this model 
+ * supports for drag and drop support. 
+ *
+ * @return List of mime types this model supports for drag and drop. 
  */
 QStringList MetadataModel::mimeTypes() const
 {
@@ -47,6 +56,11 @@ QStringList MetadataModel::mimeTypes() const
 
 
 /*!
+ * This implements the interface that informs Qt what drag and drop actions this 
+ * model supports. The drag and drop actions this model supports is moving and 
+ * copying. 
+ *
+ * @return Supported drag and drop actions for this model. 
  */
 Qt::DropActions MetadataModel::supportedDropActions() const
 {
@@ -59,12 +73,30 @@ Qt::DropActions MetadataModel::supportedDropActions() const
 
 
 /*!
+ * This implements the interface that informs any view what the headers should 
+ * be for columns and/or rows of the view. This returns the header data for the 
+ * given section, orientation, and role. This model has no headers for the row 
+ * and has headers for the first three columns denoting "key", "type", and 
+ * "value". 
  *
- * @param section  
+ * @param section The section for the requested header data. This is the indent, 
+ *                starting at 0, for the given orientation of vertical or 
+ *                horizontal. 
  *
- * @param orientation  
+ * @param orientation The orientation for the requested header data. 
  *
- * @param role  
+ * @param role The role for the requested header data. 
+ *
+ * @return The header data for the given section, orientation, and role. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If this is not the display role or the orientation is not vertical then 
+ *    return a null variant else go to the next step. 
+ *
+ * 2. If the section is between 0 and 2 return the correct header name else 
+ *    return a null variant. 
  */
 QVariant MetadataModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
@@ -87,12 +119,29 @@ QVariant MetadataModel::headerData(int section, Qt::Orientation orientation, int
 
 
 /*!
+ * This implements the interface that creates a new index from the given row, 
+ * column, and parent index. 
  *
- * @param row  
+ * @param row Row for the requested index. 
  *
- * @param column  
+ * @param column Column for the requested index. 
  *
- * @param parent  
+ * @param parent Parent index for the requested index. 
+ *
+ * @return Index for the given row, column, and parent index. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Get the node pointer of the given parent index. 
+ *
+ * 2. If the parent node is not a container then throw an exception, else go to 
+ *    the next step. 
+ *
+ * 3. If the row is out of range for the parent node's list of children nodes 
+ *    then return an invalid index, else go to the next step. 
+ *
+ * 4. Return a new index for the given row, column, and parent. 
  */
 QModelIndex MetadataModel::index(int row, int column, const QModelIndex& parent) const
 {
@@ -372,30 +421,7 @@ bool MetadataModel::isContainer(const QModelIndex& index) const
  */
 bool MetadataModel::insert(const QModelIndex& parent, EMetadata::Type type)
 {
-   Node* parent_ {pointer(parent)};
-   if ( parent_->isObject() )
-   {
-      QString newKey {tr("unnamed")};
-      while ( parent_->contains(newKey) )
-      {
-         newKey.append("_");
-      }
-      int row {parent_->getFutureIndex(newKey)};
-      beginInsertRows(parent,row,row);
-      parent_->insertObject(newKey,unique_ptr<Node>(new Node(type)));
-      endInsertRows();
-   }
-   else if ( parent_->isArray() )
-   {
-      beginInsertRows(parent,0,0);
-      parent_->insertArray(0,unique_ptr<Node>(new Node(type)));
-      endInsertRows();
-   }
-   else
-   {
-      return false;
-   }
-   return true;
+   return insert(parent,0,unique_ptr<Node>(new Node(type)));
 }
 
 
@@ -444,6 +470,13 @@ EMetadata MetadataModel::meta() const
  */
 void MetadataModel::setMeta(const EMetadata& newRoot)
 {
+   if ( !newRoot.isObject() )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Metadata Model"));
+      e.setDetails(tr("Cannot set root of model to metadata that is not an object type."));
+      throw e;
+   }
    beginResetModel();
    delete _root;
    _root = buildNode(newRoot).release();
@@ -551,8 +584,41 @@ std::unique_ptr<MetadataModel::Node> MetadataModel::take(Node* node)
  *
  * @param node  
  */
-void MetadataModel::insert(const QModelIndex& parent, int row, std::unique_ptr<Node>&& node)
-{}
+bool MetadataModel::insert(const QModelIndex& parent, int row, std::unique_ptr<Node>&& node)
+{
+   Node* parent_ {pointer(parent)};
+   if ( parent_->isObject() )
+   {
+      QString newKey {tr("unnamed")};
+      while ( parent_->contains(newKey) )
+      {
+         newKey.append("_");
+      }
+      int row {parent_->getFutureIndex(newKey)};
+      beginInsertRows(parent,row,row);
+      parent_->insertObject(newKey,std::move(node));
+      endInsertRows();
+   }
+   else if ( parent_->isArray() )
+   {
+      if ( row >= parent_->size() )
+      {
+         row = parent_->size() - 1;
+      }
+      else if ( row < 0 )
+      {
+         row = 0;
+      }
+      beginInsertRows(parent,row,row);
+      parent_->insertArray(row,std::move(node));
+      endInsertRows();
+   }
+   else
+   {
+      return false;
+   }
+   return true;
+}
 
 
 
@@ -564,7 +630,24 @@ void MetadataModel::insert(const QModelIndex& parent, int row, std::unique_ptr<N
  * @param node  
  */
 EMetadata MetadataModel::buildMeta(const Node* node) const
-{}
+{
+   EMetadata ret {node->meta()};
+   if ( ret.isArray() )
+   {
+      for (auto i = node->arrayBegin(); i != node->arrayEnd() ;++i)
+      {
+         ret.toArray().append(buildMeta(*i));
+      }
+   }
+   else if ( ret.isObject() )
+   {
+      for (auto i = node->objectBegin(); i != node->objectEnd() ;++i)
+      {
+         ret.toObject().insert(i.key(),buildMeta(*i));
+      }
+   }
+   return ret;
+}
 
 
 
@@ -576,4 +659,21 @@ EMetadata MetadataModel::buildMeta(const Node* node) const
  * @param meta  
  */
 std::unique_ptr<MetadataModel::Node> MetadataModel::buildNode(const EMetadata& meta)
-{}
+{
+   unique_ptr<Node> ret {new Node(meta)};
+   if ( meta.isArray() )
+   {
+      for (auto child : qAsConst(meta.toArray()))
+      {
+         ret->insertArray(ret->size(),buildNode(child));
+      }
+   }
+   else if ( meta.isObject() )
+   {
+      for (auto i = meta.toObject().cbegin(); i != meta.toObject().cend() ;++i)
+      {
+         ret->insertObject(i.key(),buildNode(*i));
+      }
+   }
+   return ret;
+}

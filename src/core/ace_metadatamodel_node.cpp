@@ -30,6 +30,35 @@ MetadataModel::Node::Node(EMetadata::Type type, QObject* parent):
 
 
 /*!
+ * Constructs a new node object with the given metadata value and the given qt 
+ * object as its parent, if any. If the metadata given is an array or object 
+ * then the metadata values contained within are not copied. This is because 
+ * nodes store their values in an entirely different manner than the metadata 
+ * class. 
+ *
+ * @param meta The metadata value of this new node. 
+ *
+ * @param parent The parent of this new node, if any. 
+ */
+MetadataModel::Node::Node(const EMetadata& meta, QObject* parent):
+   QObject(parent)
+{
+   if ( meta.isArray() || meta.isObject() )
+   {
+      _meta = EMetadata(meta.type());
+   }
+   else
+   {
+      _meta = meta;
+   }
+}
+
+
+
+
+
+
+/*!
  * Constructs a new node object as a copy of the given object. 
  *
  * @param object The other node object that is copied to this one. 
@@ -339,6 +368,21 @@ QByteArray MetadataModel::Node::bytes() const
       ret = _meta.toBytes();
    }
    return ret;
+}
+
+
+
+
+
+
+/*!
+ * This returns the metadata value for this node. 
+ *
+ * @return This node's metadata value. 
+ */
+EMetadata MetadataModel::Node::meta() const
+{
+   return _meta;
 }
 
 
