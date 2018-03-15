@@ -290,8 +290,8 @@ QString MetadataModel::Node::key() const
 
 
 /*!
- * This will set the key of this node to a new value. If this node's parent is 
- * not an object type or the key already exists then false is returned. 
+ * This sets the key of this node to a new value. If this node's parent is not 
+ * an object type or the key already exists then false is returned. 
  *
  * @param newKey The new key for this node. 
  *

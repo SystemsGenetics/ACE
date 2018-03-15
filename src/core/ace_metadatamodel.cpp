@@ -166,8 +166,23 @@ QModelIndex MetadataModel::index(int row, int column, const QModelIndex& parent)
 
 
 /*!
+ * This implements the interface that returns the parent index of the given 
+ * index for this model. 
  *
- * @param child  
+ * @param child The child index of the parent index to be found. 
+ *
+ * @return Parent index of the given index. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Get node pointer to parent of the given child index. If the parent is null 
+ *    then return an invalid index else go to the next step. 
+ *
+ * 2. Get node pointer to grandparent of the given child index. If the 
+ *    grandparent is null then return an invalid index else go to the next step. 
+ *
+ * 3. Return a new index of the parent of the given index. 
  */
 QModelIndex MetadataModel::parent(const QModelIndex& child) const
 {
@@ -190,8 +205,30 @@ QModelIndex MetadataModel::parent(const QModelIndex& child) const
 
 
 /*!
+ * This implements the interface that returns the flags for a given index of 
+ * this mode. The flags inform anyone what can and cannot be done to the given 
+ * index. 
  *
- * @param index  
+ * @param index The index whose flags are returned. 
+ *
+ * @return Flags for the given index. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Create return flag variable with default flags all indexes contain. 
+ *
+ * 2. If the index is valid then add drag enabled to the return flags. 
+ *
+ * 3. If the node of the given index is a container then add drop enabled to the 
+ *    return flags. 
+ *
+ * 4. If the given index is the first column, the node of the index has a 
+ *    parent, and the node's parent is an object type, then add is editable to 
+ *    the return flags. 
+ *
+ * 5. If the index is the third column and the node of the given index is 
+ *    editable then add is editable to the return flags. 
  */
 Qt::ItemFlags MetadataModel::flags(const QModelIndex& index) const
 {
@@ -228,8 +265,13 @@ Qt::ItemFlags MetadataModel::flags(const QModelIndex& index) const
 
 
 /*!
+ * This implements the interface that returns the number of rows a given index 
+ * contains. This number resolves to the number of nodes contained in the node 
+ * of the given index. If the node is not a container 0 is returned. 
  *
- * @param parent  
+ * @param parent The index whose number of rows are returned. 
+ *
+ * @return The number of rows for the given index. 
  */
 int MetadataModel::rowCount(const QModelIndex& parent) const
 {
@@ -242,8 +284,12 @@ int MetadataModel::rowCount(const QModelIndex& parent) const
 
 
 /*!
+ * This implements the interface that returns the number of columns a given 
+ * index contains. For this model the number of columns is always 3. 
  *
- * @param parent  
+ * @param parent This is not used because the number of columns is static. 
+ *
+ * @return The number of columns which is always 3 for this model. 
  */
 int MetadataModel::columnCount(const QModelIndex& parent) const
 {
@@ -257,8 +303,29 @@ int MetadataModel::columnCount(const QModelIndex& parent) const
 
 
 /*!
+ * This implements the interface that creates a new qt mime data object when a 
+ * drag and drop action is initiated. This model creates a custom mime data type 
+ * just for this model which consists of a node pointer that will be copied or 
+ * moved. This model does not support multiple indexes being drag and dropped at 
+ * once so only the first index in the list of indexes will ever be used. 
  *
- * @param indexes  
+ * @param indexes List of indexes that is being requested for drag and drop 
+ *                action. This model only uses the first index in the list. 
+ *
+ * @return Pointer to new qt mime data object. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Initialize byte array and stream for writing to it. 
+ *
+ * 2. Write node pointer from the first index of the given indexes and make sure 
+ *    it worked. If writing failed then return a null pointer else go to next 
+ *    step. 
+ *
+ * 3. Create a new qt mime data object, then set its mime data to this model's 
+ *    custom type with the byte array as its data, then return a pointer to the 
+ *    new qt mime data object. 
  */
 QMimeData* MetadataModel::mimeData(const QModelIndexList& indexes) const
 {
@@ -280,21 +347,41 @@ QMimeData* MetadataModel::mimeData(const QModelIndexList& indexes) const
 
 
 /*!
+ * This implements the interface that returns data from the given index and 
+ * role. This model only returns data based off the display role or custom raw 
+ * image data role. This model returns a string suitable for a view with the 
+ * display role. Only if the node of the given index is a bytes type then the 
+ * byte array is returned with the raw image data role. 
  *
- * @param index  
+ * @param index The index whose data is being requested. 
  *
- * @param role  
+ * @param role The role of the data being requested. 
+ *
+ * @return Data of given index and role. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Get the node pointer for the given index. 
+ *
+ * 2. If the given role is raw image data and the node is a bytes type then 
+ *    return the byte array of the given index, else go to the next step. 
+ *
+ * 3. If the given role is not the display role then return a null variant, else 
+ *    go to the next step. 
+ *
+ * 4. Return the display string value of the given index. 
  */
 QVariant MetadataModel::data(const QModelIndex& index, int role) const
 {
-   if ( role != Qt::DisplayRole )
-   {
-      return QVariant();
-   }
    Node* node {pointer(index)};
    if ( role == RawImageData && node->isBytes() )
    {
       return node->bytes();
+   }
+   else if ( role != Qt::DisplayRole )
+   {
+      return QVariant();
    }
    return node->value();
 }
@@ -305,12 +392,36 @@ QVariant MetadataModel::data(const QModelIndex& index, int role) const
 
 
 /*!
+ * This implements the interface that sets the data of a given index with the 
+ * given role. The only role this model implements is the edit role. All other 
+ * roles are ignored and false is returned. 
  *
- * @param index  
+ * @param index The index whose data will be changed. 
  *
- * @param value  
+ * @param value The new value for the given index's data. 
  *
- * @param role  
+ * @param role The role of the data being set. 
+ *
+ * @return Returns true if the data of the given index was successfully changed, 
+ *         else returns false. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Initialize return value to false. 
+ *
+ * 2. If the given role is the edit role go to the next step, else go to the 
+ *    last step. 
+ *
+ * 3. If the given index is the first column then set its key, setting the 
+ *    return value to the result of setting the key. 
+ *
+ * 4. If the given index is the third column then set its value to the given 
+ *    one, setting the return variable to the result of that operation. If 
+ *    setting a new value was successful then emit a data changed signal for the 
+ *    model. 
+ *
+ * 5. Return the return variable. 
  */
 bool MetadataModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
@@ -337,16 +448,41 @@ bool MetadataModel::setData(const QModelIndex& index, const QVariant& value, int
 
 
 /*!
+ * This implements the interface that handles the end of a drag and drop 
+ * operation where the drop has occurred. This model only implements the copy 
+ * and move actions. 
  *
- * @param data  
+ * @param data Pointer to qt mime data object that was created when the drag was 
+ *             initiated. 
  *
- * @param action  
+ * @param action The drag and drop action being requested. 
  *
- * @param row  
+ * @param row The row where the drop occurred. 
  *
- * @param column  
+ * @param column The column where the drop occurred. 
  *
- * @param parent  
+ * @param parent The parent index where the drop occurred. 
+ *
+ * @return Returns true on success of the drag and drop action or false on 
+ *         failure. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the drag and drop action is not copy or move then return false, else go 
+ *    to the next step. 
+ *
+ * 2. Extract the node pointer from the qt mime data object. If reading the node 
+ *    pointer in fails then return false, else go the the next step. 
+ *
+ * 3. Either copy a new node from the node pointer or take it from its current 
+ *    location in the model, depending on if the action is copy or move, 
+ *    respectively. 
+ *
+ * 4. Insert the new or taken node into the model at the new location where the 
+ *    drop occurred. 
+ *
+ * 5. Return true for success. 
  */
 bool MetadataModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent)
 {
