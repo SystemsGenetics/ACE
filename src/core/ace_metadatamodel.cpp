@@ -522,8 +522,11 @@ bool MetadataModel::dropMimeData(const QMimeData* data, Qt::DropAction action, i
 
 
 /*!
+ * Tests if the given index is a bytes type which stores the data of an image. 
  *
- * @param index  
+ * @param index The given index to test if it is an image. 
+ *
+ * @return Returns true if the given index is an image else returns false. 
  */
 bool MetadataModel::isImage(const QModelIndex& index) const
 {
@@ -536,8 +539,12 @@ bool MetadataModel::isImage(const QModelIndex& index) const
 
 
 /*!
+ * Tests if the given index is a container type, either an array or object type. 
  *
- * @param index  
+ * @param index The given index to test if it is a container type. 
+ *
+ * @return Returns true if the given index is a container type else returns 
+ *         false. 
  */
 bool MetadataModel::isContainer(const QModelIndex& index) const
 {
@@ -550,10 +557,15 @@ bool MetadataModel::isContainer(const QModelIndex& index) const
 
 
 /*!
+ * Inserts a new empty node with the given metadata type into the given parent. 
+ * If the parent is a map type a new key is generated else if the parent is an 
+ * array type the new node is prepended to the array. 
  *
  * @param parent  
  *
  * @param type  
+ *
+ * @return Returns true on success else returns false. 
  */
 bool MetadataModel::insert(const QModelIndex& parent, EMetadata::Type type)
 {
@@ -566,8 +578,23 @@ bool MetadataModel::insert(const QModelIndex& parent, EMetadata::Type type)
 
 
 /*!
+ * Removes the given index from this model. 
  *
- * @param index  
+ * @param index The given index that is deleted. 
+ *
+ * @return Returns true on success or false on failure. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the given index is not valid then return false, else go to the next 
+ *    step. 
+ *
+ * 2. Get the parent index of the given index. 
+ *
+ * 3. Remove the given index from the parent's container. 
+ *
+ * 4. Return true on success. 
  */
 bool MetadataModel::remove(const QModelIndex& index)
 {
@@ -589,6 +616,11 @@ bool MetadataModel::remove(const QModelIndex& index)
 
 
 /*!
+ * Returns this model's data tree in the form of metadata objects. The root 
+ * metadata object returned is an object type that is the root of the tree for 
+ * the model. 
+ *
+ * @return Root metadata object of this model's data tree. 
  */
 EMetadata MetadataModel::meta() const
 {
@@ -601,8 +633,23 @@ EMetadata MetadataModel::meta() const
 
 
 /*!
+ * This sets its model's data to the given metadata value. Any data stored 
+ * within the model is removed and overwritten. The metadata object given must 
+ * be an object type or this will throw an exception. 
  *
- * @param newRoot  
+ * @param newRoot The given metadata root object that will be copied into this 
+ *                model's data. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the given metadata object is not an object type then throw an 
+ *    exception, else go to the next step. 
+ *
+ * 2. Delete the current node data on this model if any exists. 
+ *
+ * 3. Copy a new node data tree from the given metadata object and set it is 
+ *    this mode's new data tree. 
  */
 void MetadataModel::setMeta(const EMetadata& newRoot)
 {
@@ -626,8 +673,18 @@ void MetadataModel::setMeta(const EMetadata& newRoot)
 
 
 /*!
+ * Returns the node pointer of the given index. If the given index is invalid 
+ * the root node of this model is returned. 
  *
- * @param index  
+ * @param index The index of the requested node pointer. 
+ *
+ * @return The node pointer of the given index. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the index is valid extract its internal pointer and return it as a node 
+ *    pointer, else return this model's root node pointer. 
  */
 MetadataModel::Node* MetadataModel::pointer(const QModelIndex& index) const
 {
@@ -649,10 +706,24 @@ MetadataModel::Node* MetadataModel::pointer(const QModelIndex& index) const
 
 
 /*!
+ * Sets the key of the given index to the new given value. 
  *
- * @param index  
+ * @param index The given index whose key is changed. 
  *
- * @param newKey  
+ * @param newKey The new key value. 
+ *
+ * @return Returns true and success or false on failure. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the parent of the given index is not object type and/or already 
+ *    contains the new key then return false, else go to the next step. 
+ *
+ * 2. Find out if changing the key of the given index will change its row 
+ *    position within it's parent's map. Then set the key of the given index to 
+ *    the new given key, notifying the model the position of the index has 
+ *    changed if that is the case. Then return true on success. 
  */
 bool MetadataModel::setKey(const QModelIndex& index, const QString& newKey)
 {
@@ -685,8 +756,23 @@ bool MetadataModel::setKey(const QModelIndex& index, const QString& newKey)
 
 
 /*!
+ * Take ownership of the given node pointer, removing it from this model. If the 
+ * given node is this model's root node nothing is done and a null pointer is 
+ * returned because it is impossible to remove the root node. 
  *
- * @param node  
+ * @param node Node pointer to take ownership. 
+ *
+ * @return Node pointer. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the node does not have a parent because it is the root node then return 
+ *    a null pointer, else go to the next step. 
+ *
+ * 2. Get the parent index of the given node and its row within the parent node. 
+ *    Then remove the given node from its parent, informing the model of the 
+ *    removal. Then return ownership of the given node pointer. 
  */
 std::unique_ptr<MetadataModel::Node> MetadataModel::take(Node* node)
 {
@@ -713,12 +799,48 @@ std::unique_ptr<MetadataModel::Node> MetadataModel::take(Node* node)
 
 
 /*!
+ * This inserts a new node into the model into the given parent index at the 
+ * given row. If the parent node is an object type the given row is ignored 
+ * because those lists are ordered by the map. If the parent node is an array 
+ * the row is used; if the row is less than 0 the new node is prepended to the 
+ * parent else if it is beyond the end of the list the new node is appended. If 
+ * this fails at inserting the new node it is deleted. 
  *
- * @param parent  
+ * @param parent The parent where the new node will be inserted into. 
  *
- * @param row  
+ * @param row The row where the new node will be inserted within the parent. 
+ *            Ignored if the parent is an object type. 
  *
- * @param node  
+ * @param node The new node that will be inserted if successful or deleted if 
+ *             insertion failed. 
+ *
+ * @return Returns true on successful insertion else returns false. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Get node pointer of given parent index. 
+ *
+ * 2. If the node parent is an object type then go to the next step, else go to 
+ *    step 5. 
+ *
+ * 3. Generate a new key that does not exist in the parent node's mapping of 
+ *    nodes. 
+ *
+ * 4. Insert the new node into the parent node's map with the new generated key. 
+ *    Return true for success. 
+ *
+ * 5. If the node parent is an array type then go to the next step, else go to 
+ *    the last step. 
+ *
+ * 6. If the row is out of range, change it to 0 or the end of the list 
+ *    depending on it being less than 0 or greater than the size, respectively. 
+ *
+ * 7. Insert the new node into the parent node's array with the given and 
+ *    possibly modified row. Return true for success. 
+ *
+ * 8. The parent is not an object or array so delete the new node and return 
+ *    false for failure. 
  */
 bool MetadataModel::insert(const QModelIndex& parent, int row, std::unique_ptr<Node>&& node)
 {
@@ -737,9 +859,9 @@ bool MetadataModel::insert(const QModelIndex& parent, int row, std::unique_ptr<N
    }
    else if ( parent_->isArray() )
    {
-      if ( row >= parent_->size() )
+      if ( row > parent_->size() )
       {
-         row = parent_->size() - 1;
+         row = parent_->size();
       }
       else if ( row < 0 )
       {
@@ -751,6 +873,7 @@ bool MetadataModel::insert(const QModelIndex& parent, int row, std::unique_ptr<N
    }
    else
    {
+      node.reset();
       return false;
    }
    return true;
@@ -762,8 +885,20 @@ bool MetadataModel::insert(const QModelIndex& parent, int row, std::unique_ptr<N
 
 
 /*!
+ * Recursively builds metadata value from the given pointed to node. The entire 
+ * tree is copied, recursively building all children of arrays and objects. 
  *
- * @param node  
+ * @param node The node pointer whose node is copied. 
+ *
+ * @return Copy of the given pointed to node. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Create a new metadata variable that is a copy of the node's metadata 
+ *    value. If the metadata variable is a container type then recursively copy 
+ *    all children nodes into the metadata variable with the same keys if it is 
+ *    an object type. Then return the new metadata variable. 
  */
 EMetadata MetadataModel::buildMeta(const Node* node) const
 {
@@ -791,8 +926,21 @@ EMetadata MetadataModel::buildMeta(const Node* node) const
 
 
 /*!
+ * Builds node value from the given metadata value, recursively building all 
+ * children of arrays and objects. 
  *
- * @param meta  
+ * @param meta The metadata value that is copied. 
+ *
+ * @return Copy of the given metadata value. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Create a new node variable, storing its pointer, setting it's metadata 
+ *    type as the given metadata value's type. If the given metadata type is a 
+ *    container then recursively copy all children metadata into the new node 
+ *    with the same keys if it is an object type. Then return the node pointer 
+ *    of the new node. 
  */
 std::unique_ptr<MetadataModel::Node> MetadataModel::buildNode(const EMetadata& meta)
 {
