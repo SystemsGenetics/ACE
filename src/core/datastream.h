@@ -46,6 +46,8 @@ public:
    const EDataStream& operator>>(double& value) const { return readValue(value); }
    const EDataStream& operator>>(QString& value) const;
    const EDataStream& operator>>(QByteArray& value) const;
+   bool hasError() const { return false; }
+   QString errorString() const { return QString(); }
 private:
    enum
    {

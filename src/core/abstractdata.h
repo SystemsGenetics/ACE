@@ -14,8 +14,9 @@ class EMetadata;
 
 
 /// Interface class that defines a data object type.
-class EAbstractData
+class EAbstractData : public QObject
 {
+   Q_OBJECT
 public:
    EAbstractData() = default;
    virtual ~EAbstractData() = default;
@@ -25,7 +26,7 @@ public:
    /// Report offset where data for object ends.
    ///
    /// @return End of data offset.
-   virtual quint64 getDataEnd() const = 0;
+   virtual quint64 dataEnd() const = 0;
    /// Initialize a new data object..
    virtual void newData() = 0;
    /// Prepare a new data object for input.

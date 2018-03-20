@@ -20,21 +20,21 @@ public:
    /// Get instance of data factory.
    ///
    /// @return Reference to factory.
-   static EAbstractDataFactory& getInstance();
+   static EAbstractDataFactory& instance();
    /// Set new data factory instance.
    ///
    /// @param factory New data factory.
    static void setInstance(std::unique_ptr<EAbstractDataFactory>&& factory);
    /// Get total number of possible data types.
-   virtual quint16 getCount() = 0;
+   virtual quint16 size() = 0;
    /// Get name of specific data type.
    ///
    /// @param type Data type identifier.
-   virtual QString getName(quint16 type) = 0;
+   virtual QString name(quint16 type) = 0;
    /// Get file extension of specific data type.
    ///
    /// @param type Data type identifier.
-   virtual QString getFileExtension(quint16 type) = 0;
+   virtual QString fileExtension(quint16 type) = 0;
    /// Make new data object of given type.
    ///
    /// @param type Data type identifier.

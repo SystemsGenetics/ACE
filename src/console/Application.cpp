@@ -7,7 +7,7 @@
 #include "abstractanalytic.h"
 #include "datamanager.h"
 #include "datareference.h"
-#include "dataobject.h"
+#include "ace_dataobject.h"
 #include "metadata.h"
 #include "ace_qmpi.h"
 

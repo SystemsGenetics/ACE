@@ -11,7 +11,7 @@ unique_ptr<EAbstractDataFactory> EAbstractDataFactory::_instance {nullptr};
 
 
 
-EAbstractDataFactory& EAbstractDataFactory::getInstance()
+EAbstractDataFactory& EAbstractDataFactory::instance()
 {
    if ( !_instance )
    {

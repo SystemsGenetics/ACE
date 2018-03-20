@@ -8,7 +8,7 @@
 #include "metadatadialog.h"
 #include "old_metadatamodel.h"
 #include "metadata.h"
-#include "dataobject.h"
+#include "ace_dataobject.h"
 #include "imageviewer.h"
 
 

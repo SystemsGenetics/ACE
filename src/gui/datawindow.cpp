@@ -5,7 +5,7 @@
 #include "datawindow.h"
 #include "abstractdata.h"
 #include "datareference.h"
-#include "dataobject.h"
+#include "ace_dataobject.h"
 #include "metadatadialog.h"
 
 
