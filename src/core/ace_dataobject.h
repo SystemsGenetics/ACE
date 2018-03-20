@@ -14,7 +14,11 @@ namespace Ace
     * This is the file handler object for an open ACE data object. It works like a 
     * very basic Qt file device object but much simpler. Most importantly it hides 
     * the very beginning of the file which is the header of the data object, 
-    * preventing it from accidentally being overwritten. 
+    * preventing it from accidentally being overwritten. This class is also unique 
+    * in treating any read operation to its underlying file as constant. So things 
+    * such as seeking and reading functions are declared constant. This is because 
+    * ACE is made towards big data where it is impossible to just read an entire 
+    * file into system memory. 
     */
    class DataObject : public QObject
    {

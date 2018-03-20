@@ -22,6 +22,15 @@ using namespace Ace;
  * @param path Path of the data object file to open. 
  *
  * @param parent Parent for this data object. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Open the data object file, read in the header data, and call the read data 
+ *    interface of this object's abstract data object. 
+ *
+ * 2. If any exception occurs within this function then delete any allocated 
+ *    resources. 
  */
 DataObject::DataObject(const QString& path, QObject* parent):
    QObject(parent),
@@ -50,13 +59,16 @@ DataObject::DataObject(const QString& path, QObject* parent):
 /*!
  * Creates a new data object file with the given type, the given file path, and 
  * the given system metadata. Optionally a parent for this data object is given. 
- * The file at the given path is overwritten. 
+ * The file at the given path is overwritten. If the file truncation fails, 
+ * writing to it fails, or the given system metadata is not an object type then 
+ * an exception is thrown. 
  *
  * @param path Path for this new data object's file that is overwritten. 
  *
  * @param type Data object type for this newly created data object. 
  *
- * @param system  
+ * @param system System metadata for this new data object. The metadata must be 
+ *               an object type or an exception is thrown. 
  *
  * @param parent Parent for this data object. 
  */
@@ -154,6 +166,16 @@ EMetadata DataObject::systemMeta() const
  * thrown. 
  *
  * @return Root of user metadata for this data object. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Seek to the end of this data object's data by calling the data end 
+ *    interface of this data object's abstract data object. 
+ *
+ * 2. Read in the user metadata of this data object located at the end of the 
+ *    data. If reading in the data failed then throw an exception, else return 
+ *    the read in user metadata. 
  */
 EMetadata DataObject::userMeta() const
 {
@@ -205,6 +227,16 @@ QString DataObject::errorString() const
  *              to. 
  *
  * @return True on success or false on failure. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the given index is less than 0 then do nothing and exit, else to go the 
+ *    next step. 
+ *
+ * 2. Call the qt file device seek function using the given index in addition to 
+ *    this data object's header offset, returning success or failure of the 
+ *    operation. 
  */
 bool DataObject::seek(qint64 index) const
 {
@@ -233,6 +265,15 @@ bool DataObject::seek(qint64 index) const
  *             cursor position. 
  *
  * @return True on success or false on failure. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the given size is less than 0 then do nothing and exit, else go to the 
+ *    next step. 
+ *
+ * 2. Resize this data object's file to the given size in addition to its 
+ *    current cursor position, returning success or failure of the operation 
  */
 bool DataObject::allocate(int size)
 {
@@ -299,9 +340,25 @@ EAbstractData& DataObject::data()
  *
  * @param newRoot New root metadata value that this data object's user metadata 
  *                is set to. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the given metadata is not an object type then throw on an exception, 
+ *    else go to the next step. 
+ *
+ * 2. Seek to the end of this data object's data and write the new user metadata 
+ *    to this data object. If writing failed then throw an exception. 
  */
 void DataObject::setUserMeta(const EMetadata& newRoot)
 {
+   if ( !newRoot.isObject() )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Invalid Argument"));
+      e.setDetails(tr("User metadata must be an object type."));
+      throw e;
+   }
    seek(_data->dataEnd());
    stream() << newRoot;
    if ( stream().hasError() )
@@ -321,10 +378,24 @@ void DataObject::setUserMeta(const EMetadata& newRoot)
 
 
 /*!
+ * Reads in the given number of bytes from this data object at its current 
+ * cursor position and writes it to the given character pointer. 
  *
- * @param data  
+ * @param data Pointer to character array that is written to from the data read 
+ *             in this data object. 
  *
- * @param size  
+ * @param size Number of bytes to read from this data object. 
+ *
+ * @return The number of bytes successfully read from this data object. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If this data object's file cursor position is less than the header offset 
+ *    then throw an exception, else go the next step. 
+ *
+ * 2. Read the given number of bytes from this data object at the current cursor 
+ *    position to the given character array, returning the number of bytes read. 
  */
 qint64 DataObject::read(char* data, qint64 size) const
 {
@@ -344,10 +415,26 @@ qint64 DataObject::read(char* data, qint64 size) const
 
 
 /*!
+ * Write out the given number of bytes to this data object at its current cursor 
+ * position from the given character pointer. 
  *
- * @param data  
+ * @param data Pointer to character array whose data is written to this data 
+ *             object. 
  *
- * @param size  
+ * @param size The number of bytes to write to this data object from the given 
+ *             character array. 
+ *
+ * @return The number of bytes successfully written to this data object. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If this data object's file cursor position is less than the header offset 
+ *    then throw an exception, else go the next step. 
+ *
+ * 2. Write the given number of bytes to this data object at the current cursor 
+ *    position from the given character array, returning the number of bytes 
+ *    written. 
  */
 qint64 DataObject::write(const char* data, qint64 size)
 {
@@ -367,6 +454,19 @@ qint64 DataObject::write(const char* data, qint64 size)
 
 
 /*!
+ * Opens this data object's file for read and write access and creates a new 
+ * data stream associated with this data object. If there is an error opening 
+ * the file then an exception is thrown. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Open this data object's file. If opening the file failed then throw an 
+ *    exception, else go to the next step. 
+ *
+ * 2. Create a data stream object and assign it to this data object. 
+ *
+ * 3. Set this data object's file path to its absolute canonical form. 
  */
 void DataObject::openObject()
 {
@@ -388,6 +488,22 @@ void DataObject::openObject()
 
 
 /*!
+ * Reads in the header portion of this data object's file, creating the abstract 
+ * data interface as well. This assumes the file already contains an existing 
+ * ACE data object. If reading in the file as a data object fails then an 
+ * exception is thrown. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Read in this data object's special value, type, name, extension, and 
+ *    system metadata of this data object's file. If reading failed or the 
+ *    special value is incorrect then throw an exception, else go to the next 
+ *    step. 
+ *
+ * 2. Create a new abstract data object for this data object and set this data 
+ *    object's header offset to the current cursor position of this data 
+ *    object's file. 
  */
 void DataObject::readHeader()
 {
@@ -419,9 +535,39 @@ void DataObject::readHeader()
 
 
 /*!
+ * Writes out the header portion of this data object to its file, creating a new 
+ * abstract data object as well. This will truncate the existing file and 
+ * overwrite any existing data. If writing to the file fails then an exception 
+ * is thrown. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If this new data object's system metadata is not an object type then throw 
+ *    an exception, else go to the next step. 
+ *
+ * 2. Make a new abstract data object for this data object, providing the 
+ *    correct name and extension for it. 
+ *
+ * 3. Truncate this data object's file to 0. If the truncation failed then throw 
+ *    an exception, else go to the next step. 
+ *
+ * 4. Write out this data object's special value, type, name, extension, and 
+ *    system metadata to this data object's file. If writing failed then throw 
+ *    an exception, else go to the next step. 
+ *
+ * 5. Set this data object's header offset to the current cursor position of 
+ *    this data object's file. 
  */
 void DataObject::writeHeader()
 {
+   if ( !_system.isObject() )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Invalid Argument"));
+      e.setDetails(tr("System metadata must be an object type."));
+      throw e;
+   }
    EAbstractDataFactory& factory {EAbstractDataFactory::instance()};
    makeData(factory.name(_type),factory.fileExtension(_type));
    if ( !_file->resize(0) )
@@ -451,10 +597,22 @@ void DataObject::writeHeader()
 
 
 /*!
+ * Makes a new abstract data object for this data object using the type 
+ * specified in this data object and checking its validity with the given name 
+ * and extension. If this data object's type is out of range, the given name 
+ * does not match, or the given extension does not mach then an exception is 
+ * thrown. 
  *
  * @param name  
  *
  * @param extension  
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the given name or extension does not match would they should be for the 
+ *    given data type then throw an exception, else create a new abstract data 
+ *    object setting its parent to this data object. 
  */
 void DataObject::makeData(const QString& name, const QString& extension)
 {
