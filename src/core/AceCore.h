@@ -4,6 +4,6 @@
 #include "abstractanalyticfactory.h"
 #include "abstractdata.h"
 #include "abstractdatafactory.h"
-#include "datastream.h"
+#include "edatastream.h"
 #include "exception.h"
 #endif

@@ -9,6 +9,7 @@ class EMetadata;
 
 
 
+class EDataStream;
 class EMetaArray;
 class EMetaObject;
 class EMetadata;

@@ -2,7 +2,7 @@
 #define ACE_DATAOBJECT_H
 #include <QtCore>
 #include "abstractdata.h"
-#include "datastream.h"
+#include "edatastream.h"
 #include "emetadata.h"
 //
 
@@ -31,15 +31,14 @@ namespace Ace
       qint64 size() const;
       EMetadata systemMeta() const;
       EMetadata userMeta() const;
-      QString errorString() const;
-      bool seek(qint64 index) const;
-      bool allocate(int size);
+      void seek(qint64 index) const;
+      void allocate(int size);
       const EDataStream& stream() const;
       EDataStream& stream();
       EAbstractData& data();
       void setUserMeta(const EMetadata& newRoot);
-      qint64 read(char* data, qint64 size) const;
-      qint64 write(const char* data, qint64 size);
+      void read(char* data, qint64 size) const;
+      void write(const char* data, qint64 size);
    private:
       void openObject();
       void readHeader();

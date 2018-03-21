@@ -1,5 +1,5 @@
 #include "common.h"
-#include "datastream.h"
+#include "edatastream.h"
 #include "emetadata.h"
 #include "emetaarray.h"
 #include "emetaobject.h"

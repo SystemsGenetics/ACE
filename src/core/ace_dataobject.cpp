@@ -1,7 +1,7 @@
 #include "ace_dataobject.h"
 #include "exception.h"
 #include "abstractdatafactory.h"
-#include "datastream.h"
+//#include "edatastream.h"
 #include "common.h"
 
 
@@ -162,8 +162,7 @@ EMetadata DataObject::systemMeta() const
 
 /*!
  * Returns the user metadata for this data object. The root metadata object is 
- * always an object type. If reading the metadata failed then an exception is 
- * thrown. 
+ * always an object type. 
  *
  * @return Root of user metadata for this data object. 
  *
@@ -174,42 +173,14 @@ EMetadata DataObject::systemMeta() const
  *    interface of this data object's abstract data object. 
  *
  * 2. Read in the user metadata of this data object located at the end of the 
- *    data. If reading in the data failed then throw an exception, else return 
- *    the read in user metadata. 
+ *    data. 
  */
 EMetadata DataObject::userMeta() const
 {
    EMetadata ret;
    seek(_data->dataEnd());
    stream() >> ret;
-   if ( stream().hasError() )
-   {
-      E_MAKE_EXCEPTION(e);
-      e.setTitle(tr("Read Error"));
-      e.setDetails(tr("Failed reading in metadata for %1: %2")
-                   .arg(_path)
-                   .arg(stream().errorString()));
-      throw e;
-   }
    return ret;
-}
-
-
-
-
-
-
-/*!
- * Returns description of the last error that occurred from calling the read or 
- * write methods on this data object. If no error ever occurred on this data 
- * object then an empty string is returned. 
- *
- * @return Description of last error that occurred on read/write methods or 
- *         empty if no error has occurred. 
- */
-QString DataObject::errorString() const
-{
-   return _file->errorString();
 }
 
 
@@ -220,31 +191,38 @@ QString DataObject::errorString() const
 /*!
  * Seeks to the given index within this data object. This does not allow seeking 
  * to the hidden header of this data object so seeking to 0 is one byte after 
- * the header. If the given index is less than 0 then this does nothing and 
- * returns false. 
+ * the header. If the given index is less than 0 or seeking fails then an 
+ * exception is thrown. 
  *
  * @param index The index that the cursor position in this data object is set 
  *              to. 
  *
- * @return True on success or false on failure. 
- *
  *
  * Steps of Operation: 
  *
- * 1. If the given index is less than 0 then do nothing and exit, else to go the 
+ * 1. If the given index is less than 0 then throw an exception, else to go the 
  *    next step. 
  *
  * 2. Call the qt file device seek function using the given index in addition to 
- *    this data object's header offset, returning success or failure of the 
- *    operation. 
+ *    this data object's header offset. If the seek call fails then throw an 
+ *    exception. 
  */
-bool DataObject::seek(qint64 index) const
+void DataObject::seek(qint64 index) const
 {
    if ( index < 0 )
    {
-      return false;
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Invalid Argument"));
+      e.setDetails(tr("Seeking index cannot be negative."));
+      throw e;
    }
-   return _file->seek(index + _headerOffset);
+   if ( !_file->seek(index + _headerOffset) )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("System Error"));
+      e.setDetails(tr("Failed seeking in data object file: %1").arg(_file->errorString()));
+      throw e;
+   }
 }
 
 
@@ -258,30 +236,38 @@ bool DataObject::seek(qint64 index) const
  * object. So if the cursor position is at the end of the data object then this 
  * will grow the data object by the given amount. However if the cursor position 
  * is at the beginning of the data object then this will only grow the data 
- * object by the different of the amount given and this data object's current 
- * size. 
+ * object by the difference of the amount given and this data object's current 
+ * size. If the given size is less than 0 or resizing fails then an exception is 
+ * thrown. 
  *
  * @param size The number of bytes to allocate after this data object's current 
  *             cursor position. 
  *
- * @return True on success or false on failure. 
- *
  *
  * Steps of Operation: 
  *
- * 1. If the given size is less than 0 then do nothing and exit, else go to the 
+ * 1. If the given size is less than 0 then throw an exception, else go to the 
  *    next step. 
  *
  * 2. Resize this data object's file to the given size in addition to its 
- *    current cursor position, returning success or failure of the operation 
+ *    current cursor position. If the resize call fails then throw an exception. 
  */
-bool DataObject::allocate(int size)
+void DataObject::allocate(int size)
 {
    if ( size < 0 )
    {
-      return false;
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Invalid Argument"));
+      e.setDetails(tr("Allocation size cannot be negative."));
+      throw e;
    }
-   return _file->resize(_file->pos() + size);
+   if ( !_file->resize(_file->pos() + size) )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("System Error"));
+      e.setDetails(tr("Failed resizing data object file: %1").arg(_file->errorString()));
+      throw e;
+   }
 }
 
 
@@ -348,7 +334,7 @@ EAbstractData& DataObject::data()
  *    else go to the next step. 
  *
  * 2. Seek to the end of this data object's data and write the new user metadata 
- *    to this data object. If writing failed then throw an exception. 
+ *    to this data object. 
  */
 void DataObject::setUserMeta(const EMetadata& newRoot)
 {
@@ -361,15 +347,6 @@ void DataObject::setUserMeta(const EMetadata& newRoot)
    }
    seek(_data->dataEnd());
    stream() << newRoot;
-   if ( stream().hasError() )
-   {
-      E_MAKE_EXCEPTION(e);
-      e.setTitle(tr("Write Error"));
-      e.setDetails(tr("Failed writing metadata to file %1: %2")
-                   .arg(_path)
-                   .arg(stream().errorString()));
-      throw e;
-   }
 }
 
 
@@ -379,14 +356,13 @@ void DataObject::setUserMeta(const EMetadata& newRoot)
 
 /*!
  * Reads in the given number of bytes from this data object at its current 
- * cursor position and writes it to the given character pointer. 
+ * cursor position and writes it to the given character pointer. If reading 
+ * failed then an exception is thrown. 
  *
  * @param data Pointer to character array that is written to from the data read 
  *             in this data object. 
  *
  * @param size Number of bytes to read from this data object. 
- *
- * @return The number of bytes successfully read from this data object. 
  *
  *
  * Steps of Operation: 
@@ -395,9 +371,10 @@ void DataObject::setUserMeta(const EMetadata& newRoot)
  *    then throw an exception, else go the next step. 
  *
  * 2. Read the given number of bytes from this data object at the current cursor 
- *    position to the given character array, returning the number of bytes read. 
+ *    position to the given character array. If reading failed then throw an 
+ *    exception. 
  */
-qint64 DataObject::read(char* data, qint64 size) const
+void DataObject::read(char* data, qint64 size) const
 {
    if ( _file->pos() < _headerOffset )
    {
@@ -406,7 +383,13 @@ qint64 DataObject::read(char* data, qint64 size) const
       e.setDetails(tr("Cannot read from header section of data object file."));
       throw e;
    }
-   return _file->read(data,size);
+   if ( _file->read(data,size) != size )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("System Error"));
+      e.setDetails(tr("Failed reading from data object file: %1").arg(_file->errorString()));
+      throw e;
+   }
 }
 
 
@@ -416,15 +399,14 @@ qint64 DataObject::read(char* data, qint64 size) const
 
 /*!
  * Write out the given number of bytes to this data object at its current cursor 
- * position from the given character pointer. 
+ * position from the given character pointer. If writing failed then an 
+ * exception is thrown. 
  *
  * @param data Pointer to character array whose data is written to this data 
  *             object. 
  *
  * @param size The number of bytes to write to this data object from the given 
  *             character array. 
- *
- * @return The number of bytes successfully written to this data object. 
  *
  *
  * Steps of Operation: 
@@ -433,10 +415,10 @@ qint64 DataObject::read(char* data, qint64 size) const
  *    then throw an exception, else go the next step. 
  *
  * 2. Write the given number of bytes to this data object at the current cursor 
- *    position from the given character array, returning the number of bytes 
- *    written. 
+ *    position from the given character array. If writing failed then throw an 
+ *    exception. 
  */
-qint64 DataObject::write(const char* data, qint64 size)
+void DataObject::write(const char* data, qint64 size)
 {
    if ( _file->pos() < _headerOffset )
    {
@@ -445,7 +427,13 @@ qint64 DataObject::write(const char* data, qint64 size)
       e.setDetails(tr("Cannot write to header section of data object file."));
       throw e;
    }
-   return _file->write(data,size);
+   if ( _file->write(data,size) != size )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("System Error"));
+      e.setDetails(tr("Failed writing to data object file: %1").arg(_file->errorString()));
+      throw e;
+   }
 }
 
 
@@ -478,7 +466,7 @@ void DataObject::openObject()
       e.setDetails(tr("Cannot open file %1; %2").arg(_path).arg(_file->errorString()));
       throw e;
    }
-   _stream = new EDataStream(_file);//,this);///CHANGE TO HAVE PARENT!
+   _stream = new EDataStream(this);
    _path = QFileInfo(_path).canonicalPath();
 }
 
@@ -497,9 +485,8 @@ void DataObject::openObject()
  * Steps of Operation: 
  *
  * 1. Read in this data object's special value, type, name, extension, and 
- *    system metadata of this data object's file. If reading failed or the 
- *    special value is incorrect then throw an exception, else go to the next 
- *    step. 
+ *    system metadata of this data object's file. If the special value is 
+ *    incorrect then throw an exception, else go to the next step. 
  *
  * 2. Create a new abstract data object for this data object and set this data 
  *    object's header offset to the current cursor position of this data 
@@ -511,13 +498,6 @@ void DataObject::readHeader()
    QString name;
    QString extension;
    stream() >> value >> _type >> name >> extension >> _system;
-   if ( stream().hasError() )
-   {
-      E_MAKE_EXCEPTION(e);
-      e.setTitle(tr("Read Error"));
-      e.setDetails(tr("Failed reading in file %1: %2").arg(_path).arg(stream().errorString()));
-      throw e;
-   }
    if ( value != _specialValue )
    {
       E_MAKE_EXCEPTION(e);
@@ -537,8 +517,8 @@ void DataObject::readHeader()
 /*!
  * Writes out the header portion of this data object to its file, creating a new 
  * abstract data object as well. This will truncate the existing file and 
- * overwrite any existing data. If writing to the file fails then an exception 
- * is thrown. 
+ * overwrite any existing data. If truncation fails or the system metadata is 
+ * not an object type then an exception is thrown. 
  *
  *
  * Steps of Operation: 
@@ -553,8 +533,7 @@ void DataObject::readHeader()
  *    an exception, else go to the next step. 
  *
  * 4. Write out this data object's special value, type, name, extension, and 
- *    system metadata to this data object's file. If writing failed then throw 
- *    an exception, else go to the next step. 
+ *    system metadata to this data object's file. 
  *
  * 5. Set this data object's header offset to the current cursor position of 
  *    this data object's file. 
@@ -581,13 +560,6 @@ void DataObject::writeHeader()
             << _type << factory.name(_type)
             << factory.fileExtension(_type)
             << _system;
-   if ( stream().hasError() )
-   {
-      E_MAKE_EXCEPTION(e);
-      e.setTitle(tr("Write Error"));
-      e.setDetails(tr("Failed writing to file %1: %2").arg(_path).arg(stream().errorString()));
-      throw e;
-   }
    _headerOffset = _file->pos();
 }
 
