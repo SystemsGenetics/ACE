@@ -62,7 +62,9 @@ HEADERS += \
     ace_metadatamodel_node.h \
     ace_dataobject.h \
     edatastream.h \
-    edatastream_ext.h
+    edatastream_ext.h \
+    global.h \
+    ace.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 

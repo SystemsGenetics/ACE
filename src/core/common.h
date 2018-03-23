@@ -9,10 +9,6 @@ class EMetadata;
 
 
 
-class EDataStream;
-class EMetaArray;
-class EMetaObject;
-class EMetadata;
 const EDataStream& operator>>(const EDataStream& stream, EMetadata& meta);
 EDataStream& operator<<(EDataStream& stream, const EMetadata& meta);
 

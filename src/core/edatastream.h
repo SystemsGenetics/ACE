@@ -3,9 +3,7 @@
 #include <QtCore>
 #include <memory>
 #include "edatastream_ext.h"
-#include "utilities.h"
-#include "exception.h"
-#include "ace_dataobject.h"
+#include "ace.h"
 //
 
 
@@ -50,6 +48,23 @@ public:
    EDataStream& operator<<(const QString& value);
    EDataStream& operator<<(const QByteArray& value);
 private:
+   /*!
+    * Defines special byte markers used to identify strings and byte arrays in this 
+    * data stream. 
+    */
+   enum class Tag
+   {
+      /*!
+       * Special unsigned byte value that marks the beginning of a string in the 
+       * stream. 
+       */
+      String = 85
+      /*!
+       * Special unsigned byte value that marks the beginning of a byte array in the 
+       * stream. 
+       */
+      ,ByteArray = 170
+   };
    template<class T> const EDataStream& read(T& value) const;
    template<class T> EDataStream& write(T value);
    /*!
@@ -58,9 +73,6 @@ private:
     */
    Ace::DataObject* _parent;
 };
-
-
-
 
 
 
