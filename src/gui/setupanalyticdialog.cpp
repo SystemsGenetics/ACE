@@ -15,7 +15,7 @@
 
 #include "setupanalyticdialog.h"
 #include "abstractanalytic.h"
-#include "abstractdatafactory.h"
+#include "eabstractdatafactory.h"
 #include "exception.h"
 #include "mainwindow.h"
 

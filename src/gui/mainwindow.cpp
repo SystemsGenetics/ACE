@@ -9,7 +9,7 @@
 #include "setupanalyticdialog.h"
 #include "abstractanalytic.h"
 #include "analyticdialog.h"
-#include "abstractdatafactory.h"
+#include "eabstractdatafactory.h"
 #include "datawindow.h"
 #include "datamanager.h"
 #include "datareference.h"
