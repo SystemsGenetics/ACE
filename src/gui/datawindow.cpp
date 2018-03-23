@@ -3,7 +3,7 @@
 #include <QMenuBar>
 
 #include "datawindow.h"
-#include "abstractdata.h"
+#include "eabstractdata.h"
 #include "datareference.h"
 #include "ace_dataobject.h"
 #include "metadatadialog.h"

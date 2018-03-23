@@ -1,9 +1,8 @@
 #ifndef ACE_DATAOBJECT_H
 #define ACE_DATAOBJECT_H
 #include <QtCore>
-#include "abstractdata.h"
-#include "edatastream.h"
 #include "emetadata.h"
+#include "global.h"
 //
 
 

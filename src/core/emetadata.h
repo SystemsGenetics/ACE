@@ -1,13 +1,11 @@
 #ifndef EMETADATA_H
 #define EMETADATA_H
+#include "global.h"
 
 
 
 class QString;
 class QByteArray;
-class EDataStream;
-class EMetaArray;
-class EMetaObject;
 //
 
 

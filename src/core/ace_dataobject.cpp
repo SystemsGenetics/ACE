@@ -1,7 +1,9 @@
 #include "ace_dataobject.h"
-#include "exception.h"
+#include "eabstractdata.h"
+#include "edatastream.h"
 #include "abstractdatafactory.h"
 #include "common.h"
+#include "exception.h"
 
 
 
@@ -81,7 +83,7 @@ DataObject::DataObject(const QString& path, quint16 type, const EMetadata& syste
    {
       openObject();
       writeHeader();
-      _data->newData();
+      _data->writeNewData();
    }
    catch (...)
    {
