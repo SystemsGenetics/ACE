@@ -11,7 +11,7 @@
 #include "analyticdialog.h"
 #include "eabstractdatafactory.h"
 #include "datawindow.h"
-#include "datamanager.h"
+#include "ace_datamanager.h"
 #include "datareference.h"
 
 

@@ -27,11 +27,10 @@ EDataStream::EDataStream(Ace::DataObject* parent):
 
 
 /*!
- * Reads in data from this data stream setting the given value to the data read 
- * in. 
+ * Reads in data from this data stream setting the given value to the data read in. 
  *
- * @param value Reference to value that is set to the value read in from this 
- *              data stream. 
+ * @param value Reference to value that is set to the value read in from this data 
+ *              stream. 
  *
  * @return Read only reference to this data stream. 
  */
@@ -46,11 +45,10 @@ const EDataStream& EDataStream::operator>>(qint8& value) const
 
 
 /*!
- * Reads in data from this data stream setting the given value to the data read 
- * in. 
+ * Reads in data from this data stream setting the given value to the data read in. 
  *
- * @param value Reference to value that is set to the value read in from this 
- *              data stream. 
+ * @param value Reference to value that is set to the value read in from this data 
+ *              stream. 
  *
  * @return Read only reference to this data stream. 
  */
@@ -65,11 +63,10 @@ const EDataStream& EDataStream::operator>>(qint16& value) const
 
 
 /*!
- * Reads in data from this data stream setting the given value to the data read 
- * in. 
+ * Reads in data from this data stream setting the given value to the data read in. 
  *
- * @param value Reference to value that is set to the value read in from this 
- *              data stream. 
+ * @param value Reference to value that is set to the value read in from this data 
+ *              stream. 
  *
  * @return Read only reference to this data stream. 
  */
@@ -84,11 +81,10 @@ const EDataStream& EDataStream::operator>>(qint32& value) const
 
 
 /*!
- * Reads in data from this data stream setting the given value to the data read 
- * in. 
+ * Reads in data from this data stream setting the given value to the data read in. 
  *
- * @param value Reference to value that is set to the value read in from this 
- *              data stream. 
+ * @param value Reference to value that is set to the value read in from this data 
+ *              stream. 
  *
  * @return Read only reference to this data stream. 
  */
@@ -103,11 +99,10 @@ const EDataStream& EDataStream::operator>>(qint64& value) const
 
 
 /*!
- * Reads in data from this data stream setting the given value to the data read 
- * in. 
+ * Reads in data from this data stream setting the given value to the data read in. 
  *
- * @param value Reference to value that is set to the value read in from this 
- *              data stream. 
+ * @param value Reference to value that is set to the value read in from this data 
+ *              stream. 
  *
  * @return Read only reference to this data stream. 
  */
@@ -122,11 +117,10 @@ const EDataStream& EDataStream::operator>>(quint8& value) const
 
 
 /*!
- * Reads in data from this data stream setting the given value to the data read 
- * in. 
+ * Reads in data from this data stream setting the given value to the data read in. 
  *
- * @param value Reference to value that is set to the value read in from this 
- *              data stream. 
+ * @param value Reference to value that is set to the value read in from this data 
+ *              stream. 
  *
  * @return Read only reference to this data stream. 
  */
@@ -141,11 +135,10 @@ const EDataStream& EDataStream::operator>>(quint16& value) const
 
 
 /*!
- * Reads in data from this data stream setting the given value to the data read 
- * in. 
+ * Reads in data from this data stream setting the given value to the data read in. 
  *
- * @param value Reference to value that is set to the value read in from this 
- *              data stream. 
+ * @param value Reference to value that is set to the value read in from this data 
+ *              stream. 
  *
  * @return Read only reference to this data stream. 
  */
@@ -160,11 +153,10 @@ const EDataStream& EDataStream::operator>>(quint32& value) const
 
 
 /*!
- * Reads in data from this data stream setting the given value to the data read 
- * in. 
+ * Reads in data from this data stream setting the given value to the data read in. 
  *
- * @param value Reference to value that is set to the value read in from this 
- *              data stream. 
+ * @param value Reference to value that is set to the value read in from this data 
+ *              stream. 
  *
  * @return Read only reference to this data stream. 
  */
@@ -179,11 +171,10 @@ const EDataStream& EDataStream::operator>>(quint64& value) const
 
 
 /*!
- * Reads in data from this data stream setting the given value to the data read 
- * in. 
+ * Reads in data from this data stream setting the given value to the data read in. 
  *
- * @param value Reference to value that is set to the value read in from this 
- *              data stream. 
+ * @param value Reference to value that is set to the value read in from this data 
+ *              stream. 
  *
  * @return Read only reference to this data stream. 
  */
@@ -198,11 +189,10 @@ const EDataStream& EDataStream::operator>>(float& value) const
 
 
 /*!
- * Reads in data from this data stream setting the given value to the data read 
- * in. 
+ * Reads in data from this data stream setting the given value to the data read in. 
  *
- * @param value Reference to value that is set to the value read in from this 
- *              data stream. 
+ * @param value Reference to value that is set to the value read in from this data 
+ *              stream. 
  *
  * @return Read only reference to this data stream. 
  */
@@ -217,11 +207,10 @@ const EDataStream& EDataStream::operator>>(double& value) const
 
 
 /*!
- * Reads in data from this data stream setting the given value to the data read 
- * in. 
+ * Reads in data from this data stream setting the given value to the data read in. 
  *
- * @param value Reference to value that is set to the value read in from this 
- *              data stream. 
+ * @param value Reference to value that is set to the value read in from this data 
+ *              stream. 
  *
  * @return Read only reference to this data stream. 
  *
@@ -231,8 +220,8 @@ const EDataStream& EDataStream::operator>>(double& value) const
  * 1. Read in the type marker from the data stream. If the type is not a string 
  *    then throw an exception, else go to the next step. 
  *
- * 2. Read in the string as a byte array and then set the given string's value 
- *    to the byte array assuming it is encoded with UTF-8. 
+ * 2. Read in the string as a byte array and then set the given string's value to 
+ *    the byte array assuming it is encoded with UTF-8. 
  *
  * 3. Return reference to this data stream. 
  */
@@ -259,12 +248,12 @@ const EDataStream& EDataStream::operator>>(QString& value) const
 
 
 /*!
- * Reads in data from this data stream setting the given value to the data read 
- * in. The given byte array should not have any endian sensitive data stored 
- * within it because this does not handle it at all. 
+ * Reads in data from this data stream setting the given value to the data read in. 
+ * The given byte array should not have any endian sensitive data stored within it 
+ * because this does not handle it at all. 
  *
- * @param value Reference to value that is set to the value read in from this 
- *              data stream. 
+ * @param value Reference to value that is set to the value read in from this data 
+ *              stream. 
  *
  * @return Read only reference to this data stream. 
  *
@@ -501,9 +490,9 @@ EDataStream& EDataStream::operator<<(const QString& value)
 
 
 /*!
- * Writes out the given value to this data stream. The given byte array should 
- * not have any endian sensitive data stored within it because this does not 
- * handle it at all. 
+ * Writes out the given value to this data stream. The given byte array should not 
+ * have any endian sensitive data stored within it because this does not handle it 
+ * at all. 
  *
  * @param value The value that is written to this data stream. 
  *
@@ -531,11 +520,9 @@ EDataStream& EDataStream::operator<<(const QByteArray& value)
 
 
 /*!
- * Reads in data from this data stream setting the given value to the data read 
- * in. 
+ * Reads in data from this data stream setting the given value to the data read in. 
  *
- * @tparam T Data type for the given value that is read in from this data 
- *           stream. 
+ * @tparam T Data type for the given value that is read in from this data stream. 
  *
  * @param value Reference to the value that is read in from this data stream. 
  *
@@ -544,8 +531,8 @@ EDataStream& EDataStream::operator<<(const QByteArray& value)
  *
  * Steps of Operation: 
  *
- * 1. Read in the given value from this data stream, flipping the bytes of the 
- *    read in value if required. 
+ * 1. Read in the given value from this data stream, flipping the bytes of the read 
+ *    in value if required. 
  *
  * 2. Return a reference to this data stream. 
  */

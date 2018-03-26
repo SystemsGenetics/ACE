@@ -8,16 +8,15 @@
 
 
 /*!
- * This represents the factory for producing new abstract data objects. This 
- * also gives basic information that allows ACE to query and figure out all 
- * available data types the program that uses the ACE library provides. If a 
- * program wishes to be backwards compatible any previously defined data types 
- * must maintain the same unique integer that identifies them. 
+ * This represents the factory for producing new abstract data objects. This also 
+ * gives basic information that allows ACE to query and figure out all available 
+ * data types the program that uses the ACE library provides. If a program wishes 
+ * to be backwards compatible any previously defined data types must maintain the 
+ * same unique integer that identifies them. 
  */
 class EAbstractDataFactory
 {
 public:
-   virtual ~EAbstractDataFactory() = default;
    /*!
     * This interface returns the total number of data types a program that uses ACE 
     * implements. All integers from 0 to one less than the size returned must be 
@@ -35,8 +34,7 @@ public:
     */
    virtual QString name(quint16 type) = 0;
    /*!
-    * This interface returns the file extension for the given data type as a 
-    * string. 
+    * This interface returns the file extension for the given data type as a string. 
     *
     * @param type The data type whose file extension is returned. 
     *
@@ -46,8 +44,7 @@ public:
    /*!
     * Makes and returns a new abstract data object of the given type. 
     *
-    * @param type The data type of the abstract data object that is made and 
-    *             returned. 
+    * @param type The data type of the abstract data object that is made and returned. 
     *
     * @return Pointer to the new abstract data object of the given type. 
     */

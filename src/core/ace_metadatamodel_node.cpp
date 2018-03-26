@@ -31,10 +31,9 @@ MetadataModel::Node::Node(EMetadata::Type type, QObject* parent):
 
 /*!
  * Constructs a new node object with the given metadata value and the given qt 
- * object as its parent, if any. If the metadata given is an array or object 
- * then the metadata values contained within are not copied. This is because 
- * nodes store their values in an entirely different manner than the metadata 
- * class. 
+ * object as its parent, if any. If the metadata given is an array or object then 
+ * the metadata values contained within are not copied. This is because nodes store 
+ * their values in an entirely different manner than the metadata class. 
  *
  * @param meta The metadata value of this new node. 
  *
@@ -66,14 +65,13 @@ MetadataModel::Node::Node(const EMetadata& meta, QObject* parent):
  *
  * Steps of Operation: 
  *
- * 1. Iterate through the given object's internal array, creating a new node 
- *    that is a copy of the node pointed to from the given object's array, and 
- *    save each new pointer to this node's array. 
+ * 1. Iterate through the given object's internal array, creating a new node that 
+ *    is a copy of the node pointed to from the given object's array, and save each 
+ *    new pointer to this node's array. 
  *
- * 2. Iterate through the given object's internal map, creating a new node that 
- *    is a copy of the node pointed to from the given object's map, and save 
- *    each new pointer to this node's mapping with the same key as the given 
- *    object's map. 
+ * 2. Iterate through the given object's internal map, creating a new node that is 
+ *    a copy of the node pointed to from the given object's map, and save each new 
+ *    pointer to this node's mapping with the same key as the given object's map. 
  */
 MetadataModel::Node::Node(const Node& object):
    QObject(),
@@ -174,9 +172,8 @@ bool MetadataModel::Node::isObject() const
 
 
 /*!
- * Returns the number of children this node contains. This works for any 
- * metadata type. If this node is not a container type then 0 is always 
- * returned. 
+ * Returns the number of children this node contains. This works for any metadata 
+ * type. If this node is not a container type then 0 is always returned. 
  *
  * @return Number of children, if any, this node contains. 
  *
@@ -186,8 +183,8 @@ bool MetadataModel::Node::isObject() const
  * 1. If this node is an array type then return this node's array size, else 
  *    proceed to the next step. 
  *
- * 2. If this node is an object type then return this node's map size, else 
- *    proceed to the next step. 
+ * 2. If this node is an object type then return this node's map size, else proceed 
+ *    to the next step. 
  *
  * 3. Safely assume this node is not a container so return 0. 
  */
@@ -228,8 +225,8 @@ MetadataModel::Node* MetadataModel::Node::parent() const
 
 
 /*!
- * Returns the key or name for this node in relation to its parent. If its 
- * parent is an array the index is returned as a string. 
+ * Returns the key or name for this node in relation to its parent. If its parent 
+ * is an array the index is returned as a string. 
  *
  * @return The key or index number of this node. 
  *
@@ -238,19 +235,18 @@ MetadataModel::Node* MetadataModel::Node::parent() const
  *
  * 1. Get a pointer to this node's parent, casting it is a node pointer itself. 
  *
- * 2. Make sure the casting of this node's parent to a node pointer itself 
- *    worked. If it failed throw an exception about the error. 
+ * 2. Make sure the casting of this node's parent to a node pointer itself worked. 
+ *    If it failed throw an exception about the error. 
  *
  * 3. If the parent is an array type then find where this node is indexed within 
- *    the parent's array and return the index number as a string, else proceed 
- *    to the next step. 
+ *    the parent's array and return the index number as a string, else proceed to 
+ *    the next step. 
  *
- * 4. If the parent is an object type then find the key in the parent's map 
- *    where this node is indexed and return it, else proceed to the next step. 
+ * 4. If the parent is an object type then find the key in the parent's map where 
+ *    this node is indexed and return it, else proceed to the next step. 
  *
- * 5. If this step is reached a logical error has been reached because any 
- *    node's parent must be an array or object. Throw an exception about the 
- *    error. 
+ * 5. If this step is reached a logical error has been reached because any node's 
+ *    parent must be an array or object. Throw an exception about the error. 
  */
 QString MetadataModel::Node::key() const
 {
@@ -290,8 +286,8 @@ QString MetadataModel::Node::key() const
 
 
 /*!
- * This sets the key of this node to a new value. If this node's parent is not 
- * an object type or the key already exists then false is returned. 
+ * This sets the key of this node to a new value. If this node's parent is not an 
+ * object type or the key already exists then false is returned. 
  *
  * @param newKey The new key for this node. 
  *
@@ -303,11 +299,11 @@ QString MetadataModel::Node::key() const
  * 1. Get pointer to this node's parent. 
  *
  * 2. If this node has no parent, this node's parent is not an object, or this 
- *    node's parent already contains a node with the new key then return false 
- *    for failure. Else go to the next step. 
+ *    node's parent already contains a node with the new key then return false for 
+ *    failure. Else go to the next step. 
  *
- * 3. Remove the old key this node was contained in its parent and add it back 
- *    with the new key. 
+ * 3. Remove the old key this node was contained in its parent and add it back with 
+ *    the new key. 
  *
  * 4. Return true for success. 
  */
@@ -391,13 +387,13 @@ EMetadata MetadataModel::Node::meta() const
 
 
 /*!
- * Returns the metadata value of this node if it is not a container or bytes 
- * type. If this node is a container type then a string reporting the number of 
- * nodes it holds is returned. If this node is a bytes type then a string 
- * informing the user this is an image is returned. 
+ * Returns the metadata value of this node if it is not a container or bytes type. 
+ * If this node is a container type then a string reporting the number of nodes it 
+ * holds is returned. If this node is a bytes type then a string informing the user 
+ * this is an image is returned. 
  *
- * @return Value of this node's metadata, or information about what it contains, 
- *         or a plain string stating it is a bytes(image) type. 
+ * @return Value of this node's metadata, or information about what it contains, or 
+ *         a plain string stating it is a bytes(image) type. 
  *
  *
  * Steps of Operation: 
@@ -411,11 +407,11 @@ EMetadata MetadataModel::Node::meta() const
  * 3. If this node is an array type then return a string reporting the number of 
  *    nodes this node's array contains, else proceed to the next step. 
  *
- * 4. If this node is an object type then return a string reporting the number 
- *    of nodes this node's map contains, else proceed to the next step. 
+ * 4. If this node is an object type then return a string reporting the number of 
+ *    nodes this node's map contains, else proceed to the next step. 
  *
- * 5. If this step is reached then the node's metadata type must be null so 
- *    return an empty qt variant. 
+ * 5. If this step is reached then the node's metadata type must be null so return 
+ *    an empty qt variant. 
  */
 QVariant MetadataModel::Node::value() const
 {
@@ -444,8 +440,8 @@ QVariant MetadataModel::Node::value() const
 
 
 /*!
- * Sets the metadata value of this node if it is not a container type. If it is 
- * a container or null type then this will do nothing and return immediately. 
+ * Sets the metadata value of this node if it is not a container type. If it is a 
+ * container or null type then this will do nothing and return immediately. 
  *
  * @param value New value this node's metadata will be set to if it is not a 
  *              container type. 
@@ -456,8 +452,8 @@ QVariant MetadataModel::Node::value() const
  *
  * Steps of Operation: 
  *
- * 1. If this node is not a container type then set its value and return true, 
- *    else do nothing and return false. 
+ * 1. If this node is not a container type then set its value and return true, else 
+ *    do nothing and return false. 
  */
 bool MetadataModel::Node::setValue(const QVariant& value)
 {
@@ -486,9 +482,8 @@ bool MetadataModel::Node::setValue(const QVariant& value)
 
 
 /*!
- * Returns first constant iterator to node pointer in this node's internal array 
- * of pointers. If this node is not an array type this list will always be 
- * empty. 
+ * Returns first constant iterator to node pointer in this node's internal array of 
+ * pointers. If this node is not an array type this list will always be empty. 
  *
  * @return First node pointer constant iterator in array. 
  */
@@ -503,8 +498,8 @@ QList<MetadataModel::Node*>::const_iterator MetadataModel::Node::arrayBegin() co
 
 
 /*!
- * Returns end of list constant iterator in this node's internal array of 
- * pointers. If this node is not an array type this list will always be empty. 
+ * Returns end of list constant iterator in this node's internal array of pointers. 
+ * If this node is not an array type this list will always be empty. 
  *
  * @return End of list constant iterator of array. 
  */
@@ -519,9 +514,8 @@ QList<MetadataModel::Node*>::const_iterator MetadataModel::Node::arrayEnd() cons
 
 
 /*!
- * Returns first constant iterator to node pointer in this node's internal map 
- * of pointers. If this node is not an object type this list will always be 
- * empty. 
+ * Returns first constant iterator to node pointer in this node's internal map of 
+ * pointers. If this node is not an object type this list will always be empty. 
  *
  * @return First node pointer constant iterator in map. 
  */
@@ -553,8 +547,8 @@ QMap<QString,MetadataModel::Node*>::const_iterator MetadataModel::Node::objectEn
 
 /*!
  * Returns the node pointer contains in this node's internal container, map or 
- * array, with the given index. If this node is not a container type or the 
- * index is out of range then null is returned. 
+ * array, with the given index. If this node is not a container type or the index 
+ * is out of range then null is returned. 
  *
  * @param index The index of the requested node pointer. 
  *
@@ -565,9 +559,8 @@ QMap<QString,MetadataModel::Node*>::const_iterator MetadataModel::Node::objectEn
  *
  * 1. Initialize return pointer variable to null. 
  *
- * 2. If the index is within range and this node is a container type then set 
- *    the return pointer variable to the node pointer contained with the given 
- *    index. 
+ * 2. If the index is within range and this node is a container type then set the 
+ *    return pointer variable to the node pointer contained with the given index. 
  *
  * 3. Return the return pointer variable. 
  */
@@ -598,11 +591,10 @@ MetadataModel::Node* MetadataModel::Node::get(int index) const
  * this node is not a container or the pointer is not matched to any of its 
  * children then -1 is returned. 
  *
- * @param pointer The node pointer that will be matched against any children 
- *                this node contains. 
+ * @param pointer The node pointer that will be matched against any children this 
+ *                node contains. 
  *
- * @return Index where match to node pointer is found or -1 if no match is 
- *         found. 
+ * @return Index where match to node pointer is found or -1 if no match is found. 
  *
  *
  * Steps of Operation: 
@@ -615,9 +607,9 @@ MetadataModel::Node* MetadataModel::Node::get(int index) const
  *    internal mapping, else it is an array type so make a direct copy of its 
  *    internal array. 
  *
- * 4. Go through the list of copied node pointers until a match is found or the 
- *    end of the list is reached. If a match is found then set the return 
- *    variable to the index where it was found. 
+ * 4. Go through the list of copied node pointers until a match is found or the end 
+ *    of the list is reached. If a match is found then set the return variable to 
+ *    the index where it was found. 
  *
  * 5. Return the return variable. 
  */
@@ -654,8 +646,8 @@ int MetadataModel::Node::indexOf(const Node* pointer) const
 
 
 /*!
- * Tests whether this node's internal mapping of node pointers already contains 
- * the given key. If this node is not an object type false is always returned. 
+ * Tests whether this node's internal mapping of node pointers already contains the 
+ * given key. If this node is not an object type false is always returned. 
  *
  * @param key The given key to be tested if it already exists within this node's 
  *            mapping. 
@@ -674,8 +666,8 @@ bool MetadataModel::Node::contains(const QString& key) const
 
 /*!
  * This will return the index a new node would be inserted into this node's 
- * internal map with the given key if this is an object type. If this node is 
- * not an object then -1 is returned. 
+ * internal map with the given key if this is an object type. If this node is not 
+ * an object then -1 is returned. 
  *
  * @param key The given key to test for indexing position within the map. 
  *
@@ -692,14 +684,12 @@ int MetadataModel::Node::getFutureIndex(const QString& key) const
 
 
 /*!
- * Creates a copy of this node's child at the given index. If the given index 
- * does not exist or this node is not a container type then a null pointer is 
- * returned. 
+ * Creates a copy of this node's child at the given index. If the given index does 
+ * not exist or this node is not a container type then a null pointer is returned. 
  *
  * @param index Index of child node that is copied. 
  *
- * @return Pointer to copy of child node or null pointer if no such child 
- *         exists. 
+ * @return Pointer to copy of child node or null pointer if no such child exists. 
  *
  *
  * Steps of Operation: 
@@ -707,9 +697,9 @@ int MetadataModel::Node::getFutureIndex(const QString& key) const
  * 1. Initialize the return smart pointer to null. 
  *
  * 2. If the index is within range and this node is a container type then make a 
- *    new node, setting its pointer to the return smart pointer, that is a copy 
- *    of the node pointed to at the given index from this node's internal array 
- *    or map depending on its container type. 
+ *    new node, setting its pointer to the return smart pointer, that is a copy of 
+ *    the node pointed to at the given index from this node's internal array or map 
+ *    depending on its container type. 
  *
  * 3. Return the return smart pointer which is null or set to a copy of the node 
  *    pointed to at the given index. 
@@ -737,26 +727,25 @@ std::unique_ptr<MetadataModel::Node> MetadataModel::Node::copy(int index)
 
 
 /*!
- * Cuts this node's child at the given index, returning its pointer and removing 
- * it form this node's list of children. If the given index does not exist or 
- * this node is not a container type then a null pointer is returned. 
+ * Cuts this node's child at the given index, returning its pointer and removing it 
+ * form this node's list of children. If the given index does not exist or this 
+ * node is not a container type then a null pointer is returned. 
  *
  * @param index Index of child node that is cut. 
  *
- * @return Pointer to child node removed or null pointer if no such child 
- *         exists. 
+ * @return Pointer to child node removed or null pointer if no such child exists. 
  *
  *
  * Steps of Operation: 
  *
  * 1. Initialize the return smart pointer to null. 
  *
- * 2. If the index is within range and this node is a container type then take 
- *    the node pointer from this node's array or map, depending on what type 
- *    this node is, and set the return smart pointer to the taken pointer. 
+ * 2. If the index is within range and this node is a container type then take the 
+ *    node pointer from this node's array or map, depending on what type this node 
+ *    is, and set the return smart pointer to the taken pointer. 
  *
- * 3. If the return smart pointer is not null then set the pointed to node's 
- *    parent to null. 
+ * 3. If the return smart pointer is not null then set the pointed to node's parent 
+ *    to null. 
  *
  * 4. Return the return smart pointer which is null or set to the node pointer 
  *    found at the given index. 
@@ -788,11 +777,11 @@ std::unique_ptr<MetadataModel::Node> MetadataModel::Node::cut(int index)
 
 
 /*!
- * Inserts a new node with the given pointer into this node's internal array at 
- * the given index if this node is an array type. If this node is not an array 
- * type this does nothing but free then given node pointer. If the index is less 
- * than 0 the new node is prepended to the array. If the index is greater than 
- * or equal to its size it is appended to the array. 
+ * Inserts a new node with the given pointer into this node's internal array at the 
+ * given index if this node is an array type. If this node is not an array type 
+ * this does nothing but free then given node pointer. If the index is less than 0 
+ * the new node is prepended to the array. If the index is greater than or equal to 
+ * its size it is appended to the array. 
  *
  * @param index Index where the new node is inserted. 
  *
@@ -802,8 +791,8 @@ std::unique_ptr<MetadataModel::Node> MetadataModel::Node::cut(int index)
  * Steps of Operation: 
  *
  * 1. If this node is an array type then insert the given node pointer into this 
- *    node's internal array setting the new node's parent to this node, else 
- *    delete the node pointed to. 
+ *    node's internal array setting the new node's parent to this node, else delete 
+ *    the node pointed to. 
  */
 void MetadataModel::Node::insertArray(int index, std::unique_ptr<Node>&& node)
 {
@@ -824,10 +813,10 @@ void MetadataModel::Node::insertArray(int index, std::unique_ptr<Node>&& node)
 
 
 /*!
- * Inserts a new node with the given pointer into this node's internal mapping 
- * with the given key. If the key already exists the node pointer is overwritten 
- * with the new node pointer, freeing the old node's memory. If this node is not 
- * an object type this does nothing but free the given node pointer. 
+ * Inserts a new node with the given pointer into this node's internal mapping with 
+ * the given key. If the key already exists the node pointer is overwritten with 
+ * the new node pointer, freeing the old node's memory. If this node is not an 
+ * object type this does nothing but free the given node pointer. 
  *
  * @param key The key where the new node that is inserted to in the map. 
  *
@@ -836,12 +825,12 @@ void MetadataModel::Node::insertArray(int index, std::unique_ptr<Node>&& node)
  *
  * Steps of Operation: 
  *
- * 1. If this node is an object type then go to the next step, else delete the 
- *    node pointed to and exit. 
+ * 1. If this node is an object type then go to the next step, else delete the node 
+ *    pointed to and exit. 
  *
- * 2. If a node pointer already exists with the given key delete the node 
- *    pointed to. Insert the new node pointer with the given key setting the new 
- *    node's parent to this node. 
+ * 2. If a node pointer already exists with the given key delete the node pointed 
+ *    to. Insert the new node pointer with the given key setting the new node's 
+ *    parent to this node. 
  */
 void MetadataModel::Node::insertObject(const QString& key, std::unique_ptr<Node>&& node)
 {
@@ -864,28 +853,27 @@ void MetadataModel::Node::insertObject(const QString& key, std::unique_ptr<Node>
 
 /*!
  * Removes and deletes this node's child with the given index. This will work if 
- * the node is an array or an object type. If this node is not a container type 
- * or the index is out of range this does nothing. 
+ * the node is an array or an object type. If this node is not a container type or 
+ * the index is out of range this does nothing. 
  *
  * @param index Index of the child node to be removed and deleted. 
  *
  *
  * Steps of Operation: 
  *
- * 1. If the index is greater then 0 go to the next step, else exit the 
- *    function. 
+ * 1. If the index is greater then 0 go to the next step, else exit the function. 
  *
- * 2. If the node is an array type and the index is less than the size of the 
- *    array then go to the next step, else go to step 4. 
+ * 2. If the node is an array type and the index is less than the size of the array 
+ *    then go to the next step, else go to step 4. 
  *
  * 3. Remove the node pointer from this node's internal array at the given index 
  *    and delete the node it points to. Exit the function. 
  *
- * 4. If this node is an object and the index is less than the size of the map 
- *    then go to the next step, else exit the function. 
+ * 4. If this node is an object and the index is less than the size of the map then 
+ *    go to the next step, else exit the function. 
  *
- * 5. Remove the node pointer from this node's internal mapping at the given 
- *    index and delete the node it points to. 
+ * 5. Remove the node pointer from this node's internal mapping at the given index 
+ *    and delete the node it points to. 
  */
 void MetadataModel::Node::remove(int index)
 {

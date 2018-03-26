@@ -8,8 +8,8 @@
 
 
 /*!
- * Assign this mapping to the one given. The map will not be copied until a 
- * write operation is performed. 
+ * Assign this mapping to the one given. The map will not be copied until a write 
+ * operation is performed. 
  *
  * @param object Map that this object will be assigned to. 
  *
@@ -155,8 +155,8 @@ QMap<QString,EMetadata>::const_iterator EMetaObject::cend() const
 
 /*!
  * Returns copy of metadata object with given key within the mapping of metadata 
- * objects. If the key does not exist a new null metadata value will be created 
- * and returned. 
+ * objects. If the key does not exist a new null metadata value will be created and 
+ * returned. 
  *
  * @param key Key of requested metadata object within the mapping of objects. 
  *
@@ -205,9 +205,9 @@ void EMetaObject::clear()
 
 
 /*!
- * Returns reference to metadata object with the given key. If no metadata 
- * object is mapped to the given key a new null metadata object is created, 
- * mapped with the given key, and returned as the reference. 
+ * Returns reference to metadata object with the given key. If no metadata object 
+ * is mapped to the given key a new null metadata object is created, mapped with 
+ * the given key, and returned as the reference. 
  *
  * @param key Key of requested metadata object within the mapping of objects. 
  *

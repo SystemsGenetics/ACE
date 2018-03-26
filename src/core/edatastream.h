@@ -10,13 +10,13 @@
 
 /*!
  * This provides a C++ style stream for input and output of a data object. This 
- * also provides endian compatibility for cross platform loading. All data 
- * written by this data stream is in beg endian and all reading is switched back 
- * to little endian if the local machine is little endian. If the local machine 
- * is big endian then no switching of bits is done. Therefore means data object 
- * files are always big endian, also called network endian. This class handles 
- * all read operations from the data object as constant to keep in line with the 
- * constant paradigm used in data objects and ACE in general. 
+ * also provides endian compatibility for cross platform loading. All data written 
+ * by this data stream is in beg endian and all reading is switched back to little 
+ * endian if the local machine is little endian. If the local machine is big endian 
+ * then no switching of bits is done. Therefore means data object files are always 
+ * big endian, also called network endian. This class handles all read operations 
+ * from the data object as constant to keep in line with the constant paradigm used 
+ * in data objects and ACE in general. 
  */
 class EDataStream : public QObject
 {
@@ -55,8 +55,7 @@ private:
    enum class Tag
    {
       /*!
-       * Special unsigned byte value that marks the beginning of a string in the 
-       * stream. 
+       * Special unsigned byte value that marks the beginning of a string in the stream. 
        */
       String = 85
       /*!

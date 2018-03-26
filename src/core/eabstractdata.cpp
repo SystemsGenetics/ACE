@@ -39,8 +39,8 @@ EMetadata EAbstractData::meta() const
 
 
 /*!
- * Sets this data object's user metadata to the given metadata as its new root. 
- * The given metadata must be an object type or else an exception is thrown. 
+ * Sets this data object's user metadata to the given metadata as its new root. The 
+ * given metadata must be an object type or else an exception is thrown. 
  *
  * @param newMeta New root metadata object for this data object's user metadata. 
  */
@@ -85,9 +85,9 @@ EDataStream& EAbstractData::stream()
 
 
 /*!
- * Changes the cursor position of this data object to the given index. The 
- * cursor position does not include the header of this data object which is 
- * hidden so index 0 is one byte after the header section. 
+ * Changes the cursor position of this data object to the given index. The cursor 
+ * position does not include the header of this data object which is hidden so 
+ * index 0 is one byte after the header section. 
  *
  * @param index The index this data object's cursor position is set to. 
  */
@@ -102,13 +102,13 @@ void EAbstractData::seek(qint64 index) const
 
 
 /*!
- * Allocates the given number of bytes after this data object's cursor position 
- * to the underlying file. This means if the given size to allocate is less then 
- * the current number of bytes after this data object's cursor position then the 
+ * Allocates the given number of bytes after this data object's cursor position to 
+ * the underlying file. This means if the given size to allocate is less then the 
+ * current number of bytes after this data object's cursor position then the 
  * underlying file will be truncated to the smaller size. 
  *
- * @param size The number of bytes to allocate after this object's current 
- *             cursor position. 
+ * @param size The number of bytes to allocate after this object's current cursor 
+ *             position. 
  */
 void EAbstractData::allocate(qint64 size)
 {

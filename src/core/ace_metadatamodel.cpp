@@ -14,8 +14,8 @@ using namespace Ace;
 
 
 /*!
- * This stores the string identifier for the custom mime type used for this 
- * model to have drag and drop functionality. 
+ * This stores the string identifier for the custom mime type used for this model 
+ * to have drag and drop functionality. 
  */
 const char* MetadataModel::_mimeType {"ace/metadatamodel.node.pointer"};
 
@@ -73,11 +73,10 @@ Qt::DropActions MetadataModel::supportedDropActions() const
 
 
 /*!
- * This implements the interface that informs any view what the headers should 
- * be for columns and/or rows of the view. This returns the header data for the 
- * given section, orientation, and role. This model has no headers for the row 
- * and has headers for the first three columns denoting "key", "type", and 
- * "value". 
+ * This implements the interface that informs any view what the headers should be 
+ * for columns and/or rows of the view. This returns the header data for the given 
+ * section, orientation, and role. This model has no headers for the row and has 
+ * headers for the first three columns denoting "key", "type", and "value". 
  *
  * @param section The section for the requested header data. This is the indent, 
  *                starting at 0, for the given orientation of vertical or 
@@ -95,8 +94,8 @@ Qt::DropActions MetadataModel::supportedDropActions() const
  * 1. If this is not the display role or the orientation is not vertical then 
  *    return a null variant else go to the next step. 
  *
- * 2. If the section is between 0 and 2 return the correct header name else 
- *    return a null variant. 
+ * 2. If the section is between 0 and 2 return the correct header name else return 
+ *    a null variant. 
  */
 QVariant MetadataModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
@@ -135,11 +134,11 @@ QVariant MetadataModel::headerData(int section, Qt::Orientation orientation, int
  *
  * 1. Get the node pointer of the given parent index. 
  *
- * 2. If the parent node is not a container then throw an exception, else go to 
- *    the next step. 
+ * 2. If the parent node is not a container then throw an exception, else go to the 
+ *    next step. 
  *
- * 3. If the row is out of range for the parent node's list of children nodes 
- *    then return an invalid index, else go to the next step. 
+ * 3. If the row is out of range for the parent node's list of children nodes then 
+ *    return an invalid index, else go to the next step. 
  *
  * 4. Return a new index for the given row, column, and parent. 
  */
@@ -166,8 +165,8 @@ QModelIndex MetadataModel::index(int row, int column, const QModelIndex& parent)
 
 
 /*!
- * This implements the interface that returns the parent index of the given 
- * index for this model. 
+ * This implements the interface that returns the parent index of the given index 
+ * for this model. 
  *
  * @param child The child index of the parent index to be found. 
  *
@@ -179,8 +178,8 @@ QModelIndex MetadataModel::index(int row, int column, const QModelIndex& parent)
  * 1. Get node pointer to parent of the given child index. If the parent is null 
  *    then return an invalid index else go to the next step. 
  *
- * 2. Get node pointer to grandparent of the given child index. If the 
- *    grandparent is null then return an invalid index else go to the next step. 
+ * 2. Get node pointer to grandparent of the given child index. If the grandparent 
+ *    is null then return an invalid index else go to the next step. 
  *
  * 3. Return a new index of the parent of the given index. 
  */
@@ -205,9 +204,8 @@ QModelIndex MetadataModel::parent(const QModelIndex& child) const
 
 
 /*!
- * This implements the interface that returns the flags for a given index of 
- * this mode. The flags inform anyone what can and cannot be done to the given 
- * index. 
+ * This implements the interface that returns the flags for a given index of this 
+ * mode. The flags inform anyone what can and cannot be done to the given index. 
  *
  * @param index The index whose flags are returned. 
  *
@@ -223,12 +221,12 @@ QModelIndex MetadataModel::parent(const QModelIndex& child) const
  * 3. If the node of the given index is a container then add drop enabled to the 
  *    return flags. 
  *
- * 4. If the given index is the first column, the node of the index has a 
- *    parent, and the node's parent is an object type, then add is editable to 
- *    the return flags. 
+ * 4. If the given index is the first column, the node of the index has a parent, 
+ *    and the node's parent is an object type, then add is editable to the return 
+ *    flags. 
  *
- * 5. If the index is the third column and the node of the given index is 
- *    editable then add is editable to the return flags. 
+ * 5. If the index is the third column and the node of the given index is editable 
+ *    then add is editable to the return flags. 
  */
 Qt::ItemFlags MetadataModel::flags(const QModelIndex& index) const
 {
@@ -266,8 +264,8 @@ Qt::ItemFlags MetadataModel::flags(const QModelIndex& index) const
 
 /*!
  * This implements the interface that returns the number of rows a given index 
- * contains. This number resolves to the number of nodes contained in the node 
- * of the given index. If the node is not a container 0 is returned. 
+ * contains. This number resolves to the number of nodes contained in the node of 
+ * the given index. If the node is not a container 0 is returned. 
  *
  * @param parent The index whose number of rows are returned. 
  *
@@ -284,8 +282,8 @@ int MetadataModel::rowCount(const QModelIndex& parent) const
 
 
 /*!
- * This implements the interface that returns the number of columns a given 
- * index contains. For this model the number of columns is always 3. 
+ * This implements the interface that returns the number of columns a given index 
+ * contains. For this model the number of columns is always 3. 
  *
  * @param parent This is not used because the number of columns is static. 
  *
@@ -303,14 +301,14 @@ int MetadataModel::columnCount(const QModelIndex& parent) const
 
 
 /*!
- * This implements the interface that creates a new qt mime data object when a 
- * drag and drop action is initiated. This model creates a custom mime data type 
- * just for this model which consists of a node pointer that will be copied or 
- * moved. This model does not support multiple indexes being drag and dropped at 
- * once so only the first index in the list of indexes will ever be used. 
+ * This implements the interface that creates a new qt mime data object when a drag 
+ * and drop action is initiated. This model creates a custom mime data type just 
+ * for this model which consists of a node pointer that will be copied or moved. 
+ * This model does not support multiple indexes being drag and dropped at once so 
+ * only the first index in the list of indexes will ever be used. 
  *
- * @param indexes List of indexes that is being requested for drag and drop 
- *                action. This model only uses the first index in the list. 
+ * @param indexes List of indexes that is being requested for drag and drop action. 
+ *                This model only uses the first index in the list. 
  *
  * @return Pointer to new qt mime data object. 
  *
@@ -319,13 +317,12 @@ int MetadataModel::columnCount(const QModelIndex& parent) const
  *
  * 1. Initialize byte array and stream for writing to it. 
  *
- * 2. Write node pointer from the first index of the given indexes and make sure 
- *    it worked. If writing failed then return a null pointer else go to next 
- *    step. 
+ * 2. Write node pointer from the first index of the given indexes and make sure it 
+ *    worked. If writing failed then return a null pointer else go to next step. 
  *
  * 3. Create a new qt mime data object, then set its mime data to this model's 
- *    custom type with the byte array as its data, then return a pointer to the 
- *    new qt mime data object. 
+ *    custom type with the byte array as its data, then return a pointer to the new 
+ *    qt mime data object. 
  */
 QMimeData* MetadataModel::mimeData(const QModelIndexList& indexes) const
 {
@@ -347,11 +344,11 @@ QMimeData* MetadataModel::mimeData(const QModelIndexList& indexes) const
 
 
 /*!
- * This implements the interface that returns data from the given index and 
- * role. This model only returns data based off the display role or custom raw 
- * image data role. This model returns a string suitable for a view with the 
- * display role. Only if the node of the given index is a bytes type then the 
- * byte array is returned with the raw image data role. 
+ * This implements the interface that returns data from the given index and role. 
+ * This model only returns data based off the display role or custom raw image data 
+ * role. This model returns a string suitable for a view with the display role. 
+ * Only if the node of the given index is a bytes type then the byte array is 
+ * returned with the raw image data role. 
  *
  * @param index The index whose data is being requested. 
  *
@@ -364,11 +361,11 @@ QMimeData* MetadataModel::mimeData(const QModelIndexList& indexes) const
  *
  * 1. Get the node pointer for the given index. 
  *
- * 2. If the given role is raw image data and the node is a bytes type then 
- *    return the byte array of the given index, else go to the next step. 
+ * 2. If the given role is raw image data and the node is a bytes type then return 
+ *    the byte array of the given index, else go to the next step. 
  *
- * 3. If the given role is not the display role then return a null variant, else 
- *    go to the next step. 
+ * 3. If the given role is not the display role then return a null variant, else go 
+ *    to the next step. 
  *
  * 4. Return the display string value of the given index. 
  */
@@ -392,9 +389,9 @@ QVariant MetadataModel::data(const QModelIndex& index, int role) const
 
 
 /*!
- * This implements the interface that sets the data of a given index with the 
- * given role. The only role this model implements is the edit role. All other 
- * roles are ignored and false is returned. 
+ * This implements the interface that sets the data of a given index with the given 
+ * role. The only role this model implements is the edit role. All other roles are 
+ * ignored and false is returned. 
  *
  * @param index The index whose data will be changed. 
  *
@@ -410,16 +407,15 @@ QVariant MetadataModel::data(const QModelIndex& index, int role) const
  *
  * 1. Initialize return value to false. 
  *
- * 2. If the given role is the edit role go to the next step, else go to the 
- *    last step. 
+ * 2. If the given role is the edit role go to the next step, else go to the last 
+ *    step. 
  *
- * 3. If the given index is the first column then set its key, setting the 
- *    return value to the result of setting the key. 
+ * 3. If the given index is the first column then set its key, setting the return 
+ *    value to the result of setting the key. 
  *
- * 4. If the given index is the third column then set its value to the given 
- *    one, setting the return variable to the result of that operation. If 
- *    setting a new value was successful then emit a data changed signal for the 
- *    model. 
+ * 4. If the given index is the third column then set its value to the given one, 
+ *    setting the return variable to the result of that operation. If setting a new 
+ *    value was successful then emit a data changed signal for the model. 
  *
  * 5. Return the return variable. 
  */
@@ -448,9 +444,9 @@ bool MetadataModel::setData(const QModelIndex& index, const QVariant& value, int
 
 
 /*!
- * This implements the interface that handles the end of a drag and drop 
- * operation where the drop has occurred. This model only implements the copy 
- * and move actions. 
+ * This implements the interface that handles the end of a drag and drop operation 
+ * where the drop has occurred. This model only implements the copy and move 
+ * actions. 
  *
  * @param data Pointer to qt mime data object that was created when the drag was 
  *             initiated. 
@@ -463,14 +459,13 @@ bool MetadataModel::setData(const QModelIndex& index, const QVariant& value, int
  *
  * @param parent The parent index where the drop occurred. 
  *
- * @return Returns true on success of the drag and drop action or false on 
- *         failure. 
+ * @return Returns true on success of the drag and drop action or false on failure. 
  *
  *
  * Steps of Operation: 
  *
- * 1. If the drag and drop action is not copy or move then return false, else go 
- *    to the next step. 
+ * 1. If the drag and drop action is not copy or move then return false, else go to 
+ *    the next step. 
  *
  * 2. Extract the node pointer from the qt mime data object. If reading the node 
  *    pointer in fails then return false, else go the the next step. 
@@ -543,8 +538,7 @@ bool MetadataModel::isImage(const QModelIndex& index) const
  *
  * @param index The given index to test if it is a container type. 
  *
- * @return Returns true if the given index is a container type else returns 
- *         false. 
+ * @return Returns true if the given index is a container type else returns false. 
  */
 bool MetadataModel::isContainer(const QModelIndex& index) const
 {
@@ -557,9 +551,9 @@ bool MetadataModel::isContainer(const QModelIndex& index) const
 
 
 /*!
- * Inserts a new empty node with the given metadata type into the given parent. 
- * If the parent is a map type a new key is generated else if the parent is an 
- * array type the new node is prepended to the array. 
+ * Inserts a new empty node with the given metadata type into the given parent. If 
+ * the parent is a map type a new key is generated else if the parent is an array 
+ * type the new node is prepended to the array. 
  *
  * @param parent  
  *
@@ -587,8 +581,7 @@ bool MetadataModel::insert(const QModelIndex& parent, EMetadata::Type type)
  *
  * Steps of Operation: 
  *
- * 1. If the given index is not valid then return false, else go to the next 
- *    step. 
+ * 1. If the given index is not valid then return false, else go to the next step. 
  *
  * 2. Get the parent index of the given index. 
  *
@@ -617,8 +610,8 @@ bool MetadataModel::remove(const QModelIndex& index)
 
 /*!
  * Returns this model's data tree in the form of metadata objects. The root 
- * metadata object returned is an object type that is the root of the tree for 
- * the model. 
+ * metadata object returned is an object type that is the root of the tree for the 
+ * model. 
  *
  * @return Root metadata object of this model's data tree. 
  */
@@ -633,9 +626,9 @@ EMetadata MetadataModel::meta() const
 
 
 /*!
- * This sets its model's data to the given metadata value. Any data stored 
- * within the model is removed and overwritten. The metadata object given must 
- * be an object type or this will throw an exception. 
+ * This sets its model's data to the given metadata value. Any data stored within 
+ * the model is removed and overwritten. The metadata object given must be an 
+ * object type or this will throw an exception. 
  *
  * @param newRoot The given metadata root object that will be copied into this 
  *                model's data. 
@@ -643,13 +636,13 @@ EMetadata MetadataModel::meta() const
  *
  * Steps of Operation: 
  *
- * 1. If the given metadata object is not an object type then throw an 
- *    exception, else go to the next step. 
+ * 1. If the given metadata object is not an object type then throw an exception, 
+ *    else go to the next step. 
  *
  * 2. Delete the current node data on this model if any exists. 
  *
- * 3. Copy a new node data tree from the given metadata object and set it is 
- *    this mode's new data tree. 
+ * 3. Copy a new node data tree from the given metadata object and set it is this 
+ *    mode's new data tree. 
  */
 void MetadataModel::setMeta(const EMetadata& newRoot)
 {
@@ -673,8 +666,8 @@ void MetadataModel::setMeta(const EMetadata& newRoot)
 
 
 /*!
- * Returns the node pointer of the given index. If the given index is invalid 
- * the root node of this model is returned. 
+ * Returns the node pointer of the given index. If the given index is invalid the 
+ * root node of this model is returned. 
  *
  * @param index The index of the requested node pointer. 
  *
@@ -717,13 +710,13 @@ MetadataModel::Node* MetadataModel::pointer(const QModelIndex& index) const
  *
  * Steps of Operation: 
  *
- * 1. If the parent of the given index is not object type and/or already 
- *    contains the new key then return false, else go to the next step. 
+ * 1. If the parent of the given index is not object type and/or already contains 
+ *    the new key then return false, else go to the next step. 
  *
- * 2. Find out if changing the key of the given index will change its row 
- *    position within it's parent's map. Then set the key of the given index to 
- *    the new given key, notifying the model the position of the index has 
- *    changed if that is the case. Then return true on success. 
+ * 2. Find out if changing the key of the given index will change its row position 
+ *    within it's parent's map. Then set the key of the given index to the new 
+ *    given key, notifying the model the position of the index has changed if that 
+ *    is the case. Then return true on success. 
  */
 bool MetadataModel::setKey(const QModelIndex& index, const QString& newKey)
 {
@@ -767,8 +760,8 @@ bool MetadataModel::setKey(const QModelIndex& index, const QString& newKey)
  *
  * Steps of Operation: 
  *
- * 1. If the node does not have a parent because it is the root node then return 
- *    a null pointer, else go to the next step. 
+ * 1. If the node does not have a parent because it is the root node then return a 
+ *    null pointer, else go to the next step. 
  *
  * 2. Get the parent index of the given node and its row within the parent node. 
  *    Then remove the given node from its parent, informing the model of the 
@@ -799,12 +792,12 @@ std::unique_ptr<MetadataModel::Node> MetadataModel::take(Node* node)
 
 
 /*!
- * This inserts a new node into the model into the given parent index at the 
- * given row. If the parent node is an object type the given row is ignored 
- * because those lists are ordered by the map. If the parent node is an array 
- * the row is used; if the row is less than 0 the new node is prepended to the 
- * parent else if it is beyond the end of the list the new node is appended. If 
- * this fails at inserting the new node it is deleted. 
+ * This inserts a new node into the model into the given parent index at the given 
+ * row. If the parent node is an object type the given row is ignored because those 
+ * lists are ordered by the map. If the parent node is an array the row is used; if 
+ * the row is less than 0 the new node is prepended to the parent else if it is 
+ * beyond the end of the list the new node is appended. If this fails at inserting 
+ * the new node it is deleted. 
  *
  * @param parent The parent where the new node will be inserted into. 
  *
@@ -824,23 +817,22 @@ std::unique_ptr<MetadataModel::Node> MetadataModel::take(Node* node)
  * 2. If the node parent is an object type then go to the next step, else go to 
  *    step 5. 
  *
- * 3. Generate a new key that does not exist in the parent node's mapping of 
- *    nodes. 
+ * 3. Generate a new key that does not exist in the parent node's mapping of nodes. 
  *
  * 4. Insert the new node into the parent node's map with the new generated key. 
  *    Return true for success. 
  *
- * 5. If the node parent is an array type then go to the next step, else go to 
- *    the last step. 
+ * 5. If the node parent is an array type then go to the next step, else go to the 
+ *    last step. 
  *
- * 6. If the row is out of range, change it to 0 or the end of the list 
- *    depending on it being less than 0 or greater than the size, respectively. 
+ * 6. If the row is out of range, change it to 0 or the end of the list depending 
+ *    on it being less than 0 or greater than the size, respectively. 
  *
- * 7. Insert the new node into the parent node's array with the given and 
- *    possibly modified row. Return true for success. 
+ * 7. Insert the new node into the parent node's array with the given and possibly 
+ *    modified row. Return true for success. 
  *
- * 8. The parent is not an object or array so delete the new node and return 
- *    false for failure. 
+ * 8. The parent is not an object or array so delete the new node and return false 
+ *    for failure. 
  */
 bool MetadataModel::insert(const QModelIndex& parent, int row, std::unique_ptr<Node>&& node)
 {
@@ -895,10 +887,10 @@ bool MetadataModel::insert(const QModelIndex& parent, int row, std::unique_ptr<N
  *
  * Steps of Operation: 
  *
- * 1. Create a new metadata variable that is a copy of the node's metadata 
- *    value. If the metadata variable is a container type then recursively copy 
- *    all children nodes into the metadata variable with the same keys if it is 
- *    an object type. Then return the new metadata variable. 
+ * 1. Create a new metadata variable that is a copy of the node's metadata value. 
+ *    If the metadata variable is a container type then recursively copy all 
+ *    children nodes into the metadata variable with the same keys if it is an 
+ *    object type. Then return the new metadata variable. 
  */
 EMetadata MetadataModel::buildMeta(const Node* node) const
 {
@@ -936,11 +928,10 @@ EMetadata MetadataModel::buildMeta(const Node* node) const
  *
  * Steps of Operation: 
  *
- * 1. Create a new node variable, storing its pointer, setting it's metadata 
- *    type as the given metadata value's type. If the given metadata type is a 
- *    container then recursively copy all children metadata into the new node 
- *    with the same keys if it is an object type. Then return the node pointer 
- *    of the new node. 
+ * 1. Create a new node variable, storing its pointer, setting it's metadata type 
+ *    as the given metadata value's type. If the given metadata type is a container 
+ *    then recursively copy all children metadata into the new node with the same 
+ *    keys if it is an object type. Then return the node pointer of the new node. 
  */
 std::unique_ptr<MetadataModel::Node> MetadataModel::buildNode(const EMetadata& meta)
 {

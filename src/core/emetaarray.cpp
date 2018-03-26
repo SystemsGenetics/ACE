@@ -8,8 +8,8 @@
 
 
 /*!
- * Assign this array to the one given. The array will not be copied until a 
- * write operation is performed. 
+ * Assign this array to the one given. The array will not be copied until a write 
+ * operation is performed. 
  *
  * @param object Array that this object will be assigned to. 
  *
@@ -154,9 +154,9 @@ QList<EMetadata>::const_iterator EMetaArray::cend() const
 
 
 /*!
- * Returns constant reference to metadata object with given index within the 
- * array of metadata objects. If the index is beyond the scope of the array then 
- * Qt will force exit the program. 
+ * Returns constant reference to metadata object with given index within the array 
+ * of metadata objects. If the index is beyond the scope of the array then Qt will 
+ * force exit the program. 
  *
  * @param index Index of requested metadata object within the array of objects. 
  *
@@ -174,9 +174,8 @@ const EMetadata& EMetaArray::at(int index) const
 
 /*!
  * Inserts a new metadata value to the array at the given index of the array. If 
- * the index is less than or equal to 0 it is prepended to the array. If the 
- * index is greater than or equal to the size of the array it is appended to the 
- * list. 
+ * the index is less than or equal to 0 it is prepended to the array. If the index 
+ * is greater than or equal to the size of the array it is appended to the list. 
  *
  * @param index Index where new metadata value will be inserted. 
  *
@@ -221,8 +220,8 @@ void EMetaArray::clear()
 
 
 /*!
- * Returns reference to metadata object with the given index. If the index is 
- * out of range of the array then Qt will force exit the program. 
+ * Returns reference to metadata object with the given index. If the index is out 
+ * of range of the array then Qt will force exit the program. 
  *
  * @param index Index of requested metadata object within the array. 
  *
@@ -239,8 +238,8 @@ EMetadata& EMetaArray::operator[](int index)
 
 
 /*!
- * Returns constant reference to metadata object with the given index. If the 
- * index is out of range of the array then Qt will force exit the program. 
+ * Returns constant reference to metadata object with the given index. If the index 
+ * is out of range of the array then Qt will force exit the program. 
  *
  * @param index Index of requested metadata object within the array. 
  *

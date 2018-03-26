@@ -1,7 +1,7 @@
 #include <memory>
 
 #include "abstractanalytic.h"
-#include "datamanager.h"
+#include "ace_datamanager.h"
 #include "exception.h"
 #include "datareference.h"
 #include "opencldevice.h"

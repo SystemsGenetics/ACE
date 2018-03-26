@@ -13,10 +13,10 @@ class QByteArray;
 /*!
  * This holds a single metadata value. It is designed as a variant class which 
  * means it can hold any possible value type supported by the metadata system. 
- * Because this can be an array or object it can possibly hold additional 
- * metadata objects as children. Care should be taken to not attempt to convert 
- * a metadata object to a type that it is not. If the object attempts to convert 
- * itself to a type it is not an exception will be thrown. 
+ * Because this can be an array or object it can possibly hold additional metadata 
+ * objects as children. Care should be taken to not attempt to convert a metadata 
+ * object to a type that it is not. If the object attempts to convert itself to a 
+ * type it is not an exception will be thrown. 
  */
 class EMetadata
 {
@@ -43,8 +43,8 @@ public:
        */
       ,String
       /*!
-       * This means the object is an array of bytes. The QByteArray type is used to 
-       * store this type. 
+       * This means the object is an array of bytes. The QByteArray type is used to store 
+       * this type. 
        */
       ,Bytes
       /*!
@@ -52,8 +52,8 @@ public:
        */
       ,Array
       /*!
-       * This means the object is a mapping of additional metadata objects. The 
-       * mapping is done using strings as keywords. 
+       * This means the object is a mapping of additional metadata objects. The mapping 
+       * is done using strings as keywords. 
        */
       ,Object
    };

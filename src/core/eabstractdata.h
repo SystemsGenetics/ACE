@@ -9,27 +9,26 @@
 
 
 /*!
- * This represents a data object for the ACE system. Implementations of this 
- * class are responsible for managing a data type for a program using the ACE 
- * library. Implementations can also manipulate the user metadata of its data 
- * object. All functionality is provided through protected methods. If an 
- * already existing data object is opened only the read data interface is 
- * called. If it is a new data object then the write new data, prepare, and 
- * finish interfaces are called in that order. Data object files are organized 
- * into three parts; the header, data, and user metadata in that order. An 
- * implementation of this class is responsible for the data section. 
+ * This represents a data object for the ACE system. Implementations of this class 
+ * are responsible for managing a data type for a program using the ACE library. 
+ * Implementations can also manipulate the user metadata of its data object. All 
+ * functionality is provided through protected methods. If an already existing data 
+ * object is opened only the read data interface is called. If it is a new data 
+ * object then the write new data, prepare, and finish interfaces are called in 
+ * that order. Data object files are organized into three parts; the header, data, 
+ * and user metadata in that order. An implementation of this class is responsible 
+ * for the data section. 
  */
 class EAbstractData : public QObject
 {
    Q_OBJECT
 public:
    /*!
-    * This interface returns the index within this data object after the end of 
-    * where the data is stored. This is used to determine where the user metadata 
-    * is written since it comes after the data section of the data object. 
+    * This interface returns the index within this data object after the end of where 
+    * the data is stored. This is used to determine where the user metadata is written 
+    * since it comes after the data section of the data object. 
     *
-    * @return Index of the first byte in the data object after the data section 
-    *         ends. 
+    * @return Index of the first byte in the data object after the data section ends. 
     */
    virtual qint64 dataEnd() const = 0;
    /*!
@@ -38,22 +37,20 @@ public:
     */
    virtual void readData() = 0;
    /*!
-    * This interface is called to initialize the data object's data to a null 
-    * state. 
+    * This interface is called to initialize the data object's data to a null state. 
     */
    virtual void writeNewData() = 0;
    /*!
-    * This interface is called to prepare this data object's data to get new data 
-    * from an analytic and optionally allocate all required space on the underlying 
-    * file. 
+    * This interface is called to prepare this data object's data to get new data from 
+    * an analytic and optionally allocate all required space on the underlying file. 
     *
     * @param allocate True if this interface should allocate all space required for 
     *                 the incoming data or false otherwise. 
     */
    virtual void prepare(bool allocate) = 0;
    /*!
-    * This interface finalizes this data object's data after the analytic that 
-    * created it has finished giving it new data. 
+    * This interface finalizes this data object's data after the analytic that created 
+    * it has finished giving it new data. 
     */
    virtual void finish() = 0;
    /*!

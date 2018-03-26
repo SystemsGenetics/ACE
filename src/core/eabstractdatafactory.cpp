@@ -43,9 +43,8 @@ EAbstractDataFactory& EAbstractDataFactory::instance()
 
 
 /*!
- * Sets the global instance for this object's implementation. If a global 
- * instance already exists then it is deleted and replaced with the new one 
- * given. 
+ * Sets the global instance for this object's implementation. If a global instance 
+ * already exists then it is deleted and replaced with the new one given. 
  *
  * @param instance Pointer to the new global instance for this factory. 
  */

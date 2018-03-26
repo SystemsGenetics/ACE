@@ -20,8 +20,6 @@ SOURCES += \
    exception.cpp \
    abstractanalyticfactory.cpp \
    opencl.cpp \
-   datamanager.cpp \
-   datareference.cpp \
    abstractanalytic.cpp \
    emetadata.cpp \
    ace_qmpi.cpp \
@@ -33,7 +31,8 @@ SOURCES += \
     ace_dataobject.cpp \
     edatastream.cpp \
     eabstractdata.cpp \
-    eabstractdatafactory.cpp
+    eabstractdatafactory.cpp \
+    ace_datamanager.cpp
 
 HEADERS += \
    opencldevicemodel.h \
@@ -47,8 +46,6 @@ HEADERS += \
    abstractanalyticfactory.h \
    abstractanalytic.h \
    opencl.h \
-   datamanager.h \
-   datareference.h \
    AceCore.h \
    AceOpenCL.h \
    emetadata.h \
@@ -64,7 +61,8 @@ HEADERS += \
     global.h \
     ace.h \
     eabstractdata.h \
-    eabstractdatafactory.h
+    eabstractdatafactory.h \
+    ace_datamanager.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
