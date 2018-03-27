@@ -1,7 +1,7 @@
 #include "opencldevicemodel.h"
 #include "utilities.h"
 #include "opencldevice.h"
-#include "exception.h"
+#include "eexception.h"
 
 
 

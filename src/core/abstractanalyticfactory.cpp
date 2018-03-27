@@ -1,6 +1,6 @@
 #include "abstractanalyticfactory.h"
 #include "abstractanalytic.h"
-#include "exception.h"
+#include "eexception.h"
 
 
 

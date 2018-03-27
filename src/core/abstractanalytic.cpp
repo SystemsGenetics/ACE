@@ -2,7 +2,7 @@
 
 #include "abstractanalytic.h"
 #include "ace_datamanager.h"
-#include "exception.h"
+#include "eexception.h"
 #include "datareference.h"
 #include "opencldevice.h"
 #include "ace_qmpi.h"

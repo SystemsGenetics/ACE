@@ -1,7 +1,7 @@
 #include <QMessageBox>
 
 #include "Application.h"
-#include "exception.h"
+#include "eexception.h"
 #include "opencldevice.h"
 #include "mainwindow.h"
 #include "analyticdialog.h"

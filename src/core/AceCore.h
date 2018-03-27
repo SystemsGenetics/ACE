@@ -5,5 +5,5 @@
 #include "eabstractdata.h"
 #include "eabstractdatafactory.h"
 #include "edatastream.h"
-#include "exception.h"
+#include "eexception.h"
 #endif

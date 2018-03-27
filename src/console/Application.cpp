@@ -2,7 +2,7 @@
 #include <QJsonDocument>
 
 #include "Application.h"
-#include "exception.h"
+#include "eexception.h"
 #include "abstractanalyticfactory.h"
 #include "abstractanalytic.h"
 #include "ace_datamanager.h"

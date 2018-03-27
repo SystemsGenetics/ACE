@@ -1,7 +1,7 @@
 #include "emetadata.h"
 #include <QString>
 #include <QByteArray>
-#include "exception.h"
+#include "eexception.h"
 #include "emetaarray.h"
 #include "emetaobject.h"
 //

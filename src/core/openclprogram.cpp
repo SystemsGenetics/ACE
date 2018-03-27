@@ -1,6 +1,6 @@
 #include "openclprogram.h"
 #include "openclkernel.h"
-#include "exception.h"
+#include "eexception.h"
 
 
 

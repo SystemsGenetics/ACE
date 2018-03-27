@@ -3,7 +3,7 @@
 #include "emetadata.h"
 #include "emetaarray.h"
 #include "emetaobject.h"
-#include "exception.h"
+#include "eexception.h"
 
 
 

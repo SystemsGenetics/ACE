@@ -17,7 +17,6 @@ SOURCES += \
    openclprogram.cpp \
    openclkernel.cpp \
    utilities.cpp \
-   exception.cpp \
    abstractanalyticfactory.cpp \
    opencl.cpp \
    abstractanalytic.cpp \
@@ -32,7 +31,8 @@ SOURCES += \
     edatastream.cpp \
     eabstractdata.cpp \
     eabstractdatafactory.cpp \
-    ace_datamanager.cpp
+    ace_datamanager.cpp \
+    eexception.cpp
 
 HEADERS += \
    opencldevicemodel.h \
@@ -42,7 +42,6 @@ HEADERS += \
    openclprogram.h \
    openclkernel.h \
    utilities.h \
-   exception.h \
    abstractanalyticfactory.h \
    abstractanalytic.h \
    opencl.h \
@@ -62,7 +61,8 @@ HEADERS += \
     ace.h \
     eabstractdata.h \
     eabstractdatafactory.h \
-    ace_datamanager.h
+    ace_datamanager.h \
+    eexception.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 

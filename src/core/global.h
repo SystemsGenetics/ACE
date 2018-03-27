@@ -1,4 +1,5 @@
 
+class EException;
 class EAbstractDataFactory;
 class EAbstractData;
 class EDataStream;
