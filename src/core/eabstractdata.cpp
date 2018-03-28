@@ -9,6 +9,34 @@
 
 
 /*!
+ * This interface is called to prepare this data object's data to get new data from 
+ * an analytic and optionally allocate all required space on the underlying file. 
+ * The default implementation does nothing. 
+ *
+ * @param allocate True if this interface should allocate all space required for 
+ *                 the incoming data or false otherwise. 
+ */
+void EAbstractData::prepare(bool allocate)
+{}
+
+
+
+
+
+
+/*!
+ * This interface finalizes this data object's data after the analytic that created 
+ * it has finished giving it new data. The default implementation does nothing. 
+ */
+void EAbstractData::finish()
+{}
+
+
+
+
+
+
+/*!
  * Returns the root metadata object for this data object's system metadata. 
  *
  * @return Root metadata object for this data object's system metadata. 

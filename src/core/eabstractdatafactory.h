@@ -18,6 +18,10 @@ class EAbstractDataFactory
 {
 public:
    /*!
+    * This is so any implementation of this class will be deconstructed correctly. 
+    */
+   virtual ~EAbstractDataFactory() = default;
+   /*!
     * This interface returns the total number of data types a program that uses ACE 
     * implements. All integers from 0 to one less than the size returned must be 
     * defined as a unique data type. 

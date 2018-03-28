@@ -41,25 +41,14 @@ public:
     */
    virtual void writeNewData() = 0;
    /*!
-    * This interface is called to prepare this data object's data to get new data from 
-    * an analytic and optionally allocate all required space on the underlying file. 
-    *
-    * @param allocate True if this interface should allocate all space required for 
-    *                 the incoming data or false otherwise. 
-    */
-   virtual void prepare(bool allocate) = 0;
-   /*!
-    * This interface finalizes this data object's data after the analytic that created 
-    * it has finished giving it new data. 
-    */
-   virtual void finish() = 0;
-   /*!
     * This interface returns a qt table model that represents the data of this data 
     * object as a table. 
     *
     * @return Pointer to model that represents the data of this data object. 
     */
    virtual QAbstractTableModel* model() = 0;
+   virtual void prepare(bool allocate);
+   virtual void finish();
 protected:
    EMetadata systemMeta() const;
    EMetadata meta() const;
