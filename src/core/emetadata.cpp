@@ -1,6 +1,7 @@
 #include "emetadata.h"
 #include <QString>
 #include <QByteArray>
+#include <QJsonDocument>
 #include "eexception.h"
 #include "emetaarray.h"
 #include "emetaobject.h"
@@ -47,6 +48,77 @@ EMetadata::EMetadata(Type type):
       break;
    default:
       break;
+   }
+}
+
+
+
+
+
+
+/*!
+ * Constructs a new metadata object from the given JSON value. If the JSON is an 
+ * array or object this will recursively create all children metadata mirroring the 
+ * structure of the given JSON. 
+ *
+ * @param value JSON value that is used to construct this new metadata object. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the given json value is a boolean, double, or string then initialize this 
+ *    metadata object to that type, set its value to the json value, and exit, else 
+ *    go to the next step. 
+ *
+ * 2. If the given json value is an array then initialize this metadata object to 
+ *    that type, copy all children json values to this metadata object as children 
+ *    metadata, and exit, else go to the next step. 
+ *
+ * 3. If the given json value is an object then initialize this metadata object to 
+ *    that type, copy all children json values with their associated keys to this 
+ *    metadata object as children metadata with the same keys, and exit, else go to 
+ *    the next step. 
+ *
+ * 4. If this is reached then initialize this metadata object to the null type. 
+ */
+EMetadata::EMetadata(const QJsonValue& value)
+{
+   if ( value.isBool() )
+   {
+      *this = EMetadata(Bool);
+      toBool() = value.toBool();
+   }
+   else if ( value.isDouble() )
+   {
+      *this = EMetadata(Double);
+      toDouble() = value.toDouble();
+   }
+   else if ( value.isString() )
+   {
+      *this = EMetadata(String);
+      toString() = value.toString();
+   }
+   else if ( value.isArray() )
+   {
+      *this = EMetadata(Array);
+      const QJsonArray values {value.toArray()};
+      for (auto value: values)
+      {
+         toArray().append(EMetadata(value));
+      }
+   }
+   else if ( value.isObject() )
+   {
+      *this = EMetadata(Object);
+      const QJsonObject values {value.toObject()};
+      for (auto i = values.begin(); i != values.end() ;++i)
+      {
+         toObject().insert(i.key(),EMetadata(*i));
+      }
+   }
+   else
+   {
+      *this = EMetadata(Null);
    }
 }
 
@@ -170,6 +242,84 @@ EMetadata& EMetadata::operator=(EMetadata&& object)
 EMetadata::~EMetadata()
 {
    clear();
+}
+
+
+
+
+
+
+/*!
+ * Returns the JSON equivalent to this metadata excluding any byte array types 
+ * because JSON does not support that. If this metadata is an array or object then 
+ * all children are recursively copied into JSON format and returned with the root 
+ * JSON value. 
+ *
+ * @return JSON value of this metadata object. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If this metadata is a boolean, double, or string then return the JSON value 
+ *    of this metadata object, else go to the next step. 
+ *
+ * 2. If this metadata is an array then return a JSON array of this metadata object 
+ *    with all metadata children recursively added as JSON values themselves, else 
+ *    go to the next step. 
+ *
+ * 3. If this metadata is an object then return a JSON object of this metadata 
+ *    object with all metadata children recursively added as JSON values and 
+ *    associated their keys, else go to the next step. 
+ *
+ * 4. If this is reached then metadata is a byte array or null so return an null 
+ *    JSON value. 
+ */
+QJsonValue EMetadata::toJson() const
+{
+   switch (_type)
+   {
+   case Bool:
+      return QJsonValue(toBool());
+   case Double:
+      return QJsonValue(toDouble());
+   case String:
+      return QJsonValue(toString());
+   case Array:
+      {
+         QJsonArray ret;
+         for (auto value: toArray())
+         {
+            ret.append(value.toJson());
+         }
+         return ret;
+      }
+   case Object:
+      {
+         QJsonObject ret;
+         for (auto i = toObject().begin(); i != toObject().end() ;++i)
+         {
+            ret.insert(i.key(),i->toJson());
+         }
+         return ret;
+      }
+   default:
+      return QJsonValue();
+   }
+}
+
+
+
+
+
+
+/*!
+ * Returns the type for this metadata. 
+ *
+ * @return This type for this metadata. 
+ */
+EMetadata::Type EMetadata::type() const
+{
+   return _type;
 }
 
 
@@ -479,21 +629,6 @@ EMetaObject& EMetadata::toObject()
 {
    checkType(Object);
    return *static_cast<EMetaObject*>(_data);
-}
-
-
-
-
-
-
-/*!
- * Returns the type for this metadata. 
- *
- * @return This type for this metadata. 
- */
-EMetadata::Type EMetadata::type() const
-{
-   return _type;
 }
 
 
