@@ -32,7 +32,9 @@ SOURCES += \
     eabstractdata.cpp \
     eabstractdatafactory.cpp \
     ace_datamanager.cpp \
-    eexception.cpp
+    eexception.cpp \
+    ace_analytic_manager.cpp \
+    eabstractanalytic.cpp
 
 HEADERS += \
    opencldevicemodel.h \
@@ -62,7 +64,9 @@ HEADERS += \
     eabstractdata.h \
     eabstractdatafactory.h \
     ace_datamanager.h \
-    eexception.h
+    eexception.h \
+    ace_analytic_manager.h \
+    eabstractanalytic.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
