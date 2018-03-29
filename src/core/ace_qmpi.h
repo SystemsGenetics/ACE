@@ -25,6 +25,7 @@ namespace Ace
       static void shutdown();
       int size() const;
       int rank() const;
+      int localRank() const;
       bool isMaster() const;
    signals:
       /*!
@@ -52,6 +53,11 @@ namespace Ace
        * part of the MPI run. 
        */
       int _rank;
+      /*!
+       * This is the local rank of this process identifying among all processes that 
+       * share resources. 
+       */
+      int _localRank;
       /*!
        * This is the period, in milliseconds, between each time this class checks for new 
        * data received from other MPI processes. 

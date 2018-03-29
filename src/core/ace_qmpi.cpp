@@ -48,8 +48,8 @@ QMPI& QMPI::initialize()
    if ( _hasShutdown )
    {
       E_MAKE_EXCEPTION(e);
-      e.setTitle(tr("MPI Initialize Failed"));
-      e.setDetails(tr("An instance of QMPI already existed and as shutdown."));
+      e.setTitle(tr("Logical Error"));
+      e.setDetails(tr("An instance of QMPI already existed and shutdown."));
       throw e;
    }
    if ( !_instance )
@@ -119,6 +119,22 @@ int QMPI::rank() const
 
 
 /*!
+ * Returns the local rank of this process to identify it within the number of other 
+ * processes that share its local resources within this MPI run. 
+ *
+ * @return Local rank of this process. 
+ */
+int QMPI::localRank() const
+{
+   return _localRank;
+}
+
+
+
+
+
+
+/*!
  * Tests if this process is the master process (rank 0) of the MPI run. 
  *
  * @return Returns true if this process is the master else returns false. 
@@ -153,7 +169,7 @@ void QMPI::sendData(int toRank, const QByteArray& data)
    if ( MPI_Send(data.data(),data.size(),MPI_CHAR,toRank,0,MPI_COMM_WORLD) )
    {
       E_MAKE_EXCEPTION(e);
-      e.setTitle(tr("MPI_Send Failed"));
+      e.setTitle(tr("MPI Failed"));
       e.setDetails(tr("MPI_Send failed."));
       throw e;
    }
@@ -203,7 +219,7 @@ void QMPI::timerEvent(QTimerEvent* event)
          if ( MPI_Iprobe(i,0,MPI_COMM_WORLD,&flag,&status) )
          {
             E_MAKE_EXCEPTION(e);
-            e.setTitle(tr("MPI_Iprobe Failed"));
+            e.setTitle(tr("MPI Failed"));
             e.setDetails(tr("MPI_Iprobe failed."));
             throw e;
          }
@@ -213,7 +229,7 @@ void QMPI::timerEvent(QTimerEvent* event)
             if ( MPI_Get_count(&status,MPI_CHAR,&count) )
             {
                E_MAKE_EXCEPTION(e);
-               e.setTitle(tr("MPI_Get_count Failed"));
+               e.setTitle(tr("MPI Failed"));
                e.setDetails(tr("MPI_Get_count failed."));
                throw e;
             }
@@ -222,7 +238,7 @@ void QMPI::timerEvent(QTimerEvent* event)
             if ( MPI_Recv(data.data(),count,MPI_CHAR,i,0,MPI_COMM_WORLD,MPI_STATUS_IGNORE) )
             {
                E_MAKE_EXCEPTION(e);
-               e.setTitle(tr("MPI_Recv Failed"));
+               e.setTitle(tr("MPI Failed"));
                e.setDetails(tr("MPI_Recv failed."));
                throw e;
             }
@@ -245,29 +261,50 @@ void QMPI::timerEvent(QTimerEvent* event)
  *
  * Steps of Operation: 
  *
- * 1. Initialize the MPI system. If it failed go to step 4. 
+ * 1. Initialize the MPI system. If it failed set MPI to a single process state, 
+ *    else go to the next step. 
  *
- * 2. Query the MPI system for the size and rank. If the query failed go to step 4. 
+ * 2. Query the MPI system for the size, rank, and local rank based off shared 
+ *    type. If any query fails then throw an exception, else go to the next step. 
  *
- * 3. Initialize a QObject timer event used for polling of new data received and 
- *    end operation. 
- *
- * 4. Throw an exception detailing the error that occurred. 
+ * 3. Initialize a QObject timer event used for polling of new data received. 
  */
 QMPI::QMPI()
 {
    if ( MPI_Init(nullptr,nullptr) )
    {
-      E_MAKE_EXCEPTION(e);
-      e.setTitle(tr("MPI_Init Failed"));
-      e.setDetails(tr("MPI_Init failed."));
-      throw e;
+      _size = 1;
+      _rank = 0;
+      _localRank = 0;
+      return;
    }
-   if ( MPI_Comm_size(MPI_COMM_WORLD,&_size) || MPI_Comm_rank(MPI_COMM_WORLD,&_rank) )
+   if ( MPI_Comm_size(MPI_COMM_WORLD,&_size) )
    {
       E_MAKE_EXCEPTION(e);
-      e.setTitle(tr("MPI_Comm Failed"));
-      e.setDetails(tr("MPI_Comm failed."));
+      e.setTitle(tr("MPI Failed"));
+      e.setDetails(tr("MPI_Comm_size failed."));
+      throw e;
+   }
+   if (MPI_Comm_rank(MPI_COMM_WORLD,&_rank) )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("MPI Failed"));
+      e.setDetails(tr("MPI_Comm_rank failed."));
+      throw e;
+   }
+   MPI_Comm local;
+   if ( MPI_Comm_split_type(MPI_COMM_WORLD,MPI_COMM_TYPE_SHARED,0,MPI_INFO_NULL,&local) )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("MPI Failed"));
+      e.setDetails(tr("MPI_Comm_split_type failed."));
+      throw e;
+   }
+   if ( MPI_Comm_rank(local,&_localRank) )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("MPI Failed"));
+      e.setDetails(tr("MPI_Comm_rank failed."));
       throw e;
    }
    startTimer(_timerPeriod);
