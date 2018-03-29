@@ -165,6 +165,7 @@ EMetadata& EMetadata::operator=(EMetadata&& object)
 
 
 /*!
+ * Deletes any data this object may contain. 
  */
 EMetadata::~EMetadata()
 {
@@ -177,6 +178,9 @@ EMetadata::~EMetadata()
 
 
 /*!
+ * Tests if this metadata is a null type. 
+ *
+ * @return True if this metadata is a null type or false otherwise. 
  */
 bool EMetadata::isNull() const
 {
@@ -189,6 +193,9 @@ bool EMetadata::isNull() const
 
 
 /*!
+ * Tests if this metadata is a boolean type. 
+ *
+ * @return True if this metadata is a boolean type or false otherwise. 
  */
 bool EMetadata::isBool() const
 {
@@ -201,6 +208,9 @@ bool EMetadata::isBool() const
 
 
 /*!
+ * Tests if this metadata is a double (real number) type. 
+ *
+ * @return True if this metadata is a double type or false otherwise. 
  */
 bool EMetadata::isDouble() const
 {
@@ -213,6 +223,9 @@ bool EMetadata::isDouble() const
 
 
 /*!
+ * Tests if this metadata is a string type. 
+ *
+ * @return True if this metadata is a string type or false otherwise. 
  */
 bool EMetadata::isString() const
 {
@@ -225,6 +238,9 @@ bool EMetadata::isString() const
 
 
 /*!
+ * Tests if this metadata is a byte array type. 
+ *
+ * @return True if this metadata is a byte type or false otherwise. 
  */
 bool EMetadata::isBytes() const
 {
@@ -237,6 +253,9 @@ bool EMetadata::isBytes() const
 
 
 /*!
+ * Tests if this metadata is an array type. 
+ *
+ * @return True if this metadata is an array type or false otherwise. 
  */
 bool EMetadata::isArray() const
 {
@@ -249,6 +268,9 @@ bool EMetadata::isArray() const
 
 
 /*!
+ * Tests if this metadata is an object type. 
+ *
+ * @return True if this metadata is an object type. 
  */
 bool EMetadata::isObject() const
 {
@@ -261,6 +283,112 @@ bool EMetadata::isObject() const
 
 
 /*!
+ * Returns a read only reference to this object's data cast as a boolean. If This 
+ * metadata is not a boolean type then an exception is thrown. 
+ *
+ * @return Read only reference to this object's boolean data. 
+ */
+bool& EMetadata::toBool() const
+{
+   checkType(Bool);
+   return *static_cast<bool*>(_data);
+}
+
+
+
+
+
+
+/*!
+ * Returns a read only reference to this object's data cast as a double. If This 
+ * metadata is not a double type then an exception is thrown. 
+ *
+ * @return Read only reference to this object's double data. 
+ */
+double& EMetadata::toDouble() const
+{
+   checkType(Double);
+   return *static_cast<double*>(_data);
+}
+
+
+
+
+
+
+/*!
+ * Returns a read only reference to this object's data cast as a string. If This 
+ * metadata is not a string type then an exception is thrown. 
+ *
+ * @return Read only reference to this object's string data. 
+ */
+QString& EMetadata::toString() const
+{
+   checkType(String);
+   return *static_cast<QString*>(_data);
+}
+
+
+
+
+
+
+/*!
+ * Returns a read only reference to this object's data cast as a byte array. If 
+ * This metadata is not a byte type then an exception is thrown. 
+ *
+ * @return Read only reference to this object's byte array data. 
+ */
+QByteArray& EMetadata::toBytes() const
+{
+   checkType(Bytes);
+   return *static_cast<QByteArray*>(_data);
+}
+
+
+
+
+
+
+/*!
+ * Returns a read only reference to this object's data cast as a meta array. If 
+ * This metadata is not an array type then an exception is thrown. 
+ *
+ * @return Read only reference to this object's meta array. 
+ */
+EMetaArray& EMetadata::toArray() const
+{
+   checkType(Array);
+   return *static_cast<EMetaArray*>(_data);
+}
+
+
+
+
+
+
+/*!
+ * Returns a read only reference to this object's data cast as a meta object. If 
+ * This metadata is not an object type then an exception is thrown. 
+ *
+ * @return Read only reference to this object's meta object. 
+ */
+EMetaObject& EMetadata::toObject() const
+{
+   checkType(Object);
+   return *static_cast<EMetaObject*>(_data);
+}
+
+
+
+
+
+
+/*!
+ * Returns a reference to this object's data cast as a boolean. If This metadata is 
+ * not a boolean type then an exception is thrown. 
+ *
+ * @return Reference to this object's boolean data. 
  */
 bool& EMetadata::toBool()
 {
@@ -274,19 +402,10 @@ bool& EMetadata::toBool()
 
 
 /*!
- */
-const bool& EMetadata::toBool() const
-{
-   checkType(Bool);
-   return *static_cast<bool*>(_data);
-}
-
-
-
-
-
-
-/*!
+ * Returns a reference to this object's data cast as a double. If This metadata is 
+ * not a double type then an exception is thrown. 
+ *
+ * @return Reference to this object's double data. 
  */
 double& EMetadata::toDouble()
 {
@@ -300,19 +419,10 @@ double& EMetadata::toDouble()
 
 
 /*!
- */
-const double& EMetadata::toDouble() const
-{
-   checkType(Double);
-   return *static_cast<double*>(_data);
-}
-
-
-
-
-
-
-/*!
+ * Returns a reference to this object's data cast as a string. If This metadata is 
+ * not a string type then an exception is thrown. 
+ *
+ * @return Reference to this object's string data. 
  */
 QString& EMetadata::toString()
 {
@@ -326,19 +436,10 @@ QString& EMetadata::toString()
 
 
 /*!
- */
-const QString& EMetadata::toString() const
-{
-   checkType(String);
-   return *static_cast<QString*>(_data);
-}
-
-
-
-
-
-
-/*!
+ * Returns a reference to this object's data cast as a byte array. If This metadata 
+ * is not a byte type then an exception is thrown. 
+ *
+ * @return Reference to this object's byte array data. 
  */
 QByteArray& EMetadata::toBytes()
 {
@@ -352,19 +453,10 @@ QByteArray& EMetadata::toBytes()
 
 
 /*!
- */
-const QByteArray& EMetadata::toBytes() const
-{
-   checkType(Bytes);
-   return *static_cast<QByteArray*>(_data);
-}
-
-
-
-
-
-
-/*!
+ * Returns a reference to this object's data cast as a meta array. If This metadata 
+ * is not an array type then an exception is thrown. 
+ *
+ * @return Reference to this object's meta array. 
  */
 EMetaArray& EMetadata::toArray()
 {
@@ -378,19 +470,10 @@ EMetaArray& EMetadata::toArray()
 
 
 /*!
- */
-const EMetaArray& EMetadata::toArray() const
-{
-   checkType(Array);
-   return *static_cast<EMetaArray*>(_data);
-}
-
-
-
-
-
-
-/*!
+ * Returns a reference to this object's data cast as a meta object. If This 
+ * metadata is not an object type then an exception is thrown. 
+ *
+ * @return Reference to this object's meta object. 
  */
 EMetaObject& EMetadata::toObject()
 {
@@ -404,19 +487,9 @@ EMetaObject& EMetadata::toObject()
 
 
 /*!
- */
-const EMetaObject& EMetadata::toObject() const
-{
-   checkType(Object);
-   return *static_cast<EMetaObject*>(_data);
-}
-
-
-
-
-
-
-/*!
+ * Returns the type for this metadata. 
+ *
+ * @return This type for this metadata. 
  */
 EMetadata::Type EMetadata::type() const
 {

@@ -70,18 +70,18 @@ public:
    bool isBytes() const;
    bool isArray() const;
    bool isObject() const;
+   bool& toBool() const;
+   double& toDouble() const;
+   QString& toString() const;
+   QByteArray& toBytes() const;
+   EMetaArray& toArray() const;
+   EMetaObject& toObject() const;
    bool& toBool();
-   const bool& toBool() const;
    double& toDouble();
-   const double& toDouble() const;
    QString& toString();
-   const QString& toString() const;
    QByteArray& toBytes();
-   const QByteArray& toBytes() const;
    EMetaArray& toArray();
-   const EMetaArray& toArray() const;
    EMetaObject& toObject();
-   const EMetaObject& toObject() const;
    EMetadata::Type type() const;
    static QString typeName(Type type);
 private:
