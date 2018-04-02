@@ -23,38 +23,38 @@ class EMetadata
 {
 public:
    /*!
-    * This holds all possible types a metadata object can contain. 
+    * Defines all possible types a metadata object can contain. 
     */
    enum Type
    {
       /*!
-       * This means the object is empty and contains no data. 
+       * Defines the object is empty and contains no data. 
        */
       Null
       /*!
-       * This means the object is a Boolean. 
+       * Defines the object is a Boolean. 
        */
       ,Bool
       /*!
-       * This means the object is a real number. 
+       * Defines the object is a real number. 
        */
       ,Double
       /*!
-       * This means the object is a string. 
+       * Defines the object is a string. 
        */
       ,String
       /*!
-       * This means the object is an array of bytes. The QByteArray type is used to store 
+       * Defines the object is an array of bytes. The QByteArray type is used to store 
        * this type. 
        */
       ,Bytes
       /*!
-       * This means the object is an array of additional metadata objects. 
+       * Defines the object is an array of additional metadata objects. 
        */
       ,Array
       /*!
-       * This means the object is a mapping of additional metadata objects. The mapping 
-       * is done using strings as keywords. 
+       * Defines the object is a mapping of additional metadata objects. The mapping is 
+       * done using strings as keywords. 
        */
       ,Object
    };
@@ -74,12 +74,12 @@ public:
    bool isBytes() const;
    bool isArray() const;
    bool isObject() const;
-   bool& toBool() const;
-   double& toDouble() const;
-   QString& toString() const;
-   QByteArray& toBytes() const;
-   EMetaArray& toArray() const;
-   EMetaObject& toObject() const;
+   const bool& toBool() const;
+   const double& toDouble() const;
+   const QString& toString() const;
+   const QByteArray& toBytes() const;
+   const EMetaArray& toArray() const;
+   const EMetaObject& toObject() const;
    bool& toBool();
    double& toDouble();
    QString& toString();

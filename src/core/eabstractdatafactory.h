@@ -17,6 +17,8 @@
 class EAbstractDataFactory
 {
 public:
+   static EAbstractDataFactory& instance();
+   static void setInstance(std::unique_ptr<EAbstractDataFactory>&& instance);
    /*!
     * This is so any implementation of this class will be deconstructed correctly. 
     */
@@ -53,8 +55,6 @@ public:
     * @return Pointer to the new abstract data object of the given type. 
     */
    virtual std::unique_ptr<EAbstractData> make(quint16 type) = 0;
-   static EAbstractDataFactory& instance();
-   static void setInstance(EAbstractDataFactory* instance);
 private:
    /*!
     * Pointer to the global instance of this program's data factory. 

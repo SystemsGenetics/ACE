@@ -438,7 +438,7 @@ bool EMetadata::isObject() const
  *
  * @return Read only reference to this object's boolean data. 
  */
-bool& EMetadata::toBool() const
+const bool& EMetadata::toBool() const
 {
    checkType(Bool);
    return *static_cast<bool*>(_data);
@@ -455,7 +455,7 @@ bool& EMetadata::toBool() const
  *
  * @return Read only reference to this object's double data. 
  */
-double& EMetadata::toDouble() const
+const double& EMetadata::toDouble() const
 {
    checkType(Double);
    return *static_cast<double*>(_data);
@@ -472,7 +472,7 @@ double& EMetadata::toDouble() const
  *
  * @return Read only reference to this object's string data. 
  */
-QString& EMetadata::toString() const
+const QString& EMetadata::toString() const
 {
    checkType(String);
    return *static_cast<QString*>(_data);
@@ -489,7 +489,7 @@ QString& EMetadata::toString() const
  *
  * @return Read only reference to this object's byte array data. 
  */
-QByteArray& EMetadata::toBytes() const
+const QByteArray& EMetadata::toBytes() const
 {
    checkType(Bytes);
    return *static_cast<QByteArray*>(_data);
@@ -506,7 +506,7 @@ QByteArray& EMetadata::toBytes() const
  *
  * @return Read only reference to this object's meta array. 
  */
-EMetaArray& EMetadata::toArray() const
+const EMetaArray& EMetadata::toArray() const
 {
    checkType(Array);
    return *static_cast<EMetaArray*>(_data);
@@ -523,7 +523,7 @@ EMetaArray& EMetadata::toArray() const
  *
  * @return Read only reference to this object's meta object. 
  */
-EMetaObject& EMetadata::toObject() const
+const EMetaObject& EMetadata::toObject() const
 {
    checkType(Object);
    return *static_cast<EMetaObject*>(_data);

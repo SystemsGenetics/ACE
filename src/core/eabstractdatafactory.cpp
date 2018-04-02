@@ -47,8 +47,8 @@ EAbstractDataFactory& EAbstractDataFactory::instance()
  *
  * @param instance Pointer to the new global instance for this factory. 
  */
-void EAbstractDataFactory::setInstance(EAbstractDataFactory* instance)
+void EAbstractDataFactory::setInstance(std::unique_ptr<EAbstractDataFactory>&& instance)
 {
    delete _instance;
-   _instance = instance;
+   _instance = instance.release();
 }
