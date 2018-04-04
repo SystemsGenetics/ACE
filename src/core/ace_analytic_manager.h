@@ -2,7 +2,8 @@
 #define ACE_ANALYTIC_MANAGER_H
 #include <memory>
 #include <QObject>
-#include "global.h"
+#include <QVariant>
+#include "eabstractanalytic_input.h"
 
 
 

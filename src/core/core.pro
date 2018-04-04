@@ -11,15 +11,6 @@ LIBS += -lmpi -lmpi_cxx -lOpenCL
 TEMPLATE = lib
 
 SOURCES += \
-   opencldevicemodel.cpp \
-   opencldevice.cpp \
-   openclevent.cpp \
-   openclprogram.cpp \
-   openclkernel.cpp \
-   utilities.cpp \
-   abstractanalyticfactory.cpp \
-   opencl.cpp \
-   abstractanalytic.cpp \
    emetadata.cpp \
    ace_qmpi.cpp \
     common.cpp \
@@ -36,18 +27,10 @@ SOURCES += \
     ace_analytic_manager.cpp \
     eabstractanalytic.cpp \
     eabstractanalytic_input.cpp \
-    eabstractanalytic_serial.cpp
+    eabstractanalytic_serial.cpp \
+    eabstractanalyticfactory.cpp
 
 HEADERS += \
-   opencldevicemodel.h \
-   opencldevice.h \
-   openclevent.h \
-   openclbuffer.h \
-   openclprogram.h \
-   openclkernel.h \
-   utilities.h \
-   abstractanalyticfactory.h \
-   abstractanalytic.h \
    opencl.h \
    AceCore.h \
    AceOpenCL.h \
@@ -70,7 +53,8 @@ HEADERS += \
     ace_analytic_manager.h \
     eabstractanalytic.h \
     eabstractanalytic_input.h \
-    eabstractanalytic_serial.h
+    eabstractanalytic_serial.h \
+    eabstractanalyticfactory.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 

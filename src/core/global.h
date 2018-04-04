@@ -1,5 +1,6 @@
 
 class EException;
+class EAbstractAnalyticFactory;
 class EAbstractDataFactory;
 class EAbstractData;
 class EAbstractAnalytic;

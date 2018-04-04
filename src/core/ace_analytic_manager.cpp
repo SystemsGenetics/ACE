@@ -2,6 +2,7 @@
 
 
 
+using namespace std;
 using namespace Ace::Analytic;
 //
 
@@ -31,7 +32,13 @@ using namespace Ace::Analytic;
  * @return Pointer to the new manager object. 
  */
 std::unique_ptr<Ace::Analytic::Manager> Manager::makeManager(quint16 type, int index, int size)
-{}
+{
+   Q_UNUSED(index)
+   Q_UNUSED(size)
+   Q_UNUSED(type)
+   return nullptr;
+   // TODO; for now just implemented serial
+}
 
 
 

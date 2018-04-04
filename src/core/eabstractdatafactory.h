@@ -30,7 +30,7 @@ public:
     *
     * @return Total number of data types this program implements. 
     */
-   virtual int size() = 0;
+   virtual quint16 size() const = 0;
    /*!
     * This interface returns the display name for the given data type. 
     *
@@ -38,7 +38,7 @@ public:
     *
     * @return Display name for the given data type. 
     */
-   virtual QString name(quint16 type) = 0;
+   virtual QString name(quint16 type) const = 0;
    /*!
     * This interface returns the file extension for the given data type as a string. 
     *
@@ -46,7 +46,7 @@ public:
     *
     * @return File extension for the given data type. 
     */
-   virtual QString fileExtension(quint16 type) = 0;
+   virtual QString fileExtension(quint16 type) const = 0;
    /*!
     * Makes and returns a new abstract data object of the given type. 
     *
@@ -54,7 +54,7 @@ public:
     *
     * @return Pointer to the new abstract data object of the given type. 
     */
-   virtual std::unique_ptr<EAbstractData> make(quint16 type) = 0;
+   virtual std::unique_ptr<EAbstractData> make(quint16 type) const = 0;
 private:
    /*!
     * Pointer to the global instance of this program's data factory. 
