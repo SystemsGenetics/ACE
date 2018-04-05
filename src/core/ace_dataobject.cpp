@@ -126,6 +126,21 @@ QString DataObject::path() const
 
 
 /*!
+ * Returns the file name for this data object. 
+ *
+ * @return Name of this data object's file. 
+ */
+QString DataObject::fileName() const
+{
+   return _fileName;
+}
+
+
+
+
+
+
+/*!
  * Returns the data type for this data object. 
  *
  * @return Data object type. 
@@ -491,7 +506,7 @@ void DataObject::dataOverwritten(const QString& canonicalPath, Ace::DataObject* 
  * 2. Create a data stream object and assign it to this data object. 
  *
  * 3. Connect data manager signals with this object and set this data object's file 
- *    path to its absolute canonical form. 
+ *    name and canonical file path. 
  */
 void DataObject::openObject()
 {
@@ -508,7 +523,9 @@ void DataObject::openObject()
            ,&Ace::DataManager::dataOverwritten
            ,this
            ,&DataObject::dataOverwritten);
-   _path = QFileInfo(_path).canonicalPath();
+   QFileInfo info(_path);
+   _path = info.canonicalPath();
+   _fileName = info.fileName();
 }
 
 

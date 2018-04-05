@@ -17,7 +17,9 @@
  *                 the incoming data or false otherwise. 
  */
 void EAbstractData::prepare(bool allocate)
-{}
+{
+   Q_UNUSED(allocate)
+}
 
 
 

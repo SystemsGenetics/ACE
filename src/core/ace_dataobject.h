@@ -25,6 +25,7 @@ namespace Ace
       explicit DataObject(const QString& path, QObject* parent = nullptr);
       explicit DataObject(const QString& path, quint16 type, const EMetadata& system, QObject* parent = nullptr);
       QString path() const;
+      QString fileName() const;
       quint16 type() const;
       qint64 size() const;
       EMetadata systemMeta() const;
@@ -64,6 +65,10 @@ namespace Ace
        * The absolute canonical path for this data object's file. 
        */
       QString _path;
+      /*!
+       * The file name for this data object. 
+       */
+      QString _fileName;
       /*!
        * The system metadata for this object. If the system metadata has not been set yet 
        * then this is null. 
