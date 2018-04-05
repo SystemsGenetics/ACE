@@ -41,7 +41,6 @@ std::unique_ptr<Ace::Analytic::Manager> Manager::makeManager(quint16 type, int i
 {
    Q_UNUSED(index)
    Q_UNUSED(size)
-   Q_UNUSED(type)
    return unique_ptr<Manager>(new SingleRun(type));
    // TODO; for now just implemented serial
 }
@@ -56,6 +55,18 @@ std::unique_ptr<Ace::Analytic::Manager> Manager::makeManager(quint16 type, int i
  * is out of range then an exception is thrown. 
  *
  * @param type Analytic type that is used for this manager's analytic run. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the given analytic type is out of range then throw an exception, else go 
+ *    to the next step. 
+ *
+ * 2. Create a new abstract analytic object of the given type and set it as this 
+ *    manager's analytic. 
+ *
+ * 3. Create a new abstract analytic input object for this manager and resize the 
+ *    array of arguments to the analytic input size. 
  */
 Manager::Manager(quint16 type)
 {
@@ -155,6 +166,15 @@ void Manager::set(int index, const QVariant& value)
  * Finalizes all input to this manager's analytic and calls the analytic object's 
  * initialize interface. This also emits a signal to call the start slot once the 
  * event loop is started. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Set analytic input arguments for basic types, files, and data objects. 
+ *
+ * 2. Clear the analytic input pointer, run the initialize interface of this 
+ *    manager's analytic, and prepare the start slot to be called once the event 
+ *    loop begins. 
  */
 void Manager::initialize()
 {
@@ -187,6 +207,15 @@ void Manager::terminationRequested()
 /*!
  * Called to Complete this manager's analytic run, signaling completion and 
  * requesting deletion. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Call the finish interface for this manager's analytic and all output data 
+ *    objects. 
+ *
+ * 2. Signal this manager is finished with execution and call on qt to delete this 
+ *    manager. 
  */
 void Manager::finish()
 {
@@ -209,6 +238,16 @@ void Manager::finish()
  * @param path Path to the output file that is opened. 
  *
  * @return Pointer to qt file device of opened file or null if no path given. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the given path is empty then return a null pointer, else go to the next 
+ *    step. 
+ *
+ * 2. Open the file with the given path set to write only and truncate, returning a 
+ *    pointer to the qt file device. If opening the file failed then throw an 
+ *    exception. 
  */
 QFile* Manager::addOutputFile(const QString& path)
 {
@@ -245,6 +284,15 @@ QFile* Manager::addOutputFile(const QString& path)
  * @param system The system metadata for the new data object. 
  *
  * @return Pointer to new data object with the given path or null if no path given. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the given path is empty then return a null pointer, else go to the next 
+ *    step. 
+ *
+ * 2. Create a new data object with the given path, type, and system data, 
+ *    returning a pointer to the new object and setting its parent to this manager. 
  */
 Ace::DataObject* Manager::addOutputData(const QString& path, quint16 type, const EMetadata& system)
 {
@@ -293,6 +341,15 @@ const EAbstractAnalytic* Manager::analytic() const
 /*!
  * Sets all basic arguments to this manager's abstract analytic input object, 
  * excluding file or data arguments. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Iterate through all of this manager's array of argument settings for the 
+ *    proceeding steps. 
+ *
+ * 2. If the argument type is not a file or data object then set the argument using 
+ *    the set interface of this manager's abstract analytic input object. 
  */
 void Manager::inputBasic()
 {
@@ -321,6 +378,19 @@ void Manager::inputBasic()
  * Sets input and output file arguments to this manager's abstract analytic input 
  * object, opening the files in the process. If a file path argument is blank then 
  * no file is opened and the argument is not set. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Iterate through all of this manager's array of argument settings for the 
+ *    proceeding steps. 
+ *
+ * 2. If the argument type is an input file then call the add input file method, 
+ *    setting the abstract analytic input if it returns a qt file device, else go 
+ *    to the next step. 
+ *
+ * 3. If the argument type is an output file then call the add output file method, 
+ *    setting the abstract analytic input if it returns a qt file device. 
  */
 void Manager::inputFiles()
 {
@@ -359,6 +429,18 @@ void Manager::inputFiles()
  * @param path Path the the input file that is opened. 
  *
  * @return Pointer to qt file device of opened file or null if no path given. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. if the given path string is empty then return a null pointer, else go to the 
+ *    next step. 
+ *
+ * 2. Create a new qt file device with the given path and setting its parent as 
+ *    this manager. 
+ *
+ * 3. Open the file with the qt file device. If opening failed then throw an 
+ *    exception, else return a pointer to the qt file device. 
  */
 QFile* Manager::addInputFile(const QString& path)
 {
@@ -386,6 +468,12 @@ QFile* Manager::addInputFile(const QString& path)
  * Sets input and output data object arguments to this manager's abstract analytic 
  * input object, opening the data objects in the process. If a data object path 
  * argument is blank then no data object is opened and the argument is not set. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Initialize all input data objects, build the system metadata for output data 
+ *    objects, and initialize all output data objects. 
  */
 void Manager::inputData()
 {
@@ -402,6 +490,22 @@ void Manager::inputData()
  * Sets input data object arguments to this manager's abstract analytic input 
  * object, opening the data objects and constructing the system metadata for output 
  * data objects in the process. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Iterate through all of this manager's array of argument settings for steps 2 
+ *    and 3. 
+ *
+ * 2. If the argument type is an input data object then go to the next step, else 
+ *    iterate to next argument. 
+ *
+ * 3. Call the add input data method and if it returns a valid data object pointer 
+ *    then set the abstract analytic input and add the data object pointer to a 
+ *    list of data inputs. 
+ *
+ * 4. Build and return the system metadata used for output data objects from the 
+ *    list of input data objects. 
  */
 EMetadata Manager::inputDataIn()
 {
@@ -433,6 +537,15 @@ EMetadata Manager::inputDataIn()
  * @param path Path the the input data object that is opened. 
  *
  * @return Pointer to the data object with the given path or null if no path given. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the given path string is empty then return a null pointer, else go to the 
+ *    next step. 
+ *
+ * 2. Open an existing data object with the given path, setting the data object's 
+ *    parent as this manager and return a pointer to it. 
  */
 Ace::DataObject* Manager::addInputData(const QString& path)
 {
@@ -449,38 +562,18 @@ Ace::DataObject* Manager::addInputData(const QString& path)
 
 
 /*!
- * Sets output data object arguments to this manager's abstract analytic input 
- * object, opening the new data objects with the given system metadata in the 
- * process. 
- *
- * @param system System metadata used for creating new output data objects. 
- */
-void Manager::inputDataOut(const EMetadata& system)
-{
-   for (int i = 0; i < _inputs.size() ;++i)
-   {
-      if (_input->type(i) == EAbstractAnalytic::Input::Type::DataOut )
-      {
-         if ( Ace::DataObject* object = addOutputData(_inputs.at(i).toString(),_input->data(i,EAbstractAnalytic::Input::Role::DataType).toUInt(),system) )
-         {
-            _input->set(i,object->data());
-         }
-      }
-   }
-}
-
-
-
-
-
-
-/*!
  * Builds the system metadata for new output data objects with the given list of 
  * input data objects. 
  *
  * @param inputs List of input data objects used to build the metadata. 
  *
  * @return System metadata for new output data objects. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Create and return a metadata object type, inserting the input and command 
+ *    keys with the input and command sections of system metadata. 
  */
 EMetadata Manager::buildMeta(const QList<Ace::DataObject*>& inputs)
 {
@@ -502,6 +595,19 @@ EMetadata Manager::buildMeta(const QList<Ace::DataObject*>& inputs)
  * @param inputs List of input data objects used to build the metadata. 
  *
  * @return Input section of system metadata for new output data objects. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Iterate through all input data objects in given list of them for step 2. 
+ *
+ * 2. Create a new metadata object type, inserting the system and user keys for the 
+ *    system and user metadata of the input data object, and insert the new 
+ *    metadata object type into the return metadata object type using the input 
+ *    data object's filename as the key. 
+ *
+ * 3. Return the metadata object type containing a list of all input data objects 
+ *    with their corresponding system and user metadata. 
  */
 EMetadata Manager::buildMetaInput(const QList<Ace::DataObject*>& inputs)
 {
@@ -511,7 +617,7 @@ EMetadata Manager::buildMetaInput(const QList<Ace::DataObject*>& inputs)
       EMetadata inputMeta(EMetadata::Object);
       inputMeta.toObject().insert("system",input->systemMeta());
       inputMeta.toObject().insert("user",input->userMeta());
-      ret.toObject().insert(input->path(),inputMeta);
+      ret.toObject().insert(input->fileName(),inputMeta);
    }
    return ret;
 }
@@ -524,6 +630,20 @@ EMetadata Manager::buildMetaInput(const QList<Ace::DataObject*>& inputs)
 /*!
  * Builds the command section of the system metadata for new output data objects 
  * using this managers list of set arguments. 
+ *
+ * @return Command section of system metadata for new output data objects. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Iterate through all of this manager's array of argument settings for step 2. 
+ *
+ * 2. Insert a new metadata string type containing the value of the argument into 
+ *    the return metadata object type using the command line name of the argument 
+ *    as the key. 
+ *
+ * 3. Return the metadata object type containing a list of all argument settings 
+ *    for this analytic run. 
  */
 EMetadata Manager::buildMetaCommand()
 {
@@ -535,4 +655,42 @@ EMetadata Manager::buildMetaCommand()
       ret.toObject().insert(_input->data(i,EAbstractAnalytic::Input::CommandLineName).toString(),value);
    }
    return ret;
+}
+
+
+
+
+
+
+/*!
+ * Sets output data object arguments to this manager's abstract analytic input 
+ * object, opening the new data objects with the given system metadata in the 
+ * process. 
+ *
+ * @param system System metadata used for creating new output data objects. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Iterate through all of this manager's array of argument settings for the 
+ *    proceeding steps. 
+ *
+ * 2. If the argument type is an output data object then go to the next step, else 
+ *    iterate to the next argument. 
+ *
+ * 3. Call the add output data method with the given system metadata and if it 
+ *    returns a valid pointer then set the abstract analytic input argument. 
+ */
+void Manager::inputDataOut(const EMetadata& system)
+{
+   for (int i = 0; i < _inputs.size() ;++i)
+   {
+      if (_input->type(i) == EAbstractAnalytic::Input::Type::DataOut )
+      {
+         if ( Ace::DataObject* object = addOutputData(_inputs.at(i).toString(),_input->data(i,EAbstractAnalytic::Input::Role::DataType).toUInt(),system) )
+         {
+            _input->set(i,object->data());
+         }
+      }
+   }
 }

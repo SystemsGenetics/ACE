@@ -56,7 +56,8 @@ HEADERS += \
     eabstractanalytic_input.h \
     eabstractanalytic_serial.h \
     eabstractanalyticfactory.h \
-    ace_analytic_singlerun.h
+    ace_analytic_singlerun.h \
+    ace_analytic.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 

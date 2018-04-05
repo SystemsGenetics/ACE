@@ -72,10 +72,10 @@ namespace Ace
          void inputData();
          EMetadata inputDataIn();
          Ace::DataObject* addInputData(const QString& path);
-         void inputDataOut(const EMetadata& system);
          EMetadata buildMeta(const QList<Ace::DataObject*>& inputs);
          EMetadata buildMetaInput(const QList<Ace::DataObject*>& inputs);
          EMetadata buildMetaCommand();
+         void inputDataOut(const EMetadata& system);
          /*!
           * Pointer to this manager's abstract analytic based off the analytic type this 
           * manager was given. 
