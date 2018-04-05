@@ -315,13 +315,13 @@ EDataStream& DataObject::stream()
 
 
 /*!
- * Returns a reference to the abstract data object for this data object. 
+ * Returns a pointer to the abstract data object for this data object. 
  *
- * @return Reference to abstract data object. 
+ * @return Pointer to abstract data object. 
  */
-EAbstractData& DataObject::data()
+EAbstractData* DataObject::data()
 {
-   return *_data;
+   return _data;
 }
 
 

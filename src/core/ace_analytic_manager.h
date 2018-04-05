@@ -2,8 +2,10 @@
 #define ACE_ANALYTIC_MANAGER_H
 #include <memory>
 #include <QObject>
+#include <QVector>
 #include <QVariant>
 #include "eabstractanalytic_input.h"
+#include "ace.h"
 
 
 
@@ -19,26 +21,25 @@ namespace Ace
       /*!
        * This represents a session manager for a single analytic run for a specific 
        * analytic type. This class takes care of processing all input for a new analytic 
-       * run and starts the process of running it. An implementation of this class is 
-       * responsible for running the analytic once this class starts it. This class 
-       * creates the correct type of implementation class depending on the input given 
-       * and status of things like MPI. 
+       * run and starts the process of running it, along with cleaning up all open files 
+       * and data objects once the analytic has finished running. An implementation of 
+       * this class is responsible for running the analytic once this class starts it and 
+       * signaling when it is finished. This class creates the correct type of 
+       * implementation class depending on the input given and status of things like MPI. 
+       * This class also manages its own deletion, calling on the qt system to delete it 
+       * once it finishes executing its analytic or termination is requested. 
        */
       class Manager : public QObject
       {
          Q_OBJECT
       public:
          static std::unique_ptr<Ace::Analytic::Manager> makeManager(quint16 type, int index, int size);
-         Manager(int type);
+         Manager(quint16 type);
          int size() const;
          EAbstractAnalytic::Input::Type type(int index) const;
          QVariant data(int index, EAbstractAnalytic::Input::Role role) const;
          void set(int index, const QVariant& value);
-         void setInputFile(const QString& path);
-         virtual void setOutputFile(const QString& path);
-         void setInputData(const QString& path);
-         virtual void setOutputData(const QString& path);
-         void finish();
+         void initialize();
       signals:
          /*!
           * Signals the running analytic has made progress to the given percentage. 
@@ -46,17 +47,35 @@ namespace Ace
           * @param percentComplete The percent complete out of 100 for this analytic. 
           */
          void progressed(int percentComplete);
+         /*!
+          * Signals the analytic and this manager has finished execution. 
+          */
+         void finished();
       public slots:
          void terminationRequested();
-      protected:
+      protected slots:
          /*!
           * This interface is called once to begin the analytic run for this manager after 
           * all argument input has been set. 
           */
-         virtual void run() = 0;
+         virtual void start() = 0;
+         void finish();
+      protected:
+         virtual QFile* addOutputFile(const QString& path);
+         virtual Ace::DataObject* addOutputData(const QString& path, quint16 type, const EMetadata& system);
          EAbstractAnalytic* analytic();
          const EAbstractAnalytic* analytic() const;
       private:
+         void inputBasic();
+         void inputFiles();
+         QFile* addInputFile(const QString& path);
+         void inputData();
+         EMetadata inputDataIn();
+         Ace::DataObject* addInputData(const QString& path);
+         void inputDataOut(const EMetadata& system);
+         EMetadata buildMeta(const QList<Ace::DataObject*>& inputs);
+         EMetadata buildMetaInput(const QList<Ace::DataObject*>& inputs);
+         EMetadata buildMetaCommand();
          /*!
           * Pointer to this manager's abstract analytic based off the analytic type this 
           * manager was given. 
@@ -68,6 +87,12 @@ namespace Ace
           * is set to null. 
           */
          EAbstractAnalytic::Input* _input;
+         /*!
+          */
+         QVector<QVariant> _inputs;
+         /*!
+          */
+         QList<EAbstractData*> _outputData;
       };
    }
 }

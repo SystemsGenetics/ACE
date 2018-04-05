@@ -28,7 +28,8 @@ SOURCES += \
     eabstractanalytic.cpp \
     eabstractanalytic_input.cpp \
     eabstractanalytic_serial.cpp \
-    eabstractanalyticfactory.cpp
+    eabstractanalyticfactory.cpp \
+    ace_analytic_singlerun.cpp
 
 HEADERS += \
    opencl.h \
@@ -54,7 +55,8 @@ HEADERS += \
     eabstractanalytic.h \
     eabstractanalytic_input.h \
     eabstractanalytic_serial.h \
-    eabstractanalyticfactory.h
+    eabstractanalyticfactory.h \
+    ace_analytic_singlerun.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 

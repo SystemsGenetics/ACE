@@ -33,7 +33,7 @@ namespace Ace
       void allocate(int size);
       const EDataStream& stream() const;
       EDataStream& stream();
-      EAbstractData& data();
+      EAbstractData* data();
       void setUserMeta(const EMetadata& newRoot);
       void read(char* data, qint64 size) const;
       void write(const char* data, qint64 size);
