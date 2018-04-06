@@ -24,9 +24,9 @@ public:
     */
    virtual ~EAbstractAnalyticFactory() = default;
    /*!
-    * This interface returns the total number of analytic types this program that uses 
-    * ACE implements. All integers from 0 to one less than the size returned must be 
-    * defined as a unique analytic type. 
+    * This interface returns the total number of analytic types a program implements 
+    * for ACE. All integers from 0 to one less than the size returned must be defined 
+    * as a unique analytic type. 
     *
     * @return Total number of analytic types this program implements. 
     */
@@ -49,7 +49,8 @@ public:
     */
    virtual QString commandName(quint16 type) const = 0;
    /*!
-    * Makes and returns a new abstract analytic object of the given type. 
+    * This interface makes and returns a new abstract analytic object of the given 
+    * type. 
     *
     * @param type The data type of the abstract data object that is made and returned. 
     *

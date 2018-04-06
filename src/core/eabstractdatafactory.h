@@ -48,7 +48,7 @@ public:
     */
    virtual QString fileExtension(quint16 type) const = 0;
    /*!
-    * Makes and returns a new abstract data object of the given type. 
+    * This interface makes and returns a new abstract data object of the given type. 
     *
     * @param type The data type of the abstract data object that is made and returned. 
     *

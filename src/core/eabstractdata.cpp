@@ -13,12 +13,12 @@
  * an analytic and optionally allocate all required space on the underlying file. 
  * The default implementation does nothing. 
  *
- * @param allocate True if this interface should allocate all space required for 
- *                 the incoming data or false otherwise. 
+ * @param preAllocate True if this interface should allocate all space required for 
+ *                    the incoming data or false otherwise. 
  */
-void EAbstractData::prepare(bool allocate)
+void EAbstractData::prepare(bool preAllocate)
 {
-   Q_UNUSED(allocate)
+   Q_UNUSED(preAllocate)
 }
 
 

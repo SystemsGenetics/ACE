@@ -6,15 +6,21 @@
 
 
 using namespace std;
+//
 
 
 
 
 
 
-quint16 AnalyticFactory::getCount()
+/*!
+ * Implements the interface that returns the total number of analytic types this 
+ * program. 
+ *
+ * @return Total number of analytic types this program implements. 
+ */
+quint16 AnalyticFactory::size() const
 {
-   // Get total of possible types using enumeration
    return Total;
 }
 
@@ -23,22 +29,22 @@ quint16 AnalyticFactory::getCount()
 
 
 
-QString AnalyticFactory::getName(quint16 type)
+/*!
+ * Implements the interface that returns the display name for the given analytic 
+ * type. 
+ *
+ * @param type The analytic type whose display name is returned. 
+ *
+ * @return Display name for the given analytic type. 
+ */
+QString AnalyticFactory::name(quint16 type) const
 {
    switch (type)
    {
-   case ImportIntegerArrayType:
-      // This is import integer array type, return name
-      return QString("Import Integer Array");
-   case MathTransformType:
-      // This is math transform type, return name
-      return QString("Math Transform");
-   case ExportIntegerArrayType:
-      // This is export integer array type, return name
-      return QString("Export Integer Array");
-   default:
-      // This is unknown type, return empty string
-      return QString();
+   case ImportIntegerArrayType: return "Import Integer Array";
+   case MathTransformType: return "Math Transform";
+   case ExportIntegerArrayType: return "Export Integer Array";
+   default: return QString();
    }
 }
 
@@ -47,22 +53,22 @@ QString AnalyticFactory::getName(quint16 type)
 
 
 
-QString AnalyticFactory::getCommandName(quint16 type)
+/*!
+ * Implements the interface that returns the command line name for the given 
+ * analytic type. 
+ *
+ * @param type The analytic type whose display name is returned. 
+ *
+ * @return Command line name for the given analytic type. 
+ */
+QString AnalyticFactory::commandName(quint16 type) const
 {
    switch (type)
    {
-   case ImportIntegerArrayType:
-      // This is import integer array type, return command
-      return QString("import");
-   case MathTransformType:
-      // This is math transform type, return command
-      return QString("transform");
-   case ExportIntegerArrayType:
-      // This is export integer array type, return command
-      return QString("export");
-   default:
-      // This is unknown type, return empty command string
-      return QString();
+   case ImportIntegerArrayType: return "import";
+   case MathTransformType: return "transform";
+   case ExportIntegerArrayType: return "export";
+   default: return QString();
    }
 }
 
@@ -71,21 +77,21 @@ QString AnalyticFactory::getCommandName(quint16 type)
 
 
 
-unique_ptr<EAbstractAnalytic> AnalyticFactory::make(quint16 type)
+/*!
+ * Implements the interface that makes and returns a new abstract analytic object 
+ * of the given type. 
+ *
+ * @param type The data type of the abstract data object that is made and returned. 
+ *
+ * @return Pointer to the new abstract analytic object of the given type. 
+ */
+std::unique_ptr<EAbstractAnalytic> AnalyticFactory::make(quint16 type) const
 {
    switch (type)
    {
-   case ImportIntegerArrayType:
-      // This is import integer array type, return new object
-      return unique_ptr<ImportIntegerArray>(new ImportIntegerArray());
-   case MathTransformType:
-      // This is math transform type, return new object
-      return unique_ptr<MathTransform>(new MathTransform());
-   case ExportIntegerArrayType:
-      // This is import integer array type, return new object
-      return unique_ptr<ExportIntegerArray>(new ExportIntegerArray());
-   default:
-      // This is unkonwn type, return null pointer
-      return nullptr;
+   case ImportIntegerArrayType: return unique_ptr<ImportIntegerArray>(new ImportIntegerArray);
+   case MathTransformType: return unique_ptr<MathTransform>(new MathTransform);
+   case ExportIntegerArrayType: return unique_ptr<ExportIntegerArray>(new ExportIntegerArray);
+   default: return nullptr;
    }
 }

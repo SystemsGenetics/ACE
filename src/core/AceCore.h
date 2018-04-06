@@ -1,7 +1,7 @@
 #ifndef ACE_CORE
 #define ACE_CORE
-#include "abstractanalytic.h"
-#include "abstractanalyticfactory.h"
+#include "eabstractanalytic.h"
+#include "eabstractanalyticfactory.h"
 #include "eabstractdata.h"
 #include "eabstractdatafactory.h"
 #include "edatastream.h"

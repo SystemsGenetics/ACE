@@ -221,6 +221,7 @@ void Manager::finish()
 {
    _analytic->finish();
    for (auto data: qAsConst(_outputData)) data->finish();
+   emit progressed(100);
    emit finished();
    deleteLater();
 }

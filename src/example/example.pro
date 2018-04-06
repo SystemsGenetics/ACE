@@ -1,20 +1,10 @@
 
-QT += core gui widgets
+QT += core
 
 TARGET = example
 CONFIG += c++11
-GUI = 0
 
-LIBS += -lmpi -lmpi_cxx -lOpenCL -L$$PWD/../../build/libs -lacecore
-
-equals(GUI, 1) {
-   QT += gui widgets
-   LIBS += -lacegui
-   DEFINES += ACE_GUI
-}
-else {
-   LIBS += -laceconsole
-}
+LIBS += -lmpi -lmpi_cxx -lOpenCL -L$$PWD/../../build/libs -lacecore -laceconsole
 
 INCLUDEPATH += $$PWD/../
 DEPENDPATH += $$PWD/../

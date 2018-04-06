@@ -1,23 +1,31 @@
 #ifndef DATAFACTORY_H
 #define DATAFACTORY_H
 #include <core/AceCore.h>
+#endif
+//
 
 
 
-// Data factory
+/*!
+ */
 class DataFactory : public EAbstractDataFactory
 {
 public:
-   // Make enumeration of all possible data types
-   enum Types
+   /*!
+    */
+   enum Type
    {
-      IntegerArrayType = 0
+      /*!
+       */
+      IntegerArrayType
+      /*!
+       */
       ,Total
    };
-   quint16 getCount() override final;
-   QString getName(quint16 type) override final;
-   QString getFileExtension(quint16 type) override final;
-   std::unique_ptr<EAbstractData> make(quint16 type) override final;
+   virtual quint16 size() const override final;
+   virtual QString name(quint16 type) const override final;
+   virtual QString fileExtension(quint16 type) const override final;
+   virtual std::unique_ptr<EAbstractData> make(quint16 type) const override final;
 };
 
 

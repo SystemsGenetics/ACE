@@ -47,7 +47,7 @@ public:
     * @return Pointer to model that represents the data of this data object. 
     */
    virtual QAbstractTableModel* model() = 0;
-   virtual void prepare(bool allocate);
+   virtual void prepare(bool preAllocate);
    virtual void finish();
 protected:
    EMetadata systemMeta() const;
