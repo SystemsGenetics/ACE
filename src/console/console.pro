@@ -12,10 +12,17 @@ DEPENDPATH += $$PWD/../core/
 TEMPLATE = lib
 
 SOURCES += \
-    Application.cpp
+    ace_options.cpp \
+    ace_command.cpp \
+    ace_run.cpp \
+    eapplication.cpp
 
 HEADERS += \
-    Application.h
+    ace_options.h \
+    ace_command.h \
+    ace_run.h \
+    ace.h \
+    eapplication.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
