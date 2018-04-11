@@ -1,6 +1,6 @@
 #ifndef INTEGERARRAY_H
 #define INTEGERARRAY_H
-#include <core/AceCore.h>
+#include <core/core.h>
 //
 
 

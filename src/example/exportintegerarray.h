@@ -1,6 +1,6 @@
 #ifndef EXPORTINTEGERARRAY_H
 #define EXPORTINTEGERARRAY_H
-#include <core/AceCore.h>
+#include <core/core.h>
 
 
 

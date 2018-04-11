@@ -1,6 +1,6 @@
 #ifndef IMPORTINTEGERARRAY_H
 #define IMPORTINTEGERARRAY_H
-#include <core/AceCore.h>
+#include <core/core.h>
 
 
 

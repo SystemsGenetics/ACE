@@ -1,7 +1,6 @@
 #ifndef DATAFACTORY_H
 #define DATAFACTORY_H
-#include <core/AceCore.h>
-#endif
+#include <core/core.h>
 //
 
 

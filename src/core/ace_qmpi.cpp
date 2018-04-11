@@ -43,7 +43,7 @@ QMPI* QMPI::_instance {nullptr};
  *
  * 3. Return reference to instance pointed to by the instance pointer. 
  */
-QMPI& QMPI::initialize()
+QMPI& QMPI::instance()
 {
    if ( _hasShutdown )
    {

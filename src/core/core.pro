@@ -33,8 +33,6 @@ SOURCES += \
 
 HEADERS += \
    opencl.h \
-   AceCore.h \
-   AceOpenCL.h \
    emetadata.h \
    ace_qmpi.h \
     common.h \
@@ -57,7 +55,9 @@ HEADERS += \
     eabstractanalytic_serial.h \
     eabstractanalyticfactory.h \
     ace_analytic_singlerun.h \
-    ace_analytic.h
+    ace_analytic.h \
+    core.h \
+    eabstractanalytic_block.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 

@@ -1,6 +1,6 @@
 #ifndef ANALYTICFACTORY_H
 #define ANALYTICFACTORY_H
-#include <core/AceCore.h>
+#include <core/core.h>
 //
 
 

@@ -21,7 +21,7 @@ namespace Ace
    {
       Q_OBJECT
    public:
-      static QMPI& initialize();
+      static QMPI& instance();
       static void shutdown();
       int size() const;
       int rank() const;

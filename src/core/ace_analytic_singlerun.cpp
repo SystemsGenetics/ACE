@@ -1,9 +1,11 @@
 #include "ace_analytic_singlerun.h"
 #include <QTimer>
 #include "eabstractanalytic_serial.h"
+#include "eabstractanalytic_block.h"
 
 
 
+using namespace std;
 using namespace Ace::Analytic;
 //
 
@@ -53,7 +55,16 @@ void SingleRun::executeSerial()
 {
    if ( _next < analytic()->size() )
    {
-      analytic()->readBlock(_next,_serial->execute(analytic()->makeBlock(_next)));
+      unique_ptr<EAbstractAnalytic::Block> work {analytic()->makeBlock(_next)};
+      if ( work )
+      {
+         unique_ptr<EAbstractAnalytic::Block> result {_serial->execute(work.get())};
+         analytic()->readBlock(_next,result.get());
+      }
+      else
+      {
+         analytic()->readBlock(_next,nullptr);
+      }
       next();
       QTimer::singleShot(0,this,&SingleRun::executeSerial);
    }

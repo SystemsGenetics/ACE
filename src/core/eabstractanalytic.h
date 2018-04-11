@@ -1,5 +1,6 @@
 #ifndef EABSTRACTANALYTIC_H
 #define EABSTRACTANALYTIC_H
+#include <memory>
 #include <QObject>
 //
 
@@ -19,48 +20,55 @@ class EAbstractAnalytic : public QObject
 {
    Q_OBJECT
 public:
+   class Block;
    class Input;
    class Serial;
    class OpenCL;
    /*!
     * This interface returns the total number of blocks this analytic must process as 
-    * blocks of work. 
+    * blocks of work. If this analytic produces no work blocks then this means the 
+    * number of times the read block interface is called. 
     *
-    * @return Total number of blocks that this analytic must work on. 
+    * @return Total number of blocks or steps that this analytic must work on. 
     */
    virtual int size() const = 0;
    /*!
     * This interface makes a new block of work from the given block index. The order 
-    * of indexes called will always be in order starting at 0. 
+    * of indexes called will always be in order starting at 0. If null is returned 
+    * that means working on blocks is skipped and the read block interface is called 
+    * immediately. 
     *
     * @param index Index used to make the block of work. 
     *
-    * @return Block of work encoded into a byte array. 
+    * @return Pointer to block of work or null if this analytic has no work blocks. 
     */
-   virtual QByteArray makeBlock(int index) const = 0;
+   virtual std::unique_ptr<EAbstractAnalytic::Block> makeBlock(int index) const = 0;
    /*!
     * This interface reads in a block of results made from a block of work with the 
     * corresponding index. The order of indexes called will always be in order 
-    * starting at 0. 
+    * starting at 0. If null is given that means this analytic does not produce work 
+    * blocks. 
     *
-    * @param index  
+    * @param index Index of the given block that is read in. 
     *
-    * @param results  
+    * @param results Pointer to the block of results that is read in. 
     */
-   virtual void readBlock(int index, const QByteArray& results) = 0;
+   virtual void readBlock(int index, const EAbstractAnalytic::Block* results) = 0;
    /*!
-    * This interface makes a new input object and returns its pointer. 
+    * This interface makes a new input object and returns its pointer. The returned 
+    * input object must have this abstract analytic set as its parent. 
     *
     * @return Pointer to new input object. 
     */
    virtual EAbstractAnalytic::Input* makeInput() = 0;
    /*!
-    * This interface makes a new serial object and returns its pointer. 
+    * This interface makes a new serial object and returns its pointer. The returned 
+    * serial object must have this abstract analytic set as its parent. 
     *
     * @return Pointer to new serial object. 
     */
-   virtual EAbstractAnalytic::Serial* makeSerial() const = 0;
-   virtual EAbstractAnalytic::OpenCL* makeOpenCL() const;
+   virtual EAbstractAnalytic::Serial* makeSerial() = 0;
+   virtual EAbstractAnalytic::OpenCL* makeOpenCL();
    virtual void initialize();
    virtual void finish();
 };

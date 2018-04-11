@@ -19,14 +19,15 @@ public:
    explicit Serial(EAbstractAnalytic* parent);
    /*!
     * This interface reads in the given work block, executes the algorithms necessary 
-    * to produce its results, and saves those results in a new results block that is 
-    * returned. 
+    * to produce its results, and saves those results in a new results block whose 
+    * pointer is returned. 
     *
-    * @param block Work block that is used to produce the returned results block. 
+    * @param block Pointer to work block that is used to produce the returned results 
+    *              block. 
     *
-    * @return Results block produced from the given work block. 
+    * @return Pointer to results block produced from the given work block. 
     */
-   virtual QByteArray execute(const QByteArray& block) = 0;
+   virtual std::unique_ptr<EAbstractAnalytic::Block> execute(const EAbstractAnalytic::Block* block) = 0;
 };
 
 

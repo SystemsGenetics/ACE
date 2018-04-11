@@ -14,7 +14,7 @@
  * @return Pointer to new OpenCL object or null if this analytic does not support 
  *         OpenCL. 
  */
-EAbstractAnalytic::OpenCL* EAbstractAnalytic::makeOpenCL() const
+EAbstractAnalytic::OpenCL* EAbstractAnalytic::makeOpenCL()
 {
    return nullptr;
 }
