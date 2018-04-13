@@ -1,27 +1,19 @@
 #include "exportintegerarray.h"
+#include "exportintegerarray_input.h"
 #include "integerarray.h"
 #include "datafactory.h"
+//
 
 
 
 
 
 
-EAbstractAnalytic::ArgumentType ExportIntegerArray::getArgumentData(int argument)
+/*!
+ */
+ExportIntegerArray::~ExportIntegerArray()
 {
-   // determine which argument is being queried
-   switch (argument)
-   {
-   case InputData:
-      // this is input data argument
-      return ArgumentType::DataIn;
-   case OutputFile:
-      // this is output file argument
-      return ArgumentType::FileOut;
-   default:
-      // unkonwn argument
-      return ArgumentType::Bool;
-   }
+   delete _stream;
 }
 
 
@@ -29,79 +21,15 @@ EAbstractAnalytic::ArgumentType ExportIntegerArray::getArgumentData(int argument
 
 
 
-QVariant ExportIntegerArray::getArgumentData(int argument, EAbstractAnalytic::Role role)
+/*!
+ * Implements the interface that returns the total number of blocks this analytic 
+ * must process as steps or blocks of work. 
+ *
+ * @return Total number of blocks or steps that this analytic must work on. 
+ */
+int ExportIntegerArray::size() const
 {
-   // determine which role is being queried
-   switch (role)
-   {
-   case Role::CommandLineName:
-      // determine which argument is being queried
-      switch (argument)
-      {
-      case InputData:
-         // this is input data argument
-         return QString("in");
-      case OutputFile:
-         // this is output file argument
-         return QString("out");
-      default:
-         // unknown argument
-         return QString();
-      }
-   case Role::Title:
-      // determine which argument is being queried
-      switch (argument)
-      {
-      case InputData:
-         // this is input data argument
-         return QString("Input integer array:");
-      case OutputFile:
-         // this is output file argument
-         return QString("Output file:");
-      default:
-         // unknown argument
-         return QString();
-      }
-   case Role::WhatsThis:
-      // determine which argument is being queried
-      switch (argument)
-      {
-      case InputData:
-         // this is input data argument
-         return QString("Integer array that will have its integers exported to raw text file.");
-      case OutputFile:
-         // this is output file argument
-         return QString("Raw text file that will be overwritten with input data's integers.");
-      default:
-         // unknown argument
-         return QString();
-      }
-   case Role::FileFilters:
-      // determine which argument is being queried
-      switch (argument)
-      {
-      case OutputFile:
-         // this is output file argument
-         return QString("Raw Text File (*.txt)");
-      default:
-         // unknown argument
-         return QString();
-      }
-   case Role::DataType:
-      // determine which argument is being queried
-      switch (argument)
-      {
-      case InputData:
-         // this is input data type
-         return DataFactory::IntegerArrayType;
-      default:
-         // unknown argument
-         return QVariant();
-      }
-   default:
-      // unknown role
-      return QVariant();
-   }
+   return _in->_numbers.size();
 }
 
 
@@ -109,13 +37,19 @@ QVariant ExportIntegerArray::getArgumentData(int argument, EAbstractAnalytic::Ro
 
 
 
-void ExportIntegerArray::setArgument(int argument, QFile *file)
+/*!
+ * Implements the interface that processes the given index with a possible block of 
+ * results if this analytic produces work blocks. This analytic implementation has 
+ * no work blocks therefore no result blocks because it is too simple. 
+ *
+ * @param index Index of the given block that is read in. 
+ *
+ * @param results Pointer to the block of results that is read in. 
+ */
+void ExportIntegerArray::process(int index, const EAbstractAnalytic::Block* results)
 {
-   // if this is output file argument set it
-   if ( argument == OutputFile )
-   {
-      _output = file;
-   }
+   Q_UNUSED(results)
+   *_stream << _in->_numbers.at(index) << "\n";
 }
 
 
@@ -123,13 +57,14 @@ void ExportIntegerArray::setArgument(int argument, QFile *file)
 
 
 
-void ExportIntegerArray::setArgument(int argument, EAbstractData *data)
+/*!
+ * Implements the interface that makes a new input object and returns its pointer. 
+ *
+ * @return Pointer to new input object. 
+ */
+EAbstractAnalytic::Input* ExportIntegerArray::makeInput()
 {
-   // if this is input data argument set it
-   if ( argument == InputData )
-   {
-      _input = dynamic_cast<IntegerArray*>(data);
-   }
+   return new Input(this);
 }
 
 
@@ -137,33 +72,18 @@ void ExportIntegerArray::setArgument(int argument, EAbstractData *data)
 
 
 
-bool ExportIntegerArray::initialize()
+/*!
+ * Implements the interface that initializes this analytic. This implementation 
+ * checks to make sure the input file and output data object has been set. 
+ */
+void ExportIntegerArray::initialize()
 {
-   // make sure we have valid inputs and outputs
-   if ( !_input || !_output )
+   if ( !_in || !_out )
    {
-      // If failure occured create exception to report failure
       E_MAKE_EXCEPTION(e);
-      e.setTitle(QObject::tr("Argument Error"));
-      e.setDetails(QObject::tr("Did not get valid input and/or output arguments."));
+      e.setTitle(tr("Invalid Argument"));
+      e.setDetails(tr("Did not get valid input and/or output arguments."));
       throw e;
    }
-
-   // no initialization for simple analytic
-   return false;
-}
-
-
-
-
-
-
-void ExportIntegerArray::runSerial()
-{
-   // iterate through input data and write out all integers to output file
-   QTextStream stream(_output);
-   for (auto i = _input->_numbers.constBegin(); i != _input->_numbers.constEnd() ;++i)
-   {
-      stream << *i << "\n";
-   }
+   _stream = new QTextStream(_out);
 }

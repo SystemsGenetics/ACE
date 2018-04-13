@@ -1,13 +1,13 @@
-#ifndef MATHTRANSFORM_INPUT_H
-#define MATHTRANSFORM_INPUT_H
-#include "mathtransform.h"
+#ifndef EXPORTINTEGERARRAY_INPUT_H
+#define EXPORTINTEGERARRAY_INPUT_H
+#include "exportintegerarray.h"
 //
 
 
 
 /*!
  */
-class MathTransform::Input : public EAbstractAnalytic::Input
+class ExportIntegerArray::Input : public EAbstractAnalytic::Input
 {
    Q_OBJECT
 public:
@@ -20,18 +20,12 @@ public:
       InputData
       /*!
        */
-      ,OutputData
-      /*!
-       */
-      ,OperationType
-      /*!
-       */
-      ,Amount
+      ,OutputFile
       /*!
        */
       ,Total
    };
-   explicit Input(MathTransform* parent);
+   explicit Input(ExportIntegerArray* parent);
    virtual int size() const override final;
    virtual EAbstractAnalytic::Input::Type type(int index) const override final;
    virtual QVariant data(int index, Role role) const override final;
@@ -40,15 +34,10 @@ public:
    virtual void set(int index, EAbstractData* data) override final;
 private:
    QVariant inputDataData(Role role) const;
-   QVariant outputDataData(Role role) const;
-   QVariant operationTypeData(Role role) const;
-   QVariant amountData(Role role) const;
+   QVariant outputFileData(Role role) const;
    /*!
     */
-   static const QStringList _operationNames;
-   /*!
-    */
-   MathTransform* _base;
+   ExportIntegerArray* _base;
 };
 
 

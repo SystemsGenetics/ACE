@@ -55,15 +55,29 @@ void SingleRun::executeSerial()
 {
    if ( _next < analytic()->size() )
    {
-      unique_ptr<EAbstractAnalytic::Block> work {analytic()->makeBlock(_next)};
-      if ( work )
+      if ( _serial )
       {
+         unique_ptr<EAbstractAnalytic::Block> work {analytic()->makeBlock(_next)};
+         if ( !work )
+         {
+            E_MAKE_EXCEPTION(e);
+            e.setTitle(tr("Logic Error"));
+            e.setDetails(tr("Analytic returned null work block in serial mode."));
+            throw e;
+         }
          unique_ptr<EAbstractAnalytic::Block> result {_serial->execute(work.get())};
-         analytic()->readBlock(_next,result.get());
+         if ( !result )
+         {
+            E_MAKE_EXCEPTION(e);
+            e.setTitle(tr("Logic Error"));
+            e.setDetails(tr("Analytic returned null results block."));
+            throw e;
+         }
+         analytic()->process(_next,result.get());
       }
       else
       {
-         analytic()->readBlock(_next,nullptr);
+         analytic()->process(_next,nullptr);
       }
       next();
       QTimer::singleShot(0,this,&SingleRun::executeSerial);

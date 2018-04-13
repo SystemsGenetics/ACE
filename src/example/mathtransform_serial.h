@@ -1,6 +1,5 @@
 #ifndef MATHTRANSFORM_SERIAL_H
 #define MATHTRANSFORM_SERIAL_H
-#include <core/eabstractanalytic_serial.h>
 #include "mathtransform.h"
 //
 

@@ -1,6 +1,5 @@
 #ifndef MATHTRANSFORM_BLOCK_H
 #define MATHTRANSFORM_BLOCK_H
-#include <core/eabstractanalytic_block.h>
 #include "mathtransform.h"
 //
 

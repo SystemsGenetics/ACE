@@ -1,26 +1,59 @@
 #include "importintegerarray.h"
+#include "importintegerarray_input.h"
 #include "integerarray.h"
 #include "datafactory.h"
+//
 
 
 
 
 
 
-EAbstractAnalytic::ArgumentType ImportIntegerArray::getArgumentData(int argument)
+/*!
+ */
+ImportIntegerArray::~ImportIntegerArray()
 {
-   // determine which argument is being queried
-   switch (argument)
+   delete _stream;
+}
+
+
+
+
+
+
+/*!
+ * Implements the interface that returns the total number of blocks this analytic 
+ * must process as steps or blocks of work. 
+ *
+ * @return Total number of blocks or steps that this analytic must work on. 
+ */
+int ImportIntegerArray::size() const
+{
+   return (_in->size()/_incrementSize) + 1;
+}
+
+
+
+
+
+
+/*!
+ * Implements the interface that processes the given index with a possible block of 
+ * results if this analytic produces work blocks. This analytic implementation has 
+ * no work blocks therefore no result blocks because it is too simple. 
+ *
+ * @param index Index of the given block that is read in. 
+ *
+ * @param results Pointer to the block of results that is read in. 
+ */
+void ImportIntegerArray::process(int index, const EAbstractAnalytic::Block* results)
+{
+   Q_UNUSED(results)
+   while ( _in->pos() < (index*_incrementSize) && _stream->status() == QTextStream::Ok )
    {
-   case InputFile:
-      // this is input file argument
-      return ArgumentType::FileIn;
-   case OutputData:
-      // this is output data argument
-      return ArgumentType::DataOut;
-   default:
-      // unknown argument
-      return ArgumentType::Bool;
+      int value;
+      *_stream >> value;
+      _out->_numbers << value;
    }
 }
 
@@ -29,79 +62,14 @@ EAbstractAnalytic::ArgumentType ImportIntegerArray::getArgumentData(int argument
 
 
 
-QVariant ImportIntegerArray::getArgumentData(int argument, EAbstractAnalytic::Role role)
+/*!
+ * Implements the interface that makes a new input object and returns its pointer. 
+ *
+ * @return Pointer to new input object. 
+ */
+EAbstractAnalytic::Input* ImportIntegerArray::makeInput()
 {
-   // determine which role is being queried
-   switch (role)
-   {
-   case Role::CommandLineName:
-      // determine which argument is being queried
-      switch (argument)
-      {
-      case InputFile:
-         // this is input file argument
-         return QString("in");
-      case OutputData:
-         // this is output data argument
-         return QString("out");
-      default:
-         // unknown argument
-         return QString();
-      }
-   case Role::Title:
-      // determine which argument is being queried
-      switch (argument)
-      {
-      case InputFile:
-         // this is input file argument
-         return QString("Input Text File:");
-      case OutputData:
-         // this is output data argument
-         return QString("Output integer array:");
-      default:
-         // unknown argument
-         return QString();
-      }
-   case Role::WhatsThis:
-      // determine which argument is being queried
-      switch (argument)
-      {
-      case InputFile:
-         // this is input file argument
-         return QString("Raw text file that contains a list of integers to import.");
-      case OutputData:
-         // this is output data argument
-         return QString("New integer array that will contain imported integers.");
-      default:
-         // unknown argument
-         return QString();
-      }
-   case Role::FileFilters:
-      // determine which argument is being queried
-      switch (argument)
-      {
-      case InputFile:
-         // this is input file argument
-         return QString("Raw Text File (*.txt)");
-      default:
-         // unknown argument
-         return QString();
-      }
-   case Role::DataType:
-      // determine which argument is being queried
-      switch (argument)
-      {
-      case OutputData:
-         // this is output data argument
-         return DataFactory::IntegerArrayType;
-      default:
-         // unknown argument
-         return QVariant();
-      }
-   default:
-      // unknown role
-      return QVariant();
-   }
+   return new Input(this);
 }
 
 
@@ -109,66 +77,18 @@ QVariant ImportIntegerArray::getArgumentData(int argument, EAbstractAnalytic::Ro
 
 
 
-void ImportIntegerArray::setArgument(int argument, QFile *file)
+/*!
+ * Implements the interface that initializes this analytic. This implementation 
+ * checks to make sure the input file and output data object has been set. 
+ */
+void ImportIntegerArray::initialize()
 {
-   // if argument is input file set it
-   if ( argument == InputFile )
+   if ( !_in || !_out )
    {
-      _input = file;
-   }
-}
-
-
-
-
-
-
-void ImportIntegerArray::setArgument(int argument, EAbstractData *data)
-{
-   // if argument is output data set it
-   if ( argument == OutputData )
-   {
-      _output = dynamic_cast<IntegerArray*>(data);
-   }
-}
-
-
-
-
-
-
-bool ImportIntegerArray::initialize()
-{
-   // make sure we have valid inputs and outputs
-   if ( !_input || !_output )
-   {
-      // If failure occured create exception to report failure
       E_MAKE_EXCEPTION(e);
-      e.setTitle(QObject::tr("Argument Error"));
-      e.setDetails(QObject::tr("Did not get valid input and/or output arguments."));
+      e.setTitle(tr("Invalid Argument"));
+      e.setDetails(tr("Did not get valid input and/or output arguments."));
       throw e;
    }
-
-   // clear the output data object and do not pre-allocate by returning false
-   _output->_numbers.clear();
-   return false;
-}
-
-
-
-
-
-
-void ImportIntegerArray::runSerial()
-{
-   // open input file and read all integers, adding them to output integer array as they are being
-   // read
-   QTextStream stream(_input);
-   int value;
-   stream >> value;
-   while ( stream.status() == QTextStream::Ok )
-   {
-      _output->_numbers.append(value);
-      stream >> value;
-   }
+   _stream = new QTextStream(_in);
 }

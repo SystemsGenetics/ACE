@@ -1,6 +1,8 @@
 #ifndef ACE_CORE
 #define ACE_CORE
-#include "eabstractanalytic.h"
+#include "eabstractanalytic_block.h"
+#include "eabstractanalytic_input.h"
+#include "eabstractanalytic_serial.h"
 #include "eabstractanalyticfactory.h"
 #include "eabstractdata.h"
 #include "eabstractdatafactory.h"

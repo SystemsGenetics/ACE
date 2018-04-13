@@ -56,7 +56,7 @@ std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeBlock(int index) co
  *
  * @param results  
  */
-void MathTransform::readBlock(int index, const EAbstractAnalytic::Block* results)
+void MathTransform::process(int index, const EAbstractAnalytic::Block* results)
 {
    Q_UNUSED(index)
    const Block* valid {results->cast<Block>()};
@@ -91,4 +91,24 @@ EAbstractAnalytic::Input* MathTransform::makeInput()
 EAbstractAnalytic::Serial* MathTransform::makeSerial()
 {
    return new Serial(this);
+}
+
+
+
+
+
+
+/*!
+ * Implements the interface that initializes this analytic. This implementation 
+ * checks to make sure it has valid input and output data objects. 
+ */
+void MathTransform::initialize()
+{
+   if ( !_in || !_out )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Invalid Argument"));
+      e.setDetails(tr("The required input and/or output data objects were not set."));
+      throw e;
+   }
 }

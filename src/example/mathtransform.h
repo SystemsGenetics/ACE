@@ -17,9 +17,10 @@ public:
    class Serial;
    virtual int size() const override final;
    virtual std::unique_ptr<EAbstractAnalytic::Block> makeBlock(int index) const override final;
-   virtual void readBlock(int index, const EAbstractAnalytic::Block* results) override final;
+   virtual void process(int index, const EAbstractAnalytic::Block* results) override final;
    virtual EAbstractAnalytic::Input* makeInput() override final;
    virtual EAbstractAnalytic::Serial* makeSerial() override final;
+   virtual void initialize() override final;
 private:
    /*!
     */
@@ -40,10 +41,10 @@ private:
    };
    /*!
     */
-   IntegerArray* _in;
+   IntegerArray* _in {nullptr};
    /*!
     */
-   IntegerArray* _out;
+   IntegerArray* _out {nullptr};
    /*!
     */
    Operation _type {Operation::Addition};

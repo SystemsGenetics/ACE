@@ -21,7 +21,9 @@ SOURCES += \
    exportintegerarray.cpp \
     mathtransform_input.cpp \
     mathtransform_serial.cpp \
-    mathtransform_block.cpp
+    mathtransform_block.cpp \
+    importintegerarray_input.cpp \
+    exportintegerarray_input.cpp
 
 HEADERS += \
    analyticfactory.h \
@@ -33,7 +35,9 @@ HEADERS += \
     mathtransform_input.h \
     mathtransform_serial.h \
     global.h \
-    mathtransform_block.h
+    mathtransform_block.h \
+    importintegerarray_input.h \
+    exportintegerarray_input.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
