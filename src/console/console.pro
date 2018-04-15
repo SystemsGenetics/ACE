@@ -1,10 +1,10 @@
 
 QT += core
+VERSION = 0.0.999
 
 DESTDIR = $$PWD/../../build/libs/
 TARGET = aceconsole
 CONFIG += c++11
-VERSION = 3.0.0
 
 INCLUDEPATH += $$PWD/../core/
 DEPENDPATH += $$PWD/../core/
@@ -27,3 +27,10 @@ HEADERS += \
 DEFINES += QT_DEPRECATED_WARNINGS
 
 QMAKE_CXX = mpic++
+
+isEmpty(PREFIX) { PREFIX = /usr/local }
+library.path = $${PREFIX}/lib
+library.extra = cp -fd $${PWD}/../../build/libs/lib$${TARGET}.so* $${PREFIX}/lib/
+includes.path = $${PREFIX}/include/ace/console
+includes.files = $${PWD}/*.h
+INSTALLS += library includes

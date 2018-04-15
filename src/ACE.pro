@@ -5,13 +5,11 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     core \
-    tests \
-    gui \
+    #tests \
+    #gui \
     console \
     example
 
-tests.depends = core
-gui.depends = core
-example.depends = core gui
-
-#TODO: Add exception thrown passthrough for GUI for analytic thread
+#tests.depends = core
+#gui.depends = core
+example.depends = core console

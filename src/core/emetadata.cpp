@@ -16,39 +16,11 @@
  * This creates a new metadata object of the type specified. 
  *
  * @param type The type this new object will become. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Based off the type of object create new data of the given type and store its 
- *    pointer. If the type is null simply leave the data pointer as null. 
  */
 EMetadata::EMetadata(Type type):
    _type(type)
 {
-   switch (_type)
-   {
-   case Bool:
-      _data = new bool;
-      break;
-   case Double:
-      _data = new double;
-      break;
-   case String:
-      _data = new QString;
-      break;
-   case Bytes:
-      _data = new QByteArray;
-      break;
-   case Array:
-      _data = new EMetaArray;
-      break;
-   case Object:
-      _data = new EMetaObject;
-      break;
-   default:
-      break;
-   }
+   create();
 }
 
 
@@ -194,6 +166,7 @@ EMetadata& EMetadata::operator=(const EMetadata& object)
 {
    clear();
    _type = object._type;
+   create();
    copy(object._data);
    return *this;
 }
@@ -729,6 +702,48 @@ void EMetadata::clear()
       break;
    case Object:
       delete static_cast<EMetaObject*>(_data);
+      break;
+   default:
+      break;
+   }
+}
+
+
+
+
+
+
+/*!
+ * Creates new data for this object. Overwrites any previous data pointer and does 
+ * not free anything it pointed to. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Create new data based off the type of this object, setting this object's data 
+ *    pointer to the new data. 
+ */
+void EMetadata::create()
+{
+   switch (_type)
+   {
+   case Bool:
+      _data = new bool;
+      break;
+   case Double:
+      _data = new double;
+      break;
+   case String:
+      _data = new QString;
+      break;
+   case Bytes:
+      _data = new QByteArray;
+      break;
+   case Array:
+      _data = new EMetaArray;
+      break;
+   case Object:
+      _data = new EMetaObject;
       break;
    default:
       break;

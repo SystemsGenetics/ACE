@@ -24,6 +24,13 @@ Run::Run(const Command& command, const Options& options):
    _options(options),
    _command(command)
 {
+   if ( _command.size() == 0 )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Invalid Argument"));
+      e.setDetails(tr("No analytic name given, exiting..."));
+      throw e;
+   }
    setupManager(getType());
 }
 
@@ -62,9 +69,9 @@ void Run::finished()
  */
 quint16 Run::getType()
 {
-   QList<QString> commandNames;
+   QStringList commandNames;
    EAbstractAnalyticFactory& factory {EAbstractAnalyticFactory::instance()};
-   for (quint16 i; i < factory.size() ;++i)
+   for (quint16 i = 0; i < factory.size() ;++i)
    {
       commandNames << factory.commandName(i);
    }

@@ -1,18 +1,18 @@
 
 QT += core
+VERSION = 0.0.999
 
-DESTDIR = $$PWD/../../build/libs/
+DESTDIR = $${PWD}/../../build/libs/
 TARGET = acecore
 CONFIG += c++11
-VERSION = 3.0.0
 
 LIBS += -lmpi -lmpi_cxx -lOpenCL
 
 TEMPLATE = lib
 
 SOURCES += \
-   emetadata.cpp \
-   ace_qmpi.cpp \
+    emetadata.cpp \
+    ace_qmpi.cpp \
     common.cpp \
     emetaarray.cpp \
     emetaobject.cpp \
@@ -32,9 +32,9 @@ SOURCES += \
     ace_analytic_singlerun.cpp
 
 HEADERS += \
-   opencl.h \
-   emetadata.h \
-   ace_qmpi.h \
+    opencl.h \
+    emetadata.h \
+    ace_qmpi.h \
     common.h \
     emetaarray.h \
     emetaobject.h \
@@ -62,3 +62,10 @@ HEADERS += \
 DEFINES += QT_DEPRECATED_WARNINGS
 
 QMAKE_CXX = mpic++
+
+isEmpty(PREFIX) { PREFIX = /usr/local }
+library.path = $${PREFIX}/lib
+library.extra = cp -fd $${PWD}/../../build/libs/lib$${TARGET}.so* $${PREFIX}/lib/
+includes.path = $${PREFIX}/include/ace/core
+includes.files = $${PWD}/*.h
+INSTALLS += library includes

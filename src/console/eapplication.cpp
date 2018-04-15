@@ -33,6 +33,13 @@ int EApplication::exec()
    try
    {
       enum {Unknown = -1,Run};
+      if ( _command.size() == 0 )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setTitle(tr("No Arguments"));
+         e.setDetails(tr("No arguments given, exiting..."));
+         throw e;
+      }
       QStringList commands {"run"};
       QString command {_command.first()};
       switch (_command.pop(commands))
@@ -76,8 +83,8 @@ int EApplication::exec()
  */
 void EApplication::showException(const EException& exception)
 {
-   QTextStream stream(stdin);
-   qDebug() << exception.fileName() << ":" << exception.line();
-   qDebug() << exception.functionName();
+   QTextStream stream(stdout);
+   qDebug().noquote().nospace() << exception.fileName() << ":" << exception.line();
+   qDebug().noquote() << exception.functionName();
    stream << exception.title().toUpper() << "\n" << exception.details() << "\n";
 }

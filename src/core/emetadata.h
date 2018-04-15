@@ -90,6 +90,7 @@ public:
 private:
    void checkType(Type type) const;
    void clear();
+   void create();
    void copy(const void* data);
    /*!
     * This stores what type this object contains. 
