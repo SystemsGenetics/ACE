@@ -49,10 +49,14 @@ int ImportIntegerArray::size() const
 void ImportIntegerArray::process(int index, const EAbstractAnalytic::Block* results)
 {
    Q_UNUSED(results)
-   while ( _in->pos() < (index*_incrementSize) && _stream->status() == QTextStream::Ok )
+   while ( _in->pos() < ((index + 1)*_incrementSize) )
    {
       int value;
       *_stream >> value;
+      if ( _stream->status() != QTextStream::Ok )
+      {
+         break;
+      }
       _out->_numbers << value;
    }
 }

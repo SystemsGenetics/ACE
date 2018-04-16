@@ -1,7 +1,7 @@
 #include "ace_run.h"
-#include <ace_analytic_manager.h>
-#include <eabstractanalyticfactory.h>
-#include <eexception.h>
+#include <core/ace_analytic_manager.h>
+#include <core/eabstractanalyticfactory.h>
+#include <core/eexception.h>
 
 
 
@@ -20,7 +20,7 @@ using namespace Ace;
  * @param options  
  */
 Run::Run(const Command& command, const Options& options):
-   _stream(stdin),
+   _stream(stdout),
    _options(options),
    _command(command)
 {
@@ -116,7 +116,10 @@ void Run::addArguments()
 {
    for (int i = 0; i < _manager->size() ;++i)
    {
-      QString argumentName {_manager->data(i,EAbstractAnalytic::Input::Role::CommandLineName).toString()};
+      QString argumentName
+      {
+         _manager->data(i,EAbstractAnalytic::Input::Role::CommandLineName).toString()
+      };
       switch (_manager->type(i))
       {
       case EAbstractAnalytic::Input::Type::Boolean:
@@ -214,7 +217,10 @@ void Run::addDouble(int index, const QString& name)
 void Run::addSelection(int index, const QString& name)
 {
    QString value {_options.find(name)};
-   QStringList values {_manager->data(index,EAbstractAnalytic::Input::Role::SelectionValues).toStringList()};
+   QStringList values
+   {
+      _manager->data(index,EAbstractAnalytic::Input::Role::SelectionValues).toStringList()
+   };
    if ( !values.contains(value) )
    {
       E_MAKE_EXCEPTION(e);

@@ -1,7 +1,7 @@
 #ifndef EAPPLICATION_H
 #define EAPPLICATION_H
 #include <QCoreApplication>
-#include <global.h>
+#include <core/global.h>
 #include "ace_options.h"
 #include "ace_command.h"
 //

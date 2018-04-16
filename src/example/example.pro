@@ -1,13 +1,14 @@
 
 QT += core
+VERSION = 0.0.999
 
-TARGET = example
+TARGET = aceex
 CONFIG += c++11
 
-LIBS += -lmpi -lmpi_cxx -lOpenCL -L$$PWD/../../build/libs -lacecore -laceconsole
+LIBS += -lmpi -lmpi_cxx -lOpenCL -L$${PWD}/../../build/libs -lacecore -laceconsole
 
-INCLUDEPATH += $$PWD/../
-DEPENDPATH += $$PWD/../
+INCLUDEPATH += $${PWD}/../
+DEPENDPATH += $${PWD}/../
 
 TEMPLATE = app
 
@@ -42,3 +43,8 @@ HEADERS += \
 DEFINES += QT_DEPRECATED_WARNINGS
 
 QMAKE_CXX = mpic++
+
+isEmpty(PREFIX) { PREFIX = /usr/local }
+program.path = $${PREFIX}/bin
+program.files = $${PWD}/../../build/example/$${TARGET}
+INSTALLS += program

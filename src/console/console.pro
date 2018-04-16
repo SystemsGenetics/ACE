@@ -6,8 +6,8 @@ DESTDIR = $$PWD/../../build/libs/
 TARGET = aceconsole
 CONFIG += c++11
 
-INCLUDEPATH += $$PWD/../core/
-DEPENDPATH += $$PWD/../core/
+INCLUDEPATH += $$PWD/../
+DEPENDPATH += $$PWD/../
 
 TEMPLATE = lib
 

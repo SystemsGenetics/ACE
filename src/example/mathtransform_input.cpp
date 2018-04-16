@@ -11,7 +11,7 @@
 const QStringList MathTransform::Input::_operationNames
 {
    "addition"
-   ,"subtractino"
+   ,"subtraction"
    ,"multiplication"
    ,"division"
 };

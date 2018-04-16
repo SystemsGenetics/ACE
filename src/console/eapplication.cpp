@@ -1,6 +1,6 @@
 #include "eapplication.h"
 #include <QTextStream>
-#include <eexception.h>
+#include <core/eexception.h>
 #include "ace_run.h"
 //
 
@@ -45,8 +45,11 @@ int EApplication::exec()
       switch (_command.pop(commands))
       {
       case Run:
-         new Ace::Run(_command,_options);
-         break;
+         {
+            Ace::Run* run {new Ace::Run(_command,_options)};
+            connect(run,&Ace::Run::destroyed,this,&QCoreApplication::quit);
+            break;
+         }
       case Unknown:
          {
             E_MAKE_EXCEPTION(e);

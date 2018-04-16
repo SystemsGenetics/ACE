@@ -49,7 +49,11 @@ int ExportIntegerArray::size() const
 void ExportIntegerArray::process(int index, const EAbstractAnalytic::Block* results)
 {
    Q_UNUSED(results)
-   *_stream << _in->_numbers.at(index) << "\n";
+   *_stream << _in->_numbers.at(index);
+   if ( index != (_in->_numbers.size() - 1) )
+   {
+      *_stream << " ";
+   }
 }
 
 

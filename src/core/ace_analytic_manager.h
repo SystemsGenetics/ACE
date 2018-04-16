@@ -92,7 +92,7 @@ namespace Ace
          QVector<QVariant> _inputs;
          /*!
           */
-         QList<EAbstractData*> _outputData;
+         QList<Ace::DataObject*> _outputData;
       };
    }
 }

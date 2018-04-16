@@ -211,16 +211,22 @@ void Manager::terminationRequested()
  *
  * Steps of Operation: 
  *
- * 1. Call the finish interface for this manager's analytic and all output data 
- *    objects. 
+ * 1. Call the finish interface for this manager's analytic. 
  *
- * 2. Signal this manager is finished with execution and call on qt to delete this 
+ * 2. Call all this object's output abstract data finish interfaces and set their 
+ *    user metadata to an empty object. 
+ *
+ * 3. Signal this manager is finished with execution and call on qt to delete this 
  *    manager. 
  */
 void Manager::finish()
 {
    _analytic->finish();
-   for (auto data: qAsConst(_outputData)) data->finish();
+   for (auto data: qAsConst(_outputData))
+   {
+      data->data()->finish();
+      data->setUserMeta(EMetadata(EMetadata::Object));
+   }
    emit progressed(100);
    emit finished();
    deleteLater();
@@ -691,6 +697,7 @@ void Manager::inputDataOut(const EMetadata& system)
          if ( Ace::DataObject* object = addOutputData(_inputs.at(i).toString(),_input->data(i,EAbstractAnalytic::Input::Role::DataType).toUInt(),system) )
          {
             _input->set(i,object->data());
+            _outputData << object;
          }
       }
    }

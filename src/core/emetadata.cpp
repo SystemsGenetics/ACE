@@ -112,6 +112,7 @@ EMetadata::EMetadata(const QJsonValue& value)
 EMetadata::EMetadata(const EMetadata& object):
    _type(object._type)
 {
+   create();
    copy(object._data);
 }
 

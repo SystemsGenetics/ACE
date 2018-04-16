@@ -21,7 +21,7 @@ public:
 private:
    /*!
     */
-   constexpr static const int _incrementSize {1024};
+   constexpr static const int _incrementSize {16};
    /*!
     */
    QFile* _in {nullptr};
