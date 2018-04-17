@@ -17,6 +17,10 @@ public:
    EApplication(int& argc, char** argv);
    int exec();
 private:
+   void dump();
+   void inject();
+   QJsonDocument getJson();
+   void inject(const QJsonDocument& document);
    void showException(const EException& exception);
    /*!
     */

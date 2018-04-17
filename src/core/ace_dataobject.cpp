@@ -391,8 +391,9 @@ void DataObject::setUserMeta(const EMetadata& newRoot)
  *
  * Steps of Operation: 
  *
- * 1. If this data object's file cursor position is less than the header offset 
- *    then throw an exception, else go the next step. 
+ * 1. If this data object's file cursor position is less than the header offset and 
+ *    this object's header has already been read then throw an exception, else go 
+ *    the next step. 
  *
  * 2. Read the given number of bytes from this data object at the current cursor 
  *    position to the given character array. If reading failed then throw an 
@@ -400,7 +401,7 @@ void DataObject::setUserMeta(const EMetadata& newRoot)
  */
 void DataObject::read(char* data, qint64 size) const
 {
-   if ( _file->pos() < _headerOffset )
+   if ( _headerRead && _file->pos() < _headerOffset )
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(tr("Logical Error"));
@@ -435,8 +436,9 @@ void DataObject::read(char* data, qint64 size) const
  *
  * Steps of Operation: 
  *
- * 1. If this data object's file cursor position is less than the header offset 
- *    then throw an exception, else go the next step. 
+ * 1. If this data object's file cursor position is less than the header offset and 
+ *    this object's header has already been read then throw an exception, else go 
+ *    the next step. 
  *
  * 2. Write the given number of bytes to this data object at the current cursor 
  *    position from the given character array. If writing failed then throw an 
@@ -444,7 +446,7 @@ void DataObject::read(char* data, qint64 size) const
  */
 void DataObject::write(const char* data, qint64 size)
 {
-   if ( _file->pos() < _headerOffset )
+   if ( _headerRead && _file->pos() < _headerOffset )
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(tr("Logical Error"));
@@ -549,6 +551,8 @@ void DataObject::openObject()
  * 2. Create a new abstract data object for this data object and set this data 
  *    object's header offset to the current cursor position of this data object's 
  *    file. 
+ *
+ * 3. Set this data object's header as read. 
  */
 void DataObject::readHeader()
 {
@@ -565,6 +569,7 @@ void DataObject::readHeader()
    }
    makeData(name,extension);
    _headerOffset = _file->pos();
+   _headerRead = true;
 }
 
 
@@ -595,6 +600,8 @@ void DataObject::readHeader()
  *
  * 5. Set this data object's header offset to the current cursor position of this 
  *    data object's file. 
+ *
+ * 6. Set this data object's header as read. 
  */
 void DataObject::writeHeader()
 {
@@ -619,6 +626,7 @@ void DataObject::writeHeader()
             << factory.fileExtension(_type)
             << _system;
    _headerOffset = _file->pos();
+   _headerRead = true;
 }
 
 

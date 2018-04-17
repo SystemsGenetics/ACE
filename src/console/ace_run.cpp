@@ -24,7 +24,7 @@ Run::Run(const Command& command, const Options& options):
    _options(options),
    _command(command)
 {
-   if ( _command.size() == 0 )
+   if ( _command.size() < 1 )
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(tr("Invalid Argument"));
@@ -117,7 +117,7 @@ void Run::addArguments()
    for (int i = 0; i < _manager->size() ;++i)
    {
       QString argumentName
-      {
+      {//
          _manager->data(i,EAbstractAnalytic::Input::Role::CommandLineName).toString()
       };
       switch (_manager->type(i))
@@ -218,7 +218,7 @@ void Run::addSelection(int index, const QString& name)
 {
    QString value {_options.find(name)};
    QStringList values
-   {
+   {//
       _manager->data(index,EAbstractAnalytic::Input::Role::SelectionValues).toStringList()
    };
    if ( !values.contains(value) )

@@ -93,6 +93,11 @@ namespace Ace
        * is updated to include it. 
        */
       qint64 _headerOffset;
+      /*!
+       * Indicates if the header has already been read. This is used for error checking 
+       * to prevent reading/writing to the header section after initialization. 
+       */
+      bool _headerRead {false};
    };
 }
 
