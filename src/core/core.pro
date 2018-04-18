@@ -31,7 +31,8 @@ SOURCES += \
     eabstractanalyticfactory.cpp \
     ace_analytic_singlerun.cpp \
     opencl_platform.cpp \
-    opencl_device.cpp
+    opencl_device.cpp \
+    opencl_common.cpp
 
 HEADERS += \
     opencl.h \
@@ -62,7 +63,8 @@ HEADERS += \
     eabstractanalytic_block.h \
     opencl_platform.h \
     opencl.h \
-    opencl_device.h
+    opencl_device.h \
+    opencl_common.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
