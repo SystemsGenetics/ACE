@@ -22,7 +22,8 @@ namespace OpenCL
       Q_OBJECT
    public:
       static int size();
-      static OpenCL::Platform& get(int index);
+      static OpenCL::Platform* get(int index);
+      cl_platform_id id() const;
       QString profile() const;
       QString version() const;
       QString name() const;

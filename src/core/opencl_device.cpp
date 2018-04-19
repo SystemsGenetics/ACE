@@ -235,7 +235,7 @@ template<class R,class T> R Device::getInfo(cl_device_info type) const
 {
    size_t size {1};
    T data;
-   cl_int code {clGetDeviceInfo(_id,type,size,&data,NULL)};
+   cl_int code {clGetDeviceInfo(_id,type,size,&data,nullptr)};
    if ( code != CL_SUCCESS )
    {
       E_MAKE_EXCEPTION(e);
@@ -267,7 +267,7 @@ template<class R,class T> R Device::getInfo(cl_device_info type) const
 QString Device::getStringInfo(cl_device_info type) const
 {
    size_t size;
-   cl_int code {clGetDeviceInfo(_id,type,0,NULL,&size)};
+   cl_int code {clGetDeviceInfo(_id,type,0,nullptr,&size)};
    if ( code != CL_SUCCESS )
    {
       E_MAKE_EXCEPTION(e);
@@ -275,7 +275,7 @@ QString Device::getStringInfo(cl_device_info type) const
       throw e;
    }
    char data[size];
-   code = clGetDeviceInfo(_id,type,size,data,NULL);
+   code = clGetDeviceInfo(_id,type,size,data,nullptr);
    if ( code != CL_SUCCESS )
    {
       E_MAKE_EXCEPTION(e);

@@ -42,12 +42,12 @@ int Platform::size()
 
 
 /*!
- * Returns a reference to the OpenCL platform with the given index. If the index is 
+ * Returns a pointer to the OpenCL platform with the given index. If the index is 
  * out of range an exception is thrown. 
  *
  * @param index Index of OpenCL platform whose reference is returned. 
  *
- * @return Reference to OpenCL platform with given index. 
+ * @return Pointer to OpenCL platform with given index. 
  *
  *
  * Steps of Operation: 
@@ -56,9 +56,9 @@ int Platform::size()
  *    given index is out of range then throw an exception, else go to the next 
  *    step. 
  *
- * 2. Return reference to platform with the given index. 
+ * 2. Return pointer to platform with the given index. 
  */
-OpenCL::Platform& Platform::get(int index)
+OpenCL::Platform* Platform::get(int index)
 {
    populate();
    if ( index < 0 || index >= _platforms->size() )
@@ -70,7 +70,22 @@ OpenCL::Platform& Platform::get(int index)
                    .arg(_platforms->size()));
       throw e;
    }
-   return *_platforms->at(index);
+   return _platforms->at(index);
+}
+
+
+
+
+
+
+/*!
+ * Returns the OpenCL platform ID for this platform object. 
+ *
+ * @return OpenCL platform ID for this object. 
+ */
+cl_platform_id Platform::id() const
+{
+   return _id;
 }
 
 
@@ -222,7 +237,7 @@ void Platform::populate()
    if ( !_platforms )
    {
       cl_uint size;
-      cl_int code {clGetPlatformIDs(0,NULL,&size)};
+      cl_int code {clGetPlatformIDs(0,nullptr,&size)};
       if ( code != CL_SUCCESS )
       {
          E_MAKE_EXCEPTION(e);
@@ -230,7 +245,7 @@ void Platform::populate()
          throw e;
       }
       cl_platform_id platforms[size];
-      code = clGetPlatformIDs(size,platforms,NULL);
+      code = clGetPlatformIDs(size,platforms,nullptr);
       if ( code != CL_SUCCESS )
       {
          E_MAKE_EXCEPTION(e);
@@ -289,7 +304,7 @@ Platform::Platform(cl_platform_id id, QObject* parent):
 void Platform::populateDevices()
 {
    cl_uint size;
-   cl_int code {clGetDeviceIDs(_id,CL_DEVICE_TYPE_ALL,0,NULL,&size)};
+   cl_int code {clGetDeviceIDs(_id,CL_DEVICE_TYPE_ALL,0,nullptr,&size)};
    if ( code != CL_SUCCESS )
    {
       E_MAKE_EXCEPTION(e);
@@ -297,7 +312,7 @@ void Platform::populateDevices()
       throw e;
    }
    cl_device_id devices[size];
-   code = clGetDeviceIDs(_id,CL_DEVICE_TYPE_ALL,size,devices,NULL);
+   code = clGetDeviceIDs(_id,CL_DEVICE_TYPE_ALL,size,devices,nullptr);
    if ( code != CL_SUCCESS )
    {
       E_MAKE_EXCEPTION(e);
@@ -333,7 +348,7 @@ void Platform::populateDevices()
 QString Platform::getInfo(cl_platform_info type) const
 {
    size_t size;
-   cl_int code {clGetPlatformInfo(_id,type,0,NULL,&size)};
+   cl_int code {clGetPlatformInfo(_id,type,0,nullptr,&size)};
    if ( code != CL_SUCCESS )
    {
       E_MAKE_EXCEPTION(e);
@@ -341,7 +356,7 @@ QString Platform::getInfo(cl_platform_info type) const
       throw e;
    }
    char info[size];
-   code = clGetPlatformInfo(_id,type,size,info,NULL);
+   code = clGetPlatformInfo(_id,type,size,info,nullptr);
    if ( code != CL_SUCCESS )
    {
       E_MAKE_EXCEPTION(e);
