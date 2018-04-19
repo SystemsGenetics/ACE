@@ -8,6 +8,6 @@ namespace OpenCL
    class Context;
    class Program;
    class Kernel;
-   class Buffer;
+   class CommandQueue;
    class Event;
 }
