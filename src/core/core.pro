@@ -34,7 +34,8 @@ SOURCES += \
     opencl_device.cpp \
     opencl_common.cpp \
     opencl_context.cpp \
-    opencl_program.cpp
+    opencl_program.cpp \
+    opencl_event.cpp
 
 HEADERS += \
     opencl.h \
@@ -68,7 +69,8 @@ HEADERS += \
     opencl_device.h \
     opencl_common.h \
     opencl_context.h \
-    opencl_program.h
+    opencl_program.h \
+    opencl_event.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
