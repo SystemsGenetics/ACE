@@ -21,29 +21,22 @@ namespace OpenCL
    public:
       /*!
        */
-      enum Mapping
-      {
-         /*!
-          */
-         Read
-         /*!
-          */
-         ,Write
-      };
-      /*!
-       */
       Buffer() = default;
       Buffer(Context* context, int size);
       Buffer(Buffer<T>&& other);
       ~Buffer();
       void operator=(Buffer<T>&& other);
+      T& operator[](int index);
+      const T& at(int index) const;
       bool isNull() const;
       cl_mem id() const;
       int size() const;
-      Event map(CommandQueue* queue, Mapping mapping);
+      Event mapRead(CommandQueue* queue);
+      Event mapWrite(CommandQueue* queue);
       Event unmap(CommandQueue* queue);
       T* data();
    private:
+      Event map(CommandQueue* queue, cl_map_flags mapping);
       void clear();
       void nullify();
       /*!
@@ -57,7 +50,10 @@ namespace OpenCL
       int _size {-1};
       /*!
        */
-      CommandQueue* _last;
+      cl_command_queue _last;
+      /*!
+       */
+      cl_map_flags _mapping;
    };
 
 
@@ -98,7 +94,8 @@ namespace OpenCL
       _id(other._id),
       _data(other._data),
       _size(other._size),
-      _last(other._last)
+      _last(other._last),
+      _mapping(other._mapping)
    {
       other.nullify();
    }
@@ -131,7 +128,82 @@ namespace OpenCL
       _data = other._data;
       _size = other._size;
       _last = other._last;
+      _mapping = other._mapping;
       other.nullify();
+   }
+
+
+
+
+
+
+   /*!
+    *
+    * @param index  
+    */
+   template<class T> T& Buffer<T>::operator[](int index)
+   {
+      if ( !_data )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setTitle(QObject::tr("Logic Error"));
+         e.setDetails(QObject::tr("Cannot access data from unmapped OpenCL buffer."));
+         throw e;
+      }
+      if ( _mapping != CL_MAP_WRITE )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setTitle(QObject::tr("Logic Error"));
+         e.setDetails(QObject::tr("Cannot write data to OpenCL buffer mapped for reading."));
+         throw e;
+      }
+      if ( index < 0 || index >= _size )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setTitle(QObject::tr("Out Of Range"));
+         e.setDetails(QObject::tr("The index %1 is out of range for this OpenCL buffer (%2 size).")
+                      .arg(index)
+                      .arg(_size));
+         throw e;
+      }
+      return _data[index];
+   }
+
+
+
+
+
+
+   /*!
+    *
+    * @param index  
+    */
+   template<class T> const T& Buffer<T>::at(int index) const
+   {
+      if ( !_data )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setTitle(QObject::tr("Logic Error"));
+         e.setDetails(QObject::tr("Cannot access data from unmapped OpenCL buffer."));
+         throw e;
+      }
+      if ( _mapping != CL_MAP_READ )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setTitle(QObject::tr("Logic Error"));
+         e.setDetails(QObject::tr("Cannot read data from OpenCL buffer mapped for writing."));
+         throw e;
+      }
+      if ( index < 0 || index >= _size )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setTitle(QObject::tr("Out Of Range"));
+         e.setDetails(QObject::tr("The index %1 is out of range for this OpenCL buffer (%2 size).")
+                      .arg(index)
+                      .arg(_size));
+         throw e;
+      }
+      return _data[index];
    }
 
 
@@ -185,55 +257,24 @@ namespace OpenCL
    /*!
     *
     * @param queue  
-    *
-    * @param mapping  
     */
-   template<class T> Event Buffer<T>::map(CommandQueue* queue, Mapping mapping)
+   template<class T> Event Buffer<T>::mapRead(CommandQueue* queue)
    {
-      if ( !_id )
-      {
-         E_MAKE_EXCEPTION(e);
-         e.setTitle(QObject::tr("Logic Error"));
-         e.setDetails(QObject::tr("Cannot unmap OpenCL buffer that is null."));
-         throw e;
-      }
-      if ( _data )
-      {
-         E_MAKE_EXCEPTION(e);
-         e.setTitle(QObject::tr("Logic Error"));
-         e.setDetails(QObject::tr("Cannot map OpenCL buffer that is already mapped."));
-         throw e;
-      }
-      cl_map_flags flags;
-      switch (mapping)
-      {
-      case Read:
-         flags = CL_MAP_READ;
-         break;
-      case Write:
-         flags = CL_MAP_WRITE;
-         break;
-      }
-      cl_int code;
-      cl_event id;
-      _data = static_cast<T*>(clEnqueueMapBuffer(queue->id()
-                                                 ,*_id
-                                                 ,false
-                                                 ,flags
-                                                 ,0
-                                                 ,sizeof(T)*_size
-                                                 ,0
-                                                 ,nullptr
-                                                 ,&id
-                                                 ,&code));
-      if ( code != CL_SUCCESS )
-      {
-         E_MAKE_EXCEPTION(e);
-         fillException(&e,code);
-         throw e;
-      }
-      _last = queue;
-      return Event(id);
+      return map(queue,CL_MAP_READ);
+   }
+
+
+
+
+
+
+   /*!
+    *
+    * @param queue  
+    */
+   template<class T> Event Buffer<T>::mapWrite(CommandQueue* queue)
+   {
+      return map(queue,CL_MAP_WRITE);
    }
 
 
@@ -264,6 +305,13 @@ namespace OpenCL
       cl_event id;
       clEnqueueUnmapMemObject(queue->id(),*_id,_data,0,nullptr,&id);
       _data = nullptr;
+      cl_int code = {clReleaseCommandQueue(_last)};
+      if ( code != CL_SUCCESS )
+      {
+         E_MAKE_EXCEPTION(e);
+         fillException(&e,code);
+         throw e;
+      }
       return Event(id);
    }
 
@@ -280,10 +328,67 @@ namespace OpenCL
       {
          E_MAKE_EXCEPTION(e);
          e.setTitle(QObject::tr("Logic Error"));
-         e.setDetails(QObject::tr("Cannot return mapped memory pointer from unmapped OpenCL buffer."));
+         e.setDetails(QObject::tr("Cannot access data from unmapped OpenCL buffer."));
          throw e;
       }
       return _data;
+   }
+
+
+
+
+
+
+   /*!
+    *
+    * @param queue  
+    *
+    * @param mapping  
+    */
+   template<class T> Event Buffer<T>::map(CommandQueue* queue, cl_map_flags mapping)
+   {
+      if ( !_id )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setTitle(QObject::tr("Logic Error"));
+         e.setDetails(QObject::tr("Cannot unmap OpenCL buffer that is null."));
+         throw e;
+      }
+      if ( _data )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setTitle(QObject::tr("Logic Error"));
+         e.setDetails(QObject::tr("Cannot map OpenCL buffer that is already mapped."));
+         throw e;
+      }
+      cl_int code;
+      cl_event id;
+      _data = static_cast<T*>(clEnqueueMapBuffer(queue->id()
+                                                 ,*_id
+                                                 ,false
+                                                 ,mapping
+                                                 ,0
+                                                 ,sizeof(T)*_size
+                                                 ,0
+                                                 ,nullptr
+                                                 ,&id
+                                                 ,&code));
+      if ( code != CL_SUCCESS )
+      {
+         E_MAKE_EXCEPTION(e);
+         fillException(&e,code);
+         throw e;
+      }
+      _last = queue->id();
+      code = clRetainCommandQueue(_last);
+      if ( code != CL_SUCCESS )
+      {
+         E_MAKE_EXCEPTION(e);
+         fillException(&e,code);
+         throw e;
+      }
+      _mapping = mapping;
+      return Event(id);
    }
 
 
@@ -299,7 +404,8 @@ namespace OpenCL
       {
          if ( _data )
          {
-            clEnqueueUnmapMemObject(_last->id(),*_id,_data,0,nullptr,nullptr);
+            clEnqueueUnmapMemObject(_last,*_id,_data,0,nullptr,nullptr);
+            clReleaseCommandQueue(_last);
          }
          clReleaseMemObject(*_id);
          delete _id;

@@ -170,8 +170,6 @@ bool Event::isDone() const
    {
       return true;
    }
-
-   // query event status
    cl_int status;
    cl_int code
    {//
