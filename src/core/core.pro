@@ -72,7 +72,8 @@ HEADERS += \
     opencl_context.h \
     opencl_program.h \
     opencl_event.h \
-    opencl_commandqueue.h
+    opencl_commandqueue.h \
+    opencl_buffer.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 

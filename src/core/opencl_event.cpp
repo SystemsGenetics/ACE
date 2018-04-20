@@ -118,6 +118,7 @@ void Event::operator=(Event&& other)
    if ( _id )
    {
       clReleaseEvent(*_id);
+      delete _id;
    }
    _id = other._id;
    other._id = nullptr;
@@ -130,7 +131,19 @@ void Event::operator=(Event&& other)
 
 /*!
  */
-void Event::wait()
+bool Event::isNull() const
+{
+   return !_id;
+}
+
+
+
+
+
+
+/*!
+ */
+void Event::wait() const
 {
    if ( _id )
    {
@@ -151,7 +164,7 @@ void Event::wait()
 
 /*!
  */
-bool Event::isDone()
+bool Event::isDone() const
 {
    if ( !_id )
    {
@@ -171,16 +184,4 @@ bool Event::isDone()
       throw e;
    }
    return status == CL_COMPLETE;
-}
-
-
-
-
-
-
-/*!
- */
-bool Event::isNull()
-{
-   return !_id;
 }

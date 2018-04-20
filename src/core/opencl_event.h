@@ -21,9 +21,9 @@ namespace OpenCL
       ~Event();
       void operator=(const Event& other);
       void operator=(Event&& other);
-      void wait();
-      bool isDone();
-      bool isNull();
+      bool isNull() const;
+      void wait() const;
+      bool isDone() const;
    private:
       /*!
        */

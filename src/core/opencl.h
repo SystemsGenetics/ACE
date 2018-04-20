@@ -7,7 +7,7 @@ namespace OpenCL
    class Device;
    class Context;
    class Program;
-   class Event;
    class CommandQueue;
+   class Event;
    class Kernel;
 }
