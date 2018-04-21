@@ -15,12 +15,33 @@ using namespace OpenCL;
 
 
 /*!
+ * Construct a new program with the given context, list of OpenCL kernel source 
+ * code file paths, and optional parent. If any OpenCL error occurs then an 
+ * exception is thrown. 
  *
- * @param context  
+ * @param context Pointer to context this program is created from. 
  *
- * @param paths  
+ * @param paths List of file paths containing OpenCL kernel source code that this 
+ *              program builds for all devices of the given context. 
  *
- * @param parent  
+ * @param parent Optional parent for this new program. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. For the following steps if any exception is thrown then delete the list of C 
+ *    style strings if they are not null and throw the exception again. 
+ *
+ * 2. Build the array of C style strings containing the contents of all source 
+ *    files from the given file paths. 
+ *
+ * 3. Create a new OpenCL program from the list of C style strings of source code. 
+ *    If creation fails then throw an exception. 
+ *
+ * 4. Iterate through all devices of the given context and build the source code 
+ *    for each device. 
+ *
+ * 5. delete the list of C style strings containing the source code. 
  */
 Program::Program(Context* context, const QStringList& paths, QObject* parent):
    QObject(parent)
@@ -43,7 +64,7 @@ Program::Program(Context* context, const QStringList& paths, QObject* parent):
       }
       for (auto device: context->devices())
       {
-         compile(device);
+         build(device);
       }
       deleteStrings(sources,paths.size());
    }
@@ -60,6 +81,7 @@ Program::Program(Context* context, const QStringList& paths, QObject* parent):
 
 
 /*!
+ * Releases the underlying OpenCL program that this object represents. 
  */
 Program::~Program()
 {
@@ -72,6 +94,9 @@ Program::~Program()
 
 
 /*!
+ * Returns the OpenCL program ID of this object. 
+ *
+ * @return OpenCL program ID of this object. 
  */
 cl_program Program::id() const
 {
@@ -84,10 +109,25 @@ cl_program Program::id() const
 
 
 /*!
+ * Reads in an OpenCL kernel source file with the given path, returning a C style 
+ * string of the read in source code and setting the string's size with the given 
+ * pointer. If the source file fails to open then an exception is thrown. 
  *
- * @param path  
+ * @param path Path to the OpenCL source code that is read in. 
  *
- * @param size  
+ * @param size Pointer to size variable that is set to the length of the C style 
+ *             string returned. 
+ *
+ * @return Pointer to C style string of OpenCL source code. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Open the source code file with the given path as read only. If opening fails 
+ *    then throw an exception. 
+ *
+ * 2. Read in the entire contents of the source file, saving it as a C style string 
+ *    and return a pointer to the C style string. 
  */
 char* Program::readSourceFile(const QString& path, size_t* size)
 {
@@ -114,10 +154,16 @@ char* Program::readSourceFile(const QString& path, size_t* size)
 
 
 /*!
+ * Deletes an array of C style strings with the given array size. 
  *
- * @param sources  
+ * @param sources Pointer to array of C style strings. 
  *
- * @param size  
+ * @param size Size of the array of strings that is deleted. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Iterate through the list of C style strings and delete each one of them. 
  */
 void Program::deleteStrings(const char** sources, int size)
 {
@@ -133,10 +179,19 @@ void Program::deleteStrings(const char** sources, int size)
 
 
 /*!
+ * Builds an OpenCL program using the given device. If building fails then an 
+ * exception is thrown. 
  *
- * @param device  
+ * @param device Pointer to device that is used to build all the source code. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Build the source code of this program for the given device. If a build error 
+ *    occurred then throw an exception with the build log, else if a general error 
+ *    occurs then throw a general OpenCL exception. 
  */
-void Program::compile(Device* device)
+void Program::build(Device* device)
 {
    cl_device_id id {device->id()};
    cl_int code {clBuildProgram(_id,1,&id,"",nullptr,nullptr)};
@@ -161,8 +216,20 @@ void Program::compile(Device* device)
 
 
 /*!
+ * Returns the most recent build log from the given device that is generated 
+ * whenever compiling is attempted. If any OpenCL error occurs then an exception is 
+ * thrown. 
  *
- * @param device  
+ * @param device Pointer to device whose most recent build log is returned. 
+ *
+ * @return Most recent build log of the given device. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Get the size of the given device's build log, then get the C style string of 
+ *    the given device's build log, and then return the build log as a qt string. 
+ *    If any error occurs then throw an OpenCL exception. 
  */
 QString Program::getBuildLog(Device* device) const
 {

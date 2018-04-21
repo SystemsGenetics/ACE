@@ -15,12 +15,23 @@ using namespace OpenCL;
 
 
 /*!
+ * Constructs a new OpenCL context with the given platform, list of devices, and 
+ * optional parent. The list of devices must all be part of the same platform or an 
+ * exception is thrown. 
  *
- * @param platform  
+ * @param platform Pointer to platform this context is created from. 
  *
- * @param devices  
+ * @param devices List of pointers to devices this context is created from. All 
+ *                devices must be part of the given platform. 
  *
- * @param parent  
+ * @param parent Optional parent for this new context. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Create a new OpenCL context with the given platform and list of devices, 
+ *    setting this object's OpenCL context ID to the one returned. If creating the 
+ *    context fails then throw an exception. 
  */
 Context::Context(Platform* platform, const QList<Device*>& devices, QObject* parent):
    QObject(parent),
@@ -53,6 +64,7 @@ Context::Context(Platform* platform, const QList<Device*>& devices, QObject* par
 
 
 /*!
+ * Releases the underlying OpenCL context that this object represents. 
  */
 Context::~Context()
 {
@@ -65,6 +77,9 @@ Context::~Context()
 
 
 /*!
+ * Returns the OpenCL context ID of this object. 
+ *
+ * @return OpenCL context ID of this object. 
  */
 cl_context Context::id() const
 {
@@ -77,6 +92,10 @@ cl_context Context::id() const
 
 
 /*!
+ * Returns a read only reference to the list of device pointers which is part of 
+ * this context. 
+ *
+ * @return Read only reference to list of devices of this context. 
  */
 const QList<Device*>& Context::devices() const
 {

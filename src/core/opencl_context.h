@@ -10,6 +10,10 @@
 namespace OpenCL
 {
    /*!
+    * This contains an OpenCL context. This is a very basic class that simply 
+    * maintains ownership over an underlying context along with providing basic 
+    * information about it such as the list of devices associated with it. This class 
+    * in turn is used by other OpenCL classes that derive from an OpenCL context. 
     */
    class Context : public QObject
    {
@@ -21,9 +25,11 @@ namespace OpenCL
       const QList<Device*>& devices() const;
    private:
       /*!
+       * The OpenCL context ID of this object. 
        */
       cl_context _id;
       /*!
+       * Pointer list of devices that are part of this context. 
        */
       QList<Device*> _devices;
    };

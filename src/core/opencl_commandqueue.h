@@ -16,7 +16,7 @@ namespace OpenCL
       Q_OBJECT
    public:
       explicit CommandQueue(Context* context, Device* device, QObject* parent = nullptr);
-      ~CommandQueue();
+      virtual ~CommandQueue() override final;
       cl_command_queue id() const;
    private:
       /*!
