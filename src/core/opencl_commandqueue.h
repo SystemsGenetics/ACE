@@ -10,6 +10,10 @@
 namespace OpenCL
 {
    /*!
+    * This contains an OpenCL command queue. This is a very basic class that simply 
+    * maintains ownership of an underlying command queue. The main purpose of this 
+    * class is to be used by other classes that add commands to its underlying command 
+    * queue. 
     */
    class CommandQueue : public QObject
    {
@@ -20,6 +24,7 @@ namespace OpenCL
       cl_command_queue id() const;
    private:
       /*!
+       * The OpenCL command queue ID of this object. 
        */
       cl_command_queue _id;
    };

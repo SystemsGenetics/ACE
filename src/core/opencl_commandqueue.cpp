@@ -15,12 +15,22 @@ using namespace OpenCL;
 
 
 /*!
+ * Constructs a new command queue with the given context, device, and optional 
+ * parent. If the given device is not part of the given context then an exception 
+ * is thrown. 
  *
- * @param context  
+ * @param context Pointer to context this command queue is created from. 
  *
- * @param device  
+ * @param device Pointer to device this command queue is created from. 
  *
- * @param parent  
+ * @param parent Optional parent for this new command queue. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Create a new OpenCL command queue with the given context and device, setting 
+ *    it to out of order execution and saving the new ID to this object. If 
+ *    creation fails then throw an exception. 
  */
 CommandQueue::CommandQueue(Context* context, Device* device, QObject* parent):
    QObject(parent)
@@ -44,6 +54,7 @@ CommandQueue::CommandQueue(Context* context, Device* device, QObject* parent):
 
 
 /*!
+ * Releases the underlying OpenCL command queue resource. 
  */
 CommandQueue::~CommandQueue()
 {
@@ -56,6 +67,9 @@ CommandQueue::~CommandQueue()
 
 
 /*!
+ * Returns the OpenCL command queue ID of this object. 
+ *
+ * @return OpenCL command queue ID of this object. 
  */
 cl_command_queue CommandQueue::id() const
 {
