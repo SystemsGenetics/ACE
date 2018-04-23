@@ -11,6 +11,13 @@
 namespace OpenCL
 {
    /*!
+    * This contains an OpenCL kernel. This class is designed to be inherited and 
+    * implemented by specific kernel implementations. This design works to facilitate 
+    * separating the more arduous task of setting of a kernel to execute. This way 
+    * arguments for a kernel can be abstracted to C++ with easy to understand 
+    * arguments for methods. Because of this design most methods to set the kernel 
+    * arguments and work sizes is protected and should only be used by a child 
+    * inheriting this class. 
     */
    class Kernel : public QObject
    {
@@ -28,21 +35,29 @@ namespace OpenCL
       template<class T> void setBuffer(cl_uint index, const Buffer<T>& buffer);
       template<class T> void setLocalMemory(cl_uint index, qint64 size);
    private:
-      void resize();
+      void allocate();
       void clear();
       /*!
+       * The OpenCL kernel ID of this object. 
        */
       cl_kernel _id;
       /*!
+       * The number of dimensions this kernel object uses when executes. 
        */
-      cl_uint _size {0};
+      cl_uint _size {1};
       /*!
+       * The offsets for each dimension used by this kernel object for execution. The 
+       * offsets are always 0. 
        */
       size_t* _offsets {nullptr};
       /*!
+       * The global size for each dimension used by this kernel object for execution. The 
+       * default is 1. 
        */
       size_t* _globalSizes {nullptr};
       /*!
+       * The local or work group size for each dimension used by this kernel object for 
+       * execution. The default is 1. 
        */
       size_t* _localSizes {nullptr};
    };
@@ -53,12 +68,20 @@ namespace OpenCL
 
 
    /*!
+    * Sets this kernel's argument at the given index to the given value. The first 
+    * argument of a kernel function is at index 0 and increments positively. 
     *
-    * @tparam T  
+    * @tparam T The type of the value that is set. 
     *
-    * @param index  
+    * @param index The kernel argument index whose value is set. 
     *
-    * @param value  
+    * @param value The value that the given kernel argument is set to. 
+    *
+    *
+    * Steps of Operation: 
+    *
+    * 1. Set the kernel argument with the given index to the given value. If setting 
+    *    the argument fails then throw an exception. 
     */
    template<class T> void Kernel::setArgument(cl_uint index, T value)
    {
@@ -77,12 +100,20 @@ namespace OpenCL
 
 
    /*!
+    * Sets this kernel's argument at the given index to the given OpenCL buffer. The 
+    * first argument of a kernel function is at index 0 and increments positively. 
     *
-    * @tparam T  
+    * @tparam T The buffer type that is set. 
     *
-    * @param index  
+    * @param index The kernel argument index whose value is set. 
     *
-    * @param buffer  
+    * @param buffer The buffer object that the given kernel argument is set to. 
+    *
+    *
+    * Steps of Operation: 
+    *
+    * 1. Set the kernel argument with the given index to the given OpenCL buffer. If 
+    *    setting the argument fails then throw an exception. 
     */
    template<class T> void Kernel::setBuffer(cl_uint index, const Buffer<T>& buffer)
    {
@@ -102,12 +133,26 @@ namespace OpenCL
 
 
    /*!
+    * Sets this kernel's argument at the given index to local memory allocated to the 
+    * given size in elements of template type. The first argument of a kernel function 
+    * is at index 0 and increments positively. If the given size is less than one then 
+    * an exception is thrown. 
     *
-    * @tparam T  
+    * @tparam T The element type whose given size in elements is allocated. 
     *
-    * @param index  
+    * @param index The kernel argument index whose value is set. 
     *
-    * @param size  
+    * @param size The number of elements of template type which is allocated in local 
+    *             memory. 
+    *
+    *
+    * Steps of Operation: 
+    *
+    * 1. If the given size is less than one then throw an exception, else go to the 
+    *    next step. 
+    *
+    * 2. Set the kernel argument with the given index to allocate the given amount of 
+    *    local memory. If setting the argument fails then throw an exception. 
     */
    template<class T> void Kernel::setLocalMemory(cl_uint index, qint64 size)
    {
@@ -118,7 +163,7 @@ namespace OpenCL
          e.setDetails(tr("Cannot set local memory argument of OpenCL kernel with a size of less than 1."));
          throw e;
       }
-      cl_int code {clSetKernelArg(_id,index,size,nullptr)};
+      cl_int code {clSetKernelArg(_id,index,sizeof(T)*size,nullptr)};
       if ( code != CL_SUCCESS )
       {
          E_MAKE_EXCEPTION(e);

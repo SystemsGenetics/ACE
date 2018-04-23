@@ -33,7 +33,8 @@ using namespace OpenCL;
  *    creation fails then throw an exception. 
  */
 CommandQueue::CommandQueue(Context* context, Device* device, QObject* parent):
-   QObject(parent)
+   QObject(parent),
+   _device(device)
 {
    cl_int code;
    _id = clCreateCommandQueue(context->id()
@@ -74,4 +75,19 @@ CommandQueue::~CommandQueue()
 cl_command_queue CommandQueue::id() const
 {
    return _id;
+}
+
+
+
+
+
+
+/*!
+ * Returns a pointer to the device that this command queue uses. 
+ *
+ * @return Pointer to device for this command queue. 
+ */
+Device* CommandQueue::device() const
+{
+   return _device;
 }

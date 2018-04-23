@@ -17,6 +17,12 @@ using namespace OpenCL;
 
 
 /*!
+ * Clears all resources this kernel contains. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Release the OpenCL kernel and clear all arrays. 
  */
 Kernel::~Kernel()
 {
@@ -30,8 +36,21 @@ Kernel::~Kernel()
 
 
 /*!
+ * Executes this object's OpenCL kernel on the given command queue with the 
+ * dimensions, global, and local sizes this object possesses, returning the event 
+ * for the kernel command. 
  *
  * @param queue  
+ *
+ * @return The event for the kernel command running on the given command queue. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Add a ND range kernel execution command to the given command queue with this 
+ *    objects dimensions of offsets, global sizes, and local sizes, returning the 
+ *    event for the added command. If adding the command fails then throw an 
+ *    exception. 
  */
 Event Kernel::execute(CommandQueue* queue)
 {
@@ -55,12 +74,24 @@ Event Kernel::execute(CommandQueue* queue)
 
 
 /*!
+ * Constructs a new kernel object from the given program with the given kernel name 
+ * and optional parent. 
  *
- * @param program  
+ * @param program Pointer to the program which has built the kernel with the given 
+ *                name that is created. 
  *
- * @param name  
+ * @param name The name of the kernel that is created. 
  *
- * @param parent  
+ * @param parent Optional parent for this new kernel object. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Create a new OpenCL kernel from the given program with the given name, 
+ *    storing its id to this object. If creating the kernel fails then throw an 
+ *    exception. 
+ *
+ * 2. Allocate all dimension arrays. 
  */
 Kernel::Kernel(Program* program, const QString& name, QObject* parent):
    QObject(parent)
@@ -73,7 +104,7 @@ Kernel::Kernel(Program* program, const QString& name, QObject* parent):
       fillException(&e,code);
       throw e;
    }
-   resize();
+   allocate();
 }
 
 
@@ -82,8 +113,18 @@ Kernel::Kernel(Program* program, const QString& name, QObject* parent):
 
 
 /*!
+ * Returns the maximum work group (local) size this kernel can possess for the 
+ * given device. 
  *
  * @param device  
+ *
+ * @return Maximum work group size this kernel can possess for the given device. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Get the maximum work group size for this kernel if ran on the given device 
+ *    and return it. If getting that information fails then throw an exception. 
  */
 int Kernel::maxWorkGroupSize(Device* device) const
 {
@@ -112,8 +153,18 @@ int Kernel::maxWorkGroupSize(Device* device) const
 
 
 /*!
+ * Returns the recommended, for efficiency, work group multiple for the given 
+ * device. 
  *
  * @param device  
+ *
+ * @return Work group multiple for the given device. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Get the work group multiple for the given device and return it. If getting 
+ *    that information fails then throw an exception. 
  */
 int Kernel::workGroupMultiple(Device* device) const
 {
@@ -142,16 +193,35 @@ int Kernel::workGroupMultiple(Device* device) const
 
 
 /*!
+ * Sets the number of dimensions for parallel execution of this kernel object. If 
+ * the given size is less than one then an exception is thrown. 
  *
- * @param size  
+ * @param size The number of dimensions for this kernel. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the given size is less than one then throw an exception, else go to the 
+ *    next step. 
+ *
+ * 2. if the new given size is different form this object's current dimension size 
+ *    then change it to the new size, clear the previous arrays, and allocate new 
+ *    arrays. 
  */
 void Kernel::setDimensions(cl_uint size)
 {
+   if ( size < 1 )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Invalid Argument"));
+      e.setDetails(tr("%1 is not a valid dimension size for an OpenCL Kernel (must be 1 or geater)."));
+      throw e;
+   }
    if ( size != _size )
    {
       _size = size;
       clear();
-      resize();
+      allocate();
    }
 }
 
@@ -161,12 +231,27 @@ void Kernel::setDimensions(cl_uint size)
 
 
 /*!
+ * Sets the global and local sizes of the given dimension used for parallel 
+ * execution of this kernel object. If the dimension is invalid, the local or group 
+ * size is less than one, or the global size is not a multiple of the local size 
+ * then an exception is thrown. 
  *
- * @param dimension  
+ * @param dimension The dimension whose global and local sizes are set. 
  *
- * @param globalSize  
+ * @param globalSize The new global size that is set. This must be a multiple of 
+ *                   the local size. 
  *
- * @param localSize  
+ * @param localSize The new local or work group size that is set. This must be 
+ *                  divisible of the global size. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the given dimension is out of rage, the global or local sizes are less 
+ *    then one, or the global size is not a multiple of the local size then throw 
+ *    an exception, else go to the next step. 
+ *
+ * 2. Set the global and local sizes of the given dimension to the given values. 
  */
 void Kernel::setSizes(cl_uint dimension, qint64 globalSize, qint64 localSize)
 {
@@ -196,8 +281,21 @@ void Kernel::setSizes(cl_uint dimension, qint64 globalSize, qint64 localSize)
 
 
 /*!
+ * Allocates new arrays for the offsets, global sizes, and local sizes of this 
+ * object used for adding a kernel parallel execution command. The dimension size 
+ * is used for the new sizes. Any memory pointed to previously is overwritten and 
+ * not deleted. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Allocate new arrays for offsets, global sizes, and local sizes, setting this 
+ *    object's pointers to the new arrays. 
+ *
+ * 2. Iterate through all new arrays and set their offsets to 0, global size to 1, 
+ *    and local size to 1. 
  */
-void Kernel::resize()
+void Kernel::allocate()
 {
    _offsets = new size_t[_size];
    _globalSizes = new size_t[_size];
@@ -216,6 +314,13 @@ void Kernel::resize()
 
 
 /*!
+ * Deletes arrays pointed to by this object's offsets, global sizes, and local 
+ * sizes array pointers. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Delete all arrays this object points to. 
  */
 void Kernel::clear()
 {

@@ -22,11 +22,16 @@ namespace OpenCL
       explicit CommandQueue(Context* context, Device* device, QObject* parent = nullptr);
       virtual ~CommandQueue() override final;
       cl_command_queue id() const;
+      Device* device() const;
    private:
       /*!
        * The OpenCL command queue ID of this object. 
        */
       cl_command_queue _id;
+      /*!
+       * Pointer to the device this command queue uses. 
+       */
+      Device* _device;
    };
 }
 

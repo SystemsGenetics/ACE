@@ -9,10 +9,23 @@
 
 
 /*!
+ * Fills in the title and detail properties of an exception to describe an OpenCL 
+ * error with the given error code. 
  *
- * @param exception  
+ * @param exception Pointer to the exception whose title and details are filled in 
+ *                  describing the given OpenCL error code. 
  *
- * @param code  
+ * @param code The OpenCL error code whose description is added to the given 
+ *             exception. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Modify the given error code to be used as an index into a list of predefined 
+ *    error code descriptions for OpenCL. 
+ *
+ * 2. Set the title and details of the given exception using the index converted 
+ *    from the error code to make a human readable error code. 
  */
 void OpenCL::fillException(EException* exception, cl_int code)
 {
