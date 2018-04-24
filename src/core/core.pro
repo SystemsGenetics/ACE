@@ -37,7 +37,9 @@ SOURCES += \
     opencl_program.cpp \
     opencl_event.cpp \
     opencl_commandqueue.cpp \
-    opencl_kernel.cpp
+    opencl_kernel.cpp \
+    eabstractanalytic_opencl.cpp \
+    eabstractanalytic_opencl_block.cpp
 
 HEADERS += \
     opencl.h \
@@ -75,7 +77,9 @@ HEADERS += \
     opencl_event.h \
     opencl_commandqueue.h \
     opencl_buffer.h \
-    opencl_kernel.h
+    opencl_kernel.h \
+    eabstractanalytic_opencl.h \
+    eabstractanalytic_opencl_block.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
