@@ -40,7 +40,8 @@ SOURCES += \
     opencl_kernel.cpp \
     eabstractanalytic_opencl.cpp \
     eabstractanalytic_opencl_block.cpp \
-    eabstractanalytic_block.cpp
+    eabstractanalytic_block.cpp \
+    ace_settings.cpp
 
 HEADERS += \
     opencl.h \
@@ -80,7 +81,8 @@ HEADERS += \
     opencl_buffer.h \
     opencl_kernel.h \
     eabstractanalytic_opencl.h \
-    eabstractanalytic_opencl_block.h
+    eabstractanalytic_opencl_block.h \
+    ace_settings.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
