@@ -22,7 +22,7 @@ namespace Ace
       static Settings* _instance;
       /*!
        */
-      OpenCL::Device* _device;
+      OpenCL::Device* _device {nullptr};
    };
 }
 

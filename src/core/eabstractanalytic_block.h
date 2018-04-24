@@ -24,16 +24,8 @@ public:
    void fromBytes(const QByteArray& data);
    template<class T> T* cast();
 protected:
-   /*!
-    *
-    * @param stream  
-    */
-   virtual void write(QDataStream& stream) const = 0;
-   /*!
-    *
-    * @param stream  
-    */
-   virtual void read(QDataStream& stream) = 0;
+   virtual void write(QDataStream& stream) const;
+   virtual void read(QDataStream& stream);
 private:
    /*!
     */

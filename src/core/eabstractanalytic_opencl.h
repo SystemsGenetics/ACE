@@ -16,9 +16,6 @@ public:
    explicit OpenCL(EAbstractAnalytic* parent);
    /*!
     */
-   virtual int stepSize() const = 0;
-   /*!
-    */
    virtual std::unique_ptr<EAbstractAnalytic::OpenCL::Block> makeBlock() const = 0;
    /*!
     *

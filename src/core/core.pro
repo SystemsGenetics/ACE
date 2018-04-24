@@ -39,7 +39,6 @@ SOURCES += \
     opencl_commandqueue.cpp \
     opencl_kernel.cpp \
     eabstractanalytic_opencl.cpp \
-    eabstractanalytic_opencl_block.cpp \
     eabstractanalytic_block.cpp \
     ace_settings.cpp
 

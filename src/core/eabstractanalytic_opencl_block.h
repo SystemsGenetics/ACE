@@ -10,20 +10,12 @@
 class EAbstractAnalytic::OpenCL::Block : public QObject
 {
    Q_OBJECT
-protected:
+public:
    /*!
     *
     * @param block  
     */
-   virtual void start(const EAbstractAnalytic::Block* block) = 0;
-   /*!
-    *
-    * @param step  
-    */
-   virtual void execute(int step) = 0;
-   /*!
-    */
-   virtual std::unique_ptr<EAbstractAnalytic::Block> finish() = 0;
+   virtual std::unique_ptr<EAbstractAnalytic::Block> execute(const EAbstractAnalytic::Block* block) = 0;
 };
 
 

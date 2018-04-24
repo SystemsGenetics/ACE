@@ -57,3 +57,31 @@ void EAbstractAnalytic::Block::fromBytes(const QByteArray& data)
    stream >> _index;
    read(stream);
 }
+
+
+
+
+
+
+/*!
+ *
+ * @param stream  
+ */
+void EAbstractAnalytic::Block::write(QDataStream& stream) const
+{
+   Q_UNUSED(stream)
+}
+
+
+
+
+
+
+/*!
+ *
+ * @param stream  
+ */
+void EAbstractAnalytic::Block::read(QDataStream& stream)
+{
+   Q_UNUSED(stream)
+}
