@@ -2,6 +2,7 @@
 #define OPENCL_DEVICE_H
 #include <CL/cl.h>
 #include <QObject>
+#include "opencl.h"
 //
 
 
@@ -52,6 +53,7 @@ namespace OpenCL
       int clockFrequency() const;
       QString name() const;
       OpenCL::Device::Type type() const;
+      cl_platform_id platform() const;
    private:
       template<class R,class T> R getInfo(cl_device_info type) const;
       QString getStringInfo(cl_device_info type) const;
@@ -96,6 +98,10 @@ namespace OpenCL
        * OpenCL device type of this device. 
        */
       Type _type;
+      /*!
+       * OpenCL platform ID that this device belongs to. 
+       */
+      cl_platform_id _platform;
    };
 }
 

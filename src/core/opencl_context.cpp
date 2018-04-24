@@ -15,11 +15,9 @@ using namespace OpenCL;
 
 
 /*!
- * Constructs a new OpenCL context with the given platform, list of devices, and 
- * optional parent. The list of devices must all be part of the same platform or an 
- * exception is thrown. 
- *
- * @param platform Pointer to platform this context is created from. 
+ * Constructs a new OpenCL context with the given list of devices and optional 
+ * parent. If the given device list is empty or all devices are not part of the 
+ * same platform then an exception is thrown. 
  *
  * @param devices List of pointers to devices this context is created from. All 
  *                devices must be part of the given platform. 
@@ -29,19 +27,28 @@ using namespace OpenCL;
  *
  * Steps of Operation: 
  *
- * 1. Create a new OpenCL context with the given platform and list of devices, 
+ * 1. If the given device list is empty then throw an exception, else go to the 
+ *    next step. 
+ *
+ * 2. Create a new OpenCL context with the given platform and list of devices, 
  *    setting this object's OpenCL context ID to the one returned. If creating the 
  *    context fails then throw an exception. 
  */
-Context::Context(Platform* platform, const QList<Device*>& devices, QObject* parent):
-   QObject(parent),
-   _devices(devices)
+Context::Context(const QList<Device*>& devices, QObject* parent):
+   QObject(parent)
 {
+   if ( devices.isEmpty() )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Invalid Argument"));
+      e.setDetails(tr("Cannot create OpenCL context with empty list of devices."));
+      throw e;
+   }
    cl_int code;
    cl_context_properties properties[] =
    {//
       CL_CONTEXT_PLATFORM,
-      (cl_context_properties)platform->id(),
+      (cl_context_properties)devices.first()->platform(),
       0
    };
    cl_device_id deviceIds[devices.size()];

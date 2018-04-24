@@ -36,7 +36,8 @@ Device::Device(cl_device_id id, QObject* parent):
    _localMemorySize(getInfo<qint64,cl_ulong>(CL_DEVICE_LOCAL_MEM_SIZE)),
    _computeUnitSize(getInfo<int,cl_uint>(CL_DEVICE_MAX_COMPUTE_UNITS)),
    _clockFrequency(getInfo<int,cl_uint>(CL_DEVICE_MAX_CLOCK_FREQUENCY)),
-   _name(getStringInfo(CL_DEVICE_NAME))
+   _name(getStringInfo(CL_DEVICE_NAME)),
+   _platform(getInfo<cl_platform_id,cl_platform_id>(CL_DEVICE_PLATFORM))
 {
    switch (getInfo<cl_device_type,cl_device_type>(CL_DEVICE_TYPE))
    {
@@ -205,6 +206,21 @@ QString Device::name() const
 OpenCL::Device::Type Device::type() const
 {
    return _type;
+}
+
+
+
+
+
+
+/*!
+ * Returns the OpenCL platform ID that this device belongs to. 
+ *
+ * @return OpenCL platform ID of this device. 
+ */
+cl_platform_id Device::platform() const
+{
+   return _platform;
 }
 
 

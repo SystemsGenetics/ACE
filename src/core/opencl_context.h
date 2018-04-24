@@ -19,7 +19,7 @@ namespace OpenCL
    {
       Q_OBJECT
    public:
-      explicit Context(Platform* platform, const QList<Device*>& devices, QObject* parent = nullptr);
+      explicit Context(const QList<Device*>& devices, QObject* parent = nullptr);
       virtual ~Context() override final;
       cl_context id() const;
       const QList<Device*>& devices() const;
