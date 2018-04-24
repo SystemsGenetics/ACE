@@ -13,15 +13,16 @@ class EAbstractAnalytic::OpenCL : public QObject
    Q_OBJECT
 public:
    class Block;
-   explicit OpenCL(EAbstractAnalytic* parent);
+   explicit OpenCL(std::unique_ptr<::OpenCL::Context>&& context, EAbstractAnalytic* parent);
    /*!
     */
    virtual std::unique_ptr<EAbstractAnalytic::OpenCL::Block> makeBlock() const = 0;
+protected:
+   ::OpenCL::Context& context();
+private:
    /*!
-    *
-    * @param context  
     */
-   virtual void initialize(::OpenCL::Context* context) = 0;
+   ::OpenCL::Context* _context;
 };
 
 
