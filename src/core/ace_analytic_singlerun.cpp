@@ -65,6 +65,14 @@ void SingleRun::executeSerial()
             e.setDetails(tr("Analytic returned null work block in serial mode."));
             throw e;
          }
+         if ( work->index() != _next )
+         {
+            E_MAKE_EXCEPTION(e);
+            e.setTitle(tr("Logic Error"));
+            e.setDetails(tr("Analytic returned work block with index %1 when it should be %2.")
+                         .arg(work->index()).arg(_next));
+            throw e;
+         }
          unique_ptr<EAbstractAnalytic::Block> result {_serial->execute(work.get())};
          if ( !result )
          {

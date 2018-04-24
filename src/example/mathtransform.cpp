@@ -40,7 +40,7 @@ int MathTransform::size() const
  */
 std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeBlock(int index) const
 {
-   return unique_ptr<EAbstractAnalytic::Block>(new Block(_in->_numbers.at(index)));
+   return unique_ptr<EAbstractAnalytic::Block>(new Block(index,_in->_numbers.at(index)));
 }
 
 

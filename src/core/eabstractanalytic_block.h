@@ -17,21 +17,27 @@ class EAbstractAnalytic::Block : public QObject
 {
    Q_OBJECT
 public:
-   /*!
-    * This interface converts this block's data into a qt byte array. 
-    *
-    * @return Qt byte array encoded with this block's data. 
-    */
-   virtual QByteArray toBytes() const = 0;
-   /*!
-    * This interface loads data from the given qt byte array into this block, 
-    * overwriting any data this block may possess. 
-    *
-    * @param data Qt byte array whose embedded data is loaded into this block. 
-    */
-   virtual void fromBytes(const QByteArray& data) = 0;
+   Block(int index);
+   int index() const;
+   QByteArray toBytes() const;
    template<class T> const T* cast() const;
+   void fromBytes(const QByteArray& data);
    template<class T> T* cast();
+protected:
+   /*!
+    *
+    * @param stream  
+    */
+   virtual void write(QDataStream& stream) const = 0;
+   /*!
+    *
+    * @param stream  
+    */
+   virtual void read(QDataStream& stream) = 0;
+private:
+   /*!
+    */
+   int _index;
 };
 
 

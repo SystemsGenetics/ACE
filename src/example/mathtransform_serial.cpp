@@ -55,5 +55,5 @@ std::unique_ptr<EAbstractAnalytic::Block> MathTransform::Serial::execute(const E
       value /= _base->_amount;
       break;
    }
-   return unique_ptr<EAbstractAnalytic::Block>(new Block(value));
+   return unique_ptr<EAbstractAnalytic::Block>(new Block(block->index(),value));
 }

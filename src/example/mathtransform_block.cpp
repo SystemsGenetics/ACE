@@ -8,9 +8,12 @@
 
 /*!
  *
+ * @param index  
+ *
  * @param number  
  */
-MathTransform::Block::Block(qint32 number):
+MathTransform::Block::Block(int index, qint32 number):
+   EAbstractAnalytic::Block(index),
    _number(number)
 {}
 
@@ -20,13 +23,12 @@ MathTransform::Block::Block(qint32 number):
 
 
 /*!
+ *
+ * @param stream  
  */
-QByteArray MathTransform::Block::toBytes() const
+void MathTransform::Block::write(QDataStream& stream) const
 {
-   QByteArray ret;
-   QDataStream stream(&ret,QIODevice::WriteOnly);
    stream << _number;
-   return ret;
 }
 
 
@@ -36,10 +38,9 @@ QByteArray MathTransform::Block::toBytes() const
 
 /*!
  *
- * @param data  
+ * @param stream  
  */
-void MathTransform::Block::fromBytes(const QByteArray& data)
+void MathTransform::Block::read(QDataStream& stream)
 {
-   QDataStream stream(data);
    stream >> _number;
 }
