@@ -1,4 +1,5 @@
 #include "opencl_kernel.h"
+#include "opencl_kernel_locker.h"
 #include "opencl_device.h"
 #include "opencl_program.h"
 #include "opencl_commandqueue.h"
@@ -113,8 +114,52 @@ Kernel::Kernel(Program* program, const QString& name, QObject* parent):
 
 
 /*!
+ * Locks this kernel object allowing the setting of this object's kernel parameters 
+ * and returning a locker object that unlocks this kernel on its destruction. 
+ *
+ * @return Locker object that unlocks this kernel upon its destruction. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Lock this kernel's mutex, set this object as locked, and return a locker 
+ *    object pointing to this kernel. 
+ */
+Kernel::Locker Kernel::lock()
+{
+   _lock.lock();
+   _isLocked = true;
+   return Locker(this);
+}
+
+
+
+
+
+
+/*!
+ * Unlocks this kernel object after which parameters cannot be set and allows other 
+ * threads to lock it. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Unlock this kernel's mutex and set this object as unlocked. 
+ */
+void Kernel::unlock()
+{
+   _lock.unlock();
+   _isLocked = false;
+}
+
+
+
+
+
+
+/*!
  * Returns the maximum work group (local) size this kernel can possess for the 
- * given device. 
+ * given device. If this kernel is not locked then an exception is thrown. 
  *
  * @param device  
  *
@@ -123,11 +168,21 @@ Kernel::Kernel(Program* program, const QString& name, QObject* parent):
  *
  * Steps of Operation: 
  *
- * 1. Get the maximum work group size for this kernel if ran on the given device 
+ * 1. If this kernel is not locked then throw an exception, else go to the next 
+ *    step. 
+ *
+ * 2. Get the maximum work group size for this kernel if ran on the given device 
  *    and return it. If getting that information fails then throw an exception. 
  */
 int Kernel::maxWorkGroupSize(Device* device) const
 {
+   if ( !_isLocked )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Logic Error"));
+      e.setDetails(tr("Cannot set OpenCL kernel parameters without locking the object first."));
+      throw e;
+   }
    size_t size;
    cl_int code
    {//
@@ -154,7 +209,7 @@ int Kernel::maxWorkGroupSize(Device* device) const
 
 /*!
  * Returns the recommended, for efficiency, work group multiple for the given 
- * device. 
+ * device. If this kernel is not locked then an exception is thrown. 
  *
  * @param device  
  *
@@ -163,11 +218,21 @@ int Kernel::maxWorkGroupSize(Device* device) const
  *
  * Steps of Operation: 
  *
- * 1. Get the work group multiple for the given device and return it. If getting 
+ * 1. If this kernel is not locked then throw an exception, else go to the next 
+ *    step. 
+ *
+ * 2. Get the work group multiple for the given device and return it. If getting 
  *    that information fails then throw an exception. 
  */
 int Kernel::workGroupMultiple(Device* device) const
 {
+   if ( !_isLocked )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Logic Error"));
+      e.setDetails(tr("Cannot set OpenCL kernel parameters without locking the object first."));
+      throw e;
+   }
    size_t size;
    cl_int code
    {//
@@ -194,15 +259,16 @@ int Kernel::workGroupMultiple(Device* device) const
 
 /*!
  * Sets the number of dimensions for parallel execution of this kernel object. If 
- * the given size is less than one then an exception is thrown. 
+ * this kernel is not locked or the given size is less than one then an exception 
+ * is thrown. 
  *
  * @param size The number of dimensions for this kernel. 
  *
  *
  * Steps of Operation: 
  *
- * 1. If the given size is less than one then throw an exception, else go to the 
- *    next step. 
+ * 1. If this kernel is not locked or the given size is less than one then throw an 
+ *    exception, else go to the next step. 
  *
  * 2. if the new given size is different form this object's current dimension size 
  *    then change it to the new size, clear the previous arrays, and allocate new 
@@ -210,6 +276,13 @@ int Kernel::workGroupMultiple(Device* device) const
  */
 void Kernel::setDimensions(cl_uint size)
 {
+   if ( !_isLocked )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Logic Error"));
+      e.setDetails(tr("Cannot set OpenCL kernel parameters without locking the object first."));
+      throw e;
+   }
    if ( size < 1 )
    {
       E_MAKE_EXCEPTION(e);
@@ -232,9 +305,9 @@ void Kernel::setDimensions(cl_uint size)
 
 /*!
  * Sets the global and local sizes of the given dimension used for parallel 
- * execution of this kernel object. If the dimension is invalid, the local or group 
- * size is less than one, or the global size is not a multiple of the local size 
- * then an exception is thrown. 
+ * execution of this kernel object. If this kernel is not locked, the dimension is 
+ * invalid, the local or group size is less than one, or the global size is not a 
+ * multiple of the local size then an exception is thrown. 
  *
  * @param dimension The dimension whose global and local sizes are set. 
  *
@@ -247,14 +320,21 @@ void Kernel::setDimensions(cl_uint size)
  *
  * Steps of Operation: 
  *
- * 1. If the given dimension is out of rage, the global or local sizes are less 
- *    then one, or the global size is not a multiple of the local size then throw 
- *    an exception, else go to the next step. 
+ * 1. If this kernel is not locked, the given dimension is out of rage, the global 
+ *    or local sizes are less then one, or the global size is not a multiple of the 
+ *    local size then throw an exception, else go to the next step. 
  *
  * 2. Set the global and local sizes of the given dimension to the given values. 
  */
 void Kernel::setSizes(cl_uint dimension, qint64 globalSize, qint64 localSize)
 {
+   if ( !_isLocked )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Logic Error"));
+      e.setDetails(tr("Cannot set OpenCL kernel parameters without locking the object first."));
+      throw e;
+   }
    if ( dimension >= _size )
    {
       E_MAKE_EXCEPTION(e);
