@@ -44,8 +44,16 @@ void SimpleRun::start()
  */
 void SimpleRun::process()
 {
-   _analytic->process(_next,nullptr);
-   next();
+   if ( _next < _analytic->size() )
+   {
+      _analytic->process(_next,nullptr);
+      next();
+      QTimer::singleShot(0,this,&SimpleRun::process);
+   }
+   else
+   {
+      emit finished();
+   }
 }
 
 

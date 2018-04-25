@@ -45,7 +45,8 @@ SOURCES += \
     ace_analytic_openclengine.cpp \
     ace_analytic_openclengine_piston.cpp \
     ace_analytic_simplerun.cpp \
-    ace_analytic_iobase.cpp
+    ace_analytic_iobase.cpp \
+    ace_analytic_serialrun.cpp
 
 HEADERS += \
     opencl.h \
@@ -91,7 +92,8 @@ HEADERS += \
     ace_analytic_openclengine.h \
     ace_analytic_openclengine_piston.h \
     ace_analytic_simplerun.h \
-    ace_analytic_iobase.h
+    ace_analytic_iobase.h \
+    ace_analytic_serialrun.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 

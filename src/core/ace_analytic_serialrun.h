@@ -1,7 +1,8 @@
-#ifndef ACE_ANALYTIC_SIMPLERUN_H
-#define ACE_ANALYTIC_SIMPLERUN_H
+#ifndef ACE_ANALYTIC_SERIALRUN_H
+#define ACE_ANALYTIC_SERIALRUN_H
 #include <QObject>
-#include "global.h"
+#include "ace_analytic.h"
+#include "eabstractanalytic.h"
 //
 
 
@@ -12,11 +13,11 @@ namespace Ace
    {
       /*!
        */
-      class SimpleRun : public QObject
+      class SerialRun : public QObject
       {
          Q_OBJECT
       public:
-         explicit SimpleRun(EAbstractAnalytic* analytic, QObject* parent = nullptr);
+         explicit SerialRun(EAbstractAnalytic* analytic, EAbstractAnalytic::Serial* serial, IOBase* base, QObject* parent = nullptr);
          void start();
       signals:
          /*!
@@ -34,6 +35,12 @@ namespace Ace
          /*!
           */
          EAbstractAnalytic* _analytic;
+         /*!
+          */
+         EAbstractAnalytic::Serial* _serial;
+         /*!
+          */
+         IOBase* _base;
          /*!
           */
          int _next {0};

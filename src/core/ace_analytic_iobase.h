@@ -22,6 +22,12 @@ namespace Ace
          ~IOBase();
          /*!
           */
+         virtual bool hasWork() const = 0;
+         /*!
+          */
+         virtual bool isFinished() const = 0;
+         /*!
+          */
          virtual std::unique_ptr<EAbstractAnalytic::Block> makeWork() = 0;
          /*!
           *
