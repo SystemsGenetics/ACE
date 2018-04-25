@@ -41,7 +41,9 @@ SOURCES += \
     eabstractanalytic_opencl.cpp \
     eabstractanalytic_block.cpp \
     ace_settings.cpp \
-    opencl_kernel_locker.cpp
+    opencl_kernel_locker.cpp \
+    ace_analytic_openclengine.cpp \
+    ace_analytic_openclengine_piston.cpp
 
 HEADERS += \
     opencl.h \
@@ -83,7 +85,9 @@ HEADERS += \
     eabstractanalytic_opencl.h \
     eabstractanalytic_opencl_block.h \
     ace_settings.h \
-    opencl_kernel_locker.h
+    opencl_kernel_locker.h \
+    ace_analytic_openclengine.h \
+    ace_analytic_openclengine_piston.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 

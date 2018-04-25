@@ -5,7 +5,7 @@ namespace Ace
 {
    namespace Analytic
    {
-      class OpenCL;
+      class OpenCLEngine;
       class Manager;
       class SingleRun;
       class MPIMaster;
