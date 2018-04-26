@@ -40,16 +40,13 @@ int ImportIntegerArray::size() const
 /*!
  * Implements the interface that processes the given index with a possible block of 
  * results if this analytic produces work blocks. This analytic implementation has 
- * no work blocks therefore no result blocks because it is too simple. 
+ * no work blocks. 
  *
- * @param index Index of the given block that is read in. 
- *
- * @param results Pointer to the block of results that is read in. 
+ * @param result Pointer to the block of results that is read in. 
  */
-void ImportIntegerArray::process(int index, const EAbstractAnalytic::Block* results)
+void ImportIntegerArray::process(const EAbstractAnalytic::Block* result)
 {
-   Q_UNUSED(results)
-   while ( _in->pos() < ((index + 1)*_incrementSize) )
+   while ( _in->pos() < ((result->index() + 1)*_incrementSize) )
    {
       int value;
       *_stream >> value;

@@ -14,7 +14,11 @@
  * implementation of this class must do all of these things. The work of an 
  * analytic is designed to be split up into individual blocks of work. This class 
  * creates these blocks of work and then reads in the corresponding blocks 
- * containing the results of the work. 
+ * containing the results of the work. To accommodate very simple analytic types an 
+ * implementation of this class can choose to not produce work blocks which causes 
+ * the process interface to be called with empty generic result blocks. A simple 
+ * analytic only supports single process serial mode for operation and does not 
+ * override the serial or OpenCL methods. 
  */
 class EAbstractAnalytic : public QObject
 {
@@ -27,22 +31,20 @@ public:
    /*!
     * This interface returns the total number of blocks this analytic must process as 
     * steps or blocks of work. If this analytic produces no work blocks then this 
-    * means the number of times the read block interface is called. 
+    * means the number of times the process interface is called. 
     *
     * @return Total number of blocks or steps that this analytic must work on. 
     */
    virtual int size() const = 0;
    /*!
-    * This interface processes the given index with a possible block of results if 
-    * this analytic produces work blocks. The order of indexes called will always be 
-    * in order starting at 0. If null is given that means this analytic does not 
-    * produce work blocks. 
+    * This interface processes the given result block. The order of indexes called 
+    * will always be in order starting at 0. If this analytic does not produce work 
+    * blocks then this is a generic and empty result block which only contains the 
+    * index. 
     *
-    * @param index Index of the given block that is read in. 
-    *
-    * @param results Pointer to the block of results that is read in. 
+    * @param result Pointer to result block that is processed. 
     */
-   virtual void process(int index, const EAbstractAnalytic::Block* results) = 0;
+   virtual void process(const EAbstractAnalytic::Block* result) = 0;
    /*!
     * This interface makes a new input object and returns its pointer. The returned 
     * input object must have this abstract analytic set as its parent. 

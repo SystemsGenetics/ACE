@@ -52,14 +52,11 @@ std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeBlock(int index) co
  * Implements the interface that reads in a block of results made from a block of 
  * work with the corresponding index. 
  *
- * @param index  
- *
- * @param results  
+ * @param result  
  */
-void MathTransform::process(int index, const EAbstractAnalytic::Block* results)
+void MathTransform::process(const EAbstractAnalytic::Block* result)
 {
-   Q_UNUSED(index)
-   const Block* valid {results->cast<Block>()};
+   const Block* valid {result->cast<Block>()};
    _out->_numbers << valid->_number;
 }
 

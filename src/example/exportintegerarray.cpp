@@ -40,17 +40,14 @@ int ExportIntegerArray::size() const
 /*!
  * Implements the interface that processes the given index with a possible block of 
  * results if this analytic produces work blocks. This analytic implementation has 
- * no work blocks therefore no result blocks because it is too simple. 
+ * no work blocks. 
  *
- * @param index Index of the given block that is read in. 
- *
- * @param results Pointer to the block of results that is read in. 
+ * @param result Pointer to the block of results that is read in. 
  */
-void ExportIntegerArray::process(int index, const EAbstractAnalytic::Block* results)
+void ExportIntegerArray::process(const EAbstractAnalytic::Block* result)
 {
-   Q_UNUSED(results)
-   *_stream << _in->_numbers.at(index);
-   if ( index != (_in->_numbers.size() - 1) )
+   *_stream << _in->_numbers.at(result->index());
+   if ( result->index() != (_in->_numbers.size() - 1) )
    {
       *_stream << " ";
    }

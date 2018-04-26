@@ -135,7 +135,7 @@ int Single::index() const
  */
 void Single::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 {
-   if ( result && result->index() != _nextResult )
+   if ( result->index() != _nextResult )
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(tr("Logic Error"));
@@ -144,8 +144,9 @@ void Single::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
                    .arg(_nextResult));
       throw e;
    }
-   analytic()->process(_nextResult++,result.get());
+   analytic()->process(result.get());
    result.reset();
+   ++_nextResult;
 }
 
 

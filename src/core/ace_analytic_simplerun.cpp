@@ -5,6 +5,7 @@
 
 
 
+using namespace std;
 using namespace Ace::Analytic;
 //
 

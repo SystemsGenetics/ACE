@@ -15,7 +15,7 @@ public:
    class Input;
    virtual ~ExportIntegerArray() override final;
    virtual int size() const override final;
-   virtual void process(int index, const EAbstractAnalytic::Block* results) override final;
+   virtual void process(const EAbstractAnalytic::Block* result) override final;
    virtual EAbstractAnalytic::Input* makeInput() override final;
    virtual void initialize();
 private:

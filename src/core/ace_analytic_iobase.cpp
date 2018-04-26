@@ -36,9 +36,9 @@ void IOBase::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 {
    if ( !result )
    {
-      writeResult(nullptr);
+      result.reset(new EAbstractAnalytic::Block(index()));
    }
-   else if ( result->index() == index() )
+   if ( result->index() == index() )
    {
       writeResult(std::move(result));
       while ( _hopper.contains(index()) )
