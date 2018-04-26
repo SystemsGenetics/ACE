@@ -1,5 +1,6 @@
 #include "ace_analytic_iobase.h"
 #include "eabstractanalytic_block.h"
+#include "eexception.h"
 
 
 
@@ -30,25 +31,41 @@ IOBase::~IOBase()
 /*!
  *
  * @param result  
- *
- * @param analytic  
- *
- * @param next  
  */
-void IOBase::hopperSaveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result, EAbstractAnalytic* analytic, int* next)
+void IOBase::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 {
-   if ( result->index() == *next )
+   if ( !result )
    {
-      analytic->process((*next)++,result.get());
-      result.reset();
-      while ( _hopper.contains(*next) )
+      writeResult(nullptr);
+   }
+   else if ( result->index() == nextResult() )
+   {
+      writeResult(std::move(result));
+      while ( _hopper.contains(nextResult()) )
       {
-         unique_ptr<EAbstractAnalytic::Block> result {_hopper.take(*next)};
-         analytic->process((*next)++,result.get());
+         writeResult(unique_ptr<EAbstractAnalytic::Block>(_hopper.take(nextResult())));
       }
    }
    else
    {
       _hopper.insert(result->index(),result.release());
    }
+}
+
+
+
+
+
+
+/*!
+ *
+ * @param result  
+ */
+void IOBase::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
+{
+   result.reset();
+   E_MAKE_EXCEPTION(e);
+   e.setTitle(QObject::tr("Logic Error"));
+   e.setDetails(QObject::tr("Cannot call write result interface without implementation."));
+   throw e;
 }

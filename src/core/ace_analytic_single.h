@@ -1,6 +1,8 @@
-#ifndef ACE_ANALYTIC_SINGLERUN_H
-#define ACE_ANALYTIC_SINGLERUN_H
+#ifndef ACE_ANALYTIC_SINGLE_H
+#define ACE_ANALYTIC_SINGLE_H
 #include "ace_analytic_manager.h"
+#include "ace_analytic_iobase.h"
+#include "ace_analytic.h"
 //
 
 
@@ -17,27 +19,29 @@ namespace Ace
        * beginning to end, running them through OpenCL if available or processing them on 
        * the CPU serially if not. 
        */
-      class SingleRun : public Manager
+      class Single : public Manager, public IOBase
       {
          Q_OBJECT
       public:
-         SingleRun(quint16 type);
+         Single(quint16 type);
+         virtual std::unique_ptr<EAbstractAnalytic::Block> makeWork() override final;
+         virtual bool isFinished() const override final;
+         virtual bool hasWork() const override final;
+      protected:
+         virtual int nextResult() const override final;
+         virtual void writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result) override final;
       protected slots:
          virtual void start() override final;
-      private slots:
-         void executeSerial();
       private:
-         void next();
          /*!
-          * Pointer to the abstract analytic serial object for processing work blocks using 
-          * the CPU serially. If OpenCL is used then this is null. 
           */
-         EAbstractAnalytic::Serial* _serial;
+         Run* _runner;
          /*!
-          * Index to the next work block that must be processed. When this index reaches the 
-          * work block size this manager has finished processing all blocks. 
           */
-         int _next {0};
+         int _nextWork {0};
+         /*!
+          */
+         int _nextResult {0};
          /*!
           * The percent of blocks this manager has completed processing. 
           */

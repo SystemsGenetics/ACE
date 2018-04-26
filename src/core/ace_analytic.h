@@ -5,12 +5,16 @@ namespace Ace
 {
    namespace Analytic
    {
-      class OpenCLEngine;
+      class IOBase;
+      class Run;
+      class SimpleRun;
+      class SerialRun;
+      class OpenCLRun;
       class Manager;
-      class SingleRun;
+      class Single;
       class MPIMaster;
       class MPISlave;
-      class ChunkRun;
-      class MergeRun;
+      class Chunk;
+      class Merge;
    }
 }

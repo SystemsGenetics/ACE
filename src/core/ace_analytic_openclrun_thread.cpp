@@ -1,4 +1,4 @@
-#include "ace_analytic_openclengine_piston.h"
+#include "ace_analytic_openclrun_thread.h"
 #include "eabstractanalytic_opencl_block.h"
 #include "eabstractanalytic_block.h"
 #include "eexception.h"
@@ -20,7 +20,7 @@ using namespace Ace::Analytic;
  *
  * @param parent  
  */
-OpenCLEngine::Piston::Piston(std::unique_ptr<EAbstractAnalytic::OpenCL::Block>&& engine, QObject* parent):
+OpenCLRun::Thread::Thread(std::unique_ptr<EAbstractAnalytic::OpenCL::Block>&& engine, QObject* parent):
    QThread(parent),
    _engine(engine.release())
 {
@@ -36,7 +36,7 @@ OpenCLEngine::Piston::Piston(std::unique_ptr<EAbstractAnalytic::OpenCL::Block>&&
  *
  * @param block  
  */
-void OpenCLEngine::Piston::execute(std::unique_ptr<EAbstractAnalytic::Block>&& block)
+void OpenCLRun::Thread::execute(std::unique_ptr<EAbstractAnalytic::Block>&& block)
 {
    if ( _result )
    {
@@ -58,7 +58,7 @@ void OpenCLEngine::Piston::execute(std::unique_ptr<EAbstractAnalytic::Block>&& b
 
 /*!
  */
-std::unique_ptr<EAbstractAnalytic::Block> OpenCLEngine::Piston::result()
+std::unique_ptr<EAbstractAnalytic::Block> OpenCLRun::Thread::result()
 {
    if ( !_result )
    {
@@ -80,7 +80,7 @@ std::unique_ptr<EAbstractAnalytic::Block> OpenCLEngine::Piston::result()
 
 /*!
  */
-void OpenCLEngine::Piston::run()
+void OpenCLRun::Thread::run()
 {
    _result = _engine->execute(_work).release();
    _result->setParent(this);

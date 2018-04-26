@@ -29,13 +29,12 @@ namespace Ace
          /*!
           */
          virtual std::unique_ptr<EAbstractAnalytic::Block> makeWork() = 0;
-         /*!
-          *
-          * @param result  
-          */
-         virtual void saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result) = 0;
+         virtual void saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result);
       protected:
-         void hopperSaveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result, EAbstractAnalytic* analytic, int* next);
+         /*!
+          */
+         virtual int nextResult() const = 0;
+         virtual void writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result);
       private:
          /*!
           */

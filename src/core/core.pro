@@ -29,7 +29,6 @@ SOURCES += \
     eabstractanalytic_input.cpp \
     eabstractanalytic_serial.cpp \
     eabstractanalyticfactory.cpp \
-    ace_analytic_singlerun.cpp \
     opencl_platform.cpp \
     opencl_device.cpp \
     opencl_common.cpp \
@@ -42,11 +41,13 @@ SOURCES += \
     eabstractanalytic_block.cpp \
     ace_settings.cpp \
     opencl_kernel_locker.cpp \
-    ace_analytic_openclengine.cpp \
-    ace_analytic_openclengine_piston.cpp \
     ace_analytic_simplerun.cpp \
     ace_analytic_iobase.cpp \
-    ace_analytic_serialrun.cpp
+    ace_analytic_serialrun.cpp \
+    ace_analytic_openclrun.cpp \
+    ace_analytic_openclrun_thread.cpp \
+    ace_analytic_single.cpp \
+    ace_analytic_run.cpp
 
 HEADERS += \
     opencl.h \
@@ -71,7 +72,6 @@ HEADERS += \
     eabstractanalytic_input.h \
     eabstractanalytic_serial.h \
     eabstractanalyticfactory.h \
-    ace_analytic_singlerun.h \
     ace_analytic.h \
     core.h \
     eabstractanalytic_block.h \
@@ -89,11 +89,13 @@ HEADERS += \
     eabstractanalytic_opencl_block.h \
     ace_settings.h \
     opencl_kernel_locker.h \
-    ace_analytic_openclengine.h \
-    ace_analytic_openclengine_piston.h \
     ace_analytic_simplerun.h \
     ace_analytic_iobase.h \
-    ace_analytic_serialrun.h
+    ace_analytic_serialrun.h \
+    ace_analytic_openclrun.h \
+    ace_analytic_openclrun_thread.h \
+    ace_analytic_single.h \
+    ace_analytic_run.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 

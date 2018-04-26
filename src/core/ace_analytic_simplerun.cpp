@@ -1,6 +1,7 @@
 #include "ace_analytic_simplerun.h"
 #include <QTimer>
-#include "eabstractanalytic.h"
+#include "ace_analytic_iobase.h"
+#include "eabstractanalytic_block.h"
 
 
 
@@ -14,13 +15,13 @@ using namespace Ace::Analytic;
 
 /*!
  *
- * @param analytic  
+ * @param base  
  *
  * @param parent  
  */
-SimpleRun::SimpleRun(EAbstractAnalytic* analytic, QObject* parent):
-   QObject(parent),
-   _analytic(analytic)
+SimpleRun::SimpleRun(IOBase* base, QObject* parent):
+   Run(parent),
+   _base(base)
 {}
 
 
@@ -44,31 +45,13 @@ void SimpleRun::start()
  */
 void SimpleRun::process()
 {
-   if ( _next < _analytic->size() )
+   if ( _base->hasWork() )
    {
-      _analytic->process(_next,nullptr);
-      next();
+      _base->saveResult(nullptr);
       QTimer::singleShot(0,this,&SimpleRun::process);
    }
    else
    {
       emit finished();
-   }
-}
-
-
-
-
-
-
-/*!
- */
-void SimpleRun::next()
-{
-   int percentComplete {100*_next++/_analytic->size()};
-   if ( _percentComplete != percentComplete )
-   {
-      _percentComplete = percentComplete;
-      emit progressed(_percentComplete);
    }
 }

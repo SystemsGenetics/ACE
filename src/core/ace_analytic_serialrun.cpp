@@ -18,17 +18,14 @@ using namespace Ace::Analytic;
 
 /*!
  *
- * @param analytic  
- *
  * @param serial  
  *
  * @param base  
  *
  * @param parent  
  */
-SerialRun::SerialRun(EAbstractAnalytic* analytic, EAbstractAnalytic::Serial* serial, IOBase* base, QObject* parent):
-   QObject(parent),
-   _analytic(analytic),
+SerialRun::SerialRun(EAbstractAnalytic::Serial* serial, IOBase* base, QObject* parent):
+   Run(parent),
    _serial(serial),
    _base(base)
 {}
@@ -59,28 +56,10 @@ void SerialRun::process()
       unique_ptr<EAbstractAnalytic::Block> work {_base->makeWork()};
       unique_ptr<EAbstractAnalytic::Block> result {_serial->execute(work.get())};
       _base->saveResult(std::move(result));
-      next();
       QTimer::singleShot(0,this,&SerialRun::process);
    }
    else if ( _base->isFinished() )
    {
       emit finished();
-   }
-}
-
-
-
-
-
-
-/*!
- */
-void SerialRun::next()
-{
-   int percentComplete {100*_next++/_analytic->size()};
-   if ( _percentComplete != percentComplete )
-   {
-      _percentComplete = percentComplete;
-      emit progressed(_percentComplete);
    }
 }

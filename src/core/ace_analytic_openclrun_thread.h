@@ -1,7 +1,7 @@
-#ifndef ACE_ANALYTIC_OPENCLENGINE_PISTON_H
-#define ACE_ANALYTIC_OPENCLENGINE_PISTON_H
+#ifndef ACE_ANALYTIC_OPENCLRUN_THREAD_H
+#define ACE_ANALYTIC_OPENCLRUN_THREAD_H
 #include <QThread>
-#include "ace_analytic_openclengine.h"
+#include "ace_analytic_openclrun.h"
 #include "eabstractanalytic_opencl.h"
 //
 
@@ -13,11 +13,11 @@ namespace Ace
    {
       /*!
        */
-      class OpenCLEngine::Piston : public QThread
+      class OpenCLRun::Thread : public QThread
       {
          Q_OBJECT
       public:
-         explicit Piston(std::unique_ptr<EAbstractAnalytic::OpenCL::Block>&& engine, QObject* parent = nullptr);
+         explicit Thread(std::unique_ptr<EAbstractAnalytic::OpenCL::Block>&& engine, QObject* parent = nullptr);
          void execute(std::unique_ptr<EAbstractAnalytic::Block>&& block);
          std::unique_ptr<EAbstractAnalytic::Block> result();
       protected:

@@ -1,5 +1,5 @@
 #include "ace_analytic_manager.h"
-#include "ace_analytic_singlerun.h"
+#include "ace_analytic_single.h"
 #include "ace_dataobject.h"
 #include "eabstractanalyticfactory.h"
 #include "eabstractdata.h"
@@ -41,7 +41,7 @@ std::unique_ptr<Ace::Analytic::Manager> Manager::makeManager(quint16 type, int i
 {
    Q_UNUSED(index)
    Q_UNUSED(size)
-   return unique_ptr<Manager>(new SingleRun(type));
+   return unique_ptr<Manager>(new Single(type));
    // TODO; for now just implemented serial
 }
 

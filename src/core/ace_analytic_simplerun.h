@@ -1,6 +1,7 @@
 #ifndef ACE_ANALYTIC_SIMPLERUN_H
 #define ACE_ANALYTIC_SIMPLERUN_H
-#include <QObject>
+#include "ace_analytic_run.h"
+#include "ace_analytic.h"
 #include "global.h"
 //
 
@@ -12,34 +13,18 @@ namespace Ace
    {
       /*!
        */
-      class SimpleRun : public QObject
+      class SimpleRun : public Run
       {
          Q_OBJECT
       public:
-         explicit SimpleRun(EAbstractAnalytic* analytic, QObject* parent = nullptr);
-         void start();
-      signals:
-         /*!
-          *
-          * @param percentComplete  
-          */
-         void progressed(int percentComplete);
-         /*!
-          */
-         void finished();
+         explicit SimpleRun(IOBase* base, QObject* parent = nullptr);
+         virtual void start() override final;
       private slots:
          void process();
       private:
-         void next();
          /*!
           */
-         EAbstractAnalytic* _analytic;
-         /*!
-          */
-         int _next {0};
-         /*!
-          */
-         int _percentComplete {0};
+         IOBase* _base;
       };
    }
 }
