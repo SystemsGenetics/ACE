@@ -38,12 +38,12 @@ void IOBase::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
    {
       writeResult(nullptr);
    }
-   else if ( result->index() == nextResult() )
+   else if ( result->index() == index() )
    {
       writeResult(std::move(result));
-      while ( _hopper.contains(nextResult()) )
+      while ( _hopper.contains(index()) )
       {
-         writeResult(unique_ptr<EAbstractAnalytic::Block>(_hopper.take(nextResult())));
+         writeResult(unique_ptr<EAbstractAnalytic::Block>(_hopper.take(index())));
       }
    }
    else

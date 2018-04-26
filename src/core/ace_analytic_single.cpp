@@ -58,6 +58,30 @@ Single::Single(quint16 type):
 
 /*!
  */
+bool Single::hasWork() const
+{
+   return _nextWork < analytic()->size();
+}
+
+
+
+
+
+
+/*!
+ */
+bool Single::isFinished() const
+{
+   return _nextResult >= analytic()->size();
+}
+
+
+
+
+
+
+/*!
+ */
 std::unique_ptr<EAbstractAnalytic::Block> Single::makeWork()
 {
    if ( _nextWork >= analytic()->size() )
@@ -95,31 +119,7 @@ std::unique_ptr<EAbstractAnalytic::Block> Single::makeWork()
 
 /*!
  */
-bool Single::isFinished() const
-{
-   return _nextResult >= analytic()->size();
-}
-
-
-
-
-
-
-/*!
- */
-bool Single::hasWork() const
-{
-   return _nextWork < analytic()->size();
-}
-
-
-
-
-
-
-/*!
- */
-int Single::nextResult() const
+int Single::index() const
 {
    return _nextResult;
 }
@@ -135,7 +135,7 @@ int Single::nextResult() const
  */
 void Single::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 {
-   if ( result->index() != _nextResult )
+   if ( result && result->index() != _nextResult )
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(tr("Logic Error"));

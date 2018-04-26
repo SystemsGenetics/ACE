@@ -24,11 +24,11 @@ namespace Ace
          Q_OBJECT
       public:
          Single(quint16 type);
-         virtual std::unique_ptr<EAbstractAnalytic::Block> makeWork() override final;
-         virtual bool isFinished() const override final;
          virtual bool hasWork() const override final;
+         virtual bool isFinished() const override final;
+         virtual std::unique_ptr<EAbstractAnalytic::Block> makeWork() override final;
       protected:
-         virtual int nextResult() const override final;
+         virtual int index() const override final;
          virtual void writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result) override final;
       protected slots:
          virtual void start() override final;

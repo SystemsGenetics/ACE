@@ -12,8 +12,6 @@ class MathTransform::Block : public EAbstractAnalytic::Block
    Q_OBJECT
 public:
    explicit Block(int index, qint32 number);
-   void* operator new(size_t);
-   void operator delete(void*);
    /*!
     */
    qint32 _number;

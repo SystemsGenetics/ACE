@@ -249,9 +249,8 @@ cl_platform_id Device::platform() const
  */
 template<class R,class T> R Device::getInfo(cl_device_info type) const
 {
-   size_t size {1};
    T data;
-   cl_int code {clGetDeviceInfo(_id,type,size,&data,nullptr)};
+   cl_int code {clGetDeviceInfo(_id,type,sizeof(T),&data,nullptr)};
    if ( code != CL_SUCCESS )
    {
       E_MAKE_EXCEPTION(e);

@@ -45,13 +45,13 @@ void SimpleRun::start()
  */
 void SimpleRun::process()
 {
-   if ( _base->hasWork() )
+   if ( _base->isFinished() )
    {
-      _base->saveResult(nullptr);
-      QTimer::singleShot(0,this,&SimpleRun::process);
+      emit finished();
    }
    else
    {
-      emit finished();
+      _base->saveResult(nullptr);
+      QTimer::singleShot(0,this,&SimpleRun::process);
    }
 }

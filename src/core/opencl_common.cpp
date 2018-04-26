@@ -113,7 +113,7 @@ void OpenCL::fillException(EException* exception, cl_int code)
       index = 28;
    }
    exception->setTitle(QObject::tr("OpenCL Error"));
-   exception->setTitle(QObject::tr("OpenCL system failed with the following error code: %1(%2)")
-                       .arg(codeStrings.at(index))
-                       .arg(code));
+   exception->setDetails(QObject::tr("OpenCL system failed with the following error code: %1(%2)")
+                         .arg(codeStrings.at(index))
+                         .arg(code));
 }

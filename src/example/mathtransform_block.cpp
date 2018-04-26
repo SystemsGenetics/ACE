@@ -22,25 +22,6 @@ MathTransform::Block::Block(int index, qint32 number):
 
 
 
-void* MathTransform::Block::operator new(size_t)
-{
-   return nullptr;
-}
-
-
-
-
-
-
-void MathTransform::Block::operator delete(void*)
-{
-}
-
-
-
-
-
-
 /*!
  *
  * @param stream  

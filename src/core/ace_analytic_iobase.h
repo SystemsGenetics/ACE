@@ -33,7 +33,7 @@ namespace Ace
       protected:
          /*!
           */
-         virtual int nextResult() const = 0;
+         virtual int index() const = 0;
          virtual void writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result);
       private:
          /*!
