@@ -227,7 +227,6 @@ void Manager::finish()
       data->data()->finish();
       data->setUserMeta(EMetadata(EMetadata::Object));
    }
-   emit progressed(100);
    emit finished();
    deleteLater();
 }

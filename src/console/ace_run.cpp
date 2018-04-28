@@ -45,7 +45,8 @@ Run::Run(const Command& command, const Options& options):
  */
 void Run::progressed(int percentComplete)
 {
-   _stream << QString::number(percentComplete) << "%\n";
+   _stream << "\r" << QString::number(percentComplete) << "%";
+   _stream.flush();
 }
 
 
@@ -57,6 +58,7 @@ void Run::progressed(int percentComplete)
  */
 void Run::finished()
 {
+   _stream << "\n";
    deleteLater();
 }
 

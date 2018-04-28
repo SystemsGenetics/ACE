@@ -147,6 +147,12 @@ void Single::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
    analytic()->process(result.get());
    result.reset();
    ++_nextResult;
+   int percentComplete {_nextResult*100/analytic()->size()};
+   if ( percentComplete != _percentComplete )
+   {
+      _percentComplete = percentComplete;
+      emit progressed(_percentComplete);
+   }
 }
 
 
