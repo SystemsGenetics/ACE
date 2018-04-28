@@ -48,7 +48,8 @@ void IOBase::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
    }
    else
    {
-      _hopper.insert(result->index(),result.release());
+      EAbstractAnalytic::Block* block {result.release()};
+      _hopper.insert(block->index(),block);
    }
 }
 

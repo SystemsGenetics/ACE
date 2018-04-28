@@ -39,7 +39,6 @@ SOURCES += \
     opencl_kernel.cpp \
     eabstractanalytic_opencl.cpp \
     eabstractanalytic_block.cpp \
-    ace_settings.cpp \
     opencl_kernel_locker.cpp \
     ace_analytic_simplerun.cpp \
     ace_analytic_iobase.cpp \
@@ -47,7 +46,8 @@ SOURCES += \
     ace_analytic_openclrun.cpp \
     ace_analytic_openclrun_thread.cpp \
     ace_analytic_single.cpp \
-    ace_analytic_run.cpp
+    ace_analytic_run.cpp \
+    ace_settings.cpp
 
 HEADERS += \
     opencl.h \
@@ -86,7 +86,6 @@ HEADERS += \
     opencl_buffer.h \
     opencl_kernel.h \
     eabstractanalytic_opencl.h \
-    ace_settings.h \
     opencl_kernel_locker.h \
     ace_analytic_simplerun.h \
     ace_analytic_iobase.h \
@@ -96,7 +95,8 @@ HEADERS += \
     ace_analytic_single.h \
     ace_analytic_run.h \
     eabstractanalytic_opencl_worker.h \
-    openclxx.h
+    openclxx.h \
+    ace_settings.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 

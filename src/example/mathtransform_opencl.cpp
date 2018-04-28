@@ -15,8 +15,9 @@ using namespace std;
  *
  * @param parent  
  */
-MathTransform::OpenCL::OpenCL(EAbstractAnalytic* parent):
-   EAbstractAnalytic::OpenCL(parent)
+MathTransform::OpenCL::OpenCL(MathTransform* parent):
+   EAbstractAnalytic::OpenCL(parent),
+   _base(parent)
 {}
 
 

@@ -83,5 +83,6 @@ std::unique_ptr<EAbstractAnalytic::Block> OpenCLRun::Thread::result()
 void OpenCLRun::Thread::run()
 {
    _result = _worker->execute(_work).release();
+   _result->moveToThread(thread());
    _result->setParent(this);
 }

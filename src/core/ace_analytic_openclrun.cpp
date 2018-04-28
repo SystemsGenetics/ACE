@@ -2,6 +2,7 @@
 #include <QSignalMapper>
 #include "ace_analytic_openclrun_thread.h"
 #include "ace_analytic_iobase.h"
+#include "ace_settings.h"
 #include "eabstractanalytic_opencl_worker.h"
 #include "eabstractanalytic_block.h"
 #include "opencl_device.h"
@@ -13,12 +14,6 @@
 using namespace std;
 using namespace Ace::Analytic;
 //
-
-
-
-/*!
- */
-const int OpenCLRun::_threadSize {8};
 
 
 
@@ -40,11 +35,12 @@ OpenCLRun::OpenCLRun(EAbstractAnalytic::OpenCL* opencl, OpenCL::Device* device, 
    _context(new OpenCL::Context({device},this)),
    _opencl(opencl),
    _base(base),
-   _threads(_threadSize)
+   _threads(Settings::instance().threadSize())
 {
+   opencl->initialize(_context);
    QSignalMapper* mapper {new QSignalMapper(this)};
    connect(mapper,QOverload<int>::of(&QSignalMapper::mapped),this,&OpenCLRun::blockFinished);
-   for (int i = 0; i < _threadSize ;++i)
+   for (int i = 0; i < _threads.size() ;++i)
    {
       Thread* thread {new Thread(_opencl->makeWorker())};
       _threads[i] = thread;

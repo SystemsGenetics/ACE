@@ -30,9 +30,6 @@ namespace Ace
          class Thread;
          /*!
           */
-         static const int _threadSize;
-         /*!
-          */
          OpenCL::Context* _context;
          /*!
           */

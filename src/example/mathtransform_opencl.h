@@ -14,7 +14,7 @@ class MathTransform::OpenCL : public EAbstractAnalytic::OpenCL
 public:
    class Kernel;
    class Worker;
-   explicit OpenCL(EAbstractAnalytic* parent);
+   explicit OpenCL(MathTransform* parent);
    virtual std::unique_ptr<EAbstractAnalytic::OpenCL::Worker> makeWorker() const override final;
    virtual void initialize(::OpenCL::Context* context) override final;
 private:

@@ -34,7 +34,7 @@ Single::Single(quint16 type):
       opencl = analytic()->makeOpenCL();
       if ( opencl )
       {
-         _runner = new OpenCLRun(opencl,settings.device(),this,this);
+         _runner = new OpenCLRun(opencl,settings.openCLDevicePointer(),this,this);
       }
    }
    if ( !opencl )

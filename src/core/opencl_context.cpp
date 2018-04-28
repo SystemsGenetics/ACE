@@ -35,7 +35,8 @@ using namespace OpenCL;
  *    context fails then throw an exception. 
  */
 Context::Context(const QList<Device*>& devices, QObject* parent):
-   QObject(parent)
+   QObject(parent),
+   _devices(devices)
 {
    if ( devices.isEmpty() )
    {
