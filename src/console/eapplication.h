@@ -1,5 +1,6 @@
 #ifndef EAPPLICATION_H
 #define EAPPLICATION_H
+#include <memory>
 #include <QCoreApplication>
 #include <core/global.h>
 #include "ace_options.h"
@@ -14,7 +15,7 @@ class EApplication : public QCoreApplication
 {
    Q_OBJECT
 public:
-   EApplication(int& argc, char** argv);
+   EApplication(const QString& organization, const QString& application, std::unique_ptr<EAbstractDataFactory>&& data, std::unique_ptr<EAbstractAnalyticFactory>&& analytic, int& argc, char** argv);
    int exec();
 private:
    void dump();

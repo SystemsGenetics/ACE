@@ -29,7 +29,7 @@ Single::Single(quint16 type):
 {
    Settings& settings {Settings::instance()};
    EAbstractAnalytic::OpenCL* opencl {nullptr};
-   if ( settings.device() )
+   if ( settings.openCLDevicePointer() )
    {
       opencl = analytic()->makeOpenCL();
       if ( opencl )

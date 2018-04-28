@@ -1,8 +1,12 @@
 #include "eapplication.h"
 #include <QTextStream>
-#include <core/eexception.h>
+#include <core/ace_settings.h>
 #include <core/ace_dataobject.h>
+#include <core/eabstractdatafactory.h>
+#include <core/eabstractanalyticfactory.h>
+#include <core/eexception.h>
 #include "ace_run.h"
+#include "ace_settingsrun.h"
 //
 
 
@@ -12,15 +16,27 @@
 
 /*!
  *
+ * @param organization  
+ *
+ * @param application  
+ *
+ * @param data  
+ *
+ * @param analytic  
+ *
  * @param argc  
  *
  * @param argv  
  */
-EApplication::EApplication(int& argc, char** argv):
+EApplication::EApplication(const QString& organization, const QString& application, std::unique_ptr<EAbstractDataFactory>&& data, std::unique_ptr<EAbstractAnalyticFactory>&& analytic, int& argc, char** argv):
    QCoreApplication(argc,argv),
    _options(argc,argv),
    _command(argc,argv)
-{}
+{
+   Ace::Settings::initialize(organization,application);
+   EAbstractDataFactory::setInstance(std::move(data));
+   EAbstractAnalyticFactory::setInstance(std::move(analytic));
+}
 
 
 
@@ -33,7 +49,7 @@ int EApplication::exec()
 {
    try
    {
-      enum {Unknown = -1,Run,Dump,Inject};
+      enum {Unknown = -1,Settings,Run,Dump,Inject};
       if ( _command.size() < 1 )
       {
          E_MAKE_EXCEPTION(e);
@@ -41,10 +57,16 @@ int EApplication::exec()
          e.setDetails(tr("No arguments given, exiting..."));
          throw e;
       }
-      QStringList commands {"run","dump","inject"};
+      QStringList commands {"settings","run","dump","inject"};
       QString command {_command.first()};
       switch (_command.pop(commands))
       {
+      case Settings:
+         {
+            Ace::SettingsRun settings(_command);
+            settings.execute();
+            break;
+         }
       case Run:
          {
             Ace::Run* run {new Ace::Run(_command,_options)};

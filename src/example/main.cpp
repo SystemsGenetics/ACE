@@ -14,8 +14,11 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-   EAbstractAnalyticFactory::setInstance(unique_ptr<AnalyticFactory>(new AnalyticFactory));
-   EAbstractDataFactory::setInstance(unique_ptr<DataFactory>(new DataFactory));
-   EApplication application(argc,argv);
+   EApplication application(""
+                            ,"aceex"
+                            ,unique_ptr<DataFactory>(new DataFactory)
+                            ,unique_ptr<AnalyticFactory>(new AnalyticFactory)
+                            ,argc
+                            ,argv);
    return application.exec();
 }
