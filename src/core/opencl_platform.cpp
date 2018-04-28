@@ -230,29 +230,25 @@ OpenCL::Device* Platform::device(int index) const
  *
  * 2. Query the list of OpenCL platform IDs and create a new OpenCL platform object 
  *    for each ID, adding its pointer to the global list of platforms. If any 
- *    OpenCL error occurs then throw an exception. 
+ *    OpenCL error occurs then set the list of platforms to empty and return. 
  */
 void Platform::populate()
 {
    if ( !_platforms )
    {
+      _platforms = new QList<Platform*>();
       cl_uint size;
       cl_int code {clGetPlatformIDs(0,nullptr,&size)};
       if ( code != CL_SUCCESS )
       {
-         E_MAKE_EXCEPTION(e);
-         fillException(&e,code);
-         throw e;
+         return;
       }
       cl_platform_id platforms[size];
       code = clGetPlatformIDs(size,platforms,nullptr);
       if ( code != CL_SUCCESS )
       {
-         E_MAKE_EXCEPTION(e);
-         fillException(&e,code);
-         throw e;
+         return;
       }
-      _platforms = new QList<Platform*>();
       for (cl_uint i = 0; i < size ;++i)
       {
          *_platforms << new Platform(platforms[i]);

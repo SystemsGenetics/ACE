@@ -273,6 +273,7 @@ QMPI::QMPI()
 {
    if ( MPI_Init(nullptr,nullptr) )
    {
+      _failed = true;
       _size = 1;
       _rank = 0;
       _localRank = 0;
@@ -321,9 +322,12 @@ QMPI::QMPI()
  *
  * Steps of Operation: 
  *
- * 1. Call MPI finalize. 
+ * 1. If this object did not fail its initialization then call MPI finalize. 
  */
 QMPI::~QMPI()
 {
-   MPI_Finalize();
+   if ( !_failed )
+   {
+      MPI_Finalize();
+   }
 }

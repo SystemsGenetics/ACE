@@ -41,6 +41,21 @@ namespace Ace
    protected:
       virtual void timerEvent(QTimerEvent* event) override final;
    private:
+      /*!
+       * This is the period, in milliseconds, between each time this class checks for new 
+       * data received from other MPI processes. 
+       */
+      constexpr static int _timerPeriod {50};
+      /*!
+       * Keeps track if an instance of this class has already been created then destroyed 
+       * in shutdown. This is so a second instance is never made after the MPI system was 
+       * shutdown with finalize. 
+       */
+      static bool _hasShutdown;
+      /*!
+       * This is a pointer to the single instance of this class. 
+       */
+      static QMPI* _instance;
       explicit QMPI();
       ~QMPI();
       /*!
@@ -59,20 +74,10 @@ namespace Ace
        */
       int _localRank;
       /*!
-       * This is the period, in milliseconds, between each time this class checks for new 
-       * data received from other MPI processes. 
+       * True if initialization of MPI failed and was set to a default null state or 
+       * false otherwise. 
        */
-      constexpr static int _timerPeriod {50};
-      /*!
-       * Keeps track if an instance of this class has already been created then destroyed 
-       * in shutdown. This is so a second instance is never made after the MPI system was 
-       * shutdown with finalize. 
-       */
-      static bool _hasShutdown;
-      /*!
-       * This is a pointer to the single instance of this class. 
-       */
-      static QMPI* _instance;
+      bool _failed {false};
    };
 }
 
