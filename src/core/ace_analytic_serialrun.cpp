@@ -36,29 +36,14 @@ SerialRun::SerialRun(EAbstractAnalytic::Serial* serial, IOBase* base, QObject* p
 
 
 /*!
+ *
+ * @param block  
  */
-void SerialRun::start()
+void SerialRun::addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block)
 {
-   QTimer::singleShot(0,this,&SerialRun::process);
-}
-
-
-
-
-
-
-/*!
- */
-void SerialRun::process()
-{
-   if ( _base->hasWork() )
-   {
-      unique_ptr<EAbstractAnalytic::Block> work {_base->makeWork()};
-      unique_ptr<EAbstractAnalytic::Block> result {_serial->execute(work.get())};
-      _base->saveResult(std::move(result));
-      QTimer::singleShot(0,this,&SerialRun::process);
-   }
-   else if ( _base->isFinished() )
+   unique_ptr<EAbstractAnalytic::Block> result {_serial->execute(block.get())};
+   _base->saveResult(std::move(result));
+   if ( _base->isFinished() )
    {
       emit finished();
    }

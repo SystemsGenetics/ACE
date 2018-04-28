@@ -1,5 +1,4 @@
 #include "ace_analytic_simplerun.h"
-#include <QTimer>
 #include "ace_analytic_iobase.h"
 #include "eabstractanalytic_block.h"
 
@@ -31,28 +30,15 @@ SimpleRun::SimpleRun(IOBase* base, QObject* parent):
 
 
 /*!
+ *
+ * @param block  
  */
-void SimpleRun::start()
+void SimpleRun::addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block)
 {
-   QTimer::singleShot(0,this,&SimpleRun::process);
-}
-
-
-
-
-
-
-/*!
- */
-void SimpleRun::process()
-{
+   Q_UNUSED(block)
+   _base->saveResult(nullptr);
    if ( _base->isFinished() )
    {
       emit finished();
-   }
-   else
-   {
-      _base->saveResult(nullptr);
-      QTimer::singleShot(0,this,&SimpleRun::process);
    }
 }

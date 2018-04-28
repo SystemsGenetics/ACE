@@ -18,9 +18,7 @@ namespace Ace
          Q_OBJECT
       public:
          explicit SerialRun(EAbstractAnalytic::Serial* serial, IOBase* base, QObject* parent = nullptr);
-         void start();
-      private slots:
-         void process();
+         virtual void addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block) override final;
       private:
          /*!
           */

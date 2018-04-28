@@ -44,6 +44,7 @@ OpenCLRun::OpenCLRun(EAbstractAnalytic::OpenCL* opencl, OpenCL::Device* device, 
    {
       Thread* thread {new Thread(_opencl->makeWorker())};
       _threads[i] = thread;
+      _idle << thread;
       mapper->setMapping(thread,i);
       connect(thread
               ,&Thread::finished
@@ -75,16 +76,16 @@ OpenCLRun::~OpenCLRun()
 
 
 /*!
+ *
+ * @param block  
  */
-void OpenCLRun::start()
+void OpenCLRun::addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block)
 {
-   for (auto thread: _threads)
+   while ( _idle.isEmpty() )
    {
-      if ( _base->hasWork() )
-      {
-         thread->execute(_base->makeWork());
-      }
+      QCoreApplication::processEvents();
    }
+   _idle.dequeue()->execute(std::move(block));
 }
 
 
@@ -100,12 +101,9 @@ void OpenCLRun::blockFinished(int index)
 {
    Thread* thread {_threads.at(index)};
    _base->saveResult(thread->result());
+   _idle.enqueue(thread);
    if ( _base->isFinished() )
    {
       emit finished();
-   }
-   else if ( _base->hasWork() )
-   {
-      thread->execute(_base->makeWork());
    }
 }

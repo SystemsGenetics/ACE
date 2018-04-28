@@ -5,8 +5,8 @@ namespace Ace
 {
    namespace Analytic
    {
-      class SimpleRun;
       class Run;
+      class SimpleRun;
       class SerialRun;
       class OpenCLRun;
       class Manager;

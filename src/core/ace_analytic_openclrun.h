@@ -23,7 +23,7 @@ namespace Ace
       public:
          explicit OpenCLRun(EAbstractAnalytic::OpenCL* opencl, OpenCL::Device* device, IOBase* base, QObject* parent = nullptr);
          virtual ~OpenCLRun() override final;
-         void start();
+         virtual void addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block) override final;
       private slots:
          void blockFinished(int index);
       private:
@@ -40,6 +40,9 @@ namespace Ace
          /*!
           */
          QVector<Thread*> _threads;
+         /*!
+          */
+         QQueue<Thread*> _idle;
       };
    }
 }

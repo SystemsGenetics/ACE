@@ -44,6 +44,39 @@ EApplication::EApplication(const QString& organization, const QString& applicati
 
 
 /*!
+ *
+ * @param receiver  
+ *
+ * @param event  
+ */
+bool EApplication::notify(QObject* receiver, QEvent* event)
+{
+   try
+   {
+      return QCoreApplication::notify(receiver,event);
+   }
+   catch (EException e)
+   {
+      showException(e);
+   }
+   catch (std::exception e)
+   {
+      qDebug() << tr("STD exception %1 caught!\n").arg(e.what());
+   }
+   catch (...)
+   {
+      qDebug() << tr("Unknown exception caught!\n");
+   }
+   exit(-1);
+   return false;
+}
+
+
+
+
+
+
+/*!
  */
 int EApplication::exec()
 {

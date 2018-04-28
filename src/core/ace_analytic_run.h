@@ -1,6 +1,8 @@
 #ifndef ACE_ANALYTIC_RUN_H
 #define ACE_ANALYTIC_RUN_H
+#include <memory>
 #include <QObject>
+#include "eabstractanalytic.h"
 //
 
 
@@ -17,8 +19,10 @@ namespace Ace
       public:
          explicit Run(QObject* parent = nullptr);
          /*!
+          *
+          * @param block  
           */
-         virtual void start() = 0;
+         virtual void addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block) = 0;
       signals:
          /*!
           */

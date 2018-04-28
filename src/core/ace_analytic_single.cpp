@@ -46,6 +46,7 @@ Single::Single(quint16 type):
       else
       {
          _runner = new SimpleRun(this,this);
+         _simple = true;
       }
    }
    connect(_runner,&Run::finished,this,&Manager::finish);
@@ -58,58 +59,9 @@ Single::Single(quint16 type):
 
 /*!
  */
-bool Single::hasWork() const
-{
-   return _nextWork < analytic()->size();
-}
-
-
-
-
-
-
-/*!
- */
 bool Single::isFinished() const
 {
    return _nextResult >= analytic()->size();
-}
-
-
-
-
-
-
-/*!
- */
-std::unique_ptr<EAbstractAnalytic::Block> Single::makeWork()
-{
-   if ( _nextWork >= analytic()->size() )
-   {
-      E_MAKE_EXCEPTION(e);
-      e.setTitle(tr("Logic Error"));
-      e.setDetails(tr("Cannot make work block when all indexes have been made."));
-      throw e;
-   }
-   unique_ptr<EAbstractAnalytic::Block> ret {analytic()->makeBlock(_nextWork)};
-   if ( !ret )
-   {
-      E_MAKE_EXCEPTION(e);
-      e.setTitle(tr("Logic Error"));
-      e.setDetails(tr("Analytic returned null work block in serial mode."));
-      throw e;
-   }
-   if ( ret->index() != _nextWork )
-   {
-      E_MAKE_EXCEPTION(e);
-      e.setTitle(tr("Logic Error"));
-      e.setDetails(tr("Analytic returned work block with index %1 when it should be %2.")
-                   .arg(ret->index())
-                   .arg(_nextWork));
-      throw e;
-   }
-   ++_nextWork;
-   return ret;
 }
 
 
@@ -168,5 +120,45 @@ void Single::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
  */
 void Single::start()
 {
-   _runner->start();
+   QTimer::singleShot(0,this,&Single::process);
+}
+
+
+
+
+
+
+/*!
+ */
+void Single::process()
+{
+   while ( _nextWork < analytic()->size() )
+   {
+      if ( _simple )
+      {
+         _runner->addWork(unique_ptr<EAbstractAnalytic::Block>(new EAbstractAnalytic::Block(_nextWork)));
+      }
+      else
+      {
+         unique_ptr<EAbstractAnalytic::Block> work {analytic()->makeBlock(_nextWork)};
+         if ( !work )
+         {
+            E_MAKE_EXCEPTION(e);
+            e.setTitle(tr("Logic Error"));
+            e.setDetails(tr("Analytic returned null work block in serial mode."));
+            throw e;
+         }
+         if ( work->index() != _nextWork )
+         {
+            E_MAKE_EXCEPTION(e);
+            e.setTitle(tr("Logic Error"));
+            e.setDetails(tr("Analytic returned work block with index %1 when it should be %2.")
+                         .arg(work->index())
+                         .arg(_nextWork));
+            throw e;
+         }
+         _runner->addWork(std::move(work));
+      }
+      ++_nextWork;
+   }
 }

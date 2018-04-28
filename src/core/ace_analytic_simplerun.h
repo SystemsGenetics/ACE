@@ -18,9 +18,7 @@ namespace Ace
          Q_OBJECT
       public:
          explicit SimpleRun(IOBase* base, QObject* parent = nullptr);
-         virtual void start() override final;
-      private slots:
-         void process();
+         virtual void addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block) override final;
       private:
          /*!
           */
