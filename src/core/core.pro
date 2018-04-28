@@ -86,7 +86,6 @@ HEADERS += \
     opencl_buffer.h \
     opencl_kernel.h \
     eabstractanalytic_opencl.h \
-    eabstractanalytic_opencl_block.h \
     ace_settings.h \
     opencl_kernel_locker.h \
     ace_analytic_simplerun.h \
@@ -95,7 +94,9 @@ HEADERS += \
     ace_analytic_openclrun.h \
     ace_analytic_openclrun_thread.h \
     ace_analytic_single.h \
-    ace_analytic_run.h
+    ace_analytic_run.h \
+    eabstractanalytic_opencl_worker.h \
+    openclxx.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 

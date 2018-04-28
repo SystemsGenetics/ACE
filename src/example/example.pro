@@ -24,7 +24,10 @@ SOURCES += \
     mathtransform_serial.cpp \
     mathtransform_block.cpp \
     importintegerarray_input.cpp \
-    exportintegerarray_input.cpp
+    exportintegerarray_input.cpp \
+    mathtransform_opencl.cpp \
+    mathtransform_opencl_kernel.cpp \
+    mathtransform_opencl_worker.cpp
 
 HEADERS += \
    analyticfactory.h \
@@ -38,13 +41,20 @@ HEADERS += \
     global.h \
     mathtransform_block.h \
     importintegerarray_input.h \
-    exportintegerarray_input.h
+    exportintegerarray_input.h \
+    mathtransform_opencl.h \
+    mathtransform_opencl_kernel.h \
+    mathtransform_opencl_worker.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
 QMAKE_CXX = mpic++
+QMAKE_CXXFLAGS += -Wno-ignored-attributes
 
 isEmpty(PREFIX) { PREFIX = /usr/local }
 program.path = $${PREFIX}/bin
 program.files = $${PWD}/../../build/example/$${TARGET}
 INSTALLS += program
+
+RESOURCES += \
+    resources.qrc

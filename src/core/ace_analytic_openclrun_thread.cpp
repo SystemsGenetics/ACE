@@ -1,5 +1,5 @@
 #include "ace_analytic_openclrun_thread.h"
-#include "eabstractanalytic_opencl_block.h"
+#include "eabstractanalytic_opencl_worker.h"
 #include "eabstractanalytic_block.h"
 #include "eexception.h"
 
@@ -16,15 +16,15 @@ using namespace Ace::Analytic;
 
 /*!
  *
- * @param engine  
+ * @param worker  
  *
  * @param parent  
  */
-OpenCLRun::Thread::Thread(std::unique_ptr<EAbstractAnalytic::OpenCL::Block>&& engine, QObject* parent):
+OpenCLRun::Thread::Thread(std::unique_ptr<EAbstractAnalytic::OpenCL::Worker>&& worker, QObject* parent):
    QThread(parent),
-   _engine(engine.release())
+   _worker(worker.release())
 {
-   _engine->setParent(this);
+   _worker->setParent(this);
 }
 
 
@@ -82,6 +82,6 @@ std::unique_ptr<EAbstractAnalytic::Block> OpenCLRun::Thread::result()
  */
 void OpenCLRun::Thread::run()
 {
-   _result = _engine->execute(_work).release();
+   _result = _worker->execute(_work).release();
    _result->setParent(this);
 }

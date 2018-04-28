@@ -2,6 +2,7 @@
 #include "mathtransform_block.h"
 #include "mathtransform_input.h"
 #include "mathtransform_serial.h"
+#include "mathtransform_opencl.h"
 #include "integerarray.h"
 
 
@@ -88,6 +89,18 @@ EAbstractAnalytic::Input* MathTransform::makeInput()
 EAbstractAnalytic::Serial* MathTransform::makeSerial()
 {
    return new Serial(this);
+}
+
+
+
+
+
+
+/*!
+ */
+EAbstractAnalytic::OpenCL* MathTransform::makeOpenCL()
+{
+   return new OpenCL(this);
 }
 
 

@@ -12,11 +12,11 @@ class EAbstractAnalytic::OpenCL : public QObject
 {
    Q_OBJECT
 public:
-   class Block;
+   class Worker;
    explicit OpenCL(EAbstractAnalytic* parent);
    /*!
     */
-   virtual std::unique_ptr<EAbstractAnalytic::OpenCL::Block> makeBlock() const = 0;
+   virtual std::unique_ptr<EAbstractAnalytic::OpenCL::Worker> makeWorker() const = 0;
    /*!
     *
     * @param context  

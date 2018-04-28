@@ -1,5 +1,5 @@
-#ifndef EABSTRACTANALYTIC_OPENCL_BLOCK_H
-#define EABSTRACTANALYTIC_OPENCL_BLOCK_H
+#ifndef EABSTRACTANALYTIC_OPENCL_WORKER_H
+#define EABSTRACTANALYTIC_OPENCL_WORKER_H
 #include "eabstractanalytic_opencl.h"
 //
 
@@ -7,7 +7,7 @@
 
 /*!
  */
-class EAbstractAnalytic::OpenCL::Block : public QObject
+class EAbstractAnalytic::OpenCL::Worker : public QObject
 {
    Q_OBJECT
 public:

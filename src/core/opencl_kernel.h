@@ -38,7 +38,7 @@ namespace OpenCL
       void setDimensions(cl_uint size);
       void setSizes(cl_uint dimension, qint64 globalSize, qint64 localSize);
       template<class T> void setArgument(cl_uint index, T value);
-      template<class T> void setBuffer(cl_uint index, const Buffer<T>& buffer);
+      template<class T> void setBuffer(cl_uint index, Buffer<T>* buffer);
       template<class T> void setLocalMemory(cl_uint index, qint64 size);
    private:
       void allocate();
@@ -146,7 +146,7 @@ namespace OpenCL
     * 2. Set the kernel argument with the given index to the given OpenCL buffer. If 
     *    setting the argument fails then throw an exception. 
     */
-   template<class T> void Kernel::setBuffer(cl_uint index, const Buffer<T>& buffer)
+   template<class T> void Kernel::setBuffer(cl_uint index, Buffer<T>* buffer)
    {
       if ( !_isLocked )
       {

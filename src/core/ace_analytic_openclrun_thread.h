@@ -17,7 +17,7 @@ namespace Ace
       {
          Q_OBJECT
       public:
-         explicit Thread(std::unique_ptr<EAbstractAnalytic::OpenCL::Block>&& engine, QObject* parent = nullptr);
+         explicit Thread(std::unique_ptr<EAbstractAnalytic::OpenCL::Worker>&& worker, QObject* parent = nullptr);
          void execute(std::unique_ptr<EAbstractAnalytic::Block>&& block);
          std::unique_ptr<EAbstractAnalytic::Block> result();
       protected:
@@ -25,7 +25,7 @@ namespace Ace
       private:
          /*!
           */
-         EAbstractAnalytic::OpenCL::Block* _engine;
+         EAbstractAnalytic::OpenCL::Worker* _worker;
          /*!
           */
          EAbstractAnalytic::Block* _work {nullptr};

@@ -15,11 +15,13 @@ public:
    class Block;
    class Input;
    class Serial;
+   class OpenCL;
    virtual int size() const override final;
    virtual std::unique_ptr<EAbstractAnalytic::Block> makeBlock(int index) const override final;
    virtual void process(const EAbstractAnalytic::Block* result) override final;
    virtual EAbstractAnalytic::Input* makeInput() override final;
    virtual EAbstractAnalytic::Serial* makeSerial() override final;
+   virtual EAbstractAnalytic::OpenCL* makeOpenCL() override final;
    virtual void initialize() override final;
 private:
    /*!

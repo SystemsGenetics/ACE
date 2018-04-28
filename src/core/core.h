@@ -3,6 +3,7 @@
 #include "eabstractanalytic_block.h"
 #include "eabstractanalytic_input.h"
 #include "eabstractanalytic_serial.h"
+#include "eabstractanalytic_opencl_worker.h"
 #include "eabstractanalyticfactory.h"
 #include "eabstractdata.h"
 #include "eabstractdatafactory.h"
