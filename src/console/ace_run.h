@@ -19,6 +19,7 @@ namespace Ace
       Run(const Command& command, const Options& options);
    private slots:
       void progressed(int percentComplete);
+      void done();
       void finished();
    private:
       quint16 getType();

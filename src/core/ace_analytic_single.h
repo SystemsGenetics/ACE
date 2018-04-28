@@ -44,10 +44,6 @@ namespace Ace
          /*!
           */
          int _nextResult {0};
-         /*!
-          * The percent of blocks this manager has completed processing. 
-          */
-         int _percentComplete {0};
       };
    }
 }

@@ -2,6 +2,7 @@
 #include "ace_analytic_single.h"
 #include "ace_dataobject.h"
 #include "eabstractanalyticfactory.h"
+#include "eabstractanalytic_block.h"
 #include "eabstractdata.h"
 #include "emetaobject.h"
 #include "eexception.h"
@@ -227,6 +228,7 @@ void Manager::finish()
       data->data()->finish();
       data->setUserMeta(EMetadata(EMetadata::Object));
    }
+   emit done();
    emit finished();
    deleteLater();
 }
@@ -307,6 +309,69 @@ Ace::DataObject* Manager::addOutputData(const QString& path, quint16 type, const
       return nullptr;
    }
    return new Ace::DataObject(path,type,system,this);
+}
+
+
+
+
+
+
+/*!
+ *
+ * @param index  
+ */
+std::unique_ptr<EAbstractAnalytic::Block> Manager::makeWork(int index)
+{
+   unique_ptr<EAbstractAnalytic::Block> ret {analytic()->makeBlock(index)};
+   if ( !ret )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Logic Error"));
+      e.setDetails(tr("Analytic returned null work block in serial mode."));
+      throw e;
+   }
+   if ( ret->index() != index )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Logic Error"));
+      e.setDetails(tr("Analytic returned work block with index %1 when it should be %2.")
+                   .arg(ret->index())
+                   .arg(index));
+      throw e;
+   }
+   return ret;
+}
+
+
+
+
+
+
+/*!
+ *
+ * @param result  
+ *
+ * @param expectedIndex  
+ */
+void Manager::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result, int expectedIndex)
+{
+   if ( result->index() != expectedIndex )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Logic Error"));
+      e.setDetails(tr("Given result block with index %1 when it should be %2.")
+                   .arg(result->index())
+                   .arg(expectedIndex));
+      throw e;
+   }
+   analytic()->process(result.get());
+   result.reset();
+   int percentComplete {expectedIndex*100/analytic()->size()};
+   if ( percentComplete != _percentComplete )
+   {
+      _percentComplete = percentComplete;
+      emit progressed(_percentComplete);
+   }
 }
 
 

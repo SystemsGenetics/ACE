@@ -87,24 +87,7 @@ int Single::index() const
  */
 void Single::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 {
-   if ( result->index() != _nextResult )
-   {
-      E_MAKE_EXCEPTION(e);
-      e.setTitle(tr("Logic Error"));
-      e.setDetails(tr("Given result block with index %1 when it should be %2.")
-                   .arg(result->index())
-                   .arg(_nextResult));
-      throw e;
-   }
-   analytic()->process(result.get());
-   result.reset();
-   ++_nextResult;
-   int percentComplete {_nextResult*100/analytic()->size()};
-   if ( percentComplete != _percentComplete )
-   {
-      _percentComplete = percentComplete;
-      emit progressed(_percentComplete);
-   }
+   Manager::writeResult(std::move(result),_nextResult++);
 }
 
 
@@ -113,10 +96,6 @@ void Single::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 
 
 /*!
- * Implements the interface that is called once to begin the analytic run for this 
- * manager. This implementation initializes OpenCL if available or serial 
- * processing if not. Either way it begins execution of the analytic once its 
- * processing objects are setup. 
  */
 void Single::start()
 {
@@ -140,24 +119,7 @@ void Single::process()
       }
       else
       {
-         unique_ptr<EAbstractAnalytic::Block> work {analytic()->makeBlock(_nextWork)};
-         if ( !work )
-         {
-            E_MAKE_EXCEPTION(e);
-            e.setTitle(tr("Logic Error"));
-            e.setDetails(tr("Analytic returned null work block in serial mode."));
-            throw e;
-         }
-         if ( work->index() != _nextWork )
-         {
-            E_MAKE_EXCEPTION(e);
-            e.setTitle(tr("Logic Error"));
-            e.setDetails(tr("Analytic returned work block with index %1 when it should be %2.")
-                         .arg(work->index())
-                         .arg(_nextWork));
-            throw e;
-         }
-         _runner->addWork(std::move(work));
+         _runner->addWork(makeWork(_nextWork));
       }
       ++_nextWork;
    }

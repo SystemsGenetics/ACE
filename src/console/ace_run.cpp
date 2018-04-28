@@ -56,9 +56,20 @@ void Run::progressed(int percentComplete)
 
 /*!
  */
+void Run::done()
+{
+   _stream << "\r100%\n";
+}
+
+
+
+
+
+
+/*!
+ */
 void Run::finished()
 {
-   _stream << "\n";
    deleteLater();
 }
 
@@ -102,6 +113,7 @@ void Run::setupManager(quint16 type)
 {
    _manager = Analytic::Manager::makeManager(type,0,1).release();
    connect(_manager,&Analytic::Manager::progressed,this,&Run::progressed);
+   connect(_manager,&Analytic::Manager::done,this,&Run::done);
    connect(_manager,&Analytic::Manager::finished,this,&Run::finished);
    addArguments();
    _manager->initialize();

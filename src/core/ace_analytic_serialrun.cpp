@@ -42,6 +42,7 @@ SerialRun::SerialRun(EAbstractAnalytic::Serial* serial, IOBase* base, QObject* p
 void SerialRun::addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block)
 {
    unique_ptr<EAbstractAnalytic::Block> result {_serial->execute(block.get())};
+   block.reset();
    _base->saveResult(std::move(result));
    if ( _base->isFinished() )
    {

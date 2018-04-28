@@ -48,7 +48,12 @@ namespace Ace
           */
          void progressed(int percentComplete);
          /*!
-          * Signals the analytic and this manager has finished execution. 
+          * Signals the analytic is done. 
+          */
+         void done();
+         /*!
+          * Signals the analytic and this manager has completely finished execution and is 
+          * ready to be destroyed. 
           */
          void finished();
       public slots:
@@ -63,6 +68,8 @@ namespace Ace
       protected:
          virtual QFile* addOutputFile(const QString& path);
          virtual Ace::DataObject* addOutputData(const QString& path, quint16 type, const EMetadata& system);
+         std::unique_ptr<EAbstractAnalytic::Block> makeWork(int index);
+         void writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result, int expectedIndex);
          EAbstractAnalytic* analytic();
          const EAbstractAnalytic* analytic() const;
       private:
@@ -93,6 +100,10 @@ namespace Ace
          /*!
           */
          QList<Ace::DataObject*> _outputData;
+         /*!
+          * The percent of blocks this manager has completed processing. 
+          */
+         int _percentComplete {0};
       };
    }
 }
