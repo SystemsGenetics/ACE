@@ -41,6 +41,10 @@ int MathTransform::size() const
  */
 std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeBlock(int index) const
 {
+   if ( index == -1 )
+   {
+      return unique_ptr<EAbstractAnalytic::Block>(new Block(index,0));
+   }
    return unique_ptr<EAbstractAnalytic::Block>(new Block(index,_in->_numbers.at(index)));
 }
 
@@ -114,11 +118,11 @@ EAbstractAnalytic::OpenCL* MathTransform::makeOpenCL()
  */
 void MathTransform::initialize()
 {
-   if ( !_in || !_out )
+   if ( !_in )
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(tr("Invalid Argument"));
-      e.setDetails(tr("The required input and/or output data objects were not set."));
+      e.setDetails(tr("The required input data object was not set."));
       throw e;
    }
 }

@@ -20,8 +20,11 @@ using namespace Ace::Analytic;
  */
 MPIMaster::MPIMaster(quint16 type):
    Manager(type),
-   _mpi(QMPI::instance())
-{}
+   _mpi(QMPI::instance()),
+   _doneSlaves(_mpi.size() - 1,false)
+{
+   connect(&_mpi,&QMPI::dataReceived,this,&MPIMaster::dataReceived);
+}
 
 
 
@@ -71,6 +74,11 @@ int MPIMaster::index() const
 void MPIMaster::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 {
    Manager::writeResult(std::move(result),_nextResult++);
+   if ( isFinished() )
+   {
+      emit done();
+      emit finished();
+   }
 }
 
 
@@ -125,10 +133,14 @@ void MPIMaster::dataReceived(const QByteArray& data, int fromRank)
    {
       work = makeWork(_nextWork++);
    }
-   else
+   else if ( !_doneSlaves.at(fromRank - 1) )
    {
       work.reset(new EAbstractAnalytic::Block(-1));
+      _doneSlaves[fromRank - 1] = true;
    }
-   _mpi.sendData(fromRank,work->toBytes());
-   work.reset();
+   if ( work )
+   {
+      _mpi.sendData(fromRank,work->toBytes());
+      work.reset();
+   }
 }

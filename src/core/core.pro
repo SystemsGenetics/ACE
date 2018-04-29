@@ -48,7 +48,8 @@ SOURCES += \
     ace_analytic_single.cpp \
     ace_analytic_run.cpp \
     ace_settings.cpp \
-    ace_analytic_mpimaster.cpp
+    ace_analytic_mpimaster.cpp \
+    ace_analytic_mpislave.cpp
 
 HEADERS += \
     opencl.h \
@@ -98,7 +99,8 @@ HEADERS += \
     eabstractanalytic_opencl_worker.h \
     openclxx.h \
     ace_settings.h \
-    ace_analytic_mpimaster.h
+    ace_analytic_mpimaster.h \
+    ace_analytic_mpislave.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 

@@ -25,9 +25,7 @@ namespace Ace
          virtual bool isFinished() const = 0;
          virtual void saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result);
       protected:
-         /*!
-          */
-         virtual int index() const = 0;
+         virtual int index() const;
          virtual void writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result);
       private:
          /*!

@@ -60,11 +60,7 @@ namespace Ace
          void terminationRequested();
          void finish();
       protected slots:
-         /*!
-          * This interface is called once to begin the analytic run for this manager after 
-          * all argument input has been set. 
-          */
-         virtual void start() = 0;
+         virtual void start();
       protected:
          virtual QFile* addOutputFile(const QString& path);
          virtual Ace::DataObject* addOutputData(const QString& path, quint16 type, const EMetadata& system);

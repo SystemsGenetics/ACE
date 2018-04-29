@@ -32,6 +32,9 @@ namespace Ace
          QMPI& _mpi;
          /*!
           */
+         QVector<bool> _doneSlaves;
+         /*!
+          */
          int _nextWork {0};
          /*!
           */

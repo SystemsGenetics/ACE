@@ -1,6 +1,9 @@
 #include "ace_analytic_manager.h"
 #include "ace_analytic_single.h"
+#include "ace_analytic_mpimaster.h"
+#include "ace_analytic_mpislave.h"
 #include "ace_dataobject.h"
+#include "ace_qmpi.h"
 #include "eabstractanalyticfactory.h"
 #include "eabstractanalytic_block.h"
 #include "eabstractdata.h"
@@ -42,7 +45,22 @@ std::unique_ptr<Ace::Analytic::Manager> Manager::makeManager(quint16 type, int i
 {
    Q_UNUSED(index)
    Q_UNUSED(size)
-   return unique_ptr<Manager>(new Single(type));
+   QMPI& mpi {QMPI::instance()};
+   if ( mpi.size() > 1 )
+   {
+      if ( mpi.isMaster() )
+      {
+         return unique_ptr<Manager>(new MPIMaster(type));
+      }
+      else
+      {
+         return unique_ptr<Manager>(new MPISlave(type));
+      }
+   }
+   else
+   {
+      return unique_ptr<Manager>(new Single(type));
+   }
    // TODO; for now just implemented serial
 }
 
@@ -228,10 +246,20 @@ void Manager::finish()
       data->data()->finish();
       data->setUserMeta(EMetadata(EMetadata::Object));
    }
-   emit done();
    emit finished();
-   deleteLater();
 }
+
+
+
+
+
+
+/*!
+ * This interface is called once to begin the analytic run for this manager after 
+ * all argument input has been set. The default implementation does nothing. 
+ */
+void Manager::start()
+{}
 
 
 

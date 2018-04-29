@@ -59,6 +59,18 @@ void IOBase::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 
 
 /*!
+ */
+int IOBase::index() const
+{
+   return -1;
+}
+
+
+
+
+
+
+/*!
  *
  * @param result  
  */

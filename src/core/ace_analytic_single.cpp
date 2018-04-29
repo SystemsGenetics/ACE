@@ -88,6 +88,10 @@ int Single::index() const
 void Single::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 {
    Manager::writeResult(std::move(result),_nextResult++);
+   if ( isFinished() )
+   {
+      emit done();
+   }
 }
 
 
