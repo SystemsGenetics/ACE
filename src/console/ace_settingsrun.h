@@ -21,6 +21,7 @@ namespace Ace
       void set();
       void setACU();
       void setThreads();
+      void setBuffer();
       void setChunkDir();
       void setChunkPre();
       void setChunkExt();

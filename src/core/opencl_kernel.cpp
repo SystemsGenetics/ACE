@@ -5,6 +5,7 @@
 #include "opencl_commandqueue.h"
 #include "opencl_event.h"
 #include "opencl_common.h"
+#include "ace_settings.h"
 #include "eexception.h"
 
 

@@ -26,16 +26,39 @@ namespace Ace
       int device() const;
       OpenCL::Device* openCLDevicePointer() const;
       int threadSize() const;
+      int bufferSize() const;
       QString chunkDir() const;
       QString chunkPrefix() const;
       QString chunkExtension() const;
       void setPlatform(int index);
       void setDevice(int index);
       void setThreadSize(int size);
+      void setBufferSize(int size);
       void setChunkDir(const QString& path);
       void setChunkPrefix(const QString& prefix);
       void setChunkExtension(const QString& extension);
    private:
+      /*!
+       */
+      constexpr static int _platformDefault {0};
+      /*!
+       */
+      constexpr static int _deviceDefault {0};
+      /*!
+       */
+      constexpr static int _threadSizeDefault {8};
+      /*!
+       */
+      constexpr static int _bufferSizeDefault {4};
+      /*!
+       */
+      static const char* _chunkDirDefault;
+      /*!
+       */
+      static const char* _chunkPrefixDefault;
+      /*!
+       */
+      static const char* _chunkExtensionDefault;
       /*!
        */
       static QString _organization;
@@ -51,6 +74,9 @@ namespace Ace
       /*!
        */
       static const char* _threadSizeKey;
+      /*!
+       */
+      static const char* _bufferSizeKey;
       /*!
        */
       static const char* _chunkDirKey;
@@ -74,6 +100,9 @@ namespace Ace
       /*!
        */
       int _threadSize;
+      /*!
+       */
+      int _bufferSize;
       /*!
        */
       QString _chunkDir {"."};

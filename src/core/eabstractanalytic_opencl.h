@@ -22,6 +22,8 @@ public:
     * @param context  
     */
    virtual void initialize(::OpenCL::Context* context) = 0;
+protected:
+   int threadSize() const;
 };
 
 

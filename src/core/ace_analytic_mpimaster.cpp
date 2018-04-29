@@ -119,7 +119,7 @@ void MPIMaster::dataReceived(const QByteArray& data, int fromRank)
 void MPIMaster::processCode(int code, int fromRank)
 {
    Settings& settings {Settings::instance()};
-   int amount {4};
+   int amount {settings.bufferSize()};
    switch (code)
    {
    case ReadyAsACU:

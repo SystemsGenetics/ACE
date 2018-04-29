@@ -39,6 +39,7 @@ void SettingsRun::execute()
       Ace::Settings& settings {Ace::Settings::instance()};
       stream << "             ACU Device: " << deviceString() << "\n";
       stream << "        ACU Thread Size: " << QString::number(settings.threadSize()) << "\n";
+      stream << "        MPI Buffer Size: " << QString::number(settings.bufferSize()) << "\n";
       stream << "Chunk Working Directory: " << settings.chunkDir() << "\n";
       stream << "           Chunk Prefix: " << settings.chunkPrefix() << "\n";
       stream << "        Chunk Extension: " << settings.chunkExtension() << "\n";
@@ -108,7 +109,7 @@ QString SettingsRun::deviceString()
  */
 void SettingsRun::set()
 {
-   enum {Unknown=-1,ACU,Threads,ChunkDir,ChunkPre,ChunkExt};
+   enum {Unknown=-1,ACU,Threads,Buffer,ChunkDir,ChunkPre,ChunkExt};
    if ( _command.size() < 1 )
    {
       E_MAKE_EXCEPTION(e);
@@ -116,7 +117,7 @@ void SettingsRun::set()
       e.setDetails(QObject::tr("Settings set requires sub argument, exiting..."));
       throw e;
    }
-   QStringList list {"acu","threads","chunkdir","chunkpre","chunkext"};
+   QStringList list {"acu","threads","buffer","chunkdir","chunkpre","chunkext"};
    QString command {_command.first()};
    switch (_command.pop(list))
    {
@@ -125,6 +126,9 @@ void SettingsRun::set()
       break;
    case Threads:
       setThreads();
+      break;
+   case Buffer:
+      setBuffer();
       break;
    case ChunkDir:
       setChunkDir();
@@ -235,6 +239,42 @@ void SettingsRun::setThreads()
       invalid();
    }
    Ace::Settings::instance().setThreadSize(size);
+}
+
+
+
+
+
+
+/*!
+ */
+void SettingsRun::setBuffer()
+{
+   auto invalid = [this]()
+   {//
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(QObject::tr("Invalid argument"));
+      e.setDetails(QObject::tr("Given buffer size '%1' invalid, exiting...").arg(_command.first()));
+      throw e;
+   };
+   if ( _command.size() < 1 )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(QObject::tr("Invalid argument"));
+      e.setDetails(QObject::tr("Settings set buffer requires sub argument, exiting..."));
+      throw e;
+   }
+   bool ok;
+   int size {_command.first().toInt(&ok)};
+   if ( !ok )
+   {
+      invalid();
+   }
+   if ( size < 1 )
+   {
+      invalid();
+   }
+   Ace::Settings::instance().setBufferSize(size);
 }
 
 

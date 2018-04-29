@@ -1,6 +1,7 @@
 #include "ace_settings.h"
 #include <QSettings>
 #include "opencl_platform.h"
+#include "eexception.h"
 
 
 
@@ -9,6 +10,15 @@ using namespace Ace;
 
 
 
+/*!
+ */
+const char* Settings::_chunkDirDefault {"."};
+/*!
+ */
+const char* Settings::_chunkPrefixDefault {"chunk"};
+/*!
+ */
+const char* Settings::_chunkExtensionDefault {"abd"};
 /*!
  */
 QString Settings::_organization;
@@ -24,6 +34,9 @@ const char* Settings::_deviceKey {"opencl.device"};
 /*!
  */
 const char* Settings::_threadSizeKey {"opencl.thread.size"};
+/*!
+ */
+const char* Settings::_bufferSizeKey {"mpi.buffersize"};
 /*!
  */
 const char* Settings::_chunkDirKey {"chunk.directory"};
@@ -161,6 +174,18 @@ int Settings::threadSize() const
 
 /*!
  */
+int Settings::bufferSize() const
+{
+   return _bufferSize;
+}
+
+
+
+
+
+
+/*!
+ */
 QString Settings::chunkDir() const
 {
    return _chunkDir;
@@ -237,10 +262,42 @@ void Settings::setDevice(int index)
  */
 void Settings::setThreadSize(int size)
 {
+   if ( size < 1 )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(QObject::tr("Invalid Argument"));
+      e.setDetails(QObject::tr("Cannot set thread size to %1 (1 is smallest allowed).").arg(size));
+      throw e;
+   }
    if ( size != _threadSize )
    {
       _threadSize = size;
       setValue(_threadSizeKey,_threadSize);
+   }
+}
+
+
+
+
+
+
+/*!
+ *
+ * @param size  
+ */
+void Settings::setBufferSize(int size)
+{
+   if ( size < 1 )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(QObject::tr("Invalid Argument"));
+      e.setDetails(QObject::tr("Cannot set buffer size to %1 (1 is smallest allowed).").arg(size));
+      throw e;
+   }
+   if ( size != _bufferSize )
+   {
+      _bufferSize = size;
+      setValue(_bufferSizeKey,_bufferSize);
    }
 }
 
@@ -308,12 +365,13 @@ void Settings::setChunkExtension(const QString& extension)
 Settings::Settings()
 {
    QSettings settings(_organization,_application);
-   _platform = settings.value(_platformKey).toInt();
-   _device = settings.value(_deviceKey).toInt();
-   _threadSize = settings.value(_threadSizeKey,8).toInt();
-   _chunkDir = settings.value(_chunkDirKey,".").toString();
-   _chunkPrefix = settings.value(_chunkPrefixKey,"chunk").toString();
-   _chunkExtension = settings.value(_chunkExtensionKey,"abd").toString();
+   _platform = settings.value(_platformKey,_platformDefault).toInt();
+   _device = settings.value(_deviceKey,_deviceDefault).toInt();
+   _threadSize = settings.value(_threadSizeKey,_threadSizeDefault).toInt();
+   _bufferSize = settings.value(_bufferSizeKey,_bufferSizeDefault).toInt();
+   _chunkDir = settings.value(_chunkDirKey,_chunkDirDefault).toString();
+   _chunkPrefix = settings.value(_chunkPrefixKey,_chunkPrefixDefault).toString();
+   _chunkExtension = settings.value(_chunkExtensionKey,_chunkExtensionDefault).toString();
 }
 
 
