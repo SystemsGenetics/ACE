@@ -17,6 +17,7 @@ class EAbstractAnalytic::Block : public QObject
 {
    Q_OBJECT
 public:
+   static int extractIndex(const QByteArray& data);
    Block(int index);
    int index() const;
    QByteArray toBytes() const;
@@ -29,7 +30,7 @@ protected:
 private:
    /*!
     */
-   int _index;
+   int _index {-1};
 };
 
 

@@ -8,14 +8,12 @@
 
 
 /*!
- * This interface makes a new block of work from the given block index or -1 to 
- * make a blank block of work. The order of valid indexes called will always be in 
- * order starting at 0. If null is returned that means working on blocks is skipped 
- * and the read block interface is called immediately. The default implementation 
- * returns a null pointer. 
+ * This interface makes a new block of work from the given block index. The order 
+ * of indexes called will always be in order starting at 0. If null is returned 
+ * that means working on blocks is skipped and the read block interface is called 
+ * immediately. The default implementation returns a null pointer. 
  *
- * @param index Index used to make the block of work or -1 to make a blank block of 
- *              work. 
+ * @param index Index used to make the block of work. 
  *
  * @return Pointer to block of work or null if this analytic has no work blocks. 
  */

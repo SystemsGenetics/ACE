@@ -3,6 +3,7 @@
 #include <QThread>
 #include "ace_analytic_openclrun.h"
 #include "eabstractanalytic_opencl.h"
+#include "global.h"
 //
 
 
@@ -32,6 +33,9 @@ namespace Ace
          /*!
           */
          EAbstractAnalytic::Block* _result {nullptr};
+         /*!
+          */
+         EException* _exception {nullptr};
       };
    }
 }

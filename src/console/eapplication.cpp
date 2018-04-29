@@ -67,7 +67,7 @@ bool EApplication::notify(QObject* receiver, QEvent* event)
    {
       qDebug() << tr("Unknown exception caught!\n");
    }
-   exit(-1);
+   std::exit(-1);
    return false;
 }
 

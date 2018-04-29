@@ -60,6 +60,13 @@ void OpenCLRun::Thread::execute(std::unique_ptr<EAbstractAnalytic::Block>&& bloc
  */
 std::unique_ptr<EAbstractAnalytic::Block> OpenCLRun::Thread::result()
 {
+   if ( _exception )
+   {
+      EException e(*_exception);
+      delete _exception;
+      _exception = nullptr;
+      throw e;
+   }
    if ( !_result )
    {
       E_MAKE_EXCEPTION(e);
@@ -82,7 +89,14 @@ std::unique_ptr<EAbstractAnalytic::Block> OpenCLRun::Thread::result()
  */
 void OpenCLRun::Thread::run()
 {
-   _result = _worker->execute(_work).release();
-   _result->moveToThread(thread());
-   _result->setParent(this);
+   try
+   {
+      _result = _worker->execute(_work).release();
+      _result->moveToThread(thread());
+      _result->setParent(this);
+   }
+   catch (EException e)
+   {
+      _exception = new EException(e);
+   }
 }

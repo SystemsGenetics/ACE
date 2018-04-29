@@ -1,5 +1,30 @@
 #include "eabstractanalytic_block.h"
+#include "eexception.h"
 //
+
+
+
+
+
+
+/*!
+ *
+ * @param data  
+ */
+int EAbstractAnalytic::Block::extractIndex(const QByteArray& data)
+{
+   int ret;
+   QDataStream stream(data);
+   stream >> ret;
+   if ( stream.status() != QDataStream::Ok )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Read Error"));
+      e.setDetails(tr("Failed reading index from byte array."));
+      throw e;
+   }
+   return ret;
+}
 
 
 
@@ -39,6 +64,13 @@ QByteArray EAbstractAnalytic::Block::toBytes() const
    QDataStream stream(&ret,QIODevice::WriteOnly);
    stream << _index;
    write(stream);
+   if ( stream.status() != QDataStream::Ok )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Read Error"));
+      e.setDetails(tr("Failed reading index from byte array."));
+      throw e;
+   }
    return ret;
 }
 
@@ -56,6 +88,13 @@ void EAbstractAnalytic::Block::fromBytes(const QByteArray& data)
    QDataStream stream(data);
    stream >> _index;
    read(stream);
+   if ( stream.status() != QDataStream::Ok )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Read Error"));
+      e.setDetails(tr("Failed reading index from byte array."));
+      throw e;
+   }
 }
 
 

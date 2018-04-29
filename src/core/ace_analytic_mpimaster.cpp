@@ -77,7 +77,7 @@ void MPIMaster::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
    if ( isFinished() )
    {
       emit done();
-      emit finished();
+      finish();
    }
 }
 
@@ -125,7 +125,10 @@ void MPIMaster::start()
  */
 void MPIMaster::dataReceived(const QByteArray& data, int fromRank)
 {
-   unique_ptr<EAbstractAnalytic::Block> result {analytic()->makeBlock()};
+   unique_ptr<EAbstractAnalytic::Block> result
+   {//
+      analytic()->makeBlock(EAbstractAnalytic::Block::extractIndex(data))
+   };
    result->fromBytes(data);
    saveResult(std::move(result));
    unique_ptr<EAbstractAnalytic::Block> work;

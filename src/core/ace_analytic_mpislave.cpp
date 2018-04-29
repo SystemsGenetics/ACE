@@ -31,7 +31,7 @@ MPISlave::MPISlave(quint16 type):
    EAbstractAnalytic::OpenCL* opencl {nullptr};
    if ( settings.openCLDevicePointer() )
    {
-      int rank {_mpi.localRank()};
+      int rank {_mpi.localRank() - 1};
       for (int p = 0; p < OpenCL::Platform::size() ;++p)
       {
          for (int d = 0; d < OpenCL::Platform::get(p)->deviceSize() ;++d)
@@ -152,9 +152,8 @@ void MPISlave::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 void MPISlave::dataReceived(const QByteArray& data, int fromRank)
 {
    Q_UNUSED(fromRank)
-   unique_ptr<EAbstractAnalytic::Block> work {new EAbstractAnalytic::Block(0)};
-   work->fromBytes(data);
-   if ( work->index() == -1 )
+   int index {EAbstractAnalytic::Block::extractIndex(data)};
+   if ( index == -1 )
    {
       _finished = true;
       if ( isFinished() )
@@ -163,7 +162,7 @@ void MPISlave::dataReceived(const QByteArray& data, int fromRank)
       }
       return;
    }
-   work = analytic()->makeBlock();
+   unique_ptr<EAbstractAnalytic::Block> work {analytic()->makeBlock(index)};
    work->fromBytes(data);
    ++_workSize;
    _runner->addWork(std::move(work));
