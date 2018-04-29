@@ -1,4 +1,5 @@
 #include "ace_analytic_mpislave.h"
+#include "ace_analytic_mpimaster.h"
 #include "ace_analytic_serialrun.h"
 #include "ace_analytic_openclrun.h"
 #include "ace_qmpi.h"
@@ -115,6 +116,24 @@ void MPISlave::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 
 
 /*!
+ */
+void MPISlave::start()
+{
+   int code {MPIMaster::ReadyAsSerial};
+   if ( _acu )
+   {
+      code = MPIMaster::ReadyAsACU;
+   }
+   unique_ptr<EAbstractAnalytic::Block> block {new EAbstractAnalytic::Block(code)};
+   _mpi.sendData(0,block->toBytes());
+}
+
+
+
+
+
+
+/*!
  *
  * @param data  
  *
@@ -123,8 +142,8 @@ void MPISlave::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 void MPISlave::dataReceived(const QByteArray& data, int fromRank)
 {
    Q_UNUSED(fromRank)
-   int index {EAbstractAnalytic::Block::extractIndex(data)};
-   if ( index == -1 )
+   int code {EAbstractAnalytic::Block::extractIndex(data)};
+   if ( code == MPIMaster::Terminate )
    {
       _finished = true;
       if ( isFinished() )
@@ -133,7 +152,14 @@ void MPISlave::dataReceived(const QByteArray& data, int fromRank)
       }
       return;
    }
-   unique_ptr<EAbstractAnalytic::Block> work {analytic()->makeBlock(index)};
+   else if ( code < 0 )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Logic Error"));
+      e.setDetails(tr("Master MPI node sent unknown code %1 to slave.").arg(code));
+      throw e;
+   }
+   unique_ptr<EAbstractAnalytic::Block> work {analytic()->makeWork()};
    work->fromBytes(data);
    ++_workSize;
    _runner->addWork(std::move(work));
@@ -166,6 +192,7 @@ void MPISlave::setupOpenCL()
       if ( device )
       {
          _runner = new OpenCLRun(analytic()->makeOpenCL(),device,this,this);
+         _acu = true;
       }
    }
 }

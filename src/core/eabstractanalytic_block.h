@@ -18,7 +18,10 @@ class EAbstractAnalytic::Block : public QObject
    Q_OBJECT
 public:
    static int extractIndex(const QByteArray& data);
-   Block(int index);
+   /*!
+    */
+   explicit Block() = default;
+   explicit Block(int index);
    int index() const;
    QByteArray toBytes() const;
    template<class T> const T* cast() const;

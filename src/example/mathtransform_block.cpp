@@ -9,6 +9,19 @@
 /*!
  *
  * @param index  
+ */
+MathTransform::Block::Block(int index):
+   EAbstractAnalytic::Block(index)
+{}
+
+
+
+
+
+
+/*!
+ *
+ * @param index  
  *
  * @param number  
  */

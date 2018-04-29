@@ -350,7 +350,7 @@ Ace::DataObject* Manager::addOutputData(const QString& path, quint16 type, const
  */
 std::unique_ptr<EAbstractAnalytic::Block> Manager::makeWork(int index)
 {
-   unique_ptr<EAbstractAnalytic::Block> ret {analytic()->makeBlock(index)};
+   unique_ptr<EAbstractAnalytic::Block> ret {analytic()->makeWork(index)};
    if ( !ret )
    {
       E_MAKE_EXCEPTION(e);

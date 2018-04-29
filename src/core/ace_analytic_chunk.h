@@ -37,9 +37,6 @@ namespace Ace
          Run* _runner {nullptr};
          /*!
           */
-         bool _simple {false};
-         /*!
-          */
          QString _fileName;
          /*!
           */

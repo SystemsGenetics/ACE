@@ -11,6 +11,10 @@ class MathTransform::Block : public EAbstractAnalytic::Block
 {
    Q_OBJECT
 public:
+   /*!
+    */
+   explicit Block() = default;
+   explicit Block(int index);
    explicit Block(int index, qint32 number);
    /*!
     */

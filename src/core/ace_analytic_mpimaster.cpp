@@ -87,27 +87,63 @@ void MPIMaster::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 
 
 /*!
+ *
+ * @param data  
+ *
+ * @param fromRank  
  */
-void MPIMaster::start()
+void MPIMaster::dataReceived(const QByteArray& data, int fromRank)
 {
-   for (int t = 0; t < (Settings::instance().threadSize()*2) ;++t)
+   int index {EAbstractAnalytic::Block::extractIndex(data)};
+   if ( index < 0 )
    {
-      for (int i = 1; i < _mpi.size() ;++i)
+      processCode(index,fromRank);
+   }
+   else
+   {
+      process(data,fromRank);
+   }
+}
+
+
+
+
+
+
+/*!
+ *
+ * @param code  
+ *
+ * @param fromRank  
+ */
+void MPIMaster::processCode(int code, int fromRank)
+{
+   Settings& settings {Settings::instance()};
+   int amount {4};
+   switch (code)
+   {
+   case ReadyAsACU:
+      amount += settings.threadSize();
+   case ReadyAsSerial:
+      break;
+   default:
       {
-         if ( _nextWork >= analytic()->size() )
-         {
-            if ( t == 0 )
-            {
-               unique_ptr<EAbstractAnalytic::Block> work {new EAbstractAnalytic::Block(-1)};
-               _mpi.sendData(i,work->toBytes());
-            }
-            else
-            {
-               return;
-            }
-         }
-         unique_ptr<EAbstractAnalytic::Block> work {analytic()->makeBlock(_nextWork)};
-         _mpi.sendData(i,work->toBytes());
+         E_MAKE_EXCEPTION(e);
+         e.setTitle(tr("Logic Error"));
+         e.setDetails(tr("Slave MPI node sent unknown code %1 to master.").arg(code));
+         throw e;
+      }
+   }
+   if ( isFinished() )
+   {
+      terminate(fromRank);
+   }
+   else
+   {
+      while ( amount-- && _nextWork < analytic()->size() )
+      {
+         unique_ptr<EAbstractAnalytic::Block> work {makeWork(_nextWork++)};
+         _mpi.sendData(fromRank,work->toBytes());
       }
    }
 }
@@ -123,27 +159,33 @@ void MPIMaster::start()
  *
  * @param fromRank  
  */
-void MPIMaster::dataReceived(const QByteArray& data, int fromRank)
+void MPIMaster::process(const QByteArray& data, int fromRank)
 {
-   unique_ptr<EAbstractAnalytic::Block> result
-   {//
-      analytic()->makeBlock(EAbstractAnalytic::Block::extractIndex(data))
-   };
+   unique_ptr<EAbstractAnalytic::Block> result {analytic()->makeResult()};
    result->fromBytes(data);
    saveResult(std::move(result));
-   unique_ptr<EAbstractAnalytic::Block> work;
    if ( _nextWork < analytic()->size() )
    {
-      work = makeWork(_nextWork++);
-   }
-   else if ( !_doneSlaves.at(fromRank - 1) )
-   {
-      work.reset(new EAbstractAnalytic::Block(-1));
-      _doneSlaves[fromRank - 1] = true;
-   }
-   if ( work )
-   {
+      unique_ptr<EAbstractAnalytic::Block> work {makeWork(_nextWork++)};
       _mpi.sendData(fromRank,work->toBytes());
-      work.reset();
    }
+   else
+   {
+      terminate(fromRank);
+   }
+}
+
+
+
+
+
+
+/*!
+ *
+ * @param rank  
+ */
+void MPIMaster::terminate(int rank)
+{
+   unique_ptr<EAbstractAnalytic::Block> code {new EAbstractAnalytic::Block(Terminate)};
+   _mpi.sendData(rank,code->toBytes());
 }

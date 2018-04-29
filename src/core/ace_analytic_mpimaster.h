@@ -16,17 +16,32 @@ namespace Ace
       {
          Q_OBJECT
       public:
+         /*!
+          */
+         enum Code
+         {
+            /*!
+             */
+            Terminate = -1
+            /*!
+             */
+            ,ReadyAsSerial = -2
+            /*!
+             */
+            ,ReadyAsACU = -3
+         };
          MPIMaster(quint16 type);
          virtual ~MPIMaster() override final;
          virtual bool isFinished() const override final;
       protected:
          virtual int index() const override final;
          virtual void writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result) override final;
-      protected slots:
-         virtual void start() override final;
       private slots:
          void dataReceived(const QByteArray& data, int fromRank);
       private:
+         void processCode(int code, int fromRank);
+         void process(const QByteArray& data, int fromRank);
+         void terminate(int rank);
          /*!
           */
          QMPI& _mpi;

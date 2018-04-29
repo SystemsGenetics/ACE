@@ -32,20 +32,50 @@ int MathTransform::size() const
 
 
 /*!
- * Implements the interface that makes a new block of work from the given block 
- * index. 
  *
  * @param index Index used to make the block of work. 
- *
- * @return Pointer to block of work or null if this analytic has no work blocks. 
  */
-std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeBlock(int index) const
+std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeWork(int index) const
 {
-   if ( index == -1 )
-   {
-      return unique_ptr<EAbstractAnalytic::Block>(new Block(index,0));
-   }
    return unique_ptr<EAbstractAnalytic::Block>(new Block(index,_in->_numbers.at(index)));
+}
+
+
+
+
+
+
+/*!
+ */
+std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeWork() const
+{
+   return unique_ptr<EAbstractAnalytic::Block>(new Block);
+}
+
+
+
+
+
+
+/*!
+ *
+ * @param index Index used to make the block of work. 
+ */
+std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeResult(int index) const
+{
+   return unique_ptr<EAbstractAnalytic::Block>(new Block(index));
+}
+
+
+
+
+
+
+/*!
+ */
+std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeResult() const
+{
+   return unique_ptr<EAbstractAnalytic::Block>(new Block);
 }
 
 

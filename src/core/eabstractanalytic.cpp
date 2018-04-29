@@ -8,19 +8,64 @@
 
 
 /*!
- * This interface makes a new block of work from the given block index. The order 
- * of indexes called will always be in order starting at 0. If null is returned 
- * that means working on blocks is skipped and the read block interface is called 
- * immediately. The default implementation returns a null pointer. 
  *
  * @param index Index used to make the block of work. 
- *
- * @return Pointer to block of work or null if this analytic has no work blocks. 
  */
-std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeBlock(int index) const
+std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeWork(int index) const
 {
    Q_UNUSED(index)
-   return nullptr;
+   E_MAKE_EXCEPTION(e);
+   e.setTitle(tr("Logic Error"));
+   e.setDetails(tr("Attempting to make an abstract analytic block with a simple analytic."));
+   throw e;
+}
+
+
+
+
+
+
+/*!
+ */
+std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeWork() const
+{
+   E_MAKE_EXCEPTION(e);
+   e.setTitle(tr("Logic Error"));
+   e.setDetails(tr("Attempting to make an abstract analytic block with a simple analytic."));
+   throw e;
+}
+
+
+
+
+
+
+/*!
+ *
+ * @param index Index used to make the block of work. 
+ */
+std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeResult(int index) const
+{
+   Q_UNUSED(index)
+   E_MAKE_EXCEPTION(e);
+   e.setTitle(tr("Logic Error"));
+   e.setDetails(tr("Attempting to make an abstract analytic block with a simple analytic."));
+   throw e;
+}
+
+
+
+
+
+
+/*!
+ */
+std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeResult() const
+{
+   E_MAKE_EXCEPTION(e);
+   e.setTitle(tr("Logic Error"));
+   e.setDetails(tr("Attempting to make an abstract analytic block with a simple analytic."));
+   throw e;
 }
 
 

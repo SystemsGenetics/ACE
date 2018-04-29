@@ -24,6 +24,8 @@ namespace Ace
          virtual QFile* addOutputFile(const QString& path) override final;
          virtual Ace::DataObject* addOutputData(const QString& path, quint16 type, const EMetadata& system) override final;
          virtual void saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result) override final;
+      protected slots:
+         virtual void start() override final;
       private slots:
          void dataReceived(const QByteArray& data, int fromRank);
       private:
@@ -35,6 +37,9 @@ namespace Ace
          /*!
           */
          Run* _runner {nullptr};
+         /*!
+          */
+         bool _acu {false};
          /*!
           */
          int _workSize {0};
