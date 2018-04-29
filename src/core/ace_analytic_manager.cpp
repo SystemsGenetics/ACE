@@ -2,6 +2,8 @@
 #include "ace_analytic_single.h"
 #include "ace_analytic_mpimaster.h"
 #include "ace_analytic_mpislave.h"
+#include "ace_analytic_chunk.h"
+#include "ace_analytic_merge.h"
 #include "ace_dataobject.h"
 #include "ace_qmpi.h"
 #include "eabstractanalyticfactory.h"
@@ -43,12 +45,20 @@ using namespace Ace::Analytic;
  */
 std::unique_ptr<Ace::Analytic::Manager> Manager::makeManager(quint16 type, int index, int size)
 {
-   Q_UNUSED(index)
-   Q_UNUSED(size)
-   QMPI& mpi {QMPI::instance()};
-   if ( mpi.size() > 1 )
+   if ( size > 1 )
    {
-      if ( mpi.isMaster() )
+      if ( index < 0 )
+      {
+         return unique_ptr<Manager>(new Merge(type,size));
+      }
+      else
+      {
+         return unique_ptr<Manager>(new Chunk(type,index,size));
+      }
+   }
+   else if ( QMPI::instance().size() > 1 )
+   {
+      if ( QMPI::instance().isMaster() )
       {
          return unique_ptr<Manager>(new MPIMaster(type));
       }
@@ -61,7 +71,6 @@ std::unique_ptr<Ace::Analytic::Manager> Manager::makeManager(quint16 type, int i
    {
       return unique_ptr<Manager>(new Single(type));
    }
-   // TODO; for now just implemented serial
 }
 
 
@@ -355,7 +364,7 @@ std::unique_ptr<EAbstractAnalytic::Block> Manager::makeWork(int index)
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(tr("Logic Error"));
-      e.setDetails(tr("Analytic returned null work block in serial mode."));
+      e.setDetails(tr("Analytic returned null work block pointer."));
       throw e;
    }
    if ( ret->index() != index )

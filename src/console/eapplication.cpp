@@ -82,7 +82,7 @@ int EApplication::exec()
 {
    try
    {
-      enum {Unknown = -1,Settings,Run,Dump,Inject};
+      enum {Unknown = -1,Settings,Run,ChunkRun,Merge,Dump,Inject};
       if ( _command.size() < 1 )
       {
          E_MAKE_EXCEPTION(e);
@@ -90,33 +90,37 @@ int EApplication::exec()
          e.setDetails(tr("No arguments given, exiting..."));
          throw e;
       }
-      QStringList commands {"settings","run","dump","inject"};
-      QString command {_command.first()};
-      switch (_command.pop(commands))
+      QStringList commands {"settings","run","chunkrun","merge","dump","inject"};
+      switch (_command.peek(commands))
       {
       case Settings:
          {
+            _command.pop();
             Ace::SettingsRun settings(_command);
             settings.execute();
             break;
          }
       case Run:
+      case ChunkRun:
+      case Merge:
          {
             Ace::Run* run {new Ace::Run(_command,_options)};
             connect(run,&Ace::Run::destroyed,this,&QCoreApplication::quit);
             return QCoreApplication::exec();
          }
       case Dump:
+         _command.pop();
          dump();
          return 0;
       case Inject:
+         _command.pop();
          inject();
          return 0;
       case Unknown:
          {
             E_MAKE_EXCEPTION(e);
             e.setTitle(tr("Invalid argument"));
-            e.setDetails(tr("Unknown command '%1'.").arg(command));
+            e.setDetails(tr("Unknown command '%1'.").arg(commands.first()));
             throw e;
          }
       }

@@ -94,3 +94,17 @@ int Command::pop(const QStringList& list)
 {
    return list.indexOf(_values.takeFirst());
 }
+
+
+
+
+
+
+/*!
+ *
+ * @param list  
+ */
+int Command::peek(const QStringList& list)
+{
+   return list.indexOf(_values.first());
+}

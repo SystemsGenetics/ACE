@@ -160,6 +160,13 @@ void MPISlave::dataReceived(const QByteArray& data, int fromRank)
       throw e;
    }
    unique_ptr<EAbstractAnalytic::Block> work {analytic()->makeWork()};
+   if ( !work )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Logic Error"));
+      e.setDetails(tr("Analytic returned null work block pointer."));
+      throw e;
+   }
    work->fromBytes(data);
    ++_workSize;
    _runner->addWork(std::move(work));

@@ -162,6 +162,13 @@ void MPIMaster::processCode(int code, int fromRank)
 void MPIMaster::process(const QByteArray& data, int fromRank)
 {
    unique_ptr<EAbstractAnalytic::Block> result {analytic()->makeResult()};
+   if ( !result )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Logic Error"));
+      e.setDetails(tr("Analytic returned null result block pointer."));
+      throw e;
+   }
    result->fromBytes(data);
    saveResult(std::move(result));
    if ( _nextWork < analytic()->size() )

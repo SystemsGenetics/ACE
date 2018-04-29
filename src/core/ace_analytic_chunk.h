@@ -28,10 +28,16 @@ namespace Ace
          virtual void start() override final;
          void process();
       private:
-         void setupFile(int index);
-         void setupIndexes(int index, int size);
-         void setupOpenCL(int index);
+         void setupFile();
+         void setupIndexes();
+         void setupOpenCL();
          void setupSerial();
+         /*!
+          */
+         int _index;
+         /*!
+          */
+         int _size;
          /*!
           */
          Run* _runner {nullptr};
@@ -46,13 +52,13 @@ namespace Ace
          QDataStream* _stream {nullptr};
          /*!
           */
-         int _last;
+         int _end;
          /*!
           */
          int _nextWork;
          /*!
           */
-         int _nextResult {0};
+         int _nextResult;
       };
    }
 }

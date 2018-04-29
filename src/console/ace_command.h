@@ -18,6 +18,7 @@ namespace Ace
       QString first() const;
       QString pop();
       int pop(const QStringList& list);
+      int peek(const QStringList& list);
    private:
       /*!
        */

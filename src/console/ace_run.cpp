@@ -24,13 +24,7 @@ Run::Run(const Command& command, const Options& options):
    _options(options),
    _command(command)
 {
-   if ( _command.size() < 1 )
-   {
-      E_MAKE_EXCEPTION(e);
-      e.setTitle(tr("Invalid Argument"));
-      e.setDetails(tr("No analytic name given, exiting..."));
-      throw e;
-   }
+   setupIndexes();
    setupManager(getType());
 }
 
@@ -80,6 +74,105 @@ void Run::finished()
 
 /*!
  */
+void Run::setupIndexes()
+{
+   _index = 0;
+   _size = 1;
+   QString command {_command.pop()};
+   if ( command == QString("chunkrun") )
+   {
+      setupChunk();
+   }
+   else if ( command == QString("merge") )
+   {
+      setupMerge();
+   }
+   if ( _command.size() < 1 )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Invalid Argument"));
+      e.setDetails(tr("No analytic name given, exiting..."));
+      throw e;
+   }
+}
+
+
+
+
+
+
+/*!
+ */
+void Run::setupChunk()
+{
+   if ( _command.size() < 2 )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Invalid Argument"));
+      e.setDetails(tr("Index and size values not given for chunkrun, exiting..."));
+      throw e;
+   }
+   bool ok;
+   _index = _command.pop().toInt(&ok);
+   if ( !ok )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Invalid Argument"));
+      e.setDetails(tr("Given index for chunkrun is invalid, exiting..."));
+      throw e;
+   }
+   _size = _command.pop().toInt(&ok);
+   if ( !ok )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Invalid Argument"));
+      e.setDetails(tr("Given size for chunkrun is invalid, exiting..."));
+      throw e;
+   }
+   if ( _index >= _size )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Invalid Argument"));
+      e.setDetails(tr("Given index exceeds the given size for chunkrun, exiting..."));
+      throw e;
+   }
+}
+
+
+
+
+
+
+/*!
+ */
+void Run::setupMerge()
+{
+   _index = -1;
+   if ( _command.size() < 1 )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Invalid Argument"));
+      e.setDetails(tr("Size value not given for merge, exiting..."));
+      throw e;
+   }
+   bool ok;
+   _size = _command.pop().toInt(&ok);
+   if ( !ok )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Invalid Argument"));
+      e.setDetails(tr("Given size for merge is invalid, exiting..."));
+      throw e;
+   }
+}
+
+
+
+
+
+
+/*!
+ */
 quint16 Run::getType()
 {
    QStringList commandNames;
@@ -111,7 +204,7 @@ quint16 Run::getType()
  */
 void Run::setupManager(quint16 type)
 {
-   _manager = Analytic::Manager::makeManager(type,0,1).release();
+   _manager = Analytic::Manager::makeManager(type,_index,_size).release();
    _manager->setParent(this);
    connect(_manager,&Analytic::Manager::progressed,this,&Run::progressed);
    connect(_manager,&Analytic::Manager::done,this,&Run::done);

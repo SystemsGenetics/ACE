@@ -27,12 +27,13 @@ using namespace Ace::Analytic;
  * @param size  
  */
 Chunk::Chunk(quint16 type, int index, int size):
-   Manager(type)
+   Manager(type),
+   _index(index),
+   _size(size)
 {
-   setupFile(index);
-   setupIndexes(index,size);
-   setupOpenCL(index);
+   setupOpenCL();
    setupSerial();
+   connect(_runner,&Run::finished,this,&Manager::finish);
 }
 
 
@@ -56,7 +57,7 @@ Chunk::~Chunk()
  */
 bool Chunk::isFinished() const
 {
-   return _nextResult >= _last;
+   return _nextResult >= _end;
 }
 
 
@@ -108,12 +109,8 @@ void Chunk::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 {
    QByteArray data {result->toBytes()};
    *_stream << data.size();
-   _stream->writeBytes(data.data(),data.size());
+   _stream->device()->write(data);
    ++_nextResult;
-   if ( isFinished() )
-   {
-      *_stream << (int)-1;
-   }
    if ( _stream->status() != QDataStream::Ok )
    {
       E_MAKE_EXCEPTION(e);
@@ -134,6 +131,8 @@ void Chunk::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
  */
 void Chunk::start()
 {
+   setupFile();
+   setupIndexes();
    QTimer::singleShot(0,this,&Chunk::process);
 }
 
@@ -146,7 +145,7 @@ void Chunk::start()
  */
 void Chunk::process()
 {
-   while ( _nextWork < _last )
+   while ( _nextWork < _end )
    {
       _runner->addWork(makeWork(_nextWork++));
    }
@@ -158,15 +157,13 @@ void Chunk::process()
 
 
 /*!
- *
- * @param index  
  */
-void Chunk::setupFile(int index)
+void Chunk::setupFile()
 {
    Settings& settings {Settings::instance()};
    _fileName = settings.chunkDir().append("/")
                                   .append(settings.chunkPrefix())
-                                  .append(QString::number(index))
+                                  .append(QString::number(_index))
                                   .append(".")
                                   .append(settings.chunkExtension());
    _file = new QFile(_fileName,this);
@@ -174,7 +171,7 @@ void Chunk::setupFile(int index)
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(tr("Open Error"));
-      e.setDetails(tr("Failed opening to temporary chunk file %1: %2")
+      e.setDetails(tr("Failed opening temporary chunk file %1: %2")
                    .arg(_fileName)
                    .arg(_file->errorString()));
       throw e;
@@ -189,24 +186,13 @@ void Chunk::setupFile(int index)
 
 
 /*!
- *
- * @param index  
- *
- * @param size  
  */
-void Chunk::setupIndexes(int index, int size)
+void Chunk::setupIndexes()
 {
-   int blockSize {analytic()->size()/size};
-   if ( analytic()->size() )
-   {
-      ++blockSize;
-   }
-   _nextWork = index*blockSize;
-   _last = (index + 1)*blockSize;
-   if ( _last > analytic()->size() )
-   {
-      _last = analytic()->size();
-   }
+   int chunkSize {analytic()->size()/_size + ( _size%analytic()->size() ? 1 : 0)};
+   _nextWork = _nextResult = _index*chunkSize;
+   _end = (_index + 1)*chunkSize;
+   _end = _end > analytic()->size() ? analytic()->size() : _end;
 }
 
 
@@ -215,11 +201,10 @@ void Chunk::setupIndexes(int index, int size)
 
 
 /*!
- *
- * @param index  
  */
-void Chunk::setupOpenCL(int index)
+void Chunk::setupOpenCL()
 {
+   int index {_index};
    if ( Settings::instance().openCLDevicePointer() )
    {
       OpenCL::Device* device {nullptr};

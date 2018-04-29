@@ -22,6 +22,9 @@ namespace Ace
       void done();
       void finished();
    private:
+      void setupIndexes();
+      void setupChunk();
+      void setupMerge();
       quint16 getType();
       void setupManager(quint16 type);
       void addArguments();
@@ -40,6 +43,12 @@ namespace Ace
       /*!
        */
       Analytic::Manager* _manager;
+      /*!
+       */
+      int _index;
+      /*!
+       */
+      int _size;
    };
 }
 
