@@ -99,7 +99,7 @@ void Single::process()
    {
       if ( _simple )
       {
-         _runner->addWork(unique_ptr<EAbstractAnalytic::Block>(new EAbstractAnalytic::Block(_nextWork)));
+         _runner->addWork(nullptr);
       }
       else
       {
