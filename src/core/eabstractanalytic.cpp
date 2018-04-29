@@ -41,24 +41,6 @@ std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeWork() const
 
 
 /*!
- *
- * @param index Index used to make the block of work. 
- */
-std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeResult(int index) const
-{
-   Q_UNUSED(index)
-   E_MAKE_EXCEPTION(e);
-   e.setTitle(tr("Logic Error"));
-   e.setDetails(tr("Attempting to make an abstract analytic block with a simple analytic."));
-   throw e;
-}
-
-
-
-
-
-
-/*!
  */
 std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeResult() const
 {

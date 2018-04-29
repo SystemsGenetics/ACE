@@ -58,20 +58,6 @@ std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeWork() const
 
 
 /*!
- *
- * @param index Index used to make the block of work. 
- */
-std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeResult(int index) const
-{
-   return unique_ptr<EAbstractAnalytic::Block>(new Block(index));
-}
-
-
-
-
-
-
-/*!
  */
 std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeResult() const
 {

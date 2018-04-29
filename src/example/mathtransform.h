@@ -19,7 +19,6 @@ public:
    virtual int size() const override final;
    virtual std::unique_ptr<EAbstractAnalytic::Block> makeWork(int index) const override final;
    virtual std::unique_ptr<EAbstractAnalytic::Block> makeWork() const override final;
-   virtual std::unique_ptr<EAbstractAnalytic::Block> makeResult(int index) const override final;
    virtual std::unique_ptr<EAbstractAnalytic::Block> makeResult() const override final;
    virtual void process(const EAbstractAnalytic::Block* result) override final;
    virtual EAbstractAnalytic::Input* makeInput() override final;

@@ -54,7 +54,6 @@ public:
    virtual EAbstractAnalytic::Input* makeInput() = 0;
    virtual std::unique_ptr<EAbstractAnalytic::Block> makeWork(int index) const;
    virtual std::unique_ptr<EAbstractAnalytic::Block> makeWork() const;
-   virtual std::unique_ptr<EAbstractAnalytic::Block> makeResult(int index) const;
    virtual std::unique_ptr<EAbstractAnalytic::Block> makeResult() const;
    virtual EAbstractAnalytic::Serial* makeSerial();
    virtual EAbstractAnalytic::OpenCL* makeOpenCL();
