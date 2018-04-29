@@ -15,6 +15,7 @@ namespace Ace
        */
       class MPISlave : public Manager, public IOBase
       {
+         Q_OBJECT
       public:
          MPISlave(quint16 type);
          virtual ~MPISlave() override final;
@@ -26,18 +27,20 @@ namespace Ace
       private slots:
          void dataReceived(const QByteArray& data, int fromRank);
       private:
+         void setupOpenCL();
+         void setupSerial();
          /*!
           */
          QMPI& _mpi;
          /*!
           */
-         Run* _runner;
+         Run* _runner {nullptr};
          /*!
           */
          int _workSize {0};
          /*!
           */
-         bool _finished;
+         bool _finished {false};
       };
    }
 }

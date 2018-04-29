@@ -27,37 +27,8 @@ MPISlave::MPISlave(quint16 type):
    Manager(type),
    _mpi(QMPI::instance())
 {
-   Settings& settings {Settings::instance()};
-   EAbstractAnalytic::OpenCL* opencl {nullptr};
-   if ( settings.openCLDevicePointer() )
-   {
-      int rank {_mpi.localRank() - 1};
-      for (int p = 0; p < OpenCL::Platform::size() ;++p)
-      {
-         for (int d = 0; d < OpenCL::Platform::get(p)->deviceSize() ;++d)
-         {
-            if ( rank-- == 0 )
-            {
-               opencl = analytic()->makeOpenCL();
-               _runner = new OpenCLRun(opencl,settings.openCLDevicePointer(),this,this);
-            }
-         }
-      }
-   }
-   if ( !opencl )
-   {
-      if ( EAbstractAnalytic::Serial* serial = analytic()->makeSerial() )
-      {
-         _runner = new SerialRun(serial,this,this);
-      }
-      else
-      {
-         E_MAKE_EXCEPTION(e);
-         e.setTitle(tr("Logic Error"));
-         e.setDetails(tr("Cannot run simple analytic in MPI mode."));
-         throw e;
-      }
-   }
+   setupOpenCL();
+   setupSerial();
    connect(_runner,&Run::finished,this,&Manager::finish);
    connect(&_mpi,&QMPI::dataReceived,this,&MPISlave::dataReceived);
 }
@@ -166,4 +137,60 @@ void MPISlave::dataReceived(const QByteArray& data, int fromRank)
    work->fromBytes(data);
    ++_workSize;
    _runner->addWork(std::move(work));
+}
+
+
+
+
+
+
+/*!
+ */
+void MPISlave::setupOpenCL()
+{
+   if ( Settings::instance().openCLDevicePointer() )
+   {
+      OpenCL::Device* device {nullptr};
+      int rank {_mpi.localRank() - 1};
+      for (int p = 0; ( p < OpenCL::Platform::size() ) && !device ;++p)
+      {
+         for (int d = 0; d < OpenCL::Platform::get(p)->deviceSize() ;++d)
+         {
+            if ( rank-- == 0 )
+            {
+               device = OpenCL::Platform::get(p)->device(d);
+               break;
+            }
+         }
+      }
+      if ( device )
+      {
+         _runner = new OpenCLRun(analytic()->makeOpenCL(),device,this,this);
+      }
+   }
+}
+
+
+
+
+
+
+/*!
+ */
+void MPISlave::setupSerial()
+{
+   if ( !_runner )
+   {
+      if ( EAbstractAnalytic::Serial* serial = analytic()->makeSerial() )
+      {
+         _runner = new SerialRun(serial,this,this);
+      }
+      else
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setTitle(tr("Logic Error"));
+         e.setDetails(tr("Cannot run simple analytic in MPI mode."));
+         throw e;
+      }
+   }
 }

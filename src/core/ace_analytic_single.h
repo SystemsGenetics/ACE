@@ -32,9 +32,11 @@ namespace Ace
          virtual void start() override final;
          void process();
       private:
+         void setupOpenCL();
+         void setupSerial();
          /*!
           */
-         Run* _runner;
+         Run* _runner {nullptr};
          /*!
           */
          bool _simple {false};

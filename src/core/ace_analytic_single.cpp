@@ -27,28 +27,8 @@ using namespace Ace::Analytic;
 Single::Single(quint16 type):
    Manager(type)
 {
-   Settings& settings {Settings::instance()};
-   EAbstractAnalytic::OpenCL* opencl {nullptr};
-   if ( settings.openCLDevicePointer() )
-   {
-      opencl = analytic()->makeOpenCL();
-      if ( opencl )
-      {
-         _runner = new OpenCLRun(opencl,settings.openCLDevicePointer(),this,this);
-      }
-   }
-   if ( !opencl )
-   {
-      if ( EAbstractAnalytic::Serial* serial = analytic()->makeSerial() )
-      {
-         _runner = new SerialRun(serial,this,this);
-      }
-      else
-      {
-         _runner = new SimpleRun(this,this);
-         _simple = true;
-      }
-   }
+   setupOpenCL();
+   setupSerial();
    connect(_runner,&Run::finished,this,&Manager::finish);
 }
 
@@ -126,5 +106,48 @@ void Single::process()
          _runner->addWork(makeWork(_nextWork));
       }
       ++_nextWork;
+   }
+}
+
+
+
+
+
+
+/*!
+ */
+void Single::setupOpenCL()
+{
+   Settings& settings {Settings::instance()};
+   if ( settings.openCLDevicePointer() )
+   {
+      EAbstractAnalytic::OpenCL* opencl {analytic()->makeOpenCL()};
+      if ( opencl )
+      {
+         _runner = new OpenCLRun(opencl,settings.openCLDevicePointer(),this,this);
+      }
+   }
+}
+
+
+
+
+
+
+/*!
+ */
+void Single::setupSerial()
+{
+   if ( !_runner )
+   {
+      if ( EAbstractAnalytic::Serial* serial = analytic()->makeSerial() )
+      {
+         _runner = new SerialRun(serial,this,this);
+      }
+      else
+      {
+         _runner = new SimpleRun(this,this);
+         _simple = true;
+      }
    }
 }
