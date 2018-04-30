@@ -19,7 +19,7 @@ using namespace Ace::Analytic;
  * @param type  
  */
 MPIMaster::MPIMaster(quint16 type):
-   Manager(type),
+   AbstractManager(type),
    _mpi(QMPI::instance()),
    _doneSlaves(_mpi.size() - 1,false)
 {
@@ -73,7 +73,7 @@ int MPIMaster::index() const
  */
 void MPIMaster::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 {
-   Manager::writeResult(std::move(result),_nextResult++);
+   AbstractManager::writeResult(std::move(result),_nextResult++);
    if ( isFinished() )
    {
       emit done();

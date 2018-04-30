@@ -1,5 +1,5 @@
-#ifndef ACE_ANALYTIC_RUN_H
-#define ACE_ANALYTIC_RUN_H
+#ifndef ACE_ANALYTIC_ABSTRACTRUN_H
+#define ACE_ANALYTIC_ABSTRACTRUN_H
 #include <memory>
 #include <QObject>
 #include "eabstractanalytic.h"
@@ -13,11 +13,11 @@ namespace Ace
    {
       /*!
        */
-      class Run : public QObject
+      class AbstractRun : public QObject
       {
          Q_OBJECT
       public:
-         explicit Run(QObject* parent = nullptr);
+         explicit AbstractRun(QObject* parent = nullptr);
          /*!
           *
           * @param block  

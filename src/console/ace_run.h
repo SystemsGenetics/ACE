@@ -42,7 +42,7 @@ namespace Ace
       Command _command;
       /*!
        */
-      Analytic::Manager* _manager;
+      Analytic::AbstractManager* _manager;
       /*!
        */
       int _index;

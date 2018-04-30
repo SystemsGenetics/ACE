@@ -1,7 +1,7 @@
 #ifndef ACE_ANALYTIC_MERGE_H
 #define ACE_ANALYTIC_MERGE_H
-#include "ace_analytic_manager.h"
-#include "ace_analytic_iobase.h"
+#include "ace_analytic_abstractmanager.h"
+#include "ace_analytic_abstractinput.h"
 //
 
 
@@ -12,7 +12,7 @@ namespace Ace
    {
       /*!
        */
-      class Merge : public Manager, public IOBase
+      class Merge : public AbstractManager, public AbstractInput
       {
          Q_OBJECT
       public:

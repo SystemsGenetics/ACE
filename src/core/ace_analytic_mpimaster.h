@@ -1,7 +1,7 @@
 #ifndef ACE_ANALYTIC_MPIMASTER_H
 #define ACE_ANALYTIC_MPIMASTER_H
-#include "ace_analytic_manager.h"
-#include "ace_analytic_iobase.h"
+#include "ace_analytic_abstractmanager.h"
+#include "ace_analytic_abstractinput.h"
 //
 
 
@@ -12,7 +12,7 @@ namespace Ace
    {
       /*!
        */
-      class MPIMaster : public Manager, public IOBase
+      class MPIMaster : public AbstractManager, public AbstractInput
       {
          Q_OBJECT
       public:

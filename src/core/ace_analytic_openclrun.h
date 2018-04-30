@@ -3,7 +3,7 @@
 #include <memory>
 #include <QVector>
 #include <QQueue>
-#include "ace_analytic_run.h"
+#include "ace_analytic_abstractrun.h"
 #include "ace_analytic.h"
 #include "opencl.h"
 #include "eabstractanalytic.h"
@@ -17,11 +17,11 @@ namespace Ace
    {
       /*!
        */
-      class OpenCLRun : public Run
+      class OpenCLRun : public AbstractRun
       {
          Q_OBJECT
       public:
-         explicit OpenCLRun(EAbstractAnalytic::OpenCL* opencl, OpenCL::Device* device, IOBase* base, QObject* parent = nullptr);
+         explicit OpenCLRun(EAbstractAnalytic::OpenCL* opencl, OpenCL::Device* device, AbstractInput* base, QObject* parent = nullptr);
          virtual ~OpenCLRun() override final;
          virtual void addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block) override final;
       private slots:
@@ -36,7 +36,7 @@ namespace Ace
          EAbstractAnalytic::OpenCL* _opencl;
          /*!
           */
-         IOBase* _base;
+         AbstractInput* _base;
          /*!
           */
          QVector<Thread*> _threads;

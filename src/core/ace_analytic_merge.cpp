@@ -22,7 +22,7 @@ using namespace Ace::Analytic;
  * @param size  
  */
 Merge::Merge(quint16 type, int size):
-   Manager(type),
+   AbstractManager(type),
    _size(size)
 {}
 
@@ -61,7 +61,7 @@ int Merge::index() const
  */
 void Merge::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 {
-   Manager::writeResult(std::move(result),_nextResult++);
+   AbstractManager::writeResult(std::move(result),_nextResult++);
    if ( isFinished() )
    {
       emit done();

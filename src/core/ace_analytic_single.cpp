@@ -25,11 +25,11 @@ using namespace Ace::Analytic;
  * @param type Analytic type to use for this analytic run. 
  */
 Single::Single(quint16 type):
-   Manager(type)
+   AbstractManager(type)
 {
    setupOpenCL();
    setupSerial();
-   connect(_runner,&Run::finished,this,&Manager::finish);
+   connect(_runner,&AbstractRun::finished,this,&AbstractManager::finish);
 }
 
 
@@ -67,7 +67,7 @@ int Single::index() const
  */
 void Single::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 {
-   Manager::writeResult(std::move(result),_nextResult++);
+   AbstractManager::writeResult(std::move(result),_nextResult++);
    if ( isFinished() )
    {
       emit done();

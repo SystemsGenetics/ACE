@@ -1,7 +1,7 @@
 #ifndef ACE_ANALYTIC_CHUNK_H
 #define ACE_ANALYTIC_CHUNK_H
-#include "ace_analytic_manager.h"
-#include "ace_analytic_iobase.h"
+#include "ace_analytic_abstractmanager.h"
+#include "ace_analytic_abstractinput.h"
 #include "ace_analytic.h"
 //
 
@@ -13,7 +13,7 @@ namespace Ace
    {
       /*!
        */
-      class Chunk : public Manager, public IOBase
+      class Chunk : public AbstractManager, public AbstractInput
       {
          Q_OBJECT
       public:
@@ -40,7 +40,7 @@ namespace Ace
          int _size;
          /*!
           */
-         Run* _runner {nullptr};
+         AbstractRun* _runner {nullptr};
          /*!
           */
          QString _fileName;

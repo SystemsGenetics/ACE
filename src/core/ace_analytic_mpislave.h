@@ -1,7 +1,7 @@
 #ifndef ACE_ANALYTIC_MPISLAVE_H
 #define ACE_ANALYTIC_MPISLAVE_H
-#include "ace_analytic_manager.h"
-#include "ace_analytic_iobase.h"
+#include "ace_analytic_abstractmanager.h"
+#include "ace_analytic_abstractinput.h"
 #include "ace_analytic.h"
 //
 
@@ -13,7 +13,7 @@ namespace Ace
    {
       /*!
        */
-      class MPISlave : public Manager, public IOBase
+      class MPISlave : public AbstractManager, public AbstractInput
       {
          Q_OBJECT
       public:
@@ -36,7 +36,7 @@ namespace Ace
          QMPI& _mpi;
          /*!
           */
-         Run* _runner {nullptr};
+         AbstractRun* _runner {nullptr};
          /*!
           */
          bool _acu {false};

@@ -1,7 +1,7 @@
 #include "ace_analytic_serialrun.h"
 #include <memory>
 #include <QTimer>
-#include "ace_analytic_iobase.h"
+#include "ace_analytic_abstractinput.h"
 #include "eabstractanalytic_block.h"
 #include "eabstractanalytic_serial.h"
 
@@ -24,8 +24,8 @@ using namespace Ace::Analytic;
  *
  * @param parent  
  */
-SerialRun::SerialRun(EAbstractAnalytic::Serial* serial, IOBase* base, QObject* parent):
-   Run(parent),
+SerialRun::SerialRun(EAbstractAnalytic::Serial* serial, AbstractInput* base, QObject* parent):
+   AbstractRun(parent),
    _serial(serial),
    _base(base)
 {}

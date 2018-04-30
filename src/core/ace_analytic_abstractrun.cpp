@@ -1,4 +1,4 @@
-#include "ace_analytic_run.h"
+#include "ace_analytic_abstractrun.h"
 
 
 
@@ -14,6 +14,6 @@ using namespace Ace::Analytic;
  *
  * @param parent  
  */
-Run::Run(QObject* parent):
+AbstractRun::AbstractRun(QObject* parent):
    QObject(parent)
 {}

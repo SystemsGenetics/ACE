@@ -1,6 +1,6 @@
 #ifndef ACE_ANALYTIC_SERIALRUN_H
 #define ACE_ANALYTIC_SERIALRUN_H
-#include "ace_analytic_run.h"
+#include "ace_analytic_abstractrun.h"
 #include "ace_analytic.h"
 #include "eabstractanalytic.h"
 //
@@ -13,11 +13,11 @@ namespace Ace
    {
       /*!
        */
-      class SerialRun : public Run
+      class SerialRun : public AbstractRun
       {
          Q_OBJECT
       public:
-         explicit SerialRun(EAbstractAnalytic::Serial* serial, IOBase* base, QObject* parent = nullptr);
+         explicit SerialRun(EAbstractAnalytic::Serial* serial, AbstractInput* base, QObject* parent = nullptr);
          virtual void addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block) override final;
       private:
          /*!
@@ -25,7 +25,7 @@ namespace Ace
          EAbstractAnalytic::Serial* _serial;
          /*!
           */
-         IOBase* _base;
+         AbstractInput* _base;
       };
    }
 }

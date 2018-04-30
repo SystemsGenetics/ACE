@@ -1,4 +1,4 @@
-#include "ace_analytic_manager.h"
+#include "ace_analytic_abstractmanager.h"
 #include "ace_analytic_single.h"
 #include "ace_analytic_mpimaster.h"
 #include "ace_analytic_mpislave.h"
@@ -44,33 +44,33 @@ using namespace Ace::Analytic;
  *
  * @return Pointer to the new manager object. 
  */
-std::unique_ptr<Ace::Analytic::Manager> Manager::makeManager(quint16 type, int index, int size)
+std::unique_ptr<Ace::Analytic::AbstractManager> AbstractManager::makeManager(quint16 type, int index, int size)
 {
    if ( size > 1 )
    {
       if ( index < 0 )
       {
-         return unique_ptr<Manager>(new Merge(type,size));
+         return unique_ptr<AbstractManager>(new Merge(type,size));
       }
       else
       {
-         return unique_ptr<Manager>(new Chunk(type,index,size));
+         return unique_ptr<AbstractManager>(new Chunk(type,index,size));
       }
    }
    else if ( QMPI::instance().size() > 1 )
    {
       if ( QMPI::instance().isMaster() )
       {
-         return unique_ptr<Manager>(new MPIMaster(type));
+         return unique_ptr<AbstractManager>(new MPIMaster(type));
       }
       else
       {
-         return unique_ptr<Manager>(new MPISlave(type));
+         return unique_ptr<AbstractManager>(new MPISlave(type));
       }
    }
    else
    {
-      return unique_ptr<Manager>(new Single(type));
+      return unique_ptr<AbstractManager>(new Single(type));
    }
 }
 
@@ -97,7 +97,7 @@ std::unique_ptr<Ace::Analytic::Manager> Manager::makeManager(quint16 type, int i
  * 3. Create a new abstract analytic input object for this manager and resize the 
  *    array of arguments to the analytic input size. 
  */
-Manager::Manager(quint16 type)
+AbstractManager::AbstractManager(quint16 type)
 {
    EAbstractAnalyticFactory& factory {EAbstractAnalyticFactory::instance()};
    if ( type >= factory.size() )
@@ -125,7 +125,7 @@ Manager::Manager(quint16 type)
  *
  * @return Number of analytic arguments for this manager. 
  */
-int Manager::size() const
+int AbstractManager::size() const
 {
    return _input->size();
 }
@@ -143,7 +143,7 @@ int Manager::size() const
  *
  * @return Argument type for the given index. 
  */
-EAbstractAnalytic::Input::Type Manager::type(int index) const
+EAbstractAnalytic::Input::Type AbstractManager::type(int index) const
 {
    return _input->type(index);
 }
@@ -162,7 +162,7 @@ EAbstractAnalytic::Input::Type Manager::type(int index) const
  *
  * @return Data with the given role and index. 
  */
-QVariant Manager::data(int index, EAbstractAnalytic::Input::Role role) const
+QVariant AbstractManager::data(int index, EAbstractAnalytic::Input::Role role) const
 {
    return _input->data(index,role);
 }
@@ -181,7 +181,7 @@ QVariant Manager::data(int index, EAbstractAnalytic::Input::Role role) const
  *
  * @param value Value that the argument with the given index is set to. 
  */
-void Manager::set(int index, const QVariant& value)
+void AbstractManager::set(int index, const QVariant& value)
 {
    _inputs[index] = value;
 }
@@ -205,14 +205,14 @@ void Manager::set(int index, const QVariant& value)
  *    manager's analytic, and prepare the start slot to be called once the event 
  *    loop begins. 
  */
-void Manager::initialize()
+void AbstractManager::initialize()
 {
    inputBasic();
    inputFiles();
    inputData();
    _input = nullptr;
    _analytic->initialize();
-   QTimer::singleShot(0,this,&Manager::start);
+   QTimer::singleShot(0,this,&AbstractManager::start);
 }
 
 
@@ -223,7 +223,7 @@ void Manager::initialize()
 /*!
  * Called to request this manager terminate its analytic run before completion. 
  */
-void Manager::terminationRequested()
+void AbstractManager::terminationRequested()
 {
    deleteLater();
 }
@@ -248,7 +248,7 @@ void Manager::terminationRequested()
  * 3. Signal this manager is finished with execution and call on qt to delete this 
  *    manager. 
  */
-void Manager::finish()
+void AbstractManager::finish()
 {
    _analytic->finish();
    for (auto data: qAsConst(_outputData))
@@ -268,7 +268,7 @@ void Manager::finish()
  * This interface is called once to begin the analytic run for this manager after 
  * all argument input has been set. The default implementation does nothing. 
  */
-void Manager::start()
+void AbstractManager::start()
 {}
 
 
@@ -295,7 +295,7 @@ void Manager::start()
  *    pointer to the qt file device. If opening the file failed then throw an 
  *    exception. 
  */
-QFile* Manager::addOutputFile(const QString& path)
+QFile* AbstractManager::addOutputFile(const QString& path)
 {
    if ( path.isEmpty() )
    {
@@ -340,7 +340,7 @@ QFile* Manager::addOutputFile(const QString& path)
  * 2. Create a new data object with the given path, type, and system data, 
  *    returning a pointer to the new object and setting its parent to this manager. 
  */
-Ace::DataObject* Manager::addOutputData(const QString& path, quint16 type, const EMetadata& system)
+Ace::DataObject* AbstractManager::addOutputData(const QString& path, quint16 type, const EMetadata& system)
 {
    if ( path.isEmpty() )
    {
@@ -358,7 +358,7 @@ Ace::DataObject* Manager::addOutputData(const QString& path, quint16 type, const
  *
  * @param index  
  */
-std::unique_ptr<EAbstractAnalytic::Block> Manager::makeWork(int index)
+std::unique_ptr<EAbstractAnalytic::Block> AbstractManager::makeWork(int index)
 {
    unique_ptr<EAbstractAnalytic::Block> ret {analytic()->makeWork(index)};
    if ( !ret )
@@ -391,7 +391,7 @@ std::unique_ptr<EAbstractAnalytic::Block> Manager::makeWork(int index)
  *
  * @param expectedIndex  
  */
-void Manager::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result, int expectedIndex)
+void AbstractManager::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result, int expectedIndex)
 {
    if ( result->index() != expectedIndex )
    {
@@ -422,7 +422,7 @@ void Manager::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result, in
  *
  * @return Pointer to this manager's abstract analytic. 
  */
-EAbstractAnalytic* Manager::analytic()
+EAbstractAnalytic* AbstractManager::analytic()
 {
    return _analytic;
 }
@@ -437,7 +437,7 @@ EAbstractAnalytic* Manager::analytic()
  *
  * @return Read only pointer to this manager's abstract analytic. 
  */
-const EAbstractAnalytic* Manager::analytic() const
+const EAbstractAnalytic* AbstractManager::analytic() const
 {
    return _analytic;
 }
@@ -460,7 +460,7 @@ const EAbstractAnalytic* Manager::analytic() const
  * 2. If the argument type is not a file or data object then set the argument using 
  *    the set interface of this manager's abstract analytic input object. 
  */
-void Manager::inputBasic()
+void AbstractManager::inputBasic()
 {
    for (int i = 0; i < _inputs.size() ;++i)
    {
@@ -501,7 +501,7 @@ void Manager::inputBasic()
  * 3. If the argument type is an output file then call the add output file method, 
  *    setting the abstract analytic input if it returns a qt file device. 
  */
-void Manager::inputFiles()
+void AbstractManager::inputFiles()
 {
    for (int i = 0; i < _inputs.size() ;++i)
    {
@@ -551,7 +551,7 @@ void Manager::inputFiles()
  * 3. Open the file with the qt file device. If opening failed then throw an 
  *    exception, else return a pointer to the qt file device. 
  */
-QFile* Manager::addInputFile(const QString& path)
+QFile* AbstractManager::addInputFile(const QString& path)
 {
    if ( path.isEmpty() )
    {
@@ -584,7 +584,7 @@ QFile* Manager::addInputFile(const QString& path)
  * 1. Initialize all input data objects, build the system metadata for output data 
  *    objects, and initialize all output data objects. 
  */
-void Manager::inputData()
+void AbstractManager::inputData()
 {
    EMetadata system{inputDataIn()};
    inputDataOut(system);
@@ -616,7 +616,7 @@ void Manager::inputData()
  * 4. Build and return the system metadata used for output data objects from the 
  *    list of input data objects. 
  */
-EMetadata Manager::inputDataIn()
+EMetadata AbstractManager::inputDataIn()
 {
    QList<Ace::DataObject*> inputs;
    for (int i = 0; i < _inputs.size() ;++i)
@@ -656,7 +656,7 @@ EMetadata Manager::inputDataIn()
  * 2. Open an existing data object with the given path, setting the data object's 
  *    parent as this manager and return a pointer to it. 
  */
-Ace::DataObject* Manager::addInputData(const QString& path)
+Ace::DataObject* AbstractManager::addInputData(const QString& path)
 {
    if ( path.isEmpty() )
    {
@@ -684,7 +684,7 @@ Ace::DataObject* Manager::addInputData(const QString& path)
  * 1. Create and return a metadata object type, inserting the input, command, uuid, 
  *    and version keys with the input and command sections of system metadata. 
  */
-EMetadata Manager::buildMeta(const QList<Ace::DataObject*>& inputs)
+EMetadata AbstractManager::buildMeta(const QList<Ace::DataObject*>& inputs)
 {
    EMetadata ret(EMetadata::Object);
    ret.toObject().insert("uuid",EMetadata(QUuid::createUuid().toString()));
@@ -701,7 +701,7 @@ EMetadata Manager::buildMeta(const QList<Ace::DataObject*>& inputs)
 
 /*!
  */
-EMetadata Manager::buildMetaVersion()
+EMetadata AbstractManager::buildMetaVersion()
 {
    Settings& settings {Settings::instance()};
    EMetadata ret(EMetadata::Object);
@@ -736,7 +736,7 @@ EMetadata Manager::buildMetaVersion()
  * 3. Return the metadata object type containing a list of all input data objects 
  *    with their corresponding system and user metadata. 
  */
-EMetadata Manager::buildMetaInput(const QList<Ace::DataObject*>& inputs)
+EMetadata AbstractManager::buildMetaInput(const QList<Ace::DataObject*>& inputs)
 {
    EMetadata ret(EMetadata::Object);
    for (auto input: inputs)
@@ -772,7 +772,7 @@ EMetadata Manager::buildMetaInput(const QList<Ace::DataObject*>& inputs)
  * 3. Return the metadata object type containing a list of all argument settings 
  *    for this analytic run. 
  */
-EMetadata Manager::buildMetaCommand()
+EMetadata AbstractManager::buildMetaCommand()
 {
    EMetadata ret(EMetadata::Object);
    for (int i = 0; i < _inputs.size() ;++i)
@@ -808,7 +808,7 @@ EMetadata Manager::buildMetaCommand()
  * 3. Call the add output data method with the given system metadata and if it 
  *    returns a valid pointer then set the abstract analytic input argument. 
  */
-void Manager::inputDataOut(const EMetadata& system)
+void AbstractManager::inputDataOut(const EMetadata& system)
 {
    for (int i = 0; i < _inputs.size() ;++i)
    {

@@ -1,4 +1,4 @@
-#include "ace_analytic_iobase.h"
+#include "ace_analytic_abstractinput.h"
 #include "eabstractanalytic_block.h"
 #include "eexception.h"
 
@@ -15,7 +15,7 @@ using namespace Ace::Analytic;
 
 /*!
  */
-IOBase::~IOBase()
+AbstractInput::~AbstractInput()
 {
    for (auto result: _hopper.values())
    {
@@ -32,7 +32,7 @@ IOBase::~IOBase()
  *
  * @param result  
  */
-void IOBase::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
+void AbstractInput::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 {
    if ( !result )
    {
@@ -60,7 +60,7 @@ void IOBase::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 
 /*!
  */
-int IOBase::index() const
+int AbstractInput::index() const
 {
    return -1;
 }
@@ -74,7 +74,7 @@ int IOBase::index() const
  *
  * @param result  
  */
-void IOBase::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
+void AbstractInput::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 {
    result.reset();
    E_MAKE_EXCEPTION(e);

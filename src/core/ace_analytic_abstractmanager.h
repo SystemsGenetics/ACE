@@ -1,5 +1,5 @@
-#ifndef ACE_ANALYTIC_MANAGER_H
-#define ACE_ANALYTIC_MANAGER_H
+#ifndef ACE_ANALYTIC_ABSTRACTMANAGER_H
+#define ACE_ANALYTIC_ABSTRACTMANAGER_H
 #include <memory>
 #include <QObject>
 #include <QVector>
@@ -29,12 +29,12 @@ namespace Ace
        * This class also manages its own deletion, calling on the qt system to delete it 
        * once it finishes executing its analytic or termination is requested. 
        */
-      class Manager : public QObject
+      class AbstractManager : public QObject
       {
          Q_OBJECT
       public:
-         static std::unique_ptr<Ace::Analytic::Manager> makeManager(quint16 type, int index, int size);
-         Manager(quint16 type);
+         static std::unique_ptr<Ace::Analytic::AbstractManager> makeManager(quint16 type, int index, int size);
+         AbstractManager(quint16 type);
          int size() const;
          EAbstractAnalytic::Input::Type type(int index) const;
          QVariant data(int index, EAbstractAnalytic::Input::Role role) const;

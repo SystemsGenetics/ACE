@@ -27,13 +27,13 @@ using namespace Ace::Analytic;
  * @param size  
  */
 Chunk::Chunk(quint16 type, int index, int size):
-   Manager(type),
+   AbstractManager(type),
    _index(index),
    _size(size)
 {
    setupOpenCL();
    setupSerial();
-   connect(_runner,&Run::finished,this,&Manager::finish);
+   connect(_runner,&AbstractRun::finished,this,&AbstractManager::finish);
 }
 
 

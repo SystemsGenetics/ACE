@@ -1,5 +1,5 @@
 #include "ace_analytic_simplerun.h"
-#include "ace_analytic_iobase.h"
+#include "ace_analytic_abstractinput.h"
 #include "eabstractanalytic_block.h"
 
 
@@ -19,8 +19,8 @@ using namespace Ace::Analytic;
  *
  * @param parent  
  */
-SimpleRun::SimpleRun(IOBase* base, QObject* parent):
-   Run(parent),
+SimpleRun::SimpleRun(AbstractInput* base, QObject* parent):
+   AbstractRun(parent),
    _base(base)
 {}
 

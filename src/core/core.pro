@@ -24,7 +24,6 @@ SOURCES += \
     eabstractdatafactory.cpp \
     ace_datamanager.cpp \
     eexception.cpp \
-    ace_analytic_manager.cpp \
     eabstractanalytic.cpp \
     eabstractanalytic_input.cpp \
     eabstractanalytic_serial.cpp \
@@ -41,17 +40,18 @@ SOURCES += \
     eabstractanalytic_block.cpp \
     opencl_kernel_locker.cpp \
     ace_analytic_simplerun.cpp \
-    ace_analytic_iobase.cpp \
     ace_analytic_serialrun.cpp \
     ace_analytic_openclrun.cpp \
     ace_analytic_openclrun_thread.cpp \
     ace_analytic_single.cpp \
-    ace_analytic_run.cpp \
     ace_settings.cpp \
     ace_analytic_mpimaster.cpp \
     ace_analytic_mpislave.cpp \
     ace_analytic_chunk.cpp \
-    ace_analytic_merge.cpp
+    ace_analytic_merge.cpp \
+    ace_analytic_abstractrun.cpp \
+    ace_analytic_abstractinput.cpp \
+    ace_analytic_abstractmanager.cpp
 
 HEADERS += \
     opencl.h \
@@ -71,7 +71,6 @@ HEADERS += \
     eabstractdatafactory.h \
     ace_datamanager.h \
     eexception.h \
-    ace_analytic_manager.h \
     eabstractanalytic.h \
     eabstractanalytic_input.h \
     eabstractanalytic_serial.h \
@@ -92,19 +91,20 @@ HEADERS += \
     eabstractanalytic_opencl.h \
     opencl_kernel_locker.h \
     ace_analytic_simplerun.h \
-    ace_analytic_iobase.h \
     ace_analytic_serialrun.h \
     ace_analytic_openclrun.h \
     ace_analytic_openclrun_thread.h \
     ace_analytic_single.h \
-    ace_analytic_run.h \
     eabstractanalytic_opencl_worker.h \
     openclxx.h \
     ace_settings.h \
     ace_analytic_mpimaster.h \
     ace_analytic_mpislave.h \
     ace_analytic_chunk.h \
-    ace_analytic_merge.h
+    ace_analytic_merge.h \
+    ace_analytic_abstractrun.h \
+    ace_analytic_abstractinput.h \
+    ace_analytic_abstractmanager.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 

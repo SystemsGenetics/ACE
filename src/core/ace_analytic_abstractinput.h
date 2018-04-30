@@ -1,5 +1,5 @@
-#ifndef ACE_ANALYTIC_IOBASE_H
-#define ACE_ANALYTIC_IOBASE_H
+#ifndef ACE_ANALYTIC_ABSTRACTINPUT_H
+#define ACE_ANALYTIC_ABSTRACTINPUT_H
 #include <memory>
 #include <QMap>
 #include "eabstractanalytic.h"
@@ -13,13 +13,13 @@ namespace Ace
    {
       /*!
        */
-      class IOBase
+      class AbstractInput
       {
       public:
          /*!
           */
-         IOBase() = default;
-         ~IOBase();
+         AbstractInput() = default;
+         ~AbstractInput();
          /*!
           */
          virtual bool isFinished() const = 0;

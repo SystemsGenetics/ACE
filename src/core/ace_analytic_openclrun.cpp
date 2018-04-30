@@ -1,7 +1,7 @@
 #include "ace_analytic_openclrun.h"
 #include <QSignalMapper>
 #include "ace_analytic_openclrun_thread.h"
-#include "ace_analytic_iobase.h"
+#include "ace_analytic_abstractinput.h"
 #include "ace_settings.h"
 #include "eabstractanalytic_opencl_worker.h"
 #include "eabstractanalytic_block.h"
@@ -30,8 +30,8 @@ using namespace Ace::Analytic;
  *
  * @param parent  
  */
-OpenCLRun::OpenCLRun(EAbstractAnalytic::OpenCL* opencl, OpenCL::Device* device, IOBase* base, QObject* parent):
-   Run(parent),
+OpenCLRun::OpenCLRun(EAbstractAnalytic::OpenCL* opencl, OpenCL::Device* device, AbstractInput* base, QObject* parent):
+   AbstractRun(parent),
    _context(new OpenCL::Context({device},this)),
    _opencl(opencl),
    _base(base),

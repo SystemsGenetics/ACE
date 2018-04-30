@@ -1,5 +1,5 @@
 #include "ace_run.h"
-#include <core/ace_analytic_manager.h>
+#include <core/ace_analytic_abstractmanager.h>
 #include <core/eabstractanalyticfactory.h>
 #include <core/eexception.h>
 
@@ -204,11 +204,11 @@ quint16 Run::getType()
  */
 void Run::setupManager(quint16 type)
 {
-   _manager = Analytic::Manager::makeManager(type,_index,_size).release();
+   _manager = Analytic::AbstractManager::makeManager(type,_index,_size).release();
    _manager->setParent(this);
-   connect(_manager,&Analytic::Manager::progressed,this,&Run::progressed);
-   connect(_manager,&Analytic::Manager::done,this,&Run::done);
-   connect(_manager,&Analytic::Manager::finished,this,&Run::finished);
+   connect(_manager,&Analytic::AbstractManager::progressed,this,&Run::progressed);
+   connect(_manager,&Analytic::AbstractManager::done,this,&Run::done);
+   connect(_manager,&Analytic::AbstractManager::finished,this,&Run::finished);
    addArguments();
    _manager->initialize();
 }

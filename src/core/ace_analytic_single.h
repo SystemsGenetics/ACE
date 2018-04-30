@@ -1,7 +1,7 @@
 #ifndef ACE_ANALYTIC_SINGLE_H
 #define ACE_ANALYTIC_SINGLE_H
-#include "ace_analytic_manager.h"
-#include "ace_analytic_iobase.h"
+#include "ace_analytic_abstractmanager.h"
+#include "ace_analytic_abstractinput.h"
 #include "ace_analytic.h"
 //
 
@@ -19,7 +19,7 @@ namespace Ace
        * beginning to end, running them through OpenCL if available or processing them on 
        * the CPU serially if not. 
        */
-      class Single : public Manager, public IOBase
+      class Single : public AbstractManager, public AbstractInput
       {
          Q_OBJECT
       public:
@@ -36,7 +36,7 @@ namespace Ace
          void setupSerial();
          /*!
           */
-         Run* _runner {nullptr};
+         AbstractRun* _runner {nullptr};
          /*!
           */
          bool _simple {false};

@@ -25,12 +25,12 @@ using namespace Ace::Analytic;
  * @param type  
  */
 MPISlave::MPISlave(quint16 type):
-   Manager(type),
+   AbstractManager(type),
    _mpi(QMPI::instance())
 {
    setupOpenCL();
    setupSerial();
-   connect(_runner,&Run::finished,this,&Manager::finish);
+   connect(_runner,&AbstractRun::finished,this,&AbstractManager::finish);
    connect(&_mpi,&QMPI::dataReceived,this,&MPISlave::dataReceived);
 }
 
