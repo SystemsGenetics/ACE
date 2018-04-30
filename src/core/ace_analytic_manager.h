@@ -76,6 +76,7 @@ namespace Ace
          EMetadata inputDataIn();
          Ace::DataObject* addInputData(const QString& path);
          EMetadata buildMeta(const QList<Ace::DataObject*>& inputs);
+         EMetadata buildMetaVersion();
          EMetadata buildMetaInput(const QList<Ace::DataObject*>& inputs);
          EMetadata buildMetaCommand();
          void inputDataOut(const EMetadata& system);

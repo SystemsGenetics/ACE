@@ -29,6 +29,81 @@ EMetadata::EMetadata(Type type):
 
 
 /*!
+ *
+ * @param value  
+ */
+EMetadata::EMetadata(double value):
+   EMetadata(Double)
+{
+   toDouble() = value;
+}
+
+
+
+
+
+
+/*!
+ *
+ * @param value  
+ */
+EMetadata::EMetadata(const QString& value):
+   EMetadata(String)
+{
+   toString() = value;
+}
+
+
+
+
+
+
+/*!
+ *
+ * @param value  
+ */
+EMetadata::EMetadata(const QByteArray& value):
+   EMetadata(Bytes)
+{
+   toBytes() = value;
+}
+
+
+
+
+
+
+/*!
+ *
+ * @param value  
+ */
+EMetadata::EMetadata(const EMetaArray& value):
+   EMetadata(Array)
+{
+   toArray() = value;
+}
+
+
+
+
+
+
+/*!
+ *
+ * @param value  
+ */
+EMetadata::EMetadata(const EMetaObject& value):
+   EMetadata(Object)
+{
+   toObject() = value;
+}
+
+
+
+
+
+
+/*!
  * Constructs a new metadata object from the given JSON value. If the JSON is an 
  * array or object this will recursively create all children metadata mirroring the 
  * structure of the given JSON. 

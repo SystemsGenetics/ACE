@@ -20,6 +20,12 @@
  *
  * @param application  
  *
+ * @param majorVersion  
+ *
+ * @param minorVersion  
+ *
+ * @param revision  
+ *
  * @param data  
  *
  * @param analytic  
@@ -28,12 +34,12 @@
  *
  * @param argv  
  */
-EApplication::EApplication(const QString& organization, const QString& application, std::unique_ptr<EAbstractDataFactory>&& data, std::unique_ptr<EAbstractAnalyticFactory>&& analytic, int& argc, char** argv):
+EApplication::EApplication(const QString& organization, const QString& application, int majorVersion, int minorVersion, int revision, std::unique_ptr<EAbstractDataFactory>&& data, std::unique_ptr<EAbstractAnalyticFactory>&& analytic, int& argc, char** argv):
    QCoreApplication(argc,argv),
    _options(argc,argv),
    _command(argc,argv)
 {
-   Ace::Settings::initialize(organization,application);
+   Ace::Settings::initialize(organization,application,majorVersion,minorVersion,revision);
    EAbstractDataFactory::setInstance(std::move(data));
    EAbstractAnalyticFactory::setInstance(std::move(analytic));
 }

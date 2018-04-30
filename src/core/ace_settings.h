@@ -18,10 +18,24 @@ namespace Ace
    class Settings
    {
    public:
+      static QString versionString();
       static QString organization();
       static QString application();
-      static void initialize(QString organization, QString application);
+      static QString appVersionString();
+      static int appMajorVersion();
+      static int appMinorVersion();
+      static int appRevision();
+      static void initialize(QString organization, QString application, int majorVersion, int minorVersion, int revision);
       static Settings& instance();
+      /*!
+       */
+      constexpr static int _majorVersion {0};
+      /*!
+       */
+      constexpr static int _minorVersion {0};
+      /*!
+       */
+      constexpr static int _revision {999};
       int platform() const;
       int device() const;
       OpenCL::Device* openCLDevicePointer() const;
@@ -38,6 +52,15 @@ namespace Ace
       void setChunkPrefix(const QString& prefix);
       void setChunkExtension(const QString& extension);
    private:
+      /*!
+       */
+      static int _appMajorVersion;
+      /*!
+       */
+      static int _appMinorVersion;
+      /*!
+       */
+      static int _appRevision;
       /*!
        */
       constexpr static int _platformDefault {0};

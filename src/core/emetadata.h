@@ -59,6 +59,11 @@ public:
       ,Object
    };
    EMetadata(Type type = Null);
+   EMetadata(double value);
+   EMetadata(const QString& value);
+   EMetadata(const QByteArray& value);
+   EMetadata(const EMetaArray& value);
+   EMetadata(const EMetaObject& value);
    EMetadata(const QJsonValue& value);
    EMetadata(const EMetadata& object);
    EMetadata(EMetadata&& object);

@@ -6,6 +6,7 @@
 #include "ace_analytic_merge.h"
 #include "ace_dataobject.h"
 #include "ace_qmpi.h"
+#include "ace_settings.h"
 #include "eabstractanalyticfactory.h"
 #include "eabstractanalytic_block.h"
 #include "eabstractdata.h"
@@ -680,14 +681,32 @@ Ace::DataObject* Manager::addInputData(const QString& path)
  *
  * Steps of Operation: 
  *
- * 1. Create and return a metadata object type, inserting the input and command 
- *    keys with the input and command sections of system metadata. 
+ * 1. Create and return a metadata object type, inserting the input, command, uuid, 
+ *    and version keys with the input and command sections of system metadata. 
  */
 EMetadata Manager::buildMeta(const QList<Ace::DataObject*>& inputs)
 {
    EMetadata ret(EMetadata::Object);
+   ret.toObject().insert("uuid",EMetadata(QUuid::createUuid().toString()));
+   ret.toObject().insert("version",buildMetaVersion());
    ret.toObject().insert("input",buildMetaInput(inputs));
    ret.toObject().insert("command",buildMetaCommand());
+   return ret;
+}
+
+
+
+
+
+
+/*!
+ */
+EMetadata Manager::buildMetaVersion()
+{
+   Settings& settings {Settings::instance()};
+   EMetadata ret(EMetadata::Object);
+   ret.toObject().insert("ace",EMetadata(settings.versionString()));
+   ret.toObject().insert(Settings::application(),EMetadata(settings.versionString()));
    return ret;
 }
 

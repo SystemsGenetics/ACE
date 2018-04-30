@@ -15,7 +15,7 @@ class EApplication : public QCoreApplication
 {
    Q_OBJECT
 public:
-   EApplication(const QString& organization, const QString& application, std::unique_ptr<EAbstractDataFactory>&& data, std::unique_ptr<EAbstractAnalyticFactory>&& analytic, int& argc, char** argv);
+   EApplication(const QString& organization, const QString& application, int majorVersion, int minorVersion, int revision, std::unique_ptr<EAbstractDataFactory>&& data, std::unique_ptr<EAbstractAnalyticFactory>&& analytic, int& argc, char** argv);
    virtual bool notify(QObject* receiver, QEvent* event) override final;
    int exec();
 private:

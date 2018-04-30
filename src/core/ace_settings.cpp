@@ -12,6 +12,15 @@ using namespace Ace;
 
 /*!
  */
+int Settings::_appMajorVersion {0};
+/*!
+ */
+int Settings::_appMinorVersion {0};
+/*!
+ */
+int Settings::_appRevision {0};
+/*!
+ */
 const char* Settings::_chunkDirDefault {"."};
 /*!
  */
@@ -57,6 +66,21 @@ Settings* Settings::_instance {nullptr};
 
 /*!
  */
+QString Settings::versionString()
+{
+   return QString::number(_majorVersion).append(".")
+                                        .append(QString::number(_minorVersion))
+                                        .append(".")
+                                        .append(QString::number(_revision));
+}
+
+
+
+
+
+
+/*!
+ */
 QString Settings::organization()
 {
    return _organization;
@@ -80,15 +104,82 @@ QString Settings::application()
 
 
 /*!
+ */
+QString Settings::appVersionString()
+{
+   return QString::number(_appMajorVersion).append(".")
+                                           .append(QString::number(_appMinorVersion))
+                                           .append(".")
+                                           .append(QString::number(_appRevision));
+}
+
+
+
+
+
+
+/*!
+ */
+int Settings::appMajorVersion()
+{
+   return _appMajorVersion;
+}
+
+
+
+
+
+
+/*!
+ */
+int Settings::appMinorVersion()
+{
+   return _appMinorVersion;
+}
+
+
+
+
+
+
+/*!
+ */
+int Settings::appRevision()
+{
+   return _appRevision;
+}
+
+
+
+
+
+
+/*!
  *
  * @param organization  
  *
  * @param application  
+ *
+ * @param majorVersion  
+ *
+ * @param minorVersion  
+ *
+ * @param revision  
  */
-void Settings::initialize(QString organization, QString application)
+void Settings::initialize(QString organization, QString application, int majorVersion, int minorVersion, int revision)
 {
+   if ( application == QString("ace") )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(QObject::tr("Invalid Argument"));
+      e.setDetails(QObject::tr("Cannot set application name to 'ace'."));
+      throw e;
+   }
    _organization = organization;
    _application = application;
+   _appMajorVersion = majorVersion;
+   _appMinorVersion = minorVersion;
+   _appRevision = revision;
 }
 
 
