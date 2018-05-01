@@ -39,7 +39,7 @@ public:
    /*!
     * This interface processes the given result block. The order of indexes called 
     * will always be in order starting at 0. If this analytic does not produce work 
-    * blocks then this is a generic and empty result block which only contains the 
+    * blocks then the given block is a generic and empty block which only contains the 
     * index. 
     *
     * @param result Pointer to result block that is processed. 

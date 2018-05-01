@@ -198,8 +198,11 @@ void MPISlave::setupOpenCL()
       }
       if ( device )
       {
-         _runner = new OpenCLRun(analytic()->makeOpenCL(),device,this,this);
-         _acu = true;
+         if ( EAbstractAnalytic::OpenCL* opencl = analytic()->makeOpenCL() )
+         {
+            _runner = new OpenCLRun(opencl,device,this,this);
+            _acu = true;
+         }
       }
    }
 }

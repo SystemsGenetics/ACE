@@ -221,7 +221,10 @@ void Chunk::setupOpenCL()
       }
       if ( device )
       {
-         _runner = new OpenCLRun(analytic()->makeOpenCL(),device,this,this);
+         if ( EAbstractAnalytic::OpenCL* opencl = analytic()->makeOpenCL() )
+         {
+            _runner = new OpenCLRun(opencl,device,this,this);
+         }
       }
    }
 }
@@ -245,7 +248,7 @@ void Chunk::setupSerial()
       {
          E_MAKE_EXCEPTION(e);
          e.setTitle(tr("Logic Error"));
-         e.setDetails(tr("Cannot run simple analytic in MPI mode."));
+         e.setDetails(tr("Cannot run simple analytic in chunk mode."));
          throw e;
       }
    }

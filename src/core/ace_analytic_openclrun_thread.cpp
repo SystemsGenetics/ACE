@@ -15,10 +15,13 @@ using namespace Ace::Analytic;
 
 
 /*!
+ * Constructs a new thread object with the given abstract OpenCL worker and 
+ * optional parent. 
  *
- * @param worker  
+ * @param worker An abstract OpenCL worker used to do the actual processing of work 
+ *               blocks into result blocks. 
  *
- * @param parent  
+ * @param parent Optional parent of this new thread object. 
  */
 OpenCLRun::Thread::Thread(std::unique_ptr<EAbstractAnalytic::OpenCL::Worker>&& worker, QObject* parent):
    QThread(parent),
@@ -33,8 +36,21 @@ OpenCLRun::Thread::Thread(std::unique_ptr<EAbstractAnalytic::OpenCL::Worker>&& w
 
 
 /*!
+ * Executes the processing of the given work block on a separate thread from the 
+ * one called this method. This returns immediately after starting the separate 
+ * thread. If this thread already contains a result block then an exception is 
+ * thrown. 
  *
- * @param block  
+ * @param block The work block that is processed on a separate thread. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If this thread already contains a result block then throw an exception, else 
+ *    go to the next step. 
+ *
+ * 2. Delete any previous work block this object contains, set the given work block 
+ *    as this objects new work block and then start its separate thread. 
  */
 void OpenCLRun::Thread::execute(std::unique_ptr<EAbstractAnalytic::Block>&& block)
 {
@@ -57,6 +73,23 @@ void OpenCLRun::Thread::execute(std::unique_ptr<EAbstractAnalytic::Block>&& bloc
 
 
 /*!
+ * Returns the result block produces on this object's separate thread after 
+ * finishing. If the separate thread threw an exception that exception is thrown 
+ * again on the thread calling this method. If there is not result block an 
+ * exception is also thrown. 
+ *
+ * @return Result block produced by this object's separate thread execution. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If this object has a saved exception from its separate thread then copy it 
+ *    and throw it on this thread, else go to the next step. 
+ *
+ * 2. If this object does not contain a result block then throw an exception, else 
+ *    go the next step. 
+ *
+ * 3. Release this object's saved result block from its ownership and return it. 
  */
 std::unique_ptr<EAbstractAnalytic::Block> OpenCLRun::Thread::result()
 {
@@ -86,6 +119,16 @@ std::unique_ptr<EAbstractAnalytic::Block> OpenCLRun::Thread::result()
 
 
 /*!
+ * Executes this object's saved work block on its separate thread, saving the 
+ * result block. If any exception is thrown within this separate thread it is 
+ * caught and saved. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Process this object's saved work block, saving the result block and 
+ *    transferring it to this object's main thread. If any ACE exception occurs 
+ *    then catch it and save it. 
  */
 void OpenCLRun::Thread::run()
 {

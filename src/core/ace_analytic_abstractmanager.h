@@ -20,21 +20,20 @@ namespace Ace
    {
       /*!
        * This represents a session manager for a single analytic run for a specific 
-       * analytic type. This class takes care of processing all input for a new analytic 
-       * run and starts the process of running it, along with cleaning up all open files 
-       * and data objects once the analytic has finished running. An implementation of 
-       * this class is responsible for running the analytic once this class starts it and 
+       * analytic type. This class provides methods for all input for a new analytic run 
+       * and starts the process of running it, along with cleaning up all open files and 
+       * data objects once the analytic has finished running. An implementation of this 
+       * class is responsible for running the analytic once this class starts it and 
        * signaling when it is finished. This class creates the correct type of 
        * implementation class depending on the input given and status of things like MPI. 
-       * This class also manages its own deletion, calling on the qt system to delete it 
-       * once it finishes executing its analytic or termination is requested. 
+       * This is the root analytic class that should be used to interface with the 
+       * analytic run system outside of the core library. 
        */
       class AbstractManager : public QObject
       {
          Q_OBJECT
       public:
          static std::unique_ptr<Ace::Analytic::AbstractManager> makeManager(quint16 type, int index, int size);
-         AbstractManager(quint16 type);
          int size() const;
          EAbstractAnalytic::Input::Type type(int index) const;
          QVariant data(int index, EAbstractAnalytic::Input::Role role) const;
@@ -62,6 +61,7 @@ namespace Ace
       protected slots:
          virtual void start();
       protected:
+         AbstractManager(quint16 type);
          virtual QFile* addOutputFile(const QString& path);
          virtual Ace::DataObject* addOutputData(const QString& path, quint16 type, const EMetadata& system);
          std::unique_ptr<EAbstractAnalytic::Block> makeWork(int index);
@@ -92,9 +92,13 @@ namespace Ace
           */
          EAbstractAnalytic::Input* _input;
          /*!
+          * Temporary list of input values for this manager's analytic that is used to hold 
+          * those values until setting them is finished and then added to the analytic. 
           */
          QVector<QVariant> _inputs;
          /*!
+          * Pointer list of new output data objects this manager saves so they can be 
+          * finished once this manager's analytic is finished. 
           */
          QList<Ace::DataObject*> _outputData;
          /*!

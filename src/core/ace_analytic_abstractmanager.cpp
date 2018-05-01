@@ -43,6 +43,19 @@ using namespace Ace::Analytic;
  *             processes running the analytic process. 
  *
  * @return Pointer to the new manager object. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the given size is greater than 1 and the given index is less than zero 
+ *    then return a new merge manager, else if the index is greater to or equal to 
+ *    0 then return a new chunk manager, else go to the next step. 
+ *
+ * 2. If the MPI size is greater than 1 and this is the master process then return 
+ *    a new MPI master manager, else if this is a slave process return a new MPI 
+ *    slave manager, else go to the next step. 
+ *
+ * 3. Return a new single manager. 
  */
 std::unique_ptr<Ace::Analytic::AbstractManager> AbstractManager::makeManager(quint16 type, int index, int size)
 {
@@ -72,47 +85,6 @@ std::unique_ptr<Ace::Analytic::AbstractManager> AbstractManager::makeManager(qui
    {
       return unique_ptr<AbstractManager>(new Single(type));
    }
-}
-
-
-
-
-
-
-/*!
- * Constructs a new manager object with the given analytic type. If the given type 
- * is out of range then an exception is thrown. 
- *
- * @param type Analytic type that is used for this manager's analytic run. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the given analytic type is out of range then throw an exception, else go 
- *    to the next step. 
- *
- * 2. Create a new abstract analytic object of the given type and set it as this 
- *    manager's analytic. 
- *
- * 3. Create a new abstract analytic input object for this manager and resize the 
- *    array of arguments to the analytic input size. 
- */
-AbstractManager::AbstractManager(quint16 type)
-{
-   EAbstractAnalyticFactory& factory {EAbstractAnalyticFactory::instance()};
-   if ( type >= factory.size() )
-   {
-      E_MAKE_EXCEPTION(e);
-      e.setTitle(tr("Invalid Argument"));
-      e.setDetails(tr("%1 is not a valid analytic type. (max is %2)")
-                   .arg(type)
-                   .arg(factory.size() - 1));
-      throw e;
-   }
-   _analytic = factory.make(type).release();
-   _analytic->setParent(this);
-   _input = _analytic->makeInput();
-   _inputs.resize(_input->size());
 }
 
 
@@ -245,8 +217,7 @@ void AbstractManager::terminationRequested()
  * 2. Call all this object's output abstract data finish interfaces and set their 
  *    user metadata to an empty object. 
  *
- * 3. Signal this manager is finished with execution and call on qt to delete this 
- *    manager. 
+ * 3. Signal this manager is finished with execution and ready to be deleted. 
  */
 void AbstractManager::finish()
 {
@@ -270,6 +241,48 @@ void AbstractManager::finish()
  */
 void AbstractManager::start()
 {}
+
+
+
+
+
+
+/*!
+ * Constructs a new manager object with the given analytic type. If the given type 
+ * is out of range then an exception is thrown. This is protected because this 
+ * class should never created without an implementation. 
+ *
+ * @param type Analytic type that is used for this manager's analytic run. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the given analytic type is out of range then throw an exception, else go 
+ *    to the next step. 
+ *
+ * 2. Create a new abstract analytic object of the given type and set it as this 
+ *    manager's analytic. 
+ *
+ * 3. Create a new abstract analytic input object for this manager and resize the 
+ *    array of arguments to the analytic input size. 
+ */
+AbstractManager::AbstractManager(quint16 type)
+{
+   EAbstractAnalyticFactory& factory {EAbstractAnalyticFactory::instance()};
+   if ( type >= factory.size() )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Invalid Argument"));
+      e.setDetails(tr("%1 is not a valid analytic type. (max is %2)")
+                   .arg(type)
+                   .arg(factory.size() - 1));
+      throw e;
+   }
+   _analytic = factory.make(type).release();
+   _analytic->setParent(this);
+   _input = _analytic->makeInput();
+   _inputs.resize(_input->size());
+}
 
 
 
@@ -355,8 +368,19 @@ Ace::DataObject* AbstractManager::addOutputData(const QString& path, quint16 typ
 
 
 /*!
+ * Returns a new work block from this manager's analytic with the given index. This 
+ * also does error checking on the new work block. 
  *
  * @param index  
+ *
+ * @return Pointer to a new work block with the given index. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Call this manager's analytic interface to make a new work block with the 
+ *    given index. If the analytic returned a null pointer or the work block has an 
+ *    incorrect index then throw an exception, else return the new work block. 
  */
 std::unique_ptr<EAbstractAnalytic::Block> AbstractManager::makeWork(int index)
 {
@@ -386,10 +410,25 @@ std::unique_ptr<EAbstractAnalytic::Block> AbstractManager::makeWork(int index)
 
 
 /*!
+ * Processes the given result block with this manager's analytic. This also does 
+ * error checking and determines the progress of this analytic run. 
  *
- * @param result  
+ * @param result The result block that is processed by this manager's analytic. 
  *
- * @param expectedIndex  
+ * @param expectedIndex The expected index that should be equal to the given result 
+ *                      block's index. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the given result block's index is not equal to the expected index then 
+ *    throw an exception, else go to the next step. 
+ *
+ * 2. Process the result block with this manager's analytic and then delete it. 
+ *
+ * 3. Determine the progress made from processing this result block. If the percent 
+ *    complete has changed since last time this was called then emit the progressed 
+ *    signal. 
  */
 void AbstractManager::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result, int expectedIndex)
 {
@@ -700,6 +739,15 @@ EMetadata AbstractManager::buildMeta(const QList<Ace::DataObject*>& inputs)
 
 
 /*!
+ * Builds the version section of the system metadata for new output data objects. 
+ *
+ * @return Version section of system metadata for new output data objects. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Create a new metadata object type, inserting the ace and program versions and 
+ *    then returning the object. 
  */
 EMetadata AbstractManager::buildMetaVersion()
 {
