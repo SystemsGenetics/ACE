@@ -15,13 +15,13 @@ using namespace Ace::Analytic;
 
 
 /*!
+ * Constructs a new MPI master manager with the given analytic type. 
  *
- * @param type  
+ * @param type The analytic type this manager will use. 
  */
 MPIMaster::MPIMaster(quint16 type):
    AbstractManager(type),
-   _mpi(QMPI::instance()),
-   _doneSlaves(_mpi.size() - 1,false)
+   _mpi(QMPI::instance())
 {
    connect(&_mpi,&QMPI::dataReceived,this,&MPIMaster::dataReceived);
 }
@@ -32,6 +32,7 @@ MPIMaster::MPIMaster(quint16 type):
 
 
 /*!
+ * Properly shuts down the MPI system. 
  */
 MPIMaster::~MPIMaster()
 {
@@ -44,6 +45,10 @@ MPIMaster::~MPIMaster()
 
 
 /*!
+ * Implements the interface that tests if this abstract input is finished and 
+ * received all result blocks for its analytic. 
+ *
+ * @return True if this abstract input is finished or false otherwise. 
  */
 bool MPIMaster::isFinished() const
 {
@@ -56,6 +61,10 @@ bool MPIMaster::isFinished() const
 
 
 /*!
+ * Implements the interface that returns the next expected result block index to 
+ * maintain order of result blocks. 
+ *
+ * @return The next expected result block index to maintain order. 
  */
 int MPIMaster::index() const
 {
@@ -68,8 +77,18 @@ int MPIMaster::index() const
 
 
 /*!
+ * Implements the interface that is called to save the given result block to the 
+ * underlying analytic and it can be assumed that the index order is maintained 
+ * from least to greatest. 
  *
- * @param result  
+ * @param result The result block that is processed by this manager's analytic. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Write the result block to this manager's underlying analytic. If this manager 
+ *    is finished with all result blocks then emit the done signal and call the 
+ *    manager's finish slot. 
  */
 void MPIMaster::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 {
@@ -87,10 +106,18 @@ void MPIMaster::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 
 
 /*!
+ * Called when new data has been received from one of the slave nodes. This takes 
+ * the data and processes it depending on what it is. 
  *
- * @param data  
+ * @param data The data received from a slave node. 
  *
- * @param fromRank  
+ * @param fromRank The rank of the slave node process that sent the received data. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Extract the index from the given data. If the index is less than 0 and a code 
+ *    then process it as a code, else process it as a result block. 
  */
 void MPIMaster::dataReceived(const QByteArray& data, int fromRank)
 {
@@ -111,10 +138,29 @@ void MPIMaster::dataReceived(const QByteArray& data, int fromRank)
 
 
 /*!
+ * Processes a special code sent to this master node by a slave node. The only 
+ * special codes processes are for the slave node signaling it is ready to process 
+ * blocks. 
  *
- * @param code  
+ * @param code The special code sent to this master node by a slave node. 
  *
- * @param fromRank  
+ * @param fromRank The process rank of the slave node that sent the code. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the given code is not a ready signal and therefore unknown then throw an 
+ *    exception, else go to the next step. 
+ *
+ * 2. If there is no more work blocks to be processed then send a terminate code to 
+ *    the slave node and exit, else go to the next step. 
+ *
+ * 3. Determine the amount of blocks to be initially sent to the slave node, based 
+ *    off the buffer size setting and thread size if the slave node is running in 
+ *    OpenCL mode. 
+ *
+ * 4. Send blocks in the amount determined or until there is no more work blocks to 
+ *    send. 
  */
 void MPIMaster::processCode(int code, int fromRank)
 {
@@ -134,7 +180,7 @@ void MPIMaster::processCode(int code, int fromRank)
          throw e;
       }
    }
-   if ( isFinished() )
+   if ( _nextWork >= analytic()->size() )
    {
       terminate(fromRank);
    }
@@ -154,10 +200,26 @@ void MPIMaster::processCode(int code, int fromRank)
 
 
 /*!
+ * Processes a result block sent to this master node by a slave node by saving it 
+ * to this abstract input's hopper for sorting and checking if it is done. 
  *
- * @param data  
+ * @param data The data containing a result block sent to this master node by a 
+ *             slave node. 
  *
- * @param fromRank  
+ * @param fromRank The process rank of the slave node that sent the result block. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Make a blank result block from this manager's analytic and load the given 
+ *    data into it. If the analytic fails making a blank result block then throw an 
+ *    exception, else go to the next step. 
+ *
+ * 2. Save the result block to this abstract input which will sort all result 
+ *    blocks using its internal sorting hopper. 
+ *
+ * 3. If there are more work blocks to be processed then send the slave node a new 
+ *    work block to process, else send the terminate code to the slave node. 
  */
 void MPIMaster::process(const QByteArray& data, int fromRank)
 {
@@ -188,8 +250,15 @@ void MPIMaster::process(const QByteArray& data, int fromRank)
 
 
 /*!
+ * Sends a terminate code to the slave node with the given process rank. 
  *
- * @param rank  
+ * @param rank Process rank of the slave node who is sent the terminate code. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Create a special data block with the terminate signal and send it to the 
+ *    slave node with the given rank. 
  */
 void MPIMaster::terminate(int rank)
 {
