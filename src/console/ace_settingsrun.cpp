@@ -173,29 +173,31 @@ void SettingsRun::setACU()
       e.setDetails(QObject::tr("Settings set ACU requires sub argument, exiting..."));
       throw e;
    }
-   QStringList list {_command.first().split(':')};
-   if ( list.size() != 2 )
+   int platform {-1};
+   int device {0};
+   if ( _command.first() != QString("none") )
    {
-      invalid();
-   }
-   bool ok;
-   int platform {list.at(0).toInt(&ok)};
-   if ( !ok )
-   {
-      invalid();
-   }
-   int device {list.at(1).toInt(&ok)};
-   if ( !ok )
-   {
-      invalid();
-   }
-   if ( platform >= 0 && device >= 0 )
-   {
-      if ( platform >= OpenCL::Platform::size() )
+      QStringList list {_command.first().split(':')};
+      if ( list.size() != 2 )
       {
          invalid();
       }
-      if ( device >= OpenCL::Platform::get(platform)->deviceSize() )
+      bool ok;
+      platform = list.at(0).toInt(&ok);
+      if ( !ok )
+      {
+         invalid();
+      }
+      device = list.at(1).toInt(&ok);
+      if ( !ok )
+      {
+         invalid();
+      }
+      if ( platform < 0 || platform >= OpenCL::Platform::size() )
+      {
+         invalid();
+      }
+      if ( device < 0 || device >= OpenCL::Platform::get(platform)->deviceSize() )
       {
          invalid();
       }
@@ -387,7 +389,7 @@ void SettingsRun::listACU()
                 << ":"
                 << QString::number(d)
                 << " "
-                << OpenCL::Platform::get(p)->device(p)->name()
+                << OpenCL::Platform::get(p)->device(d)->name()
                 << "\n";
       }
    }
