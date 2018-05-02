@@ -236,18 +236,6 @@ void AbstractManager::finish()
 
 
 /*!
- * This interface is called once to begin the analytic run for this manager after 
- * all argument input has been set. The default implementation does nothing. 
- */
-void AbstractManager::start()
-{}
-
-
-
-
-
-
-/*!
  * Constructs a new manager object with the given analytic type. If the given type 
  * is out of range then an exception is thrown. This is protected because this 
  * class should never created without an implementation. 
@@ -480,6 +468,18 @@ const EAbstractAnalytic* AbstractManager::analytic() const
 {
    return _analytic;
 }
+
+
+
+
+
+
+/*!
+ * This interface is called once to begin the analytic run for this manager after 
+ * all argument input has been set. The default implementation does nothing. 
+ */
+void AbstractManager::start()
+{}
 
 
 

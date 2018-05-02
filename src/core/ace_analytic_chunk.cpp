@@ -19,12 +19,21 @@ using namespace Ace::Analytic;
 
 
 /*!
+ * Constructs a new chunk manager with the given analytic type, chunk index, and 
+ * chunk size. 
  *
- * @param type  
+ * @param type The analytic type that is used. 
  *
- * @param index  
+ * @param index The chunk index for this process. 
  *
- * @param size  
+ * @param size The chunk size which is the total number of chunks the analytic is 
+ *             split into. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Setup OpenCL, setup serial if OpenCL fails, and connect this abstract run's 
+ *    finished signal with this manager's finish slot. 
  */
 Chunk::Chunk(quint16 type, int index, int size):
    AbstractManager(type),
@@ -42,6 +51,7 @@ Chunk::Chunk(quint16 type, int index, int size):
 
 
 /*!
+ * Deletes the qt data stream used for saved data to the chunk file. 
  */
 Chunk::~Chunk()
 {
@@ -54,6 +64,12 @@ Chunk::~Chunk()
 
 
 /*!
+ * Implements the interface that tests if this abstract input is finished and 
+ * received all result blocks for its analytic. This implementation is special in 
+ * that it only processes a chunk of its analytic work blocks therefore it is 
+ * finished once it has received all of its portion of result blocks. 
+ *
+ * @return True if this abstract input is finished or false otherwise. 
  */
 bool Chunk::isFinished() const
 {
@@ -66,8 +82,11 @@ bool Chunk::isFinished() const
 
 
 /*!
+ * Implements the interface that opens a new file set to write only and truncate 
+ * with the given path. This implementation does nothing and returns a null pointer 
+ * because a chunk manager saves result blocks to a special binary file. 
  *
- * @param path  
+ * @param path Unused path to file. 
  */
 QFile* Chunk::addOutputFile(const QString& path)
 {
@@ -81,12 +100,16 @@ QFile* Chunk::addOutputFile(const QString& path)
 
 
 /*!
+ * This interface opens a new data object with the given path, erasing any data the 
+ * file may have contained and returning a pointer to the new data object. This 
+ * implementation does nothing and returns a null pointer because a chunk manager 
+ * saved result blocks to a special binary file. 
  *
- * @param path  
+ * @param path Unused path to data object file. 
  *
- * @param type  
+ * @param type Unused data object type. 
  *
- * @param system  
+ * @param system Unused system metadata for new data objects. 
  */
 Ace::DataObject* Chunk::addOutputData(const QString& path, quint16 type, const EMetadata& system)
 {
@@ -102,12 +125,23 @@ Ace::DataObject* Chunk::addOutputData(const QString& path, quint16 type, const E
 
 
 /*!
+ * Implements the interface that saves the given result block to its underlying 
+ * analytic and assumes the order of indexes given is not sorted and random. This 
+ * implementation simply saves the raw result block to a temporary binary file. 
  *
- * @param result  
+ * @param result The result block that is saved to a temporary binary file. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. save the given result block to the temporary binary file deleting it and 
+ *    increment the next result. If any write error to the file occurs then throw 
+ *    an exception. 
  */
 void Chunk::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 {
    QByteArray data {result->toBytes()};
+   result.reset();
    *_stream << data.size();
    _stream->device()->write(data);
    ++_nextResult;
@@ -128,6 +162,15 @@ void Chunk::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 
 
 /*!
+ * Implements the interface that is called once to begin the analytic run for this 
+ * manager after all argument input has been set. This implementation initializes 
+ * the chunk file, indexes, and schedules the process slot to be called. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Setup the chunk file, setup the chunk indexes, and schedule the process slot 
+ *    to be called. 
  */
 void Chunk::start()
 {
@@ -142,6 +185,14 @@ void Chunk::start()
 
 
 /*!
+ * Processes the work blocks this chunk manager is responsible for saving, adding 
+ * them to this manager's abstract run object for processing. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. While this manager still has work block indexes to process make the next work 
+ *    block and add it to this manager's abstract run object. 
  */
 void Chunk::process()
 {
@@ -157,6 +208,20 @@ void Chunk::process()
 
 
 /*!
+ * Opens this chunk manager's temporary binary file as write only and truncated. 
+ * This also creates this manager's qt data stream used for file output. If opening 
+ * fails then an exception is thrown. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Determine this chunk's file name from the global settings object. 
+ *
+ * 2. Create a new qt file and open this chunk's file as write only and truncate. 
+ *    If opening fails then throw an exception, else go to the next step. 
+ *
+ * 3. Save the file name of this chunk's binary file and create a new qt data 
+ *    stream from the open file. 
  */
 void Chunk::setupFile()
 {
@@ -186,6 +251,15 @@ void Chunk::setupFile()
 
 
 /*!
+ * Determines the starting work block index and ending work block index for this 
+ * chunk manager. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Determine the chunk size, or how many blocks each chunk is responsible for, 
+ *    and then determine the first next work index and the end index for this chunk 
+ *    manager. 
  */
 void Chunk::setupIndexes()
 {
@@ -201,6 +275,23 @@ void Chunk::setupIndexes()
 
 
 /*!
+ * Attempts to initialize an OpenCL run object for block processing for this 
+ * manager. If successful sets this manager's abstract run pointer. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the singleton settings object does not contain a valid OpenCL device 
+ *    pointer then do nothing and exit, else go to the next step. 
+ *
+ * 2. Attempt to find an OpenCL index that is the nth device based off this slave 
+ *    node's process ranking minus one to account for the master node. All devices 
+ *    from all platforms are considered. If there is not enough devices then no 
+ *    device is found. 
+ *
+ * 3. If an OpenCL device was found and this manager's analytic creates a valid 
+ *    abstract OpenCL object then create a new OpenCL run object and set it to this 
+ *    object's run pointer. 
  */
 void Chunk::setupOpenCL()
 {
@@ -235,6 +326,19 @@ void Chunk::setupOpenCL()
 
 
 /*!
+ * Initializes this object's abstract run object as a serial run object if it has 
+ * not already been set. If this manager's analytic fails creating a valid abstract 
+ * serial object then an exception is thrown. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If this object already has an abstract run object then do nothing and exit, 
+ *    else go to the next step. 
+ *
+ * 2. If this manager's analytic creates a valid abstract serial object then create 
+ *    a new serial run object and set it to this object's run pointer, else throw 
+ *    an exception. 
  */
 void Chunk::setupSerial()
 {

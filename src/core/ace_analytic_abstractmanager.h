@@ -58,8 +58,6 @@ namespace Ace
       public slots:
          void terminationRequested();
          void finish();
-      protected slots:
-         virtual void start();
       protected:
          AbstractManager(quint16 type);
          virtual QFile* addOutputFile(const QString& path);
@@ -68,6 +66,8 @@ namespace Ace
          void writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result, int expectedIndex);
          EAbstractAnalytic* analytic();
          const EAbstractAnalytic* analytic() const;
+      protected slots:
+         virtual void start();
       private:
          void inputBasic();
          void inputFiles();
