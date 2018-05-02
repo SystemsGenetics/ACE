@@ -11,51 +11,68 @@ using namespace Ace;
 
 
 /*!
+ * Major version of the application using ACE. 
  */
 int Settings::_appMajorVersion {0};
 /*!
+ * Minor version of the application using ACE. 
  */
 int Settings::_appMinorVersion {0};
 /*!
+ * Revision of the application using ACE. 
  */
 int Settings::_appRevision {0};
 /*!
- */
-const char* Settings::_chunkDirDefault {"."};
-/*!
- */
-const char* Settings::_chunkPrefixDefault {"chunk"};
-/*!
- */
-const char* Settings::_chunkExtensionDefault {"abd"};
-/*!
+ * Organization name of the application using ACE. 
  */
 QString Settings::_organization;
 /*!
+ * Name of the application using ACE. 
  */
-QString Settings::_application {"ace"};
+QString Settings::_application;
 /*!
+ * The default chunk working directory value. 
+ */
+const char* Settings::_chunkDirDefault {"."};
+/*!
+ * The default chunk file prefix value. 
+ */
+const char* Settings::_chunkPrefixDefault {"chunk"};
+/*!
+ * The default chunk file extension value. 
+ */
+const char* Settings::_chunkExtensionDefault {"abd"};
+/*!
+ * The qt settings key used to persistently store the platform index value. 
  */
 const char* Settings::_platformKey {"opencl.platform"};
 /*!
+ * The qt settings key used to persistently store the device index value. 
  */
 const char* Settings::_deviceKey {"opencl.device"};
 /*!
+ * The qt settings key used to persistently store the thread size value. 
  */
 const char* Settings::_threadSizeKey {"opencl.thread.size"};
 /*!
+ * The qt settings key used to persistently store the buffer size value. 
  */
 const char* Settings::_bufferSizeKey {"mpi.buffersize"};
 /*!
+ * The qt settings key used to persistently store the chunk working directory 
+ * value. 
  */
 const char* Settings::_chunkDirKey {"chunk.directory"};
 /*!
+ * The qt settings key used to persistently store the chunk file prefix value. 
  */
 const char* Settings::_chunkPrefixKey {"chunk.prefix"};
 /*!
+ * The qt settings key used to persistently store the chunk file extension value. 
  */
 const char* Settings::_chunkExtensionKey {"chunk.extension"};
 /*!
+ * Points to the global singleton instance of this class. 
  */
 Settings* Settings::_instance {nullptr};
 
@@ -65,6 +82,9 @@ Settings* Settings::_instance {nullptr};
 
 
 /*!
+ * Returns the version of the ACE library as a string. 
+ *
+ * @return Version of ACE library as a string. 
  */
 QString Settings::versionString()
 {
@@ -80,6 +100,9 @@ QString Settings::versionString()
 
 
 /*!
+ * Returns the organization of the application using ACE. 
+ *
+ * @return Organization of the application using ACE. 
  */
 QString Settings::organization()
 {
@@ -92,6 +115,9 @@ QString Settings::organization()
 
 
 /*!
+ * Returns the name of the application using ACE. 
+ *
+ * @return Name of the application using ACE. 
  */
 QString Settings::application()
 {
@@ -104,6 +130,9 @@ QString Settings::application()
 
 
 /*!
+ * Returns the version of the application using ACE as a string. 
+ *
+ * @return Version of the application using ACE as a string. 
  */
 QString Settings::appVersionString()
 {
@@ -119,6 +148,9 @@ QString Settings::appVersionString()
 
 
 /*!
+ * Returns the major version of the application using ACE. 
+ *
+ * @return Major version of the application using ACE. 
  */
 int Settings::appMajorVersion()
 {
@@ -131,6 +163,9 @@ int Settings::appMajorVersion()
 
 
 /*!
+ * Returns the minor version of the application using ACE. 
+ *
+ * @return Minor version of the application using ACE. 
  */
 int Settings::appMinorVersion()
 {
@@ -143,6 +178,9 @@ int Settings::appMinorVersion()
 
 
 /*!
+ * The revision of the application using ACE. 
+ *
+ * @return Revision of the application using ACE. 
  */
 int Settings::appRevision()
 {
@@ -155,16 +193,29 @@ int Settings::appRevision()
 
 
 /*!
+ * Initializes and sets the organization name, name, and version numbers of the 
+ * application using ACE. This must be called before the settings singleton 
+ * instance is created. The application name cannot be "ace" or an exception is 
+ * thrown. 
  *
- * @param organization  
+ * @param organization Organization name of the application using ACE. 
  *
- * @param application  
+ * @param application Name of the application using ACE. 
  *
- * @param majorVersion  
+ * @param majorVersion Major version of the application using ACE. 
  *
- * @param minorVersion  
+ * @param minorVersion Minor version of the application using ACE. 
  *
- * @param revision  
+ * @param revision Revision of the application using ACE. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the given application name is equal to ace then throw an exception, else 
+ *    go to the next step. 
+ *
+ * 2. Set the organization name, name, and version numbers from the given 
+ *    application info. 
  */
 void Settings::initialize(QString organization, QString application, int majorVersion, int minorVersion, int revision)
 {
@@ -188,6 +239,18 @@ void Settings::initialize(QString organization, QString application, int majorVe
 
 
 /*!
+ * Returns a reference to the singleton instance of this class. If the singleton 
+ * instance has not yet been created then it is before returning. 
+ *
+ * @return Reference to the singleton instance of this class. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the global pointer to the singleton instance of this class is null then 
+ *    create a new instance and set it to the global pointer. 
+ *
+ * 2. Return a reference to the singleton instance at the global pointer. 
  */
 Settings& Settings::instance()
 {
@@ -204,6 +267,9 @@ Settings& Settings::instance()
 
 
 /*!
+ * Returns the platform index of the preferred OpenCL device. 
+ *
+ * @return Platform index of the preferred OpenCL device. 
  */
 int Settings::platform() const
 {
@@ -216,6 +282,9 @@ int Settings::platform() const
 
 
 /*!
+ * Returns the device index of the preferred OpenCL device. 
+ *
+ * @return Device index of the preferred OpenCL device. 
  */
 int Settings::device() const
 {
@@ -228,6 +297,17 @@ int Settings::device() const
 
 
 /*!
+ * Returns a pointer to the preferred OpenCL device or null if the preference is 
+ * none. 
+ *
+ * @return Pointer to preferred OpenCL device or null if none is preferred. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the platform index is out of range or the device index is out of range 
+ *    then return a null pointer, else return a pointer to the device with the 
+ *    platform and device indexes. 
  */
 OpenCL::Device* Settings::openCLDevicePointer() const
 {
@@ -252,6 +332,9 @@ OpenCL::Device* Settings::openCLDevicePointer() const
 
 
 /*!
+ * Returns the thread size for accelerated runs. 
+ *
+ * @return Thread size for accelerated runs. 
  */
 int Settings::threadSize() const
 {
@@ -264,6 +347,10 @@ int Settings::threadSize() const
 
 
 /*!
+ * Returns the MPI buffer size used to determine the number of blocks are buffered 
+ * for input to each slave node. 
+ *
+ * @return MPI buffer size. 
  */
 int Settings::bufferSize() const
 {
@@ -276,6 +363,9 @@ int Settings::bufferSize() const
 
 
 /*!
+ * Returns the working directory path for chunk runs. 
+ *
+ * @return Working directory path for chunk runs. 
  */
 QString Settings::chunkDir() const
 {
@@ -288,6 +378,9 @@ QString Settings::chunkDir() const
 
 
 /*!
+ * Returns the chunk file name prefix. 
+ *
+ * @return Chunk file name prefix. 
  */
 QString Settings::chunkPrefix() const
 {
@@ -300,6 +393,9 @@ QString Settings::chunkPrefix() const
 
 
 /*!
+ * Returns the chunk file extension. 
+ *
+ * @return Chunk file extension. 
  */
 QString Settings::chunkExtension() const
 {
@@ -312,8 +408,15 @@ QString Settings::chunkExtension() const
 
 
 /*!
+ * Sets the platform index for the preferred OpenCL device. 
  *
- * @param index  
+ * @param index Index of the platform of the preferred OpenCL device. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the new given platform index is different from the current platform index 
+ *    then set it to the new one and set the value in persistent storage. 
  */
 void Settings::setPlatform(int index)
 {
@@ -330,8 +433,15 @@ void Settings::setPlatform(int index)
 
 
 /*!
+ * Sets the index of the preferred OpenCL device. 
  *
- * @param index  
+ * @param index Index of the preferred OpenCL device. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the new given device index is different from the current device index then 
+ *    set it to the new one and set the value in persistent storage. 
  */
 void Settings::setDevice(int index)
 {
@@ -348,8 +458,19 @@ void Settings::setDevice(int index)
 
 
 /*!
+ * Sets the thread size for accelerated runs. The size must be one or greater or an 
+ * exception is thrown. 
  *
- * @param size  
+ * @param size Thread size for accelerated runs. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the new given thread size is less than one then throw an exception, else 
+ *    go to the next step. 
+ *
+ * 2. If the new given thread size is different from the current thread size then 
+ *    set it to the new one and set the value in persistent storage. 
  */
 void Settings::setThreadSize(int size)
 {
@@ -373,8 +494,19 @@ void Settings::setThreadSize(int size)
 
 
 /*!
+ * Sets the MPI buffer size used to determine the number of blocks are buffered for 
+ * input to each slave node. 
  *
- * @param size  
+ * @param size new MPI buffer size. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the new given buffer size is less than one then throw an exception, else 
+ *    go to the next step. 
+ *
+ * 2. If the new given buffer size is different from the current buffer size then 
+ *    set it to the new one and set the value in persistent storage. 
  */
 void Settings::setBufferSize(int size)
 {
@@ -398,8 +530,16 @@ void Settings::setBufferSize(int size)
 
 
 /*!
+ * Sets the working directory for chunk runs. 
  *
- * @param path  
+ * @param path Working directory path for chunk runs. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the new given working directory path is different from the current working 
+ *    directory path then set it to the new one and set the value in persistent 
+ *    storage. 
  */
 void Settings::setChunkDir(const QString& path)
 {
@@ -416,8 +556,15 @@ void Settings::setChunkDir(const QString& path)
 
 
 /*!
+ * Sets the chunk file name prefix. 
  *
- * @param prefix  
+ * @param prefix New chunk file name prefix. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the new given chunk file prefix is different from the current chunk file 
+ *    prefix then set it to the new one and set the value in persistent storage. 
  */
 void Settings::setChunkPrefix(const QString& prefix)
 {
@@ -434,8 +581,16 @@ void Settings::setChunkPrefix(const QString& prefix)
 
 
 /*!
+ * Sets the chunk file extension. 
  *
- * @param extension  
+ * @param extension New chunk file extension. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the new given chunk file extension is different from the current chunk 
+ *    file extension then set it to the new one and set the value in persistent 
+ *    storage. 
  */
 void Settings::setChunkExtension(const QString& extension)
 {
@@ -452,6 +607,13 @@ void Settings::setChunkExtension(const QString& extension)
 
 
 /*!
+ * Constructs a new settings object. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Initialize all settings this class stores, setting them to their default 
+ *    values if their values do not exist in qt settings with their given key. 
  */
 Settings::Settings()
 {
@@ -471,10 +633,16 @@ Settings::Settings()
 
 
 /*!
+ * Save the given value with the given key to qt settings. 
  *
- * @param key  
+ * @param key The key used to save the given value. 
  *
- * @param value  
+ * @param value The given value that is saved. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Initialize qt settings and save the given value to the given key. 
  */
 void Settings::setValue(const QString& key, const QVariant& value)
 {

@@ -18,7 +18,8 @@
  * implementation of this class can choose to not produce work blocks which causes 
  * the process interface to be called with empty generic result blocks. A simple 
  * analytic only supports single process serial mode for operation and does not 
- * override the serial or OpenCL methods. 
+ * override the serial or OpenCL methods. Simple analytic types also do not need to 
+ * implement any interfaces for making blocks since they are not used. 
  */
 class EAbstractAnalytic : public QObject
 {

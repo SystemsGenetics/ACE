@@ -8,8 +8,18 @@
 
 
 /*!
+ * This interface creates and returns a work block for this analytic with the given 
+ * index. The default implementation throws an exception because this should never 
+ * be called if it is not implemented by an analytic. 
  *
  * @param index Index used to make the block of work. 
+ *
+ * @return Pointer new work block with the given index. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Throw an exception. 
  */
 std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeWork(int index) const
 {
@@ -26,6 +36,17 @@ std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeWork(int index)
 
 
 /*!
+ * This interface creates an empty and uninitialized work block. This is used by 
+ * MPI and chunk runs for reading in work blocks from byte arrays. The default 
+ * implementation throws an exception because this should never be called if it is 
+ * not implemented by an analytic. 
+ *
+ * @return Pointer uninitialized work block. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Throw an exception. 
  */
 std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeWork() const
 {
@@ -41,6 +62,17 @@ std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeWork() const
 
 
 /*!
+ * This interface creates an empty and uninitialized result block. This is used by 
+ * MPI and chunk runs for reading in work blocks from byte arrays. The default 
+ * implementation throws an exception because this should never be called if it is 
+ * not implemented by an analytic. 
+ *
+ * @return Pointer uninitialized result block. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Throw an exception. 
  */
 std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeResult() const
 {
