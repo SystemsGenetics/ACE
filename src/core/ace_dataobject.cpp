@@ -35,7 +35,7 @@ using namespace Ace;
  */
 DataObject::DataObject(const QString& path, QObject* parent):
    QObject(parent),
-   _path(path)
+   _rawPath(path)
 {
    try
    {
@@ -85,8 +85,8 @@ DataObject::DataObject(const QString& path, QObject* parent):
  */
 DataObject::DataObject(const QString& path, quint16 type, const EMetadata& system, QObject* parent):
    QObject(parent),
+   _rawPath(path),
    _type(type),
-   _path(path),
    _system(system)
 {
    try
@@ -103,6 +103,22 @@ DataObject::DataObject(const QString& path, quint16 type, const EMetadata& syste
       delete _data;
       throw;
    }
+}
+
+
+
+
+
+
+/*!
+ * Returns the raw path for this data object's file that was passed to it as a 
+ * constructor argument. 
+ *
+ * @return Raw path that was passed to this data object's constructor. 
+ */
+QString DataObject::rawPath() const
+{
+   return _rawPath;
 }
 
 
@@ -512,12 +528,12 @@ void DataObject::dataOverwritten(const QString& canonicalPath, Ace::DataObject* 
  */
 void DataObject::openObject()
 {
-   _file = new QFile(_path,this);
+   _file = new QFile(_rawPath,this);
    if ( !_file->open(QIODevice::ReadWrite) )
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(tr("System Error"));
-      e.setDetails(tr("Cannot open file %1; %2").arg(_path).arg(_file->errorString()));
+      e.setDetails(tr("Cannot open file %1; %2").arg(_rawPath).arg(_file->errorString()));
       throw e;
    }
    _stream = new EDataStream(this);
@@ -525,7 +541,7 @@ void DataObject::openObject()
            ,&Ace::DataManager::dataOverwritten
            ,this
            ,&DataObject::dataOverwritten);
-   QFileInfo info(_path);
+   QFileInfo info(_rawPath);
    _path = info.canonicalPath();
    _fileName = info.fileName();
 }
@@ -564,7 +580,7 @@ void DataObject::readHeader()
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(tr("Read Error"));
-      e.setDetails(tr("Failed reading in file %1: it is not a data object file.").arg(_path));
+      e.setDetails(tr("Failed reading in file %1: it is not a data object file.").arg(_rawPath));
       throw e;
    }
    makeData(name,extension);
@@ -618,7 +634,7 @@ void DataObject::writeHeader()
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(tr("System Error"));
-      e.setDetails(tr("Failed truncating file %1: %2").arg(_path).arg(_file->errorString()));
+      e.setDetails(tr("Failed truncating file %1: %2").arg(_rawPath).arg(_file->errorString()));
       throw e;
    }
    stream() << _specialValue

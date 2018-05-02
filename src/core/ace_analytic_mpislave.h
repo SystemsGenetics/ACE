@@ -23,7 +23,7 @@ namespace Ace
       {
          Q_OBJECT
       public:
-         MPISlave(quint16 type);
+         explicit MPISlave(quint16 type);
          virtual ~MPISlave() override final;
          virtual bool isFinished() const override final;
       protected:

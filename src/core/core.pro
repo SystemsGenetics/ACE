@@ -51,7 +51,8 @@ SOURCES += \
     ace_analytic_merge.cpp \
     ace_analytic_abstractrun.cpp \
     ace_analytic_abstractinput.cpp \
-    ace_analytic_abstractmanager.cpp
+    ace_analytic_abstractmanager.cpp \
+    eabstractanalytic_opencl_worker.cpp
 
 HEADERS += \
     opencl.h \

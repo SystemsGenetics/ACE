@@ -59,7 +59,7 @@ namespace Ace
          void terminationRequested();
          void finish();
       protected:
-         AbstractManager(quint16 type);
+         explicit AbstractManager(quint16 type);
          virtual QFile* addOutputFile(const QString& path);
          virtual Ace::DataObject* addOutputData(const QString& path, quint16 type, const EMetadata& system);
          std::unique_ptr<EAbstractAnalytic::Block> makeWork(int index);
@@ -80,6 +80,10 @@ namespace Ace
          EMetadata buildMetaInput(const QList<Ace::DataObject*>& inputs);
          EMetadata buildMetaCommand();
          void inputDataOut(const EMetadata& system);
+         /*!
+          * The analytic type this manager uses. 
+          */
+         quint16 _type;
          /*!
           * Pointer to this manager's abstract analytic based off the analytic type this 
           * manager was given. 

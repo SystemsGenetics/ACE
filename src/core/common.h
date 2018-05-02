@@ -1,10 +1,6 @@
 #ifndef COMMON_H
 #define COMMON_H
-
-
-
-class EDataStream;
-class EMetadata;
+#include "global.h"
 //
 
 

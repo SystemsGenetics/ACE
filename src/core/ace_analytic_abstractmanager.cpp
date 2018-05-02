@@ -254,19 +254,20 @@ void AbstractManager::finish()
  * 3. Create a new abstract analytic input object for this manager and resize the 
  *    array of arguments to the analytic input size. 
  */
-AbstractManager::AbstractManager(quint16 type)
+AbstractManager::AbstractManager(quint16 type):
+   _type(type)
 {
    EAbstractAnalyticFactory& factory {EAbstractAnalyticFactory::instance()};
-   if ( type >= factory.size() )
+   if ( _type >= factory.size() )
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(tr("Invalid Argument"));
       e.setDetails(tr("%1 is not a valid analytic type. (max is %2)")
-                   .arg(type)
+                   .arg(_type)
                    .arg(factory.size() - 1));
       throw e;
    }
-   _analytic = factory.make(type).release();
+   _analytic = factory.make(_type).release();
    _analytic->setParent(this);
    _input = _analytic->makeInput();
    _inputs.resize(_input->size());
@@ -746,15 +747,31 @@ EMetadata AbstractManager::buildMeta(const QList<Ace::DataObject*>& inputs)
  *
  * Steps of Operation: 
  *
- * 1. Create a new metadata object type, inserting the ace and program versions and 
- *    then returning the object. 
+ * 1. Create a new metadata object for the application setting the keys for the 
+ *    string version, major version, minor version, and revision. 
+ *
+ * 2. Create a new metadata object for the ACE library setting the keys for the 
+ *    string version, major version, minor version, and revision. 
+ *
+ * 3. Create a metadata return object setting the ace and application name keys and 
+ *    setting them to the previously made objects, returning the created object. 
  */
 EMetadata AbstractManager::buildMetaVersion()
 {
+   EMetadata application(EMetadata::Object);
+   application.toObject().insert("string",EMetadata(Settings::appVersionString()));
+   application.toObject().insert("major",EMetadata(Settings::appMajorVersion()));
+   application.toObject().insert("minor",EMetadata(Settings::appMinorVersion()));
+   application.toObject().insert("revision",EMetadata(Settings::appRevision()));
    Settings& settings {Settings::instance()};
+   EMetadata ace(EMetadata::Object);
+   ace.toObject().insert("string",EMetadata(settings.versionString()));
+   ace.toObject().insert("major",EMetadata(settings._majorVersion));
+   ace.toObject().insert("minor",EMetadata(settings._minorVersion));
+   ace.toObject().insert("revision",EMetadata(settings._revision));
    EMetadata ret(EMetadata::Object);
-   ret.toObject().insert("ace",EMetadata(settings.versionString()));
-   ret.toObject().insert(Settings::application(),EMetadata(settings.versionString()));
+   ret.toObject().insert("ace",ace);
+   ret.toObject().insert(Settings::application(),application);
    return ret;
 }
 
@@ -779,7 +796,7 @@ EMetadata AbstractManager::buildMetaVersion()
  * 2. Create a new metadata object type, inserting the system and user keys for the 
  *    system and user metadata of the input data object, and insert the new 
  *    metadata object type into the return metadata object type using the input 
- *    data object's filename as the key. 
+ *    data object's raw path as the key. 
  *
  * 3. Return the metadata object type containing a list of all input data objects 
  *    with their corresponding system and user metadata. 
@@ -792,7 +809,7 @@ EMetadata AbstractManager::buildMetaInput(const QList<Ace::DataObject*>& inputs)
       EMetadata inputMeta(EMetadata::Object);
       inputMeta.toObject().insert("system",input->systemMeta());
       inputMeta.toObject().insert("user",input->userMeta());
-      ret.toObject().insert(input->fileName(),inputMeta);
+      ret.toObject().insert(input->rawPath(),inputMeta);
    }
    return ret;
 }
@@ -811,24 +828,25 @@ EMetadata AbstractManager::buildMetaInput(const QList<Ace::DataObject*>& inputs)
  *
  * Steps of Operation: 
  *
- * 1. Iterate through all of this manager's array of argument settings for step 2. 
+ * 1. Create a metadata object for the command options, populating it with all 
+ *    analytic input options using the command line name for the keys and values 
+ *    for the values. 
  *
- * 2. Insert a new metadata string type containing the value of the argument into 
- *    the return metadata object type using the command line name of the argument 
- *    as the key. 
- *
- * 3. Return the metadata object type containing a list of all argument settings 
- *    for this analytic run. 
+ * 2. Create a new metadata return object, setting the options key to the 
+ *    previously made options metadata and the analytic key to the full name of the 
+ *    analytic type this manager is using, returning the return object. 
  */
 EMetadata AbstractManager::buildMetaCommand()
 {
-   EMetadata ret(EMetadata::Object);
+   EMetadata options(EMetadata::Object);
    for (int i = 0; i < _inputs.size() ;++i)
    {
-      EMetadata value(EMetadata::String);
-      value.toString() = _inputs.at(i).toString();
-      ret.toObject().insert(_input->data(i,EAbstractAnalytic::Input::CommandLineName).toString(),value);
+      options.toObject().insert(_input->data(i,EAbstractAnalytic::Input::CommandLineName).toString()
+                                ,_inputs.at(i).toString());
    }
+   EMetadata ret(EMetadata::Object);
+   ret.toObject().insert("options",options);
+   ret.toObject().insert("analytic",EAbstractAnalyticFactory::instance().name(_type));
    return ret;
 }
 

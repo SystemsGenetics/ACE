@@ -8,8 +8,18 @@
 
 
 /*!
+ * Extracts the index from a byte array created from a to bytes method call of this 
+ * class. This is used to extract special codes used in MPI. 
  *
  * @param data  
+ *
+ * @return Index or special code of block byte array. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Read the index from the byte array and return it. If reading fails then throw 
+ *    an exception. 
  */
 int EAbstractAnalytic::Block::extractIndex(const QByteArray& data)
 {
@@ -32,8 +42,9 @@ int EAbstractAnalytic::Block::extractIndex(const QByteArray& data)
 
 
 /*!
+ * Constructs a new block with the given index. 
  *
- * @param index  
+ * @param index The index for this new block. 
  */
 EAbstractAnalytic::Block::Block(int index):
    _index(index)
@@ -45,6 +56,9 @@ EAbstractAnalytic::Block::Block(int index):
 
 
 /*!
+ * Returns the index of this block. 
+ *
+ * @return Index of this block. 
  */
 int EAbstractAnalytic::Block::index() const
 {
@@ -57,6 +71,18 @@ int EAbstractAnalytic::Block::index() const
 
 
 /*!
+ * Returns a byte array that contains all this blocks information. This includes 
+ * any implementation's data. 
+ *
+ * @return Byte array containing all data of this block. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Create a new byte array and a data stream for writing to it, writing this 
+ *    blocks index and calling this block's write interface for its implementation 
+ *    to save its data. If any write error occurs then throw an exception, else 
+ *    return the created byte array. 
  */
 QByteArray EAbstractAnalytic::Block::toBytes() const
 {
@@ -80,8 +106,17 @@ QByteArray EAbstractAnalytic::Block::toBytes() const
 
 
 /*!
+ * Read in new data from the given byte array for this block, overwriting any 
+ * previous data, including the data of this block's implementation. 
  *
  * @param data  
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Read in this block's index and call this block's read interface for its 
+ *    implementation to read its data. If any reading fails then throw an 
+ *    exception. 
  */
 void EAbstractAnalytic::Block::fromBytes(const QByteArray& data)
 {
@@ -103,8 +138,11 @@ void EAbstractAnalytic::Block::fromBytes(const QByteArray& data)
 
 
 /*!
+ * This interface writes out its data to the given qt data stream. The default 
+ * implementation does nothing. 
  *
- * @param stream  
+ * @param stream The data stream that is used to write out this block's 
+ *               implementation data. 
  */
 void EAbstractAnalytic::Block::write(QDataStream& stream) const
 {
@@ -117,8 +155,11 @@ void EAbstractAnalytic::Block::write(QDataStream& stream) const
 
 
 /*!
+ * This interface reads in new data from the given byte array, overwriting any data 
+ * it previously contained. The default implementation does nothing. 
  *
- * @param stream  
+ * @param stream The data stream that is used to read in this block's 
+ *               implementation data. 
  */
 void EAbstractAnalytic::Block::read(QDataStream& stream)
 {

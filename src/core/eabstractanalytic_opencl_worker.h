@@ -16,6 +16,8 @@ public:
     * @param block  
     */
    virtual std::unique_ptr<EAbstractAnalytic::Block> execute(const EAbstractAnalytic::Block* block) = 0;
+protected:
+   static int threadSize();
 };
 
 

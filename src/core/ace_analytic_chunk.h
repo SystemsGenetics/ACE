@@ -24,7 +24,7 @@ namespace Ace
       {
          Q_OBJECT
       public:
-         Chunk(quint16 type, int index, int size);
+         explicit Chunk(quint16 type, int index, int size);
          virtual ~Chunk() override final;
          virtual bool isFinished() const override final;
       protected:

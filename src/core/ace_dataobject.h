@@ -24,6 +24,7 @@ namespace Ace
    public:
       explicit DataObject(const QString& path, QObject* parent = nullptr);
       explicit DataObject(const QString& path, quint16 type, const EMetadata& system, QObject* parent = nullptr);
+      QString rawPath() const;
       QString path() const;
       QString fileName() const;
       quint16 type() const;
@@ -57,6 +58,10 @@ namespace Ace
        * identify it as an ACE data object file. 
        */
       constexpr static qint64 _specialValue {584};
+      /*!
+       * The raw path that was passed to this data object's constructor. 
+       */
+      QString _rawPath;
       /*!
        * The data object type for this data object. 
        */

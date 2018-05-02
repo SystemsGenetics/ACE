@@ -19,6 +19,8 @@ class EAbstractAnalytic::Block : public QObject
 public:
    static int extractIndex(const QByteArray& data);
    /*!
+    * Constructs an uninitialized block. This is used in MPI and chunk runs to load 
+    * blocks from byte arrays. 
     */
    explicit Block() = default;
    explicit Block(int index);
@@ -32,6 +34,7 @@ protected:
    virtual void read(QDataStream& stream);
 private:
    /*!
+    * The index of this block. 
     */
    int _index {-1};
 };
@@ -44,9 +47,17 @@ private:
 /*!
  * Casts this abstract block object into another constant class type. 
  *
- * @tparam T  
+ * @tparam T The type this abstract block is being cast to. This should be this 
+ *           block's implementation type. 
  *
  * @return Cast constant pointer to this object. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Use qt object cast to cast this object to the given template type as read 
+ *    only. If the cast fails then throw an exception, else return the cast read 
+ *    only pointer. 
  */
 template<class T> const T* EAbstractAnalytic::Block::cast() const
 {
@@ -69,9 +80,16 @@ template<class T> const T* EAbstractAnalytic::Block::cast() const
 /*!
  * Casts this abstract block object into another class type. 
  *
- * @tparam T  
+ * @tparam T The type this abstract block is being cast to. This should be this 
+ *           block's implementation type. 
  *
  * @return Cast pointer to this object. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Use qt object cast to cast this object to the given template type. If the 
+ *    cast fails then throw an exception, else return the cast pointer. 
  */
 template<class T> T* EAbstractAnalytic::Block::cast()
 {

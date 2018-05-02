@@ -45,7 +45,7 @@ namespace Ace
              */
             ,ReadyAsACU = -3
          };
-         MPIMaster(quint16 type);
+         explicit MPIMaster(quint16 type);
          virtual ~MPIMaster() override final;
          virtual bool isFinished() const override final;
       protected:

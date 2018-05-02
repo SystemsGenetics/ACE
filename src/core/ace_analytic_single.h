@@ -23,7 +23,7 @@ namespace Ace
       {
          Q_OBJECT
       public:
-         Single(quint16 type);
+         explicit Single(quint16 type);
          virtual bool isFinished() const override final;
       protected:
          virtual int index() const override final;
