@@ -17,16 +17,16 @@ namespace Ace
       void execute();
    private:
       void settings();
-      QString deviceString();
+      QString openCLDeviceString();
       void set();
-      void setACU();
+      void setOpenCL();
       void setThreads();
       void setBuffer();
       void setChunkDir();
       void setChunkPre();
       void setChunkExt();
       void list();
-      void listACU();
+      void listOpenCL();
       /*!
        */
       Command _command;

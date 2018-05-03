@@ -309,9 +309,8 @@ void MPISlave::process(const QByteArray& data)
  *    pointer then do nothing and exit, else go to the next step. 
  *
  * 2. Attempt to find an OpenCL index that is the nth device based off this slave 
- *    node's process ranking minus one to account for the master node. All devices 
- *    from all platforms are considered. If there is not enough devices then no 
- *    device is found. 
+ *    node's local process rank. All devices from all platforms are considered. If 
+ *    there is not enough devices then no device is found. 
  *
  * 3. If an OpenCL device was found and this manager's analytic creates a valid 
  *    abstract OpenCL object then create a new OpenCL run object and set it to this 
@@ -322,7 +321,7 @@ void MPISlave::setupOpenCL()
    if ( Settings::instance().openCLDevicePointer() )
    {
       OpenCL::Device* device {nullptr};
-      int rank {_mpi.localRank() - 1};
+      int rank {_mpi.localRank()};
       for (int p = 0; ( p < OpenCL::Platform::size() ) && !device ;++p)
       {
          for (int d = 0; d < OpenCL::Platform::get(p)->deviceSize() ;++d)

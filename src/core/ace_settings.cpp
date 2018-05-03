@@ -45,11 +45,11 @@ const char* Settings::_chunkExtensionDefault {"abd"};
 /*!
  * The qt settings key used to persistently store the platform index value. 
  */
-const char* Settings::_platformKey {"opencl.platform"};
+const char* Settings::_openCLPlatformKey {"opencl.platform"};
 /*!
  * The qt settings key used to persistently store the device index value. 
  */
-const char* Settings::_deviceKey {"opencl.device"};
+const char* Settings::_openCLDeviceKey {"opencl.device"};
 /*!
  * The qt settings key used to persistently store the thread size value. 
  */
@@ -271,9 +271,9 @@ Settings& Settings::instance()
  *
  * @return Platform index of the preferred OpenCL device. 
  */
-int Settings::platform() const
+int Settings::openCLPlatform() const
 {
-   return _platform;
+   return _openCLPlatform;
 }
 
 
@@ -286,9 +286,9 @@ int Settings::platform() const
  *
  * @return Device index of the preferred OpenCL device. 
  */
-int Settings::device() const
+int Settings::openCLDevice() const
 {
-   return _device;
+   return _openCLDevice;
 }
 
 
@@ -311,19 +311,14 @@ int Settings::device() const
  */
 OpenCL::Device* Settings::openCLDevicePointer() const
 {
-   if ( _platform < 0 || _device < 0 )
+   if ( _openCLPlatform < 0
+        || _openCLDevice < 0
+        || _openCLPlatform >= OpenCL::Platform::size()
+        || _openCLDevice >= OpenCL::Platform::get(_openCLPlatform)->size() )
    {
       return nullptr;
    }
-   if ( _platform >= OpenCL::Platform::size() )
-   {
-      return nullptr;
-   }
-   if ( _device >= OpenCL::Platform::get(_platform)->size() )
-   {
-      return nullptr;
-   }
-   return OpenCL::Platform::get(_platform)->device(_device);
+   return OpenCL::Platform::get(_openCLPlatform)->device(_openCLDevice);
 }
 
 
@@ -418,12 +413,12 @@ QString Settings::chunkExtension() const
  * 1. If the new given platform index is different from the current platform index 
  *    then set it to the new one and set the value in persistent storage. 
  */
-void Settings::setPlatform(int index)
+void Settings::setOpenCLPlatform(int index)
 {
-   if ( index != _platform )
+   if ( index != _openCLPlatform )
    {
-      _platform = index;
-      setValue(_platformKey,_platform);
+      _openCLPlatform = index;
+      setValue(_openCLPlatformKey,_openCLPlatform);
    }
 }
 
@@ -443,12 +438,12 @@ void Settings::setPlatform(int index)
  * 1. If the new given device index is different from the current device index then 
  *    set it to the new one and set the value in persistent storage. 
  */
-void Settings::setDevice(int index)
+void Settings::setOpenCLDevice(int index)
 {
-   if ( index != _device )
+   if ( index != _openCLDevice )
    {
-      _device = index;
-      setValue(_deviceKey,_device);
+      _openCLDevice = index;
+      setValue(_openCLDeviceKey,_openCLDevice);
    }
 }
 
@@ -618,8 +613,8 @@ void Settings::setChunkExtension(const QString& extension)
 Settings::Settings()
 {
    QSettings settings(_organization,_application);
-   _platform = settings.value(_platformKey,_platformDefault).toInt();
-   _device = settings.value(_deviceKey,_deviceDefault).toInt();
+   _openCLPlatform = settings.value(_openCLPlatformKey,_openCLPlatformDefault).toInt();
+   _openCLDevice = settings.value(_openCLDeviceKey,_openCLDeviceDefault).toInt();
    _threadSize = settings.value(_threadSizeKey,_threadSizeDefault).toInt();
    _bufferSize = settings.value(_bufferSizeKey,_bufferSizeDefault).toInt();
    _chunkDir = settings.value(_chunkDirKey,_chunkDirDefault).toString();

@@ -37,7 +37,7 @@ void SettingsRun::execute()
    {
       QTextStream stream(stdout);
       Ace::Settings& settings {Ace::Settings::instance()};
-      stream << "             ACU Device: " << deviceString() << "\n";
+      stream << "          OpenCL Device: " << openCLDeviceString() << "\n";
       stream << "        ACU Thread Size: " << QString::number(settings.threadSize()) << "\n";
       stream << "        MPI Buffer Size: " << QString::number(settings.bufferSize()) << "\n";
       stream << "Chunk Working Directory: " << settings.chunkDir() << "\n";
@@ -87,12 +87,12 @@ void SettingsRun::settings()
 
 /*!
  */
-QString SettingsRun::deviceString()
+QString SettingsRun::openCLDeviceString()
 {
    QString ret {"None"};
    Ace::Settings& settings {Ace::Settings::instance()};
-   int platform {settings.platform()};
-   int device {settings.device()};
+   int platform {settings.openCLPlatform()};
+   int device {settings.openCLDevice()};
    if ( platform >= 0 && device >= 0 )
    {
       ret = QString::number(platform).append(":").append(QString::number(device));
@@ -109,7 +109,7 @@ QString SettingsRun::deviceString()
  */
 void SettingsRun::set()
 {
-   enum {Unknown=-1,ACU,Threads,Buffer,ChunkDir,ChunkPre,ChunkExt};
+   enum {Unknown=-1,OpenCLCom,Threads,Buffer,ChunkDir,ChunkPre,ChunkExt};
    if ( _command.size() < 1 )
    {
       E_MAKE_EXCEPTION(e);
@@ -117,12 +117,12 @@ void SettingsRun::set()
       e.setDetails(QObject::tr("Settings set requires sub argument, exiting..."));
       throw e;
    }
-   QStringList list {"acu","threads","buffer","chunkdir","chunkpre","chunkext"};
+   QStringList list {"opencl","threads","buffer","chunkdir","chunkpre","chunkext"};
    QString command {_command.first()};
    switch (_command.pop(list))
    {
-   case ACU:
-      setACU();
+   case OpenCLCom:
+      setOpenCL();
       break;
    case Threads:
       setThreads();
@@ -157,7 +157,7 @@ void SettingsRun::set()
 
 /*!
  */
-void SettingsRun::setACU()
+void SettingsRun::setOpenCL()
 {
    auto invalid = [this]()
    {//
@@ -203,8 +203,8 @@ void SettingsRun::setACU()
       }
    }
    Ace::Settings& settings {Ace::Settings::instance()};
-   settings.setPlatform(platform);
-   settings.setDevice(device);
+   settings.setOpenCLPlatform(platform);
+   settings.setOpenCLDevice(device);
 }
 
 
@@ -345,7 +345,7 @@ void SettingsRun::setChunkExt()
  */
 void SettingsRun::list()
 {
-   enum {Unknown=-1,ACU};
+   enum {Unknown=-1,OpenCLCom};
    if ( _command.size() < 1 )
    {
       E_MAKE_EXCEPTION(e);
@@ -353,12 +353,12 @@ void SettingsRun::list()
       e.setDetails(QObject::tr("Settings list requires sub argument, exiting..."));
       throw e;
    }
-   QStringList list {"acu"};
+   QStringList list {"opencl"};
    QString command {_command.first()};
    switch (_command.pop(list))
    {
-   case ACU:
-      listACU();
+   case OpenCLCom:
+      listOpenCL();
       break;
    case Unknown:
       {
@@ -378,7 +378,7 @@ void SettingsRun::list()
 
 /*!
  */
-void SettingsRun::listACU()
+void SettingsRun::listOpenCL()
 {
    QTextStream stream (stdout);
    for (int p = 0; p < OpenCL::Platform::size() ;++p)

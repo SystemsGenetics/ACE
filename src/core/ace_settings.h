@@ -45,16 +45,16 @@ namespace Ace
        * The revision of the ACE library. 
        */
       constexpr static int _revision {999};
-      int platform() const;
-      int device() const;
+      int openCLPlatform() const;
+      int openCLDevice() const;
       OpenCL::Device* openCLDevicePointer() const;
       int threadSize() const;
       int bufferSize() const;
       QString chunkDir() const;
       QString chunkPrefix() const;
       QString chunkExtension() const;
-      void setPlatform(int index);
-      void setDevice(int index);
+      void setOpenCLPlatform(int index);
+      void setOpenCLDevice(int index);
       void setThreadSize(int size);
       void setBufferSize(int size);
       void setChunkDir(const QString& path);
@@ -82,13 +82,13 @@ namespace Ace
        */
       static QString _application;
       /*!
-       * The default platform index value. 
+       * The default OpenCL platform index value. 
        */
-      constexpr static int _platformDefault {0};
+      constexpr static int _openCLPlatformDefault {0};
       /*!
-       * The default device index value. 
+       * The default OpenCL device index value. 
        */
-      constexpr static int _deviceDefault {0};
+      constexpr static int _openCLDeviceDefault {0};
       /*!
        * The default thread size value. 
        */
@@ -112,11 +112,11 @@ namespace Ace
       /*!
        * The qt settings key used to persistently store the platform index value. 
        */
-      static const char* _platformKey;
+      static const char* _openCLPlatformKey;
       /*!
        * The qt settings key used to persistently store the device index value. 
        */
-      static const char* _deviceKey;
+      static const char* _openCLDeviceKey;
       /*!
        * The qt settings key used to persistently store the thread size value. 
        */
@@ -147,11 +147,11 @@ namespace Ace
       /*!
        * The platform index for the preferred OpenCL device. 
        */
-      int _platform;
+      int _openCLPlatform;
       /*!
        * The index for the preferred OpenCL device. 
        */
-      int _device;
+      int _openCLDevice;
       /*!
        * The thread size used for accelerated analytic runs. 
        */
