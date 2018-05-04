@@ -33,12 +33,9 @@ using namespace Ace::Analytic;
  *    this manager's data received slot. 
  */
 MPISlave::MPISlave(quint16 type):
-   AbstractManager(type),
+   MPIBase(type),
    _mpi(QMPI::instance())
 {
-   setupOpenCL();
-   setupSerial();
-   connect(_runner,&AbstractRun::finished,this,&AbstractManager::finish);
    connect(&_mpi,&QMPI::dataReceived,this,&MPISlave::dataReceived);
 }
 
@@ -71,6 +68,43 @@ MPISlave::~MPISlave()
 bool MPISlave::isFinished() const
 {
    return _finished && _workSize == 0;
+}
+
+
+
+
+
+
+/*!
+ *
+ * @param type  
+ *
+ * @param platform  
+ *
+ * @param device  
+ */
+void MPISlave::mpiStart(Type type, int platform, int device)
+{
+   int code {ReadyAsSerial};
+   switch (type)
+   {
+   case Type::Serial:
+      setupSerial();
+      break;
+   case Type::OpenCL:
+      if ( setupOpenCL(platform,device) )
+      {
+         code = ReadyAsOpenCL;
+      }
+      else
+      {
+         setupSerial();
+      }
+      break;
+   }
+   connect(_runner,&AbstractRun::finished,this,&AbstractManager::finish);
+   unique_ptr<EAbstractAnalytic::Block> block {new EAbstractAnalytic::Block(code)};
+   _mpi.sendData(0,block->toBytes());
 }
 
 
@@ -143,33 +177,6 @@ void MPISlave::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
    _mpi.sendData(0,result->toBytes());
    result.reset();
    --_workSize;
-}
-
-
-
-
-
-
-/*!
- * Implements the interface that is called once to begin the analytic run for this 
- * manager after all argument input has been set. This implementation signals the 
- * master node this slave node is ready to process blocks. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If this slave node is using an OpenCL run object then send the ready as ACU 
- *    code to the master node, else send the ready as serial code. 
- */
-void MPISlave::start()
-{
-   int code {MPIMaster::ReadyAsSerial};
-   if ( _acu )
-   {
-      code = MPIMaster::ReadyAsACU;
-   }
-   unique_ptr<EAbstractAnalytic::Block> block {new EAbstractAnalytic::Block(code)};
-   _mpi.sendData(0,block->toBytes());
 }
 
 
@@ -302,6 +309,10 @@ void MPISlave::process(const QByteArray& data)
  * Attempts to initialize an OpenCL run object for block processing for this 
  * manager. If successful sets this manager's abstract run pointer. 
  *
+ * @param platform  
+ *
+ * @param device  
+ *
  *
  * Steps of Operation: 
  *
@@ -316,32 +327,22 @@ void MPISlave::process(const QByteArray& data)
  *    abstract OpenCL object then create a new OpenCL run object and set it to this 
  *    object's run pointer. 
  */
-void MPISlave::setupOpenCL()
+bool MPISlave::setupOpenCL(int platform, int device)
 {
-   if ( Settings::instance().openCLDevicePointer() )
+   if ( platform < 0
+        || device < 0
+        || platform >= OpenCL::Platform::size()
+        || device >= OpenCL::Platform::get(platform)->deviceSize() )
    {
-      OpenCL::Device* device {nullptr};
-      int rank {_mpi.localRank()};
-      for (int p = 0; ( p < OpenCL::Platform::size() ) && !device ;++p)
-      {
-         for (int d = 0; d < OpenCL::Platform::get(p)->deviceSize() ;++d)
-         {
-            if ( rank-- == 0 )
-            {
-               device = OpenCL::Platform::get(p)->device(d);
-               break;
-            }
-         }
-      }
-      if ( device )
-      {
-         if ( EAbstractAnalytic::OpenCL* opencl = analytic()->makeOpenCL() )
-         {
-            _runner = new OpenCLRun(opencl,device,this,this);
-            _acu = true;
-         }
-      }
+      ;//ERROR
    }
+   bool ret {false};
+   if ( EAbstractAnalytic::OpenCL* opencl = analytic()->makeOpenCL() )
+   {
+      _runner = new OpenCLRun(opencl,OpenCL::Platform::get(platform)->device(device),this,this);
+      ret = true;
+   }
+   return ret;
 }
 
 
@@ -366,18 +367,15 @@ void MPISlave::setupOpenCL()
  */
 void MPISlave::setupSerial()
 {
-   if ( !_runner )
+   if ( EAbstractAnalytic::Serial* serial = analytic()->makeSerial() )
    {
-      if ( EAbstractAnalytic::Serial* serial = analytic()->makeSerial() )
-      {
-         _runner = new SerialRun(serial,this,this);
-      }
-      else
-      {
-         E_MAKE_EXCEPTION(e);
-         e.setTitle(tr("Logic Error"));
-         e.setDetails(tr("Cannot run simple analytic in MPI mode."));
-         throw e;
-      }
+      _runner = new SerialRun(serial,this,this);
+   }
+   else
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Logic Error"));
+      e.setDetails(tr("Cannot run simple analytic in MPI mode."));
+      throw e;
    }
 }

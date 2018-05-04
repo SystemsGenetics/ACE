@@ -15,6 +15,7 @@ namespace Ace
       class SerialRun;
       class OpenCLRun;
       class Single;
+      class MPIBase;
       class MPIMaster;
       class MPISlave;
       class Chunk;

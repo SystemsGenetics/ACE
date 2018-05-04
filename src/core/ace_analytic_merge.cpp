@@ -108,7 +108,7 @@ void Merge::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
  */
 void Merge::start()
 {
-   _chunkSize  = analytic()->size()/_size + (_size%analytic()->size() ? 1 : 0);
+   _chunkSize  = analytic()->size()/_size + (analytic()->size()%_size ? 1 : 0);
    QTimer::singleShot(0,this,&Merge::process);
 }
 

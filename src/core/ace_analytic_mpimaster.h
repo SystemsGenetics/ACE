@@ -1,6 +1,6 @@
 #ifndef ACE_ANALYTIC_MPIMASTER_H
 #define ACE_ANALYTIC_MPIMASTER_H
-#include "ace_analytic_abstractmanager.h"
+#include "ace_analytic_mpibase.h"
 #include "ace_analytic_abstractinput.h"
 //
 
@@ -20,31 +20,10 @@ namespace Ace
        * Also this manager does not start giving out work blocks to slave nodes until 
        * they signal they are ready to process them. 
        */
-      class MPIMaster : public AbstractManager, public AbstractInput
+      class MPIMaster : public MPIBase, public AbstractInput
       {
          Q_OBJECT
       public:
-         /*!
-          * Defines special codes passed between the master node and slave nodes. 
-          */
-         enum Code
-         {
-            /*!
-             * Defines the terminate code which is sent to a slave node to signal it is done 
-             * and should exit. 
-             */
-            Terminate = -1
-            /*!
-             * Defines the ready as serial code which is sent to the master node by a slave 
-             * node to signal it is ready to execute work blocks using a serial run object. 
-             */
-            ,ReadyAsSerial = -2
-            /*!
-             * Defines the ready as ACU code which is sent to the master node by a slave node 
-             * to signal it is ready to execute work blocks using an OpenCL run object. 
-             */
-            ,ReadyAsACU = -3
-         };
          explicit MPIMaster(quint16 type);
          virtual ~MPIMaster() override final;
          virtual bool isFinished() const override final;

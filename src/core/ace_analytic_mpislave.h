@@ -1,6 +1,6 @@
 #ifndef ACE_ANALYTIC_MPISLAVE_H
 #define ACE_ANALYTIC_MPISLAVE_H
-#include "ace_analytic_abstractmanager.h"
+#include "ace_analytic_mpibase.h"
 #include "ace_analytic_abstractinput.h"
 #include "ace_analytic.h"
 //
@@ -19,7 +19,7 @@ namespace Ace
        * also sends a special code to the master node to signal when it is ready to start 
        * processing work blocks and if it is serial or accelerated. 
        */
-      class MPISlave : public AbstractManager, public AbstractInput
+      class MPISlave : public MPIBase, public AbstractInput
       {
          Q_OBJECT
       public:
@@ -27,17 +27,16 @@ namespace Ace
          virtual ~MPISlave() override final;
          virtual bool isFinished() const override final;
       protected:
+         virtual void mpiStart(Type type, int platform, int device) override final;
          virtual QFile* addOutputFile(const QString& path) override final;
          virtual Ace::DataObject* addOutputData(const QString& path, quint16 type, const EMetadata& system) override final;
          virtual void saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result) override final;
-      protected slots:
-         virtual void start() override final;
       private slots:
          void dataReceived(const QByteArray& data, int fromRank);
       private:
          void processCode(int code);
          void process(const QByteArray& data);
-         void setupOpenCL();
+         bool setupOpenCL(int platform, int device);
          void setupSerial();
          /*!
           * Reference to the singleton MPI object. 
@@ -47,10 +46,6 @@ namespace Ace
           * Pointer to the abstract run object used to process work blocks. 
           */
          AbstractRun* _runner {nullptr};
-         /*!
-          * True if this slave node is running in ACU(OpenCL) mode or false otherwise. 
-          */
-         bool _acu {false};
          /*!
           * The total number of work blocks this slave node is currently processing. 
           */

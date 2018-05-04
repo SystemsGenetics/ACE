@@ -40,8 +40,10 @@ Chunk::Chunk(quint16 type, int index, int size):
    _index(index),
    _size(size)
 {
-   setupOpenCL();
-   setupSerial();
+   if ( !setupOpenCL() )
+   {
+      setupSerial();
+   }
    connect(_runner,&AbstractRun::finished,this,&AbstractManager::finish);
 }
 
@@ -263,7 +265,7 @@ void Chunk::setupFile()
  */
 void Chunk::setupIndexes()
 {
-   int chunkSize {analytic()->size()/_size + ( _size%analytic()->size() ? 1 : 0)};
+   int chunkSize {analytic()->size()/_size + ( analytic()->size()%_size ? 1 : 0)};
    _nextWork = _nextResult = _index*chunkSize;
    _end = (_index + 1)*chunkSize;
    _end = _end > analytic()->size() ? analytic()->size() : _end;
@@ -293,8 +295,9 @@ void Chunk::setupIndexes()
  *    abstract OpenCL object then create a new OpenCL run object and set it to this 
  *    object's run pointer. 
  */
-void Chunk::setupOpenCL()
+bool Chunk::setupOpenCL()
 {
+   bool ret {false};
    int index {_index};
    if ( Settings::instance().openCLDevicePointer() )
    {
@@ -315,9 +318,11 @@ void Chunk::setupOpenCL()
          if ( EAbstractAnalytic::OpenCL* opencl = analytic()->makeOpenCL() )
          {
             _runner = new OpenCLRun(opencl,device,this,this);
+            ret = true;
          }
       }
    }
+   return ret;
 }
 
 

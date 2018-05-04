@@ -20,7 +20,7 @@ using namespace Ace::Analytic;
  * @param type The analytic type this manager will use. 
  */
 MPIMaster::MPIMaster(quint16 type):
-   AbstractManager(type),
+   MPIBase(type),
    _mpi(QMPI::instance())
 {
    connect(&_mpi,&QMPI::dataReceived,this,&MPIMaster::dataReceived);
@@ -168,7 +168,7 @@ void MPIMaster::processCode(int code, int fromRank)
    int amount {settings.bufferSize()};
    switch (code)
    {
-   case ReadyAsACU:
+   case ReadyAsOpenCL:
       amount += settings.threadSize();
    case ReadyAsSerial:
       break;

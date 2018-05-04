@@ -1,6 +1,8 @@
 #ifndef ACE_QMPI_H
 #define ACE_QMPI_H
 #include <QObject>
+#include <QVector>
+#include <mpi.h>
 //
 
 
@@ -23,27 +25,37 @@ namespace Ace
    public:
       static QMPI& instance();
       static void shutdown();
+      bool isMaster() const;
       int size() const;
       int rank() const;
+      int localSize() const;
       int localRank() const;
-      bool isMaster() const;
    signals:
       /*!
-       * This is emitted whenever new data is received by another MPI process. 
+       * Signals that new data has been received by the MPI system. 
        *
        * @param data Stores the raw data received from another process. 
        *
        * @param fromRank The rank of the process that sent this data. 
        */
       void dataReceived(const QByteArray& data, int fromRank);
+      /*!
+       * Signals that new data has been received by the MPI system. 
+       *
+       * @param data Stores the raw data received from another process. 
+       *
+       * @param fromRank The rank of the process that sent this data. 
+       */
+      void localDataReceived(const QByteArray& data, int fromRank);
    public slots:
       void sendData(int toRank, const QByteArray& data);
+      void sendLocalData(int toRank, const QByteArray& data);
    protected:
       virtual void timerEvent(QTimerEvent* event) override final;
    private:
       /*!
        * This is the period, in milliseconds, between each time this class checks for new 
-       * data received from other MPI processes. 
+       * data received from the MPI system. 
        */
       constexpr static int _timerPeriod {50};
       /*!
@@ -58,6 +70,10 @@ namespace Ace
       static QMPI* _instance;
       explicit QMPI();
       ~QMPI();
+      void probe(MPI_Comm comm, int rank);
+      void sendData(MPI_Comm comm, int toRank, const QByteArray& data);
+      void setupWorld();
+      void setupLocal();
       /*!
        * This is the total size of the MPI run representing the total number of processes 
        * part of it. 
@@ -68,6 +84,13 @@ namespace Ace
        * part of the MPI run. 
        */
       int _rank;
+      /*!
+       */
+      MPI_Comm _local;
+      /*!
+       * This is the local size of processes that share resources. 
+       */
+      int _localSize;
       /*!
        * This is the local rank of this process identifying among all processes that 
        * share resources. 

@@ -37,7 +37,7 @@ namespace Ace
       private:
          void setupFile();
          void setupIndexes();
-         void setupOpenCL();
+         bool setupOpenCL();
          void setupSerial();
          /*!
           * The chunk index for this chunk manager. 
@@ -50,7 +50,7 @@ namespace Ace
          /*!
           * Pointer to the abstract run object used to process work blocks. 
           */
-         AbstractRun* _runner {nullptr};
+         AbstractRun* _runner;
          /*!
           * The file name of the temporary binary file this chunk manager stores all its 
           * result blocks. 

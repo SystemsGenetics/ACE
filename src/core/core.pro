@@ -52,7 +52,8 @@ SOURCES += \
     ace_analytic_abstractrun.cpp \
     ace_analytic_abstractinput.cpp \
     ace_analytic_abstractmanager.cpp \
-    eabstractanalytic_opencl_worker.cpp
+    eabstractanalytic_opencl_worker.cpp \
+    ace_analytic_mpibase.cpp
 
 HEADERS += \
     opencl.h \
@@ -105,7 +106,8 @@ HEADERS += \
     ace_analytic_merge.h \
     ace_analytic_abstractrun.h \
     ace_analytic_abstractinput.h \
-    ace_analytic_abstractmanager.h
+    ace_analytic_abstractmanager.h \
+    ace_analytic_mpibase.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
