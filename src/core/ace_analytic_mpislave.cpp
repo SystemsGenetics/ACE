@@ -33,7 +33,7 @@ using namespace Ace::Analytic;
  *    this manager's data received slot. 
  */
 MPISlave::MPISlave(quint16 type):
-   MPIBase(type),
+   AbstractMPI(type),
    _mpi(QMPI::instance())
 {
    connect(&_mpi,&QMPI::dataReceived,this,&MPISlave::dataReceived);

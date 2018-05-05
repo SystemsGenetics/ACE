@@ -9,13 +9,12 @@ using namespace Ace;
 
 
 /*!
- * Keeps track if an instance of this class has already been created then destroyed 
- * in shutdown. This is so a second instance is never made after the MPI system was 
- * shutdown with finalize. 
+ * True if an instance of this class has already been deleted or false otherwise. 
+ * This is used to make sure a second class is never deleted. 
  */
 bool QMPI::_hasShutdown {false};
 /*!
- * This is a pointer to the single instance of this class. 
+ * Pointer to the singleton instance of this class. 
  */
 QMPI* QMPI::_instance {nullptr};
 
@@ -88,9 +87,9 @@ void QMPI::shutdown()
 
 
 /*!
- * Tests if this process is the master process (rank 0) of the MPI run. 
+ * Tests if this process is the master node (rank 0). 
  *
- * @return Returns true if this process is the master else returns false. 
+ * @return Returns true if this is the master node else returns false. 
  */
 bool QMPI::isMaster() const
 {
@@ -103,9 +102,9 @@ bool QMPI::isMaster() const
 
 
 /*!
- * Returns size of MPI run. 
+ * Returns world node size. 
  *
- * @return Size of MPI run. 
+ * @return World node size. 
  */
 int QMPI::size() const
 {
@@ -118,9 +117,9 @@ int QMPI::size() const
 
 
 /*!
- * Returns rank of this process to identify it within the MPI run. 
+ * Returns the world rank of this node. 
  *
- * @return Rank of this process. 
+ * @return World rank of this node. 
  */
 int QMPI::rank() const
 {
@@ -133,10 +132,10 @@ int QMPI::rank() const
 
 
 /*!
- * Returns the local size representing the number of processes that share its local 
- * resources within this MPI run. 
+ * Returns the local size representing the number of nodes that share local 
+ * resources. 
  *
- * @return Local size of shared MPI processes. 
+ * @return Size of nodes that share local resources. 
  */
 int QMPI::localSize() const
 {
@@ -149,10 +148,10 @@ int QMPI::localSize() const
 
 
 /*!
- * Returns the local rank of this process to identify it within the number of other 
- * processes that share its local resources within this MPI run. 
+ * Returns the local rank of this node to identify it within the number of other 
+ * nodes that share its local resources. 
  *
- * @return Local rank of this process. 
+ * @return Local rank of this node. 
  */
 int QMPI::localRank() const
 {
@@ -165,20 +164,12 @@ int QMPI::localRank() const
 
 
 /*!
- * This slot is called to send data to another process within the MPI run. This is 
- * an asynchronous send and returns immediately. 
+ * Called to send data to another node using the world MPI comm. This is 
+ * asynchronous and returns immediately. 
  *
- * @param toRank The rank of the process to send this data to. 
+ * @param toRank The rank of the node to send this data to. 
  *
- * @param data Stores the raw data that will be sent to the given process. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Call the MPI system to send new byte data to the specified rank. If the call 
- *    was successful then end operation else go to step 2. 
- *
- * 2. Create exception detailing failure and throw it. 
+ * @param data The data that is sent to the node with the given rank. 
  */
 void QMPI::sendData(int toRank, const QByteArray& data)
 {
@@ -191,20 +182,12 @@ void QMPI::sendData(int toRank, const QByteArray& data)
 
 
 /*!
- * This slot is called to send data to another process within the MPI run. This is 
- * an asynchronous send and returns immediately. 
+ * Called to send data to another node using the local MPI comm. This is 
+ * asynchronous and returns immediately. 
  *
  * @param toRank The rank of the process to send this data to. 
  *
  * @param data Stores the raw data that will be sent to the given process. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Call the MPI system to send new byte data to the specified rank. If the call 
- *    was successful then end operation else go to step 2. 
- *
- * 2. Create exception detailing failure and throw it. 
  */
 void QMPI::sendLocalData(int toRank, const QByteArray& data)
 {
@@ -227,20 +210,8 @@ void QMPI::sendLocalData(int toRank, const QByteArray& data)
  *
  * Steps of Operation: 
  *
- * 1. Iterate through all ranks, excluding this process's rank, going to step 2 for 
- *    each iteration. Once iteration is complete end operation. 
- *
- * 2. Probe for incoming data from given rank using MPI system. If MPI calls fail 
- *    go to step 5. If the probe indicates there is a pending block of data proceed 
- *    else go back to step 1. 
- *
- * 3. Receive the data block using the MPI system, storing it in a Qt byte array. 
- *    If the MPI system fails go to step 5. 
- *
- * 4. Emit the data received signal with the byte array and what process it came 
- *    from identified by rank. Go back to step 1. 
- *
- * 5. Throw an exception detailing the error that occurred. 
+ * 1. Iterate through all ranks, probing for new data received from the world and 
+ *    local MPI comm channels for each rank. 
  */
 void QMPI::timerEvent(QTimerEvent* event)
 {
@@ -258,21 +229,16 @@ void QMPI::timerEvent(QTimerEvent* event)
 
 
 /*!
- * This is the private and only constructor for this class. It is private so no one 
- * except this class itself can make an instance of it thereby enforcing its 
- * singleton property. 
+ * Constructs a new QMPI object initializing the MPI system it represents. 
  *
  *
  * Steps of Operation: 
  *
- * 1. Initialize the MPI system. If it failed set MPI to a single process state, 
- *    else go to the next step. 
+ * 1. Initialize the MPI system. If it failed then set this object to a single 
+ *    process state and exit, else go to the next step. 
  *
- * 2. Query the MPI system for the size, rank, local size based off shared type, 
- *    and local rank based off shared type. If any query fails then throw an 
- *    exception, else go to the next step. 
- *
- * 3. Initialize a QObject timer event used for polling of new data received. 
+ * 2. Setup the world and local MPI comm channels and then start this object's qt 
+ *    object timer for data received polling. 
  */
 QMPI::QMPI()
 {
@@ -296,12 +262,13 @@ QMPI::QMPI()
 
 
 /*!
- * This simply calls the finalize function for MPI to shutdown the system. 
+ * Frees local MPI resources and finalizes the MPI system. 
  *
  *
  * Steps of Operation: 
  *
- * 1. If this object did not fail its initialization then call MPI finalize. 
+ * 1. If MPI initialization did not fail for this object then free the local MPI 
+ *    comm and call the MPI finalize function. 
  */
 QMPI::~QMPI()
 {
@@ -318,10 +285,27 @@ QMPI::~QMPI()
 
 
 /*!
+ * Probe the given MPI comm for any received data from the node with the given 
+ * rank, emitting a data received signal if data is found. This does not block and 
+ * returns immediately if there is no pending data to receive. 
  *
- * @param comm  
+ * @param comm The MPI comm that is proved. This is either the world or local comm. 
  *
- * @param rank  
+ * @param rank The from rank that is checked for new data received. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Probe to see if there is pending data for the given MPI comm from the given 
+ *    rank. If probing fails then throw an exception, else if there is no pending 
+ *    data then do nothing and exit, else go to the next step. 
+ *
+ * 2. Get the size of the pending data that is assumed to be of type MPI_CHAR and 
+ *    then get the data itself. If getting the size of the data or getting the data 
+ *    fails then throw an exception, else go to the next step. 
+ *
+ * 3. Emit a local data received or data received signal, depending on if the given 
+ *    comm is the world or local one. 
  */
 void QMPI::probe(MPI_Comm comm, int rank)
 {
@@ -370,12 +354,22 @@ void QMPI::probe(MPI_Comm comm, int rank)
 
 
 /*!
+ * Send the given data to the given rank or local rank, depending on the given comm 
+ * being world or local. This is asynchronous and returns immediately. 
  *
- * @param comm  
+ * @param comm The MPI comm used to send the data. This is either world or local. 
  *
- * @param toRank The rank of the process to send this data to. 
+ * @param toRank The rank or local rank, depending on if the given comm is world or 
+ *               local respectively, of the node to send this data to. 
  *
- * @param data Stores the raw data that will be sent to the given process. 
+ * @param data The data that is sent to the node with the given rank or local rank. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Send the given data to the node with the given rank using the given MPI comm, 
+ *    using the MPI function that does not block to do so. If sending fails then 
+ *    throw an exception. 
  */
 void QMPI::sendData(MPI_Comm comm, int toRank, const QByteArray& data)
 {
@@ -396,6 +390,14 @@ void QMPI::sendData(MPI_Comm comm, int toRank, const QByteArray& data)
 
 
 /*!
+ * Sets up the world MPI comm by simply getting its size and this node's rank since 
+ * MPI itself creates the world comm. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Get the world MPI comm size and this node's rank, saving it to this object. 
+ *    If any MPI call fails then throw an exception. 
  */
 void QMPI::setupWorld()
 {
@@ -421,6 +423,15 @@ void QMPI::setupWorld()
 
 
 /*!
+ * Sets up the local MPI comm which is determined by all nodes that share local 
+ * resources, getting the local size and this node's local rank rank from it. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Create the local comm and save it to this object, along with getting the 
+ *    local size and this node's local rank from the created local comm. If any MPI 
+ *    call fails then throw an exception. 
  */
 void QMPI::setupLocal()
 {

@@ -1,6 +1,6 @@
 #ifndef ACE_ANALYTIC_MPISLAVE_H
 #define ACE_ANALYTIC_MPISLAVE_H
-#include "ace_analytic_mpibase.h"
+#include "ace_analytic_abstractmpi.h"
 #include "ace_analytic_abstractinput.h"
 #include "ace_analytic.h"
 //
@@ -19,7 +19,7 @@ namespace Ace
        * also sends a special code to the master node to signal when it is ready to start 
        * processing work blocks and if it is serial or accelerated. 
        */
-      class MPISlave : public MPIBase, public AbstractInput
+      class MPISlave : public AbstractMPI, public AbstractInput
       {
          Q_OBJECT
       public:

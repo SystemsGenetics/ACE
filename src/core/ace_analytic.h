@@ -13,12 +13,12 @@ namespace Ace
       class AbstractManager;
       class SimpleRun;
       class SerialRun;
-      class OpenCLRun;
       class Single;
-      class MPIBase;
-      class MPIMaster;
-      class MPISlave;
+      class OpenCLRun;
       class Chunk;
       class Merge;
+      class AbstractMPI;
+      class MPIMaster;
+      class MPISlave;
    }
 }

@@ -1,6 +1,6 @@
 #ifndef ACE_ANALYTIC_MPIMASTER_H
 #define ACE_ANALYTIC_MPIMASTER_H
-#include "ace_analytic_mpibase.h"
+#include "ace_analytic_abstractmpi.h"
 #include "ace_analytic_abstractinput.h"
 //
 
@@ -20,7 +20,7 @@ namespace Ace
        * Also this manager does not start giving out work blocks to slave nodes until 
        * they signal they are ready to process them. 
        */
-      class MPIMaster : public MPIBase, public AbstractInput
+      class MPIMaster : public AbstractMPI, public AbstractInput
       {
          Q_OBJECT
       public:

@@ -1,5 +1,5 @@
-#ifndef ACE_ANALYTIC_MPIBASE_H
-#define ACE_ANALYTIC_MPIBASE_H
+#ifndef ACE_ANALYTIC_ABSTRACTMPI_H
+#define ACE_ANALYTIC_ABSTRACTMPI_H
 #include "ace_analytic_abstractmanager.h"
 //
 
@@ -10,13 +10,21 @@ namespace Ace
    namespace Analytic
    {
       /*!
+       * This represents the common resources required for both master and slave MPI 
+       * managers. The primary purpose of this class is to have each local rank 0 node 
+       * assign the different resources of the system to all nodes which share them in 
+       * the same local rank. The one interface this abstract class has is called for 
+       * starting the MPI run of a slave node, assigning them a specific resource to use. 
+       * The master node with local rank 0 skips itself in assigning resources since it 
+       * does not execute blocks like a slave node. This class also defines special codes 
+       * passed between master and slave nodes. 
        */
-      class MPIBase : public AbstractManager
+      class AbstractMPI : public AbstractManager
       {
          Q_OBJECT
       protected:
          /*!
-          * Defines special codes passed between the master node and slave nodes. 
+          * Defines special codes passed between the master and slave nodes. 
           */
          enum Code
          {
@@ -37,17 +45,22 @@ namespace Ace
             ,ReadyAsOpenCL = -3
          };
          /*!
+          * Defines the resource types that slave nodes can be assigned to execute as. 
           */
          enum Type
          {
             /*!
+             * Defines the serial resource which causes a slave node to run in plain serial 
+             * mode with no OpenCL device. 
              */
             Serial
             /*!
+             * Defines the OpenCL resource which causes the slave node to run in accelerated 
+             * OpenCL mode with a given platform and device index. 
              */
             ,OpenCL
          };
-         MPIBase(quint16 type);
+         explicit AbstractMPI(quint16 type);
          virtual void mpiStart(Type type, int platform, int device);
       protected slots:
          virtual void start() override final;
@@ -60,6 +73,8 @@ namespace Ace
           */
          QMPI& _mpi;
          /*!
+          * True if this MPI manager has already been started as a slave node or false 
+          * otherwise. This is used to make sure a node is not started more than once. 
           */
          bool _started {false};
       };

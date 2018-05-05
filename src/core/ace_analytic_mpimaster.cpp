@@ -20,7 +20,7 @@ using namespace Ace::Analytic;
  * @param type The analytic type this manager will use. 
  */
 MPIMaster::MPIMaster(quint16 type):
-   MPIBase(type),
+   AbstractMPI(type),
    _mpi(QMPI::instance())
 {
    connect(&_mpi,&QMPI::dataReceived,this,&MPIMaster::dataReceived);
