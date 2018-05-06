@@ -12,12 +12,14 @@ namespace Ace
    namespace Analytic
    {
       /*!
-       * This is the MPI slave manager. This manager is used for an MPI run with any 
-       * process that is not rank 0 in other words a slave node. The sole function of 
-       * this class is to process work blocks given to it by the master node and return 
-       * the corresponding result blocks until a termination code is received. This class 
+       * This is the MPI slave manager. This manager is used for an MPI run with any node 
+       * that is not rank 0 and by definition a slave node. The sole function of this 
+       * class is to process work blocks given to it by the master node and return the 
+       * corresponding result blocks until a termination code is received. This class 
        * also sends a special code to the master node to signal when it is ready to start 
-       * processing work blocks and if it is serial or accelerated. 
+       * processing work blocks and if it is serial or accelerated. This special signal 
+       * to the master node is not sent until it is given the resource type it will use 
+       * by having the interface mpi start called from its inherited abstract class. 
        */
       class MPISlave : public AbstractMPI, public AbstractInput
       {

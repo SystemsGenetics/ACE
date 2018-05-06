@@ -12,13 +12,13 @@ namespace Ace
    {
       /*!
        * This is the MPI master manager. This manager is used for an MPI run with the 
-       * process that has rank 0 in other words master. The main function of this class 
-       * is to create new work blocks and assign their execution to other slave node 
-       * processes within the MPI run, along with getting results back and saving them to 
-       * the manager's underlying analytic with the indexes being in order. Because this 
-       * manager does not process blocks itself it has no abstract run object of its own. 
-       * Also this manager does not start giving out work blocks to slave nodes until 
-       * they signal they are ready to process them. 
+       * node that has world rank 0. The main function of this class is to create new 
+       * work blocks and assign their execution to other slave nodes within the MPI run, 
+       * along with getting results back and saving them to the manager's underlying 
+       * analytic with the indexes being in order. Because this manager does not process 
+       * blocks itself it has no abstract run object of its own. Also this manager does 
+       * not start giving out work blocks to slave nodes until they signal they are ready 
+       * to process them. 
        */
       class MPIMaster : public AbstractMPI, public AbstractInput
       {

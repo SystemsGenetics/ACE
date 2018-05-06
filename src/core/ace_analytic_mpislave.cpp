@@ -24,13 +24,6 @@ using namespace Ace::Analytic;
  * Constructs a new MPI slave manager with the given analytic type. 
  *
  * @param type The analytic type this manager will use. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Setup OpenCL, setup serial if OpenCL fails, connect this abstract run signal 
- *    to this manager's finish slot, and connect the MPI data received signal to 
- *    this manager's data received slot. 
  */
 MPISlave::MPISlave(quint16 type):
    AbstractMPI(type),
@@ -76,12 +69,27 @@ bool MPISlave::isFinished() const
 
 
 /*!
+ * Implements the interface that is called to start this MPI manager as a slave 
+ * node with the given resource type and optional platform and device index. 
  *
- * @param type  
+ * @param type The resource type this slave node will use for block processing. 
  *
- * @param platform  
+ * @param platform The optional platform index this slave node will use if its 
+ *                 resource type is OpenCL. 
  *
- * @param device  
+ * @param device The optional device index this slave node will use if its resource 
+ *               type is OpenCL. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Initialize a serial or OpenCL abstract run object depending on whether the 
+ *    given resource type is serial or OpenCL, respectively. If initializing OpenCL 
+ *    fails then fall back to initializing a serial run object. 
+ *
+ * 2. Connect the runner object finished signal to this abstract manager's finish 
+ *    slot and send a special code to the master node signaling this slave node is 
+ *    ready to process work blocks with the resource type it was given. 
  */
 void MPISlave::mpiStart(Type type, int platform, int device)
 {
@@ -306,26 +314,28 @@ void MPISlave::process(const QByteArray& data)
 
 
 /*!
- * Attempts to initialize an OpenCL run object for block processing for this 
- * manager. If successful sets this manager's abstract run pointer. 
+ * Initializes a new OpenCL run object for block processing of this slave node 
+ * manager, returning true if this was successful or false otherwise. If the given 
+ * platform and device indexes are not a valid OpenCL device then an exception is 
+ * thrown. 
  *
  * @param platform  
  *
  * @param device  
  *
+ * @return True if a valid OpenCL run object was created at set to this object or 
+ *         false otherwise. 
+ *
  *
  * Steps of Operation: 
  *
- * 1. If the singleton settings object does not contain a valid OpenCL device 
- *    pointer then do nothing and exit, else go to the next step. 
+ * 1. If the given platform and device indexes are invalid then throw an exception, 
+ *    else go to the next step. 
  *
- * 2. Attempt to find an OpenCL index that is the nth device based off this slave 
- *    node's local process rank. All devices from all platforms are considered. If 
- *    there is not enough devices then no device is found. 
- *
- * 3. If an OpenCL device was found and this manager's analytic creates a valid 
- *    abstract OpenCL object then create a new OpenCL run object and set it to this 
- *    object's run pointer. 
+ * 2. Attempt to create an abstract analytic OpenCL object from this manager's 
+ *    analytic. If a valid one is returned then create a new OpenCL run object, set 
+ *    it to this object, and return true. Else if no valid one is returned then 
+ *    return false. 
  */
 bool MPISlave::setupOpenCL(int platform, int device)
 {
@@ -334,7 +344,10 @@ bool MPISlave::setupOpenCL(int platform, int device)
         || platform >= OpenCL::Platform::size()
         || device >= OpenCL::Platform::get(platform)->deviceSize() )
    {
-      ;//ERROR
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Invalid Argument"));
+      e.setDetails(tr("OpenCL device %1:%2 does not exist.").arg(platform).arg(device));
+      throw e;
    }
    bool ret {false};
    if ( EAbstractAnalytic::OpenCL* opencl = analytic()->makeOpenCL() )
@@ -351,19 +364,18 @@ bool MPISlave::setupOpenCL(int platform, int device)
 
 
 /*!
- * Initializes this object's abstract run object as a serial run object if it has 
- * not already been set. If this manager's analytic fails creating a valid abstract 
- * serial object then an exception is thrown. 
+ * Initializes a new serial run object for block processing of this slave node 
+ * manager. If this manager's analytic fails creating a valid abstract serial 
+ * object then an exception is thrown. 
  *
  *
  * Steps of Operation: 
  *
- * 1. If this object already has an abstract run object then do nothing and exit, 
- *    else go to the next step. 
+ * 1. Create a new abstract serial object from this manager's analytic. If creating 
+ *    a new abstract serial object fails then throw an exception, else go to the 
+ *    next step. 
  *
- * 2. If this manager's analytic creates a valid abstract serial object then create 
- *    a new serial run object and set it to this object's run pointer, else throw 
- *    an exception. 
+ * 2. Create a new serial run object and set to as this object's runner. 
  */
 void MPISlave::setupSerial()
 {
