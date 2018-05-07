@@ -45,10 +45,10 @@ namespace Ace
       Analytic::AbstractManager* _manager;
       /*!
        */
-      int _index;
+      int _index {0};
       /*!
        */
-      int _size;
+      int _size {1};
    };
 }
 

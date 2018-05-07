@@ -13,13 +13,13 @@ DEPENDPATH += $${PWD}/../
 TEMPLATE = app
 
 SOURCES += \
-   main.cpp \
-   analyticfactory.cpp \
-   datafactory.cpp \
-   integerarray.cpp \
-   mathtransform.cpp \
-   importintegerarray.cpp \
-   exportintegerarray.cpp \
+    main.cpp \
+    analyticfactory.cpp \
+    datafactory.cpp \
+    integerarray.cpp \
+    mathtransform.cpp \
+    importintegerarray.cpp \
+    exportintegerarray.cpp \
     mathtransform_input.cpp \
     mathtransform_serial.cpp \
     mathtransform_block.cpp \
@@ -30,12 +30,12 @@ SOURCES += \
     mathtransform_opencl_worker.cpp
 
 HEADERS += \
-   analyticfactory.h \
-   datafactory.h \
-   integerarray.h \
-   mathtransform.h \
-   importintegerarray.h \
-   exportintegerarray.h \
+    analyticfactory.h \
+    datafactory.h \
+    integerarray.h \
+    mathtransform.h \
+    importintegerarray.h \
+    exportintegerarray.h \
     mathtransform_input.h \
     mathtransform_serial.h \
     global.h \

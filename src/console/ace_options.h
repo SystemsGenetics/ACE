@@ -8,6 +8,9 @@
 namespace Ace
 {
    /*!
+    * This contains all options parsed from the command line using the variables 
+    * passed to the main function. This class provides methods for querying the 
+    * options parsed. 
     */
    class Options
    {
@@ -19,6 +22,7 @@ namespace Ace
       QString find(const QString& key) const;
    private:
       /*!
+       * Mapping of all parsed options as key value pairs. 
        */
       QHash<QString,QString> _map;
    };

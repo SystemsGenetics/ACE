@@ -76,8 +76,6 @@ void Run::finished()
  */
 void Run::setupIndexes()
 {
-   _index = 0;
-   _size = 1;
    QString command {_command.pop()};
    if ( command == QString("chunkrun") )
    {
