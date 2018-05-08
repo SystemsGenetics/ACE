@@ -69,6 +69,7 @@ namespace Ace
       protected slots:
          virtual void start();
       private:
+         void setupInput();
          void inputBasic();
          void inputFiles();
          QFile* addInputFile(const QString& path);

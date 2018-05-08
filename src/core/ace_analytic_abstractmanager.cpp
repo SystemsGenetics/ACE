@@ -251,8 +251,7 @@ void AbstractManager::finish()
  * 2. Create a new abstract analytic object of the given type and set it as this 
  *    manager's analytic. 
  *
- * 3. Create a new abstract analytic input object for this manager and resize the 
- *    array of arguments to the analytic input size. 
+ * 3. Setup the abstract input and input fields. 
  */
 AbstractManager::AbstractManager(quint16 type):
    _type(type)
@@ -269,8 +268,7 @@ AbstractManager::AbstractManager(quint16 type):
    }
    _analytic = factory.make(_type).release();
    _analytic->setParent(this);
-   _input = _analytic->makeInput();
-   _inputs.resize(_input->size());
+   setupInput();
 }
 
 
@@ -481,6 +479,31 @@ const EAbstractAnalytic* AbstractManager::analytic() const
  */
 void AbstractManager::start()
 {}
+
+
+
+
+
+
+/*!
+ * Initialize the abstract analytic input and input fields for this manager. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Create a new abstract analytic input from this manager's analytic, resize the 
+ *    array of inputs to the argument size of the abstract input object, and then 
+ *    populate all inputs with their default values. 
+ */
+void AbstractManager::setupInput()
+{
+   _input = _analytic->makeInput();
+   _inputs.resize(_input->size());
+   for (int i = 0; i < _input->size() ;++i)
+   {
+      _inputs[i] = _input->data(i,EAbstractAnalytic::Input::Default);
+   }
+}
 
 
 
