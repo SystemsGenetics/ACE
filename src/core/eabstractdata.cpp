@@ -1,25 +1,6 @@
 #include "eabstractdata.h"
 #include "ace_dataobject.h"
-#include "eexception.h"
 //
-
-
-
-
-
-
-/*!
- * This interface is called to prepare this data object's data to get new data from 
- * an analytic and optionally allocate all required space on the underlying file. 
- * The default implementation does nothing. 
- *
- * @param preAllocate True if this interface should allocate all space required for 
- *                    the incoming data or false otherwise. 
- */
-void EAbstractData::prepare(bool preAllocate)
-{
-   Q_UNUSED(preAllocate)
-}
 
 
 

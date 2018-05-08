@@ -163,10 +163,10 @@ void MathTransform::Input::set(int index, EAbstractData* data)
    switch (index)
    {
    case InputData:
-      _base->_in = qobject_cast<IntegerArray*>(data);
+      _base->_in = data->cast<IntegerArray>();
       break;
    case OutputData:
-      _base->_out = qobject_cast<IntegerArray*>(data);
+      _base->_out = data->cast<IntegerArray>();
       break;
    }
 }

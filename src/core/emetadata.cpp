@@ -13,7 +13,7 @@
 
 
 /*!
- * This creates a new metadata object of the type specified. 
+ * Constructs a new metadata object of the type specified. 
  *
  * @param type The type this new object will become. 
  */
@@ -29,8 +29,10 @@ EMetadata::EMetadata(Type type):
 
 
 /*!
+ * Constructs a new metadata object of the double type, setting its initial value 
+ * to the one given. 
  *
- * @param value  
+ * @param value Initial value of this new metadata object. 
  */
 EMetadata::EMetadata(double value):
    EMetadata(Double)
@@ -44,8 +46,10 @@ EMetadata::EMetadata(double value):
 
 
 /*!
+ * Constructs a new metadata object of the string type, setting its initial value 
+ * to the one given. 
  *
- * @param value  
+ * @param value Initial value of this new metadata object. 
  */
 EMetadata::EMetadata(const QString& value):
    EMetadata(String)
@@ -59,8 +63,10 @@ EMetadata::EMetadata(const QString& value):
 
 
 /*!
+ * Constructs a new metadata object of the byte array type, setting its initial 
+ * value to the one given. 
  *
- * @param value  
+ * @param value Initial value of this new metadata object. 
  */
 EMetadata::EMetadata(const QByteArray& value):
    EMetadata(Bytes)
@@ -74,8 +80,10 @@ EMetadata::EMetadata(const QByteArray& value):
 
 
 /*!
+ * Constructs a new metadata object of the array type, setting its initial value to 
+ * the one given. 
  *
- * @param value  
+ * @param value Initial value of this new metadata object. 
  */
 EMetadata::EMetadata(const EMetaArray& value):
    EMetadata(Array)
@@ -89,8 +97,10 @@ EMetadata::EMetadata(const EMetaArray& value):
 
 
 /*!
+ * Constructs a new metadata object of the object type, setting its initial value 
+ * to the one given. 
  *
- * @param value  
+ * @param value Initial value of this new metadata object. 
  */
 EMetadata::EMetadata(const EMetaObject& value):
    EMetadata(Object)

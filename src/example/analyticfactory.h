@@ -6,24 +6,32 @@
 
 
 /*!
+ * This implements the ACE analytic factory for producing new analytic objects and 
+ * giving basic information about all available analytic types. 
  */
 class AnalyticFactory : public EAbstractAnalyticFactory
 {
 public:
    /*!
+    * Defines all available analytic types this program implements along with the 
+    * total size. 
     */
    enum Type
    {
       /*!
+       * Defines the import integer array analytic type. 
        */
       ImportIntegerArrayType
       /*!
-       */
-      ,MathTransformType
-      /*!
+       * Defines the export integer array analytic type. 
        */
       ,ExportIntegerArrayType
       /*!
+       * Defines the math transform analytic type. 
+       */
+      ,MathTransformType
+      /*!
+       * Defines the total number of analytic types that exist. 
        */
       ,Total
    };

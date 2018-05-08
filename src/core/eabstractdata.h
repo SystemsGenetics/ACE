@@ -3,6 +3,7 @@
 #include <QtCore>
 #include <memory>
 #include "emetadata.h"
+#include "eexception.h"
 #include "global.h"
 //
 
@@ -14,10 +15,10 @@
  * Implementations can also manipulate the user metadata of its data object. All 
  * functionality is provided through protected methods. If an already existing data 
  * object is opened only the read data interface is called. If it is a new data 
- * object then the write new data, prepare, and finish interfaces are called in 
- * that order. Data object files are organized into three parts; the header, data, 
- * and user metadata in that order. An implementation of this class is responsible 
- * for the data section. 
+ * object then the write new data and finish interfaces are called in that order. 
+ * Data object files are organized into three parts; the header, data, and user 
+ * metadata in that order. An implementation of this class is responsible for the 
+ * data section. 
  */
 class EAbstractData : public QObject
 {
@@ -47,8 +48,9 @@ public:
     * @return Pointer to model that represents the data of this data object. 
     */
    virtual QAbstractTableModel* model() = 0;
-   virtual void prepare(bool preAllocate);
    virtual void finish();
+   template<class T> const T* cast() const;
+   template<class T> T* cast();
 protected:
    EMetadata systemMeta() const;
    EMetadata meta() const;
@@ -58,6 +60,71 @@ protected:
    void seek(qint64 index) const;
    void allocate(qint64 size);
 };
+
+
+
+
+
+
+/*!
+ * Casts this abstract data object into another constant class type. 
+ *
+ * @tparam T The type this abstract block is being cast to. This should be this 
+ *           block's implementation type. 
+ *
+ * @return Cast constant pointer to this object. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Use qt object cast to cast this object to the given template type as read 
+ *    only. If the cast fails then throw an exception, else return the cast read 
+ *    only pointer. 
+ */
+template<class T> const T* EAbstractData::cast() const
+{
+   const T* ret {qobject_cast<const T*>(this)};
+   if ( !ret )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Logic Error"));
+      e.setDetails(tr("Cannot convert abstract data object to given type."));
+      throw e;
+   }
+   return ret;
+}
+
+
+
+
+
+
+/*!
+ * Casts this abstract data object into another class type. 
+ *
+ * @tparam T The type this abstract block is being cast to. This should be this 
+ *           block's implementation type. 
+ *
+ * @return Cast pointer to this object. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Use qt object cast to cast this object to the given template type. If the 
+ *    cast fails then throw an exception, else return the cast pointer. 
+ */
+template<class T> T* EAbstractData::cast()
+{
+   T* ret {qobject_cast<T*>(this)};
+   if ( !ret )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Logic Error"));
+      e.setDetails(tr("Cannot convert abstract data object to given type."));
+      throw e;
+   }
+   return ret;
+}
 
 
 

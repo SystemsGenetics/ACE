@@ -10,6 +10,7 @@
 
 
 /*!
+ * Deletes the qt text stream used to read in the input text file. 
  */
 ImportIntegerArray::~ImportIntegerArray()
 {
@@ -29,7 +30,7 @@ ImportIntegerArray::~ImportIntegerArray()
  */
 int ImportIntegerArray::size() const
 {
-   return (_in->size()/_incrementSize) + 1;
+   return (_in->size()/_incrementSize) + (_incrementSize%_in->size() ? 1 : 0);
 }
 
 
@@ -43,6 +44,16 @@ int ImportIntegerArray::size() const
  * no work blocks. 
  *
  * @param result Pointer to the block of results that is read in. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. While the position of the input text file is not greater then the current 
+ *    chunk of the file that should be read in do the following steps. 
+ *
+ * 2. Read in the next integer value from the input text file using this object's 
+ *    qt text stream attached to the input file, adding the read in integer to the 
+ *    output integer array. 
  */
 void ImportIntegerArray::process(const EAbstractAnalytic::Block* result)
 {
@@ -81,6 +92,13 @@ EAbstractAnalytic::Input* ImportIntegerArray::makeInput()
 /*!
  * Implements the interface that initializes this analytic. This implementation 
  * checks to make sure the input file and output data object has been set. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the input and/or output pointers have not been set then throw an 
+ *    exception, else create a new qt text stream attached to the input text file 
+ *    and setting this object's text stream pointer to it. 
  */
 void ImportIntegerArray::initialize()
 {

@@ -7,6 +7,11 @@
 
 
 /*!
+ * This implements an import integer array analytic. This reads in a text file 
+ * assumed to have a single line of integers separated by spaces and outputs a new 
+ * integer array data object containing those integers. This is a simple analytic 
+ * which means it does not produce blocks and simply uses the process interface for 
+ * incrementally processing its task. 
  */
 class ImportIntegerArray : public EAbstractAnalytic
 {
@@ -20,17 +25,22 @@ public:
    virtual void initialize();
 private:
    /*!
+    * The number of integer values that are read in per call to the process interface. 
     */
    constexpr static const int _incrementSize {16};
    /*!
+    * Pointer to the input text file. 
     */
    QFile* _in {nullptr};
    /*!
-    */
-   QTextStream* _stream {nullptr};
-   /*!
+    * Pointer to the output integer array. 
     */
    IntegerArray* _out {nullptr};
+   /*!
+    * Pointer to the qt text stream attached to the input text file and used by this 
+    * object to read in new integer values. 
+    */
+   QTextStream* _stream {nullptr};
 };
 
 

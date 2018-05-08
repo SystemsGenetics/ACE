@@ -14,7 +14,7 @@
  */
 qint64 IntegerArray::dataEnd() const
 {
-   return static_cast<qint64>(_numbers.size())*4+4;
+   return static_cast<qint64>(_numbers.size())*4 + 4;
 }
 
 
@@ -25,6 +25,15 @@ qint64 IntegerArray::dataEnd() const
 /*!
  * Implements the interface that reads in the data of an existing data object that 
  * was just opened. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Seek to the beginning of the data and read in the amount of integers it 
+ *    contains. 
+ *
+ * 2. Read in all integer values the data contains, adding them to this object's 
+ *    list of integer values. 
  */
 void IntegerArray::readData()
 {
@@ -46,8 +55,13 @@ void IntegerArray::readData()
 
 
 /*!
- * Implements the interface that is called to initialize the data object's data to 
+ * Implements the interface that is called to initialize this data object's data to 
  * a null state. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Seek to the beginning of data and write out the amount of integers to be 0. 
  */
 void IntegerArray::writeNewData()
 {
@@ -77,30 +91,17 @@ QAbstractTableModel* IntegerArray::model()
 
 
 /*!
- * Implements the interface is called to prepare this data object's data to get new 
- * data from an analytic and optionally allocate all required space on the 
- * underlying file. 
- *
- * @param preAllocate True if this interface should allocate all space required for 
- *                    the incoming data or false otherwise. 
- */
-void IntegerArray::prepare(bool preAllocate)
-{
-   if ( preAllocate )
-   {
-      seek(0);
-      allocate(4 + 4*_futureSize);
-   }
-}
-
-
-
-
-
-
-/*!
  * Implements the interface that finalizes this data object's data after the 
  * analytic that created it has finished giving it new data. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Seek to the beginning of the data and write out the amount of integers it 
+ *    will contain. 
+ *
+ * 2. Iterate through this object's list of integers, writing out each one to the 
+ *    data. 
  */
 void IntegerArray::finish()
 {
