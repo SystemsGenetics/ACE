@@ -6,22 +6,27 @@
 
 
 /*!
+ * This implements the abstract input of the import integer array analytic. 
  */
 class ImportIntegerArray::Input : public EAbstractAnalytic::Input
 {
    Q_OBJECT
 public:
    /*!
+    * Defines all input arguments for this analytic. 
     */
    enum Argument
    {
       /*!
+       * Defines the input file argument. 
        */
       InputFile
       /*!
+       * Defines the output integer array argument. 
        */
       ,OutputData
       /*!
+       * Defines the total number of all arguments. 
        */
       ,Total
    };
@@ -36,6 +41,7 @@ private:
    QVariant inputFileData(Role role) const;
    QVariant outputDataData(Role role) const;
    /*!
+    * Pointer to the base analytic for this object. 
     */
    ImportIntegerArray* _base;
 };

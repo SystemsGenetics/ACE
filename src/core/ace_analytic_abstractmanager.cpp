@@ -771,10 +771,10 @@ EMetadata AbstractManager::buildMeta(const QList<Ace::DataObject*>& inputs)
  * Steps of Operation: 
  *
  * 1. Create a new metadata object for the application setting the keys for the 
- *    string version, major version, minor version, and revision. 
+ *    major version, minor version, and revision. 
  *
  * 2. Create a new metadata object for the ACE library setting the keys for the 
- *    string version, major version, minor version, and revision. 
+ *    major version, minor version, and revision. 
  *
  * 3. Create a metadata return object setting the ace and application name keys and 
  *    setting them to the previously made objects, returning the created object. 
@@ -782,13 +782,11 @@ EMetadata AbstractManager::buildMeta(const QList<Ace::DataObject*>& inputs)
 EMetadata AbstractManager::buildMetaVersion()
 {
    EMetadata application(EMetadata::Object);
-   application.toObject().insert("string",EMetadata(Settings::appVersionString()));
    application.toObject().insert("major",EMetadata(Settings::appMajorVersion()));
    application.toObject().insert("minor",EMetadata(Settings::appMinorVersion()));
    application.toObject().insert("revision",EMetadata(Settings::appRevision()));
    Settings& settings {Settings::instance()};
    EMetadata ace(EMetadata::Object);
-   ace.toObject().insert("string",EMetadata(settings.versionString()));
    ace.toObject().insert("major",EMetadata(settings._majorVersion));
    ace.toObject().insert("minor",EMetadata(settings._minorVersion));
    ace.toObject().insert("revision",EMetadata(settings._revision));

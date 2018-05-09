@@ -10,6 +10,7 @@
 
 
 /*!
+ * Deletes the qt text stream used to write out to the output text file. 
  */
 ExportIntegerArray::~ExportIntegerArray()
 {
@@ -43,9 +44,17 @@ int ExportIntegerArray::size() const
  * no work blocks. 
  *
  * @param result Pointer to the block of results that is read in. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Write out the integer value at the index of the given result block from the 
+ *    input integer array. If this is not the last integer value that will be 
+ *    written then also write out one space. 
  */
 void ExportIntegerArray::process(const EAbstractAnalytic::Block* result)
 {
+   // 1
    *_stream << _in->_numbers.at(result->index());
    if ( result->index() != (_in->_numbers.size() - 1) )
    {
@@ -76,9 +85,19 @@ EAbstractAnalytic::Input* ExportIntegerArray::makeInput()
 /*!
  * Implements the interface that initializes this analytic. This implementation 
  * checks to make sure the input file and output data object has been set. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the input integer array or output text file is not set then throw an 
+ *    exception. 
+ *
+ * 2. Create a new qt text stream attached to the output text file and save its 
+ *    pointer to this object. 
  */
 void ExportIntegerArray::initialize()
 {
+   // 1
    if ( !_in || !_out )
    {
       E_MAKE_EXCEPTION(e);
@@ -86,5 +105,7 @@ void ExportIntegerArray::initialize()
       e.setDetails(tr("Did not get valid input and/or output arguments."));
       throw e;
    }
+
+   // 2
    _stream = new QTextStream(_out);
 }

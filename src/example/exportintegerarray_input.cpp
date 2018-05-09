@@ -9,7 +9,7 @@
 
 
 /*!
- * Constructs a new input object with the given import integer array as its parent. 
+ * Constructs a new input object with the given export integer array as its parent. 
  *
  * @param parent The parent analytic object for this new input object. 
  */
@@ -45,9 +45,16 @@ int ExportIntegerArray::Input::size() const
  * @param index Index of argument whose type is returned. 
  *
  * @return Argument type for the given index. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Based off the argument index given return its argument type. If the index is 
+ *    out of range then return a boolean type. 
  */
 EAbstractAnalytic::Input::Type ExportIntegerArray::Input::type(int index) const
 {
+   // Step 1
    switch (index)
    {
    case InputData: return Type::DataIn;
@@ -70,9 +77,16 @@ EAbstractAnalytic::Input::Type ExportIntegerArray::Input::type(int index) const
  * @param role Role for the data that is returned. 
  *
  * @return Variant data for the given role and index. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Based off the argument index given call the method for getting argument data 
+ *    for that index, returning what the method returns. 
  */
 QVariant ExportIntegerArray::Input::data(int index, Role role) const
 {
+   // Step 1
    switch (index)
    {
    case InputData: return inputDataData(role);
@@ -88,7 +102,7 @@ QVariant ExportIntegerArray::Input::data(int index, Role role) const
 
 /*!
  * Implements the interface that sets an argument with the given index to the given 
- * value. 
+ * value. This analytic has no basic arguments so this does nothing. 
  *
  * @param index Index of argument whose value is set to the given value. 
  *
@@ -112,9 +126,16 @@ void ExportIntegerArray::Input::set(int index, const QVariant& value)
  * @param index Index of argument whose qt file device pointer is given. 
  *
  * @param file Pointer to qt file device for the argument with the given index. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the given index is for the input integer array argument then set the data 
+ *    object pointer to this input's analytic, casting it as an integer array. 
  */
 void ExportIntegerArray::Input::set(int index, QFile* file)
 {
+   // Step 1
    if ( index == OutputFile )
    {
       _base->_out = file;
@@ -134,9 +155,16 @@ void ExportIntegerArray::Input::set(int index, QFile* file)
  *
  * @param data Pointer to abstract data object for the argument with the given 
  *             index. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the given index is for the output file argument then set the given qt file 
+ *    pointer to this input's analytic. 
  */
 void ExportIntegerArray::Input::set(int index, EAbstractData* data)
 {
+   // Step 1
    if ( index == InputData )
    {
       _base->_in = qobject_cast<IntegerArray*>(data);
@@ -149,11 +177,21 @@ void ExportIntegerArray::Input::set(int index, EAbstractData* data)
 
 
 /*!
+ * Returns argument data for the input data argument and the given role. 
  *
- * @param role  
+ * @param role Role for the data that is returned.  
+ *
+ * @return Argument data for the input data argument and given role. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Based off the role given return the appropriate argument data. If the role is 
+ *    not recognized or supported then return an empty variant. 
  */
 QVariant ExportIntegerArray::Input::inputDataData(Role role) const
 {
+   // Step 1
    switch (role)
    {
    case Role::CommandLineName: return "in";
@@ -170,11 +208,21 @@ QVariant ExportIntegerArray::Input::inputDataData(Role role) const
 
 
 /*!
+ * Returns argument data for the output file argument and the given role. 
  *
- * @param role  
+ * @param role Role for the data that is returned.  
+ *
+ * @return Argument data for the output file argument and given role. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Based off the role given return the appropriate argument data. If the role is 
+ *    not recognized or supported then return an empty variant. 
  */
 QVariant ExportIntegerArray::Input::outputFileData(Role role) const
 {
+   // Step 1
    switch (role)
    {
    case Role::CommandLineName: return "out";

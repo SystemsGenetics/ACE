@@ -25,7 +25,8 @@ public:
    virtual void initialize();
 private:
    /*!
-    * The number of integer values that are read in per call to the process interface. 
+    * The number of bytes that are read in from the input text file per call to the 
+    * process interface. 
     */
    constexpr static const int _incrementSize {16};
    /*!

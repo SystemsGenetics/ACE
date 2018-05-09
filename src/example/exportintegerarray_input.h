@@ -6,22 +6,27 @@
 
 
 /*!
+ * This implements the abstract input of the export integer array analytic. 
  */
 class ExportIntegerArray::Input : public EAbstractAnalytic::Input
 {
    Q_OBJECT
 public:
    /*!
+    * Defines all input arguments for this analytic. 
     */
    enum Argument
    {
       /*!
+       * Defines the input integer array argument. 
        */
       InputData
       /*!
+       * Defines the output text file argument. 
        */
       ,OutputFile
       /*!
+       * Defines the total number of all arguments. 
        */
       ,Total
    };
@@ -36,6 +41,7 @@ private:
    QVariant inputDataData(Role role) const;
    QVariant outputFileData(Role role) const;
    /*!
+    * Pointer to the base analytic for this object. 
     */
    ExportIntegerArray* _base;
 };

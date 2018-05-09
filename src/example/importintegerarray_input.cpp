@@ -45,9 +45,16 @@ int ImportIntegerArray::Input::size() const
  * @param index Index of argument whose type is returned. 
  *
  * @return Argument type for the given index. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Based off the argument index given return its argument type. If the index is 
+ *    out of range then return a boolean type. 
  */
 EAbstractAnalytic::Input::Type ImportIntegerArray::Input::type(int index) const
 {
+   // Step 1
    switch (index)
    {
    case InputFile: return Type::FileIn;
@@ -62,17 +69,24 @@ EAbstractAnalytic::Input::Type ImportIntegerArray::Input::type(int index) const
 
 
 /*!
- * This interface returns data for a given role on an argument with the given 
- * index. 
+ * Implements the interface that returns data for a given role on an argument with 
+ * the given index. 
  *
  * @param index Index of argument whose data with the given role is returned. 
  *
  * @param role Role for the data that is returned. 
  *
  * @return Variant data for the given role and index. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Based off the argument index given call the method for getting argument data 
+ *    for that index, returning what the method returns. 
  */
 QVariant ImportIntegerArray::Input::data(int index, Role role) const
 {
+   // Step 1
    switch (index)
    {
    case InputFile: return inputFileData(role);
@@ -88,7 +102,7 @@ QVariant ImportIntegerArray::Input::data(int index, Role role) const
 
 /*!
  * Implements the interface that sets an argument with the given index to the given 
- * value. 
+ * value. This analytic has no basic arguments so this does nothing. 
  *
  * @param index Index of argument whose value is set to the given value. 
  *
@@ -112,9 +126,16 @@ void ImportIntegerArray::Input::set(int index, const QVariant& value)
  * @param index Index of argument whose qt file device pointer is given. 
  *
  * @param file Pointer to qt file device for the argument with the given index. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the given index is for the input file argument then set the given qt file 
+ *    pointer to this input's analytic. 
  */
 void ImportIntegerArray::Input::set(int index, QFile* file)
 {
+   // Step 1
    if ( index == InputFile )
    {
       _base->_in = file;
@@ -134,9 +155,16 @@ void ImportIntegerArray::Input::set(int index, QFile* file)
  *
  * @param data Pointer to abstract data object for the argument with the given 
  *             index. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If the given index is for the output integer array argument then set the data 
+ *    object pointer to this input's analytic, casting it as an integer array. 
  */
 void ImportIntegerArray::Input::set(int index, EAbstractData* data)
 {
+   // Step 1
    if ( index == OutputData )
    {
       _base->_out = qobject_cast<IntegerArray*>(data);
@@ -149,11 +177,21 @@ void ImportIntegerArray::Input::set(int index, EAbstractData* data)
 
 
 /*!
+ * Returns argument data for the input file argument and the given role. 
  *
- * @param role  
+ * @param role Role for the data that is returned. 
+ *
+ * @return Argument data for the input file argument and given role. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Based off the role given return the appropriate argument data. If the role is 
+ *    not recognized or supported then return an empty variant. 
  */
 QVariant ImportIntegerArray::Input::inputFileData(Role role) const
 {
+   // Step 1
    switch (role)
    {
    case Role::CommandLineName: return "in";
@@ -170,11 +208,21 @@ QVariant ImportIntegerArray::Input::inputFileData(Role role) const
 
 
 /*!
+ * Returns argument data for the output data argument and the given role. 
  *
- * @param role  
+ * @param role Role for the data that is returned. 
+ *
+ * @return Argument data for the output data argument and given role. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Based off the role given return the appropriate argument data. If the role is 
+ *    not recognized or supported then return an empty variant. 
  */
 QVariant ImportIntegerArray::Input::outputDataData(Role role) const
 {
+   // Step 1
    switch (role)
    {
    case Role::CommandLineName: return "out";
