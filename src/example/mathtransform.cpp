@@ -32,8 +32,13 @@ int MathTransform::size() const
 
 
 /*!
+ * Implements the interface that creates and returns a work block for this analytic 
+ * with the given index. This implementation take a single integer from its input 
+ * integer array and makes a work block from it. 
  *
  * @param index Index used to make the block of work. 
+ *
+ * @return Pointer new work block with the given index. 
  */
 std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeWork(int index) const
 {
@@ -46,6 +51,9 @@ std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeWork(int index) con
 
 
 /*!
+ * Implements the interface that creates an empty and uninitialized work block. 
+ *
+ * @return Pointer uninitialized work block. 
  */
 std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeWork() const
 {
@@ -58,6 +66,9 @@ std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeWork() const
 
 
 /*!
+ * Implements the interface that creates an empty and uninitialized result block. 
+ *
+ * @return Pointer uninitialized result block. 
  */
 std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeResult() const
 {
@@ -71,12 +82,20 @@ std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeResult() const
 
 /*!
  * Implements the interface that reads in a block of results made from a block of 
- * work with the corresponding index. 
+ * work with the corresponding index. This implementation takes the integer result 
+ * and appends it to its output integer array. 
  *
  * @param result  
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Cast the result block to this implementation's type and then append its 
+ *    integer result to this object's output integer array. 
  */
 void MathTransform::process(const EAbstractAnalytic::Block* result)
 {
+   // 1
    const Block* valid {result->cast<Block>()};
    _out->_numbers << valid->_number;
 }
@@ -117,6 +136,9 @@ EAbstractAnalytic::Serial* MathTransform::makeSerial()
 
 
 /*!
+ * Implements the interface that makes a new OpenCL object and returns its pointer. 
+ *
+ * @return Pointer to new OpenCL object. 
  */
 EAbstractAnalytic::OpenCL* MathTransform::makeOpenCL()
 {
@@ -130,10 +152,17 @@ EAbstractAnalytic::OpenCL* MathTransform::makeOpenCL()
 
 /*!
  * Implements the interface that initializes this analytic. This implementation 
- * checks to make sure it has valid input and output data objects. 
+ * checks to make sure it has a valid input data object. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If this object does not have a valid input integer array then throw an 
+ *    exception. 
  */
 void MathTransform::initialize()
 {
+   // 1
    if ( !_in )
    {
       E_MAKE_EXCEPTION(e);

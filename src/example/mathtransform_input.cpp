@@ -7,6 +7,9 @@
 
 
 /*!
+ * String list of mathematical operations for this analytic that correspond exactly 
+ * to its enumeration. Used for handling the operation type argument for this input 
+ * object. 
  */
 const QStringList MathTransform::Input::_operationNames
 {
@@ -58,9 +61,16 @@ int MathTransform::Input::size() const
  * @param index Index of argument whose type is returned. 
  *
  * @return Argument type for the given index. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Based off the argument index given return its argument type. if the index is 
+ *    out of range then return a default boolean type. 
  */
 EAbstractAnalytic::Input::Type MathTransform::Input::type(int index) const
 {
+   // 1
    switch (index)
    {
    case InputData: return Type::DataIn;
@@ -85,9 +95,16 @@ EAbstractAnalytic::Input::Type MathTransform::Input::type(int index) const
  * @param role Role for the data that is returned. 
  *
  * @return Variant data for the given role and index. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Based off the argument index given call the appropriate method with the given 
+ *    data role. If the given index is out of range then return an empty variant. 
  */
 QVariant MathTransform::Input::data(int index, Role role) const
 {
+   // 1
    switch (index)
    {
    case InputData: return inputDataData(role);
@@ -110,9 +127,16 @@ QVariant MathTransform::Input::data(int index, Role role) const
  * @param index Index of argument whose value is set to the given value. 
  *
  * @param value Variant value which is set to the argument with the given index. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Based off the argument index given set this object's parent analytic object's 
+ *    parameter. If the given index is out of range then do nothing. 
  */
 void MathTransform::Input::set(int index, const QVariant& value)
 {
+   // 1
    switch (index)
    {
    case OperationType:
@@ -157,9 +181,17 @@ void MathTransform::Input::set(int index, QFile* file)
  *
  * @param data Pointer to abstract data object for the argument with the given 
  *             index. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Based off the argument index given set the input or output integer array for 
+ *    this object's parent analytic object, casting the given data object to an 
+ *    integer array. If the given index is out of range then do nothing. 
  */
 void MathTransform::Input::set(int index, EAbstractData* data)
 {
+   // 1
    switch (index)
    {
    case InputData:
@@ -177,11 +209,21 @@ void MathTransform::Input::set(int index, EAbstractData* data)
 
 
 /*!
+ * Returns argument data with the given role for the input data argument of this 
+ * input object. 
  *
- * @param role  
+ * @param role The given data role whose data is returned. 
+ *
+ * @return Argument data of the given role. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Based off the data role given return the appropriate argument data. 
  */
 QVariant MathTransform::Input::inputDataData(Role role) const
 {
+   // 1
    switch (role)
    {
    case Role::CommandLineName: return QString("in");
@@ -198,11 +240,21 @@ QVariant MathTransform::Input::inputDataData(Role role) const
 
 
 /*!
+ * Returns argument data with the given role for the output data argument of this 
+ * input object. 
  *
- * @param role  
+ * @param role The given data role whose data is returned. 
+ *
+ * @return Argument data of the given role. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Based off the data role given return the appropriate argument data. 
  */
 QVariant MathTransform::Input::outputDataData(Role role) const
 {
+   // 1
    switch (role)
    {
    case Role::CommandLineName: return QString("out");
@@ -219,11 +271,21 @@ QVariant MathTransform::Input::outputDataData(Role role) const
 
 
 /*!
+ * Returns argument data with the given role for the operation type argument of 
+ * this input object. 
  *
- * @param role  
+ * @param role The given data role whose data is returned. 
+ *
+ * @return Argument data of the given role. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Based off the data role given return the appropriate argument data. 
  */
 QVariant MathTransform::Input::operationTypeData(Role role) const
 {
+   // 1
    switch (role)
    {
    case Role::CommandLineName: return QString("type");
@@ -241,11 +303,21 @@ QVariant MathTransform::Input::operationTypeData(Role role) const
 
 
 /*!
+ * Returns argument data with the given role for the amount argument of this input 
+ * object. 
  *
- * @param role  
+ * @param role The given data role whose data is returned. 
+ *
+ * @return Argument data of the given role. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Based off the data role given return the appropriate argument data. 
  */
 QVariant MathTransform::Input::amountData(Role role) const
 {
+   // 1
    switch (role)
    {
    case Role::CommandLineName: return QString("amount");

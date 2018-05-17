@@ -6,6 +6,7 @@
 
 
 /*!
+ * This implements the serial working class for its parent math transform analytic. 
  */
 class MathTransform::Serial : public EAbstractAnalytic::Serial
 {
@@ -15,6 +16,7 @@ public:
    virtual std::unique_ptr<EAbstractAnalytic::Block> execute(const EAbstractAnalytic::Block* block) override final;
 private:
    /*!
+    * Pointer to this serial object's parent math transform analytic. 
     */
    MathTransform* _base;
 };

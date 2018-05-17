@@ -7,13 +7,18 @@
 
 
 /*!
+ * This implements a math transform analytic. This analytic takes in an integer 
+ * array and outputs a second integer array. Each integer of the input is 
+ * transformed with a given mathematical operation and amount and then written to 
+ * the output integer array. The supported math operations are add, subtract, 
+ * multiply, and divide. This analytic fully supports both serial and OpenCL. 
  */
 class MathTransform : public EAbstractAnalytic
 {
    Q_OBJECT
 public:
-   class Block;
    class Input;
+   class Block;
    class Serial;
    class OpenCL;
    virtual int size() const override final;
@@ -27,32 +32,44 @@ public:
    virtual void initialize() override final;
 private:
    /*!
+    * Defines the mathematical operations this analytic supports. 
     */
    enum class Operation
    {
       /*!
+       * Defines the addition operation. 
        */
       Addition
       /*!
+       * Defines the subtraction operation. 
        */
       ,Subtraction
       /*!
+       * Defines the multiplication operation. 
        */
       ,Multiplication
       /*!
+       * Defines the division operation. 
        */
       ,Division
    };
    /*!
+    * Pointer to the input integer array for this analytic. 
     */
    IntegerArray* _in {nullptr};
    /*!
+    * Pointer to the output integer array for this analytic. In some cases an analytic 
+    * will be initialized without any of its output set. These analytic objects will 
+    * never have their process interface called by ACE. 
     */
    IntegerArray* _out {nullptr};
    /*!
+    * The mathematical operation this analytic does to all input integers. 
     */
    Operation _type {Operation::Addition};
    /*!
+    * The amount used with the mathematical operation by this analytic on all input 
+    * integers. 
     */
    int _amount {0};
 };

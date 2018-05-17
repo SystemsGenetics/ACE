@@ -7,6 +7,7 @@
 
 
 /*!
+ * This implements the base OpenCL class for its parent math transform analytic. 
  */
 class MathTransform::OpenCL : public EAbstractAnalytic::OpenCL
 {
@@ -19,12 +20,15 @@ public:
    virtual void initialize(::OpenCL::Context* context) override final;
 private:
    /*!
+    * Pointer to this object's parent math transform analytic. 
     */
    MathTransform* _base;
    /*!
+    * Pointer to this object's base OpenCL context used to create all other resources. 
     */
    ::OpenCL::Context* _context {nullptr};
    /*!
+    * Pointer to this object's OpenCL program. 
     */
    ::OpenCL::Program* _program {nullptr};
 };

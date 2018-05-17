@@ -6,28 +6,35 @@
 
 
 /*!
+ * This implements the input class for its math transform parent analytic. 
  */
 class MathTransform::Input : public EAbstractAnalytic::Input
 {
    Q_OBJECT
 public:
    /*!
+    * Defines all arguments for its parent analytic. 
     */
    enum Argument
    {
       /*!
+       * Defines the input data argument. 
        */
       InputData
       /*!
+       * Defines the output data argument. 
        */
       ,OutputData
       /*!
+       * Defines the operation type argument. 
        */
       ,OperationType
       /*!
+       * Defines the amount argument. 
        */
       ,Amount
       /*!
+       * Defines the total number of arguments this input class contains. 
        */
       ,Total
    };
@@ -44,9 +51,13 @@ private:
    QVariant operationTypeData(Role role) const;
    QVariant amountData(Role role) const;
    /*!
+    * String list of mathematical operations for this analytic that correspond exactly 
+    * to its enumeration. Used for handling the operation type argument for this input 
+    * object. 
     */
    static const QStringList _operationNames;
    /*!
+    * Pointer to this input object's parent math transform analytic. 
     */
    MathTransform* _base;
 };

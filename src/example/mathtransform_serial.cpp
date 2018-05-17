@@ -35,11 +35,26 @@ MathTransform::Serial::Serial(MathTransform* parent):
  *              block. 
  *
  * @return Pointer to results block produced from the given work block. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Cast the given work block to this analytic block type and get the integer 
+ *    value from it into _value_. 
+ *
+ * 2. Transform _value_ based off this object's parent analytic object's operation 
+ *    type and amount. 
+ *
+ * 3. Return a new result block with the given work block index and the transformed 
+ *    integer _value_. 
  */
 std::unique_ptr<EAbstractAnalytic::Block> MathTransform::Serial::execute(const EAbstractAnalytic::Block* block)
 {
+   // 1
    const Block* valid {block->cast<Block>()};
    qint32 value {valid->_number};
+
+   // 2
    switch (_base->_type)
    {
    case Operation::Addition:
@@ -55,5 +70,7 @@ std::unique_ptr<EAbstractAnalytic::Block> MathTransform::Serial::execute(const E
       value /= _base->_amount;
       break;
    }
+
+   // 3
    return unique_ptr<EAbstractAnalytic::Block>(new Block(block->index(),value));
 }
