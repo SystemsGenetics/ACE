@@ -7,11 +7,11 @@ TEMPLATE = subdirs
 SUBDIRS += \
     core \
     #tests \
-    #gui \
+    gui \
     console \
     example
 
 #tests.depends = core
-#gui.depends = core
+gui.depends = core
 console.depends = core
 example.depends = core console
