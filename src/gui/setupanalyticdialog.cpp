@@ -17,7 +17,7 @@
 #include "abstractanalytic.h"
 #include "eabstractdatafactory.h"
 #include "eexception.h"
-#include "mainwindow.h"
+#include "ace_mainwindow.h"
 
 
 

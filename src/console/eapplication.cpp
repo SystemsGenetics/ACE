@@ -43,15 +43,39 @@
  *
  * 1. Initialize the ACE system through the global settings instance and set the 
  *    data and analytic factories to the ones given. 
+ *
+ * 2. If any exception is caught then report it to the user and forcefully exit the 
+ *    application. 
  */
 EApplication::EApplication(const QString& organization, const QString& application, int majorVersion, int minorVersion, int revision, std::unique_ptr<EAbstractDataFactory>&& data, std::unique_ptr<EAbstractAnalyticFactory>&& analytic, int& argc, char** argv):
    QCoreApplication(argc,argv),
    _options(argc,argv),
    _command(argc,argv)
 {
-   Ace::Settings::initialize(organization,application,majorVersion,minorVersion,revision);
-   EAbstractDataFactory::setInstance(std::move(data));
-   EAbstractAnalyticFactory::setInstance(std::move(analytic));
+   // 1
+   try
+   {
+      Ace::Settings::initialize(organization,application,majorVersion,minorVersion,revision);
+      EAbstractDataFactory::setInstance(std::move(data));
+      EAbstractAnalyticFactory::setInstance(std::move(analytic));
+   }
+
+   // 2
+   catch (EException e)
+   {
+      showException(e);
+      ::exit(-1);
+   }
+   catch (std::exception e)
+   {
+      qDebug() << tr("STD exception %1 caught!\n").arg(e.what());
+      ::exit(-1);
+   }
+   catch (...)
+   {
+      qDebug() << tr("Unknown exception caught!\n");
+      ::exit(-1);
+   }
 }
 
 

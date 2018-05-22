@@ -13,23 +13,23 @@ TEMPLATE = lib
 
 SOURCES += \
     opencldevicedialog.cpp \
-    mainwindow.cpp \
     setupanalyticdialog.cpp \
-    Application.cpp \
     analyticdialog.cpp \
-    datawindow.cpp \
     metadatadialog.cpp \
-    imageviewer.cpp
+    imageviewer.cpp \
+    eapplication.cpp \
+    ace_mainwindow.cpp \
+    ace_datawindow.cpp
 
 HEADERS += \
     opencldevicedialog.h \
-    mainwindow.h \
     setupanalyticdialog.h \
-    Application.h \
     analyticdialog.h \
-    datawindow.h \
     metadatadialog.h \
-    imageviewer.h
+    imageviewer.h \
+    eapplication.h \
+    ace_mainwindow.h \
+    ace_datawindow.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 

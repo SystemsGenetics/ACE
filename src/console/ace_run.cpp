@@ -348,7 +348,6 @@ void Run::addArguments()
          addSelection(i,argumentName);
          break;
       }
-   }
 }
 
 
@@ -486,15 +485,20 @@ void Run::addSelection(int index, const QString& key)
    QStringList values
    {//
       _manager->data(index,EAbstractAnalytic::Input::Role::SelectionValues).toStringList()
-   };
-   if ( !values.contains(value) )
-   {
-      E_MAKE_EXCEPTION(e);
-      e.setTitle(tr("Invalid Argument"));
-      e.setDetails(tr("Selection argument '%1' does not contain '%2' as a valid option.")
-                   .arg(key)
-                   .arg(value));
-      throw e;
-   }
-   _manager->set(index,value);
+}
+
+
+
+
+
+
+/*! !!! UNKNOWN FUNCTION !!! */
+.arg(key)
+.arg(value));
+
+{
+
+dex,value);
+
+
 }

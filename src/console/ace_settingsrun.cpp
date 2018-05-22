@@ -225,46 +225,6 @@ void SettingsRun::setOpenCL()
       e.setTitle(QObject::tr("Invalid argument"));
       e.setDetails(QObject::tr("Given ACU device '%1' invalid, exiting...").arg(_command.first()));
       throw e;
-   };
-   if ( _command.size() < 1 )
-   {
-      E_MAKE_EXCEPTION(e);
-      e.setTitle(QObject::tr("Invalid argument"));
-      e.setDetails(QObject::tr("Settings set ACU requires sub argument, exiting..."));
-      throw e;
-   }
-   int platform {-1};
-   int device {0};
-   if ( _command.first() != QString("none") )
-   {
-      QStringList list {_command.first().split(':')};
-      if ( list.size() != 2 )
-      {
-         invalid();
-      }
-      bool ok;
-      platform = list.at(0).toInt(&ok);
-      if ( !ok )
-      {
-         invalid();
-      }
-      device = list.at(1).toInt(&ok);
-      if ( !ok )
-      {
-         invalid();
-      }
-      if ( platform < 0 || platform >= OpenCL::Platform::size() )
-      {
-         invalid();
-      }
-      if ( device < 0 || device >= OpenCL::Platform::get(platform)->deviceSize() )
-      {
-         invalid();
-      }
-   }
-   Ace::Settings& settings {Ace::Settings::instance()};
-   settings.setOpenCLPlatform(platform);
-   settings.setOpenCLDevice(device);
 }
 
 
@@ -295,25 +255,6 @@ void SettingsRun::setThreads()
       e.setTitle(QObject::tr("Invalid argument"));
       e.setDetails(QObject::tr("Given thread size '%1' invalid, exiting...").arg(_command.first()));
       throw e;
-   };
-   if ( _command.size() < 1 )
-   {
-      E_MAKE_EXCEPTION(e);
-      e.setTitle(QObject::tr("Invalid argument"));
-      e.setDetails(QObject::tr("Settings set threads requires sub argument, exiting..."));
-      throw e;
-   }
-   bool ok;
-   int size {_command.first().toInt(&ok)};
-   if ( !ok )
-   {
-      invalid();
-   }
-   if ( size < 1 )
-   {
-      invalid();
-   }
-   Ace::Settings::instance().setThreadSize(size);
 }
 
 
@@ -344,25 +285,6 @@ void SettingsRun::setBuffer()
       e.setTitle(QObject::tr("Invalid argument"));
       e.setDetails(QObject::tr("Given buffer size '%1' invalid, exiting...").arg(_command.first()));
       throw e;
-   };
-   if ( _command.size() < 1 )
-   {
-      E_MAKE_EXCEPTION(e);
-      e.setTitle(QObject::tr("Invalid argument"));
-      e.setDetails(QObject::tr("Settings set buffer requires sub argument, exiting..."));
-      throw e;
-   }
-   bool ok;
-   int size {_command.first().toInt(&ok)};
-   if ( !ok )
-   {
-      invalid();
-   }
-   if ( size < 1 )
-   {
-      invalid();
-   }
-   Ace::Settings::instance().setBufferSize(size);
 }
 
 
@@ -524,4 +446,26 @@ void SettingsRun::listOpenCL()
                 << "\n";
       }
    }
+}
+
+
+
+
+
+
+/*! !!! UNKNOWN FUNCTION !!! */
+if ( size < 1 )
+{
+   invalid();
+}
+
+
+
+
+
+
+/*! !!! UNKNOWN FUNCTION !!! */
+if ( size < 1 )
+{
+   invalid();
 }
