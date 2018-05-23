@@ -7,12 +7,13 @@
 #include <QSettings>
 #include <core/eabstractdatafactory.h>
 #include <core/eabstractanalyticfactory.h>
+#include <core/ace_analytic_abstractmanager.h>
 #include <core/ace_dataobject.h>
 #include <core/ace_settings.h>
 #include "ace_datawindow.h"
 #include "opencldevicedialog.h"
-#include "setupanalyticdialog.h"
-#include "analyticdialog.h"
+#include "ace_setupanalyticdialog.h"
+#include "ace_analyticdialog.h"
 
 
 
@@ -77,8 +78,7 @@ void MainWindow::addCommand(const QString& command)
  */
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-   QSettings settings(Ace::Settings::instance().organization()
-                      ,Ace::Settings::instance().application());
+   QSettings settings(Settings::instance().organization(),Settings::instance().application());
    settings.setValue(_stateKey,saveState());
    settings.setValue(_geometryKey,saveGeometry());
    event->accept();
@@ -126,12 +126,12 @@ void MainWindow::openTriggered(quint16 type)
 void MainWindow::runTriggered(quint16 type)
 {
    EAbstractAnalyticFactory& factory {EAbstractAnalyticFactory::instance()};
-   unique_ptr<EAbstractAnalytic> analytic {factory.make(type)};
-   SetupAnalyticDialog dialog(analytic.get(),this);
+   unique_ptr<Analytic::AbstractManager> manager {Analytic::AbstractManager::makeManager(type,0,1)};
+   SetupAnalyticDialog dialog(manager.get(),this);
    dialog.setWindowTitle(tr("Execute %1").arg(factory.name(type)));
    if ( dialog.exec() )
    {
-      AnalyticDialog runDialog(std::move(analytic));
+      AnalyticDialog runDialog(std::move(manager));
       runDialog.setWindowTitle(tr("Executing %1").arg(factory.name(type)));
       runDialog.exec();
    }
@@ -231,8 +231,7 @@ void MainWindow::createMenus()
  */
 void MainWindow::restoreSettings()
 {
-   QSettings settings(Ace::Settings::instance().organization()
-                      ,Ace::Settings::instance().application());
+   QSettings settings(Settings::instance().organization(),Settings::instance().application());
    restoreState(settings.value(_stateKey).toByteArray());
    restoreGeometry(settings.value(_geometryKey).toByteArray());
 }

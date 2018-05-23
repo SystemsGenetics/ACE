@@ -58,8 +58,7 @@ DataWindow::DataWindow(std::unique_ptr<DataObject>&& data, QWidget* parent):
  */
 DataWindow::~DataWindow()
 {
-   QSettings settings(Ace::Settings::instance().organization()
-                      ,Ace::Settings::instance().application());
+   QSettings settings(Settings::instance().organization(),Settings::instance().application());
    settings.setValue(_stateKey,saveState());
    settings.setValue(_geometryKey,saveGeometry());
 }
@@ -132,8 +131,7 @@ void DataWindow::createMenu()
  */
 void DataWindow::restoreSettings()
 {
-   QSettings settings(Ace::Settings::instance().organization()
-                      ,Ace::Settings::instance().application());
+   QSettings settings(Settings::instance().organization(),Settings::instance().application());
    restoreState(settings.value(_stateKey).toByteArray());
    restoreGeometry(settings.value(_geometryKey).toByteArray());
 }

@@ -3,7 +3,7 @@
 #include <QLabel>
 #include <QPushButton>
 
-#include "analyticdialog.h"
+#include "ace_analyticdialog.h"
 #include "abstractanalytic.h"
 
 

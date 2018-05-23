@@ -5,9 +5,9 @@
 
 
 
-class EAbstractAnalytic;
 class QProgressBar;
 class QLabel;
+//
 
 
 
