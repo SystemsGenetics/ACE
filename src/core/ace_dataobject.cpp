@@ -212,13 +212,21 @@ EMetadata DataObject::systemMeta() const
  *
  * Steps of Operation: 
  *
- * 1. Seek to the end of this data object's data by calling the data end interface 
- *    of this data object's abstract data object. 
+ * 1. If this data object's user metadata has not been written to file then return 
+ *    its temporary user metadata stored in system memory. 
  *
- * 2. Read in the user metadata of this data object located at the end of the data. 
+ * 2. Seek to the end of this object's abstract data and read in the user metadata, 
+ *    returning the read in user metadata. 
  */
 EMetadata DataObject::userMeta() const
 {
+   // Step 1
+   if ( !_userMetaWritten )
+   {
+      return _userMeta;
+   }
+
+   // Step 2
    EMetadata ret;
    seek(_data->dataEnd());
    stream() >> ret;
@@ -272,6 +280,21 @@ void DataObject::seek(qint64 index) const
 
 
 /*!
+ * Returns a read only reference to the data stream for this data object. 
+ *
+ * @return Read only reference to this objects data stream. 
+ */
+const EDataStream& DataObject::stream() const
+{
+   return *_stream;
+}
+
+
+
+
+
+
+/*!
  * Allocates new space in this data object by the given number of bytes. The new 
  * space requested is in addition to the current cursor position of this data 
  * object. So if the cursor position is at the end of the data object then this 
@@ -308,21 +331,6 @@ void DataObject::allocate(int size)
       e.setDetails(tr("Failed resizing data object file: %1").arg(_file->errorString()));
       throw e;
    }
-}
-
-
-
-
-
-
-/*!
- * Returns a read only reference to the data stream for this data object. 
- *
- * @return Read only reference to this objects data stream. 
- */
-const EDataStream& DataObject::stream() const
-{
-   return *_stream;
 }
 
 
@@ -373,11 +381,14 @@ EAbstractData* DataObject::data()
  * 1. If the given metadata is not an object type then throw on an exception, else 
  *    go to the next step. 
  *
- * 2. Seek to the end of this data object's data and write the new user metadata to 
- *    this data object. 
+ * 2. If this data object's user metadata is not ready to be written then set this 
+ *    object's temporary user metadata value to the new one given, else seek to the 
+ *    end of this data object's data and write the new user metadata to this data 
+ *    object. 
  */
 void DataObject::setUserMeta(const EMetadata& newRoot)
 {
+   // Step 1
    if ( !newRoot.isObject() )
    {
       E_MAKE_EXCEPTION(e);
@@ -385,8 +396,41 @@ void DataObject::setUserMeta(const EMetadata& newRoot)
       e.setDetails(tr("User metadata must be an object type."));
       throw e;
    }
+
+   // Step 2
+   if ( !_userMetaWritten )
+   {
+      _userMeta = newRoot;
+      return;
+   }
    seek(_data->dataEnd());
    stream() << newRoot;
+}
+
+
+
+
+
+
+/*!
+ * Finalizes this new data object by writing out the user metadata to an empty 
+ * object if it has not already been written. If it has already been written or 
+ * this is not a new data object then this does nothing. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If this object's user metadata has not been written then write it with an 
+ *    empty metadata object type. 
+ */
+void DataObject::finalize()
+{
+   // Step 1
+   if ( !_userMetaWritten )
+   {
+      _userMetaWritten = true;
+      setUserMeta(_userMeta);
+   }
 }
 
 
@@ -617,7 +661,7 @@ void DataObject::readHeader()
  * 5. Set this data object's header offset to the current cursor position of this 
  *    data object's file. 
  *
- * 6. Set this data object's header as read. 
+ * 6. Set this data object's header as read and its user metadata as not written. 
  */
 void DataObject::writeHeader()
 {
@@ -643,6 +687,7 @@ void DataObject::writeHeader()
             << _system;
    _headerOffset = _file->pos();
    _headerRead = true;
+   _userMetaWritten = false;
 }
 
 

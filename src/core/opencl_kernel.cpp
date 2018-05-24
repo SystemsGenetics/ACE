@@ -58,7 +58,7 @@ Event Kernel::execute(CommandQueue* queue)
 {
    cl_event id;
    cl_int code
-   {//
+   {
       clEnqueueNDRangeKernel(queue->id(),_id,_size,_offsets,_globalSizes,_localSizes,0,nullptr,&id)
    };
    if ( code != CL_SUCCESS )
@@ -186,7 +186,7 @@ int Kernel::maxWorkGroupSize(Device* device) const
    }
    size_t size;
    cl_int code
-   {//
+   {
       clGetKernelWorkGroupInfo(_id
                                ,device->id()
                                ,CL_KERNEL_WORK_GROUP_SIZE
@@ -236,7 +236,7 @@ int Kernel::workGroupMultiple(Device* device) const
    }
    size_t size;
    cl_int code
-   {//
+   {
       clGetKernelWorkGroupInfo(_id
                                ,device->id()
                                ,CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE

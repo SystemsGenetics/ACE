@@ -1,6 +1,5 @@
 #ifndef ACE_CORE
 #define ACE_CORE
-#include "ace_settings.h"
 #include "eexception.h"
 #include "eabstractanalyticfactory.h"
 #include "eabstractdatafactory.h"
@@ -10,4 +9,7 @@
 #include "eabstractanalytic_opencl_worker.h"
 #include "eabstractdata.h"
 #include "edatastream.h"
+#include "emetadata.h"
+#include "emetaarray.h"
+#include "emetaobject.h"
 #endif

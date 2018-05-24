@@ -47,7 +47,7 @@ Context::Context(const QList<Device*>& devices, QObject* parent):
    }
    cl_int code;
    cl_context_properties properties[] =
-   {//
+   {
       CL_CONTEXT_PLATFORM,
       (cl_context_properties)devices.first()->platform(),
       0

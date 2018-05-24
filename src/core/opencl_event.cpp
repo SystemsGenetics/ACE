@@ -238,7 +238,7 @@ bool Event::isDone() const
    }
    cl_int status;
    cl_int code
-   {//
+   {
       clGetEventInfo(*_id,CL_EVENT_COMMAND_EXECUTION_STATUS,sizeof(cl_int),&status,nullptr)
    };
    if ( code != CL_SUCCESS )

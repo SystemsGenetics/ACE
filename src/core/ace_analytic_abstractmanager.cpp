@@ -214,8 +214,8 @@ void AbstractManager::terminationRequested()
  *
  * 1. Call the finish interface for this manager's analytic. 
  *
- * 2. Call all this object's output abstract data finish interfaces and set their 
- *    user metadata to an empty object. 
+ * 2. Call all this object's output abstract data finish interfaces and then their 
+ *    finalize methods. 
  *
  * 3. Signal this manager is finished with execution and ready to be deleted. 
  */
@@ -225,7 +225,7 @@ void AbstractManager::finish()
    for (auto data: qAsConst(_outputData))
    {
       data->data()->finish();
-      data->setUserMeta(EMetadata(EMetadata::Object));
+      data->finalize();
    }
    emit finished();
 }

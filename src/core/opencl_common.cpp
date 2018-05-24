@@ -30,7 +30,7 @@
 void OpenCL::fillException(EException* exception, cl_int code)
 {
    static const QStringList codeStrings
-   {//
+   {
       "SUCCESS"
       ,"DEVICE_NOT_FOUND"
       ,"DEVICE_NOT_AVAILABLE"

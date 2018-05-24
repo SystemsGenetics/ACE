@@ -14,18 +14,18 @@ using namespace Ace;
 
 
 /*!
- * Constructs a new run object with the given command arguments and options. 
+ * Constructs a new run object with the given command arguments and options.
  *
- * @param command The command arguments, including the very first argument that 
- *                should be run, chunkrun, or merge. 
+ * @param command The command arguments, including the very first argument that
+ *                should be run, chunkrun, or merge.
  *
- * @param options The command line options used as input for the analytic being 
- *                ran. 
+ * @param options The command line options used as input for the analytic being
+ *                ran.
  *
  *
- * Steps of Operation: 
+ * Steps of Operation:
  *
- * 1. Setup the chunk run indexes and then setup this object's analytic manager. 
+ * 1. Setup the chunk run indexes and then setup this object's analytic manager.
  */
 Run::Run(const Command& command, const Options& options):
    _stream(stdout),
@@ -42,17 +42,17 @@ Run::Run(const Command& command, const Options& options):
 
 
 /*!
- * Called when this object's analytic manager has made progress to a new percent 
- * complete. 
+ * Called when this object's analytic manager has made progress to a new percent
+ * complete.
  *
- * @param percentComplete The new percent complete out of 100 for this object's 
- *                        analytic manager. 
+ * @param percentComplete The new percent complete out of 100 for this object's
+ *                        analytic manager.
  *
  *
- * Steps of Operation: 
+ * Steps of Operation:
  *
- * 1. Output a new percent complete to standard output, overwriting the previous 
- *    percent. Flush the stream to make sure it updates. 
+ * 1. Output a new percent complete to standard output, overwriting the previous
+ *    percent. Flush the stream to make sure it updates.
  */
 void Run::progressed(int percentComplete)
 {
@@ -66,8 +66,8 @@ void Run::progressed(int percentComplete)
 
 
 /*!
- * This is called when this object's analytic manager is done. This is simply used 
- * to update the percent complete to 100. 
+ * This is called when this object's analytic manager is done. This is simply used
+ * to update the percent complete to 100.
  */
 void Run::done()
 {
@@ -80,7 +80,7 @@ void Run::done()
 
 
 /*!
- * Called when this object's analytic manager is finished and ready to be deleted. 
+ * Called when this object's analytic manager is finished and ready to be deleted.
  */
 void Run::finished()
 {
@@ -93,17 +93,17 @@ void Run::finished()
 
 
 /*!
- * Configures the chunk indexes, if any, for this analytic run. If this is not a 
- * chunk or merge run then the default index is 0 and default size is 1. 
+ * Configures the chunk indexes, if any, for this analytic run. If this is not a
+ * chunk or merge run then the default index is 0 and default size is 1.
  *
  *
- * Steps of Operation: 
+ * Steps of Operation:
  *
- * 1. Pop this object's first command argument. If it is a chunk run then setup the 
- *    chunk run, else if it is a merge run then setup the merge run, else it must 
- *    be a regular run so leave the default index and size. 
+ * 1. Pop this object's first command argument. If it is a chunk run then setup the
+ *    chunk run, else if it is a merge run then setup the merge run, else it must
+ *    be a regular run so leave the default index and size.
  *
- * 2. If this object's command argument size is empty then throw an exception. 
+ * 2. If this object's command argument size is empty then throw an exception.
  */
 void Run::setupIndexes()
 {
@@ -131,20 +131,20 @@ void Run::setupIndexes()
 
 
 /*!
- * Initializes this analytic run as a chunk run, grabbing the index and size from 
- * this object's command arguments. If the index and/or size given is not valid 
- * then an exception is thrown. 
+ * Initializes this analytic run as a chunk run, grabbing the index and size from
+ * this object's command arguments. If the index and/or size given is not valid
+ * then an exception is thrown.
  *
  *
- * Steps of Operation: 
+ * Steps of Operation:
  *
- * 1. If this object's command argument size is less than two then throw an 
- *    exception, else go to the next step. 
+ * 1. If this object's command argument size is less than two then throw an
+ *    exception, else go to the next step.
  *
- * 2. Get the index value by popping the first command argument and the size value 
- *    by popping the second command argument, setting this object's index and size 
- *    to the given values. If the values fail being read as integers or they are 
- *    invalid then throw an exception. 
+ * 2. Get the index value by popping the first command argument and the size value
+ *    by popping the second command argument, setting this object's index and size
+ *    to the given values. If the values fail being read as integers or they are
+ *    invalid then throw an exception.
  */
 void Run::setupChunk()
 {
@@ -187,18 +187,18 @@ void Run::setupChunk()
 
 
 /*!
- * Initializes this analytic run as a merge run, grabbing the size form this 
- * object's command arguments. 
+ * Initializes this analytic run as a merge run, grabbing the size form this
+ * object's command arguments.
  *
  *
- * Steps of Operation: 
+ * Steps of Operation:
  *
- * 1. Set this object's index to -1 denoting a merge run. If this object's command 
- *    argument size is empty then throw an exception, else go to the next step. 
+ * 1. Set this object's index to -1 denoting a merge run. If this object's command
+ *    argument size is empty then throw an exception, else go to the next step.
  *
- * 2. Get the size by popping the first command argument, setting it to this 
- *    object's size. If reading the size as an integer fails then throw an 
- *    exception. 
+ * 2. Get the size by popping the first command argument, setting it to this
+ *    object's size. If reading the size as an integer fails then throw an
+ *    exception.
  */
 void Run::setupMerge()
 {
@@ -227,22 +227,22 @@ void Run::setupMerge()
 
 
 /*!
- * Returns the analytic type based off the name given from this object's first 
- * command argument. If no analytic can be found with the given command line name 
- * then an exception is thrown. 
+ * Returns the analytic type based off the name given from this object's first
+ * command argument. If no analytic can be found with the given command line name
+ * then an exception is thrown.
  *
- * @return The analytic type that matches the name given by this object's first 
- *         command argument. 
+ * @return The analytic type that matches the name given by this object's first
+ *         command argument.
  *
  *
- * Steps of Operation: 
+ * Steps of Operation:
  *
- * 1. Populate a string list of all analytic command names so that their indexes 
- *    match their integer type. 
+ * 1. Populate a string list of all analytic command names so that their indexes
+ *    match their integer type.
  *
- * 2. Pop this object's first command argument and attempt to find it in the list 
- *    of analytic command names. If the analytic is not found in the list then 
- *    throw an exception, else return the analytic type found. 
+ * 2. Pop this object's first command argument and attempt to find it in the list
+ *    of analytic command names. If the analytic is not found in the list then
+ *    throw an exception, else return the analytic type found.
  */
 quint16 Run::getType()
 {
@@ -270,21 +270,21 @@ quint16 Run::getType()
 
 
 /*!
- * Creates a new analytic manager with a given analytic type and this object's size 
- * and index, setting this object as its parent. This also connects all relevant 
- * signals to this object's slots, sets all analytic arguments for this object's 
- * options, and initializes the manager for execution. 
+ * Creates a new analytic manager with a given analytic type and this object's size
+ * and index, setting this object as its parent. This also connects all relevant
+ * signals to this object's slots, sets all analytic arguments for this object's
+ * options, and initializes the manager for execution.
  *
- * @param type  
+ * @param type
  *
  *
- * Steps of Operation: 
+ * Steps of Operation:
  *
- * 1. Create a new analytic manager with the given analytic type and this object's 
- *    index and size, setting this as its parent. 
+ * 1. Create a new analytic manager with the given analytic type and this object's
+ *    index and size, setting this as its parent.
  *
- * 2. Connect all signals to slots, add all arguments to the analytic manager, and 
- *    then initialize the manager for execution. 
+ * 2. Connect all signals to slots, add all arguments to the analytic manager, and
+ *    then initialize the manager for execution.
  */
 void Run::setupManager(quint16 type)
 {
@@ -303,29 +303,29 @@ void Run::setupManager(quint16 type)
 
 
 /*!
- * Parses this object's options and sets them to this object's analytic manager as 
- * analytic arguments. 
+ * Parses this object's options and sets them to this object's analytic manager as
+ * analytic arguments.
  *
  *
- * Steps of Operation: 
+ * Steps of Operation:
  *
- * 1. Iterate through all arguments for this object's analytic manager for the 
- *    following steps. 
+ * 1. Iterate through all arguments for this object's analytic manager for the
+ *    following steps.
  *
- * 2. Get the command line name for the analytic argument. 
+ * 2. Get the command line name for the analytic argument.
  *
- * 3. If the analytic argument type is integer, double, or selection then pass the 
- *    argument index and its command line name to special methods that handle those 
- *    types. Else simply set the analytic argument by attempting to find one of 
- *    this object's options whose key equals this argument's command line name, 
- *    defaulting to the default value if not found. 
+ * 3. If the analytic argument type is integer, double, or selection then pass the
+ *    argument index and its command line name to special methods that handle those
+ *    types. Else simply set the analytic argument by attempting to find one of
+ *    this object's options whose key equals this argument's command line name,
+ *    defaulting to the default value if not found.
  */
 void Run::addArguments()
 {
    for (int i = 0; i < _manager->size() ;++i)
    {
       QString argumentName
-      {//
+      {
          _manager->data(i,EAbstractAnalytic::Input::Role::CommandLineName).toString()
       };
       switch (_manager->type(i))
@@ -348,6 +348,7 @@ void Run::addArguments()
          addSelection(i,argumentName);
          break;
       }
+   }
 }
 
 
@@ -356,25 +357,25 @@ void Run::addArguments()
 
 
 /*!
- * Sets an analytic argument with the given index to one of this object's options 
- * with the given key as an integer. If the option's value cannot be converted to 
- * an integer or it is out of bounds then an exception is thrown. 
+ * Sets an analytic argument with the given index to one of this object's options
+ * with the given key as an integer. If the option's value cannot be converted to
+ * an integer or it is out of bounds then an exception is thrown.
  *
- * @param index The analytic argument index whose value is set with an option with 
- *              the given key. 
+ * @param index The analytic argument index whose value is set with an option with
+ *              the given key.
  *
- * @param key The key used to find the option used to set the analytic argument. 
+ * @param key The key used to find the option used to set the analytic argument.
  *
  *
- * Steps of Operation: 
+ * Steps of Operation:
  *
- * 1. Find an option with the given key, converting it to an integer value. If 
- *    converting it to an integer fails then throw an exception, else go to the 
- *    next step. 
+ * 1. Find an option with the given key, converting it to an integer value. If
+ *    converting it to an integer fails then throw an exception, else go to the
+ *    next step.
  *
- * 2. If the integer value is less than the minimum or greater than the maximum 
- *    then throw an exception, else set the analytic argument with the given index 
- *    to the integer value. 
+ * 2. If the integer value is less than the minimum or greater than the maximum
+ *    then throw an exception, else set the analytic argument with the given index
+ *    to the integer value.
  */
 void Run::addInteger(int index, const QString& key)
 {
@@ -409,25 +410,25 @@ void Run::addInteger(int index, const QString& key)
 
 
 /*!
- * Sets an analytic argument with the given index to one of this object's options 
- * with the given key as a double. If the option's value cannot be converted to a 
- * double or it is out of bounds then an exception is thrown. 
+ * Sets an analytic argument with the given index to one of this object's options
+ * with the given key as a double. If the option's value cannot be converted to a
+ * double or it is out of bounds then an exception is thrown.
  *
- * @param index The analytic argument index whose value is set with an option with 
- *              the given key. 
+ * @param index The analytic argument index whose value is set with an option with
+ *              the given key.
  *
- * @param key The key used to find the option used to set the analytic argument. 
+ * @param key The key used to find the option used to set the analytic argument.
  *
  *
- * Steps of Operation: 
+ * Steps of Operation:
  *
- * 1. Find an option with the given key, converting it to a double value. If 
- *    converting it to a double fails then throw an exception, else go to the next 
- *    step. 
+ * 1. Find an option with the given key, converting it to a double value. If
+ *    converting it to a double fails then throw an exception, else go to the next
+ *    step.
  *
- * 2. If the double value is less than the minimum or greater than the maximum then 
- *    throw an exception, else set the analytic argument with the given index to 
- *    the double value. 
+ * 2. If the double value is less than the minimum or greater than the maximum then
+ *    throw an exception, else set the analytic argument with the given index to
+ *    the double value.
  */
 void Run::addDouble(int index, const QString& key)
 {
@@ -462,43 +463,38 @@ void Run::addDouble(int index, const QString& key)
 
 
 /*!
- * Sets an analytic argument with the given index to one of this object's options 
- * with the given key as a selection. If the option's value is not a valid 
- * selection then an exception is thrown. 
+ * Sets an analytic argument with the given index to one of this object's options
+ * with the given key as a selection. If the option's value is not a valid
+ * selection then an exception is thrown.
  *
- * @param index The analytic argument index whose value is set with an option with 
- *              the given key. 
+ * @param index The analytic argument index whose value is set with an option with
+ *              the given key.
  *
- * @param key The key used to find the option used to set the analytic argument. 
+ * @param key The key used to find the option used to set the analytic argument.
  *
  *
- * Steps of Operation: 
+ * Steps of Operation:
  *
- * 1. Find an option with the given key, setting it to the analytic argument with 
- *    the given index. If the value of the option found is not a valid selection 
- *    option for the analytic argument with the given index then throw an 
- *    exception. 
+ * 1. Find an option with the given key, setting it to the analytic argument with
+ *    the given index. If the value of the option found is not a valid selection
+ *    option for the analytic argument with the given index then throw an
+ *    exception.
  */
 void Run::addSelection(int index, const QString& key)
 {
    QString value {_options.find(key)};
    QStringList values
-   {//
+   {
       _manager->data(index,EAbstractAnalytic::Input::Role::SelectionValues).toStringList()
-}
-
-
-
-
-
-
-/*! !!! UNKNOWN FUNCTION !!! */
-.arg(key)
-.arg(value));
-
-{
-
-dex,value);
-
-
+   };
+   if ( !values.contains(value) )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Invalid Argument"));
+      e.setDetails(tr("Selection argument '%1' does not contain '%2' as a valid option.")
+                   .arg(key)
+                   .arg(value));
+      throw e;
+   }
+   _manager->set(index,value);
 }

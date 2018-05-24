@@ -65,6 +65,9 @@ void IntegerArray::readData()
  */
 void IntegerArray::writeNewData()
 {
+   EMetadata ok {EMetadata::Object};
+   ok.toObject().insert("FOO",EMetadata(QString("BAR")));
+   setMeta(ok);
    seek(0);
    stream() << (quint32)0;
 }

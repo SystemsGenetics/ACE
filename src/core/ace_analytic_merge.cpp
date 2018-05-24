@@ -170,7 +170,7 @@ void Merge::readChunk(int index)
    }
    Settings& settings {Settings::instance()};
    QString path
-   {//
+   {
       settings.chunkDir().append("/")
                          .append(settings.chunkPrefix())
                          .append(QString::number(index))
