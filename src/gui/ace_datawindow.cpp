@@ -6,7 +6,7 @@
 #include <core/ace_dataobject.h>
 #include <core/ace_settings.h>
 #include <core/eabstractdata.h>
-#include "metadatadialog.h"
+#include "ace_metadatadialog.h"
 
 
 
@@ -85,9 +85,23 @@ void DataWindow::setWindowTitle(const QString& title)
 
 /*!
  */
-void DataWindow::metadataTriggered()
+void DataWindow::systemMetaTriggered()
 {
-   //TODO: metadata dialog
+   MetadataDialog dialog(_data);
+   dialog.exec();
+}
+
+
+
+
+
+
+/*!
+ */
+void DataWindow::userMetaTriggered()
+{
+   MetadataDialog dialog(_data,false);
+   dialog.exec();
 }
 
 
@@ -99,9 +113,13 @@ void DataWindow::metadataTriggered()
  */
 void DataWindow::createActions()
 {
-   _metadataAction = new QAction(tr("&Metadata"),this);
-   _metadataAction->setStatusTip(tr("Open metadata browser for this data object."));
-   connect(_metadataAction,&QAction::triggered,this,&DataWindow::metadataTriggered);
+   _systemMetaAction = new QAction(tr("&System Metadata"),this);
+   _systemMetaAction->setStatusTip(tr("Open the system metadata browser for this data object."));
+   connect(_systemMetaAction,&QAction::triggered,this,&DataWindow::systemMetaTriggered);
+
+   _userMetaAction = new QAction(tr("&User Metadata"),this);
+   _userMetaAction->setStatusTip(tr("Open the user metadata browser for this data object."));
+   connect(_userMetaAction,&QAction::triggered,this,&DataWindow::userMetaTriggered);
 
    _closeAction = new QAction(tr("&Close"),this);
    _closeAction->setStatusTip(tr("Close this data object's window."));
@@ -118,7 +136,8 @@ void DataWindow::createActions()
 void DataWindow::createMenu()
 {
    QMenu* file = menuBar()->addMenu(tr("&File"));
-   file->addAction(_metadataAction);
+   file->addAction(_systemMetaAction);
+   file->addAction(_userMetaAction);
    file->addAction(_closeAction);
 }
 

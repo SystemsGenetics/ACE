@@ -19,7 +19,8 @@ namespace Ace
       ~DataWindow();
       void setWindowTitle(const QString& title);
    private slots:
-      void metadataTriggered();
+      void systemMetaTriggered();
+      void userMetaTriggered();
    private:
       void createActions();
       void createMenu();
@@ -38,7 +39,10 @@ namespace Ace
       QString _title;
       /*!
        */
-      QAction* _metadataAction;
+      QAction* _systemMetaAction;
+      /*!
+       */
+      QAction* _userMetaAction;
       /*!
        */
       QAction* _closeAction;

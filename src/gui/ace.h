@@ -8,4 +8,5 @@ namespace Ace
    class AnalyticThread;
    class AnalyticDialog;
    class DataWindow;
+   class MetadataDialog;
 }
