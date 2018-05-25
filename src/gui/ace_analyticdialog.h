@@ -1,7 +1,10 @@
-#ifndef ANALYTICDIALOG_H
-#define ANALYTICDIALOG_H
+#ifndef ACE_ANALYTICDIALOG_H
+#define ACE_ANALYTICDIALOG_H
+#include <memory>
 #include <QDialog>
 #include <QTime>
+#include <core/ace_analytic.h>
+#include "ace.h"
 
 
 
@@ -13,34 +16,45 @@ class QLabel;
 
 namespace Ace
 {
-class AnalyticDialog : public QDialog
-{
-   Q_OBJECT
-public:
-   AnalyticDialog(EAbstractAnalytic* analytic, QWidget* parent = nullptr);
-   ~AnalyticDialog();
-   void fail() { reject(); }
-   int exec() override final;
-private slots:
-   void completeUpated(int percent);
-   void analyticFinished();
-   void exceptionThrown(QString file, int line, QString function, QString title, QString details);
-   virtual void timerEvent(QTimerEvent *event) override final;
-private:
-   QString getTime(int seconds);
-   int getSeconds(int total);
-   int getMinutes(int total);
-   int getHours(int total);
-   int getDays(int total);
-   QString getTimeUnit(int amount, const QString& unit);
-   EAbstractAnalytic* _analytic;
-   QProgressBar* _bar;
-   QPushButton* _button;
-   QTime _time;
-   QLabel* _status;
-   int _secondsLeft {-1};
-   int _id;
-};
+   /*!
+    */
+   class AnalyticDialog : public QDialog
+   {
+      Q_OBJECT
+   public:
+      AnalyticDialog(std::unique_ptr<Analytic::AbstractManager>&& manager);
+      virtual int exec() override final;
+   protected:
+      virtual void closeEvent(QCloseEvent* event) override final;
+      virtual void timerEvent(QTimerEvent* event) override final;
+   private slots:
+      void progressed(int percentComplete);
+      void done();
+   private:
+      static QString secondsToString(int seconds);
+      static QString numberToString(int value);
+      /*!
+       */
+      AnalyticThread* _thread;
+      /*!
+       */
+      QProgressBar* _bar;
+      /*!
+       */
+      QLabel* _info;
+      /*!
+       */
+      QPushButton* _button;
+      /*!
+       */
+      int _timerId;
+      /*!
+       */
+      int _secondsLeft {0};
+      /*!
+       */
+      int _secondsElapsed {0};
+   };
 }
 
 

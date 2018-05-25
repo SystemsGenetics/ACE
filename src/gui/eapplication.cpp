@@ -40,7 +40,7 @@ EApplication::EApplication(const QString& organization, const QString& applicati
       Ace::Settings::initialize(organization,application,majorVersion,minorVersion,revision);
       EAbstractDataFactory::setInstance(std::move(data));
       EAbstractAnalyticFactory::setInstance(std::move(analytic));
-      Ace::MainWindow& window {Ace::MainWindow::getInstance()};
+      Ace::MainWindow& window {Ace::MainWindow::instance()};
       window.setWindowTitle(application);
       window.show();
    }

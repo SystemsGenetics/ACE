@@ -19,7 +19,8 @@ SOURCES += \
     ace_mainwindow.cpp \
     ace_datawindow.cpp \
     ace_setupanalyticdialog.cpp \
-    ace_analyticdialog.cpp
+    ace_analyticdialog.cpp \
+    ace_analyticthread.cpp
 
 HEADERS += \
     opencldevicedialog.h \
@@ -29,7 +30,9 @@ HEADERS += \
     ace_mainwindow.h \
     ace_datawindow.h \
     ace_setupanalyticdialog.h \
-    ace_analyticdialog.h
+    ace_analyticdialog.h \
+    ace_analyticthread.h \
+    ace.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 

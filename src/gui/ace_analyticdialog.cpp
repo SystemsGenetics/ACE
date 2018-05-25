@@ -1,46 +1,54 @@
+#include "ace_analyticdialog.h"
 #include <QProgressBar>
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QPushButton>
-
-#include "ace_analyticdialog.h"
-#include "abstractanalytic.h"
+#include <QCloseEvent>
+#include <core/ace_analytic_abstractmanager.h>
+#include "ace_analyticthread.h"
 
 
 
 using namespace Ace;
+//
 
 
 
 
 
 
-AnalyticDialog::AnalyticDialog(EAbstractAnalytic *analytic, QWidget *parent):
-   QDialog(parent),
-   _analytic(analytic)
+/*!
+ *
+ * @param manager  
+ */
+AnalyticDialog::AnalyticDialog(std::unique_ptr<Analytic::AbstractManager>&& manager)
 {
-   // create progress bar
    _bar = new QProgressBar;
    _bar->setMinimum(0);
    _bar->setMaximum(100);
    _bar->setValue(0);
 
-   // create status and button widgets
-   _status = new QLabel(tr("Remaining Time Unknown."));
+   _info = new QLabel(tr("Remaining Time Unknown."));
    _button = new QPushButton(tr("&Done"));
    _button->setDisabled(true);
 
-   // connect all signals
-   connect(_analytic,SIGNAL(progressed(int)),this,SLOT(completeUpated(int)));
-   connect(_analytic,SIGNAL(finished()),this,SLOT(analyticFinished()));
-   connect(_analytic,SIGNAL(exceptionThrown(QString,int,QString,QString,QString)),this
-           ,SLOT(exceptionThrown(QString,int,QString,QString,QString)));
-   connect(_button,SIGNAL(clicked(bool)),this,SLOT(accept()));
+   connect(manager.get()
+           ,&Analytic::AbstractManager::progressed
+           ,this
+           ,&AnalyticDialog::progressed
+           ,Qt::QueuedConnection);
+   connect(manager.get()
+           ,&Analytic::AbstractManager::done
+           ,this
+           ,&AnalyticDialog::done
+           ,Qt::QueuedConnection);
 
-   // create main layout for dialog and set it to dialog's layout
+   _thread = new AnalyticThread(std::move(manager),this);
+   connect(_thread,&AnalyticThread::finished,this,&QDialog::accept);
+
    QVBoxLayout* layout = new QVBoxLayout;
    layout->addWidget(_bar);
-   layout->addWidget(_status);
+   layout->addWidget(_info);
    layout->addWidget(_button);
    setLayout(layout);
 }
@@ -50,23 +58,12 @@ AnalyticDialog::AnalyticDialog(EAbstractAnalytic *analytic, QWidget *parent):
 
 
 
-AnalyticDialog::~AnalyticDialog()
-{
-   _analytic->stop();
-   delete _analytic;
-}
-
-
-
-
-
-
+/*!
+ */
 int AnalyticDialog::exec()
 {
-   // start timers, analytic, and call dialog exec function
-   _id = startTimer(1000);
-   _time.start();
-   _analytic->start();
+   _timerId = startTimer(1000);
+   _thread->start();
    return QDialog::exec();
 }
 
@@ -75,14 +72,13 @@ int AnalyticDialog::exec()
 
 
 
-void AnalyticDialog::completeUpated(int percent)
+/*!
+ *
+ * @param event  
+ */
+void AnalyticDialog::closeEvent(QCloseEvent* event)
 {
-   // update time remaining status label
-   int elapsed {_time.elapsed()};
-   _secondsLeft = ((elapsed*100/percent)-elapsed)/1000;
-
-   // update progress bar
-   _bar->setValue(percent);
+   event->ignore();
 }
 
 
@@ -90,14 +86,51 @@ void AnalyticDialog::completeUpated(int percent)
 
 
 
-void AnalyticDialog::analyticFinished()
+/*!
+ *
+ * @param event  
+ */
+void AnalyticDialog::timerEvent(QTimerEvent* event)
 {
-   // set progress bar to complete and kill timer
-   _bar->setValue(100);
-   killTimer(_id);
+   Q_UNUSED(event);
+   _info->setText(secondsToString(_secondsLeft--).append(" remaining (D:HH:MM:SS)"));
+   if ( _secondsLeft < 0 )
+   {
+      _secondsLeft = 0;
+   }
+   ++_secondsElapsed;
+}
 
-   // report total time it took in status and enable done button
-   _status->setText(tr("Finished in %1.").arg(getTime(_time.elapsed()/1000)));
+
+
+
+
+
+/*!
+ *
+ * @param percentComplete  
+ */
+void AnalyticDialog::progressed(int percentComplete)
+{
+   _bar->setValue(percentComplete);
+   if ( percentComplete > 0 )
+   {
+      _secondsLeft = (_secondsElapsed*100/percentComplete) - _secondsElapsed;
+   }
+}
+
+
+
+
+
+
+/*!
+ */
+void AnalyticDialog::done()
+{
+   _bar->setValue(100);
+   killTimer(_timerId);
+   _info->setText(tr("Finished in %1 (D:HH:MM:SS)").arg(secondsToString(_secondsElapsed)));
    _button->setDisabled(false);
 }
 
@@ -106,19 +139,25 @@ void AnalyticDialog::analyticFinished()
 
 
 
-void AnalyticDialog::exceptionThrown(QString file, int line, QString function, QString title
-                                     , QString details)
+/*!
+ *
+ * @param seconds  
+ */
+QString AnalyticDialog::secondsToString(int seconds)
 {
-   // reconstitute exception that was thrown in analytic thread
-   EException e;
-   e.setFile(file);
-   e.setLine(line);
-   e.setFunction(function);
-   e.setTitle(title);
-   e.setDetails(details);
-
-   // throw exception in main gui thread
-   throw e;
+   int days {seconds};
+   seconds = days%60;
+   days /= 60;
+   int minutes {days%60};
+   days /= 60;
+   int hours {days%24};
+   days /= 24;
+   return QString::number(days).append(":")
+         .append(numberToString(hours))
+         .append(":")
+         .append(numberToString(minutes))
+         .append(":")
+         .append(numberToString(seconds));
 }
 
 
@@ -126,116 +165,20 @@ void AnalyticDialog::exceptionThrown(QString file, int line, QString function, Q
 
 
 
-void AnalyticDialog::timerEvent(QTimerEvent* event)
+/*!
+ *
+ * @param value  
+ */
+QString AnalyticDialog::numberToString(int value)
 {
-   // only one timer is used so ignore event
-   Q_UNUSED(event);
-
-   // if seconds is less than zero say time unknown
-   if ( _secondsLeft < 0 )
+   QString ret;
+   if ( value < 0 || value > 60 )
    {
-      _status->setText(tr("Remaining Time Unknown."));
+      return ret;
    }
-
-   // else decrement seconds left and report estimated time left
-   else
+   if ( value < 10 )
    {
-      if ( _secondsLeft > 0 )
-      {
-         --_secondsLeft;
-      }
-      _status->setText(tr("%1 remaining.").arg(getTime(_secondsLeft)));
+      ret.append("0");
    }
-}
-
-
-
-
-
-
-QString AnalyticDialog::getTime(int seconds)
-{
-   // determine if there are any seconds
-   if ( seconds > 0 )
-   {
-      // create string reporting tiem units left and return it
-      QString status;
-      status.append(getTimeUnit(getDays(seconds),tr("day")));
-      status.append(getTimeUnit(getHours(seconds),tr("hour")));
-      status.append(getTimeUnit(getMinutes(seconds),tr("minute")));
-      status.append(getTimeUnit(getSeconds(seconds),tr("second")));
-      status.remove(status.size()-1,1);
-      return status;
-   }
-   else
-   {
-      // return less than a second string
-      return tr("Less than a second");
-   }
-}
-
-
-
-
-
-
-int AnalyticDialog::getSeconds(int total)
-{
-   return total%60;
-}
-
-
-
-
-
-
-int AnalyticDialog::getMinutes(int total)
-{
-   // return minutes
-   total /= 60;
-   return total%60;
-}
-
-
-
-
-
-
-int AnalyticDialog::getHours(int total)
-{
-   // return hours
-   total /= 3600;
-   return total%24;
-}
-
-
-
-
-
-
-int AnalyticDialog::getDays(int total)
-{
-   return total/86400;
-}
-
-
-
-
-
-
-QString AnalyticDialog::getTimeUnit(int amount, const QString& unit)
-{
-   if ( amount > 1 )
-   {
-      // if amount is greater than one return plural unit
-      return QString("%1 %2s ").arg(amount).arg(unit);
-   }
-   else if ( amount == 1 )
-   {
-      // if amount is one return singular
-      return QString("1 %1 ").arg(unit);
-   }
-
-   // if amount is less than one return nothing
-   return QString();
+   return ret.append(QString::number(value));
 }
