@@ -33,7 +33,7 @@ MathTransform::OpenCL::OpenCL(MathTransform* parent):
  *
  * @return Pointer to a new OpenCL worker object. 
  */
-std::unique_ptr<EAbstractAnalytic::OpenCL::Worker> MathTransform::OpenCL::makeWorker() const
+std::unique_ptr<EAbstractAnalytic::OpenCL::Worker> MathTransform::OpenCL::makeWorker()
 {
    return unique_ptr<EAbstractAnalytic::OpenCL::Worker>(new Worker(_base,_context,_program));
 }

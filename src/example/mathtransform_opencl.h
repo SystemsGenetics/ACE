@@ -16,7 +16,7 @@ public:
    class Kernel;
    class Worker;
    explicit OpenCL(MathTransform* parent);
-   virtual std::unique_ptr<EAbstractAnalytic::OpenCL::Worker> makeWorker() const override final;
+   virtual std::unique_ptr<EAbstractAnalytic::OpenCL::Worker> makeWorker() override final;
    virtual void initialize(::OpenCL::Context* context) override final;
 private:
    /*!

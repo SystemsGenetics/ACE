@@ -25,7 +25,7 @@ public:
     *
     * @return Pointer to a new OpenCL worker object. 
     */
-   virtual std::unique_ptr<EAbstractAnalytic::OpenCL::Worker> makeWorker() const = 0;
+   virtual std::unique_ptr<EAbstractAnalytic::OpenCL::Worker> makeWorker() = 0;
    /*!
     * This interface initializes all OpenCL resources used by this object's 
     * implementation. 

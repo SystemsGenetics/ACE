@@ -28,24 +28,12 @@ using namespace Ace::Analytic;
  *
  * @param size The chunk size which is the total number of chunks the analytic is 
  *             split into. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Setup OpenCL, setup serial if OpenCL fails, and connect this abstract run's 
- *    finished signal with this manager's finish slot. 
  */
 Chunk::Chunk(quint16 type, int index, int size):
    AbstractManager(type),
    _index(index),
    _size(size)
-{
-   if ( !setupOpenCL() )
-   {
-      setupSerial();
-   }
-   connect(_runner,&AbstractRun::finished,this,&AbstractManager::finish);
-}
+{}
 
 
 
@@ -171,11 +159,22 @@ void Chunk::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
  *
  * Steps of Operation: 
  *
- * 1. Setup the chunk file, setup the chunk indexes, and schedule the process slot 
+ * 1. Setup OpenCL, setup serial if OpenCL fails, and connect this abstract run's 
+ *    finished signal with this manager's finish slot. 
+ *
+ * 2. Setup the chunk file, setup the chunk indexes, and schedule the process slot 
  *    to be called. 
  */
 void Chunk::start()
 {
+   // Step 1
+   if ( !setupOpenCL() )
+   {
+      setupSerial();
+   }
+   connect(_runner,&AbstractRun::finished,this,&AbstractManager::finish);
+
+   // Step 2
    setupFile();
    setupIndexes();
    QTimer::singleShot(0,this,&Chunk::process);

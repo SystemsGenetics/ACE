@@ -23,20 +23,10 @@ using namespace Ace::Analytic;
  * Constructs a new single run manager with the given analytic type. 
  *
  * @param type Analytic type to use for this analytic run. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Setup OpenCL, setup serial if OpenCL fails, and then connect this object's 
- *    abstract runner class finished signal with this manager's finish slot. 
  */
 Single::Single(quint16 type):
    AbstractManager(type)
-{
-   setupOpenCL();
-   setupSerial();
-   connect(_runner,&AbstractRun::finished,this,&AbstractManager::finish);
-}
+{}
 
 
 
@@ -106,9 +96,23 @@ void Single::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
  * Implements the interface that is called once to begin the analytic run for this 
  * manager after all argument input has been set. This implementation starts this 
  * object's process slot. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Setup OpenCL, setup serial if OpenCL fails, and then connect this object's 
+ *    abstract runner class finished signal with this manager's finish slot. 
+ *
+ * 2. Initialize analytic processing by calling this object's process slot. 
  */
 void Single::start()
 {
+   // Step 1
+   setupOpenCL();
+   setupSerial();
+   connect(_runner,&AbstractRun::finished,this,&AbstractManager::finish);
+
+   // Step 2
    QTimer::singleShot(0,this,&Single::process);
 }
 
