@@ -65,6 +65,24 @@ int Options::size() const
 
 
 /*!
+ * Tests if this object's mapping contains the given key, returning true if it 
+ * does. 
+ *
+ * @param key The key which is checked whether it exist in this object's mapping. 
+ *
+ * @return True if the given key exists or false otherwise. 
+ */
+bool Options::contains(const QString& key) const
+{
+   return _map.contains(key);
+}
+
+
+
+
+
+
+/*!
  * Returns the key at the given index of this object's mapping. If the index is out 
  * of range qt terminates the program. 
  *

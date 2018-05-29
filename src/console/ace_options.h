@@ -17,6 +17,7 @@ namespace Ace
    public:
       Options(int argc, char** argv);
       int size() const;
+      bool contains(const QString& key) const;
       QString key(int index) const;
       QString value(int index) const;
       QString find(const QString& key) const;
