@@ -1,5 +1,6 @@
 #include "eabstractanalytic.h"
 #include "eabstractanalytic_block.h"
+#include "ace_qmpi.h"
 //
 
 
@@ -141,3 +142,20 @@ void EAbstractAnalytic::initialize()
  */
 void EAbstractAnalytic::finish()
 {}
+
+
+
+
+
+
+/*!
+ * Tests if this is the master node in an MPI run. If this is not an MPI run then 
+ * this will also return true. 
+ *
+ * @return True if this is the master node of an MPI run or this is not running in 
+ *         MPI mode, otherwise false is returned. 
+ */
+bool EAbstractAnalytic::isMaster()
+{
+   return Ace::QMPI::instance().isMaster();
+}

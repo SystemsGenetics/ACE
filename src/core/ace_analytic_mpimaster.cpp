@@ -171,6 +171,7 @@ void MPIMaster::processCode(int code, int fromRank)
    case ReadyAsOpenCL:
       amount += settings.threadSize();
    case ReadyAsSerial:
+      ++amount;
       break;
    default:
       {

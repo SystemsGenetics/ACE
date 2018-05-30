@@ -60,6 +60,8 @@ public:
    virtual EAbstractAnalytic::OpenCL* makeOpenCL();
    virtual void initialize();
    virtual void finish();
+protected:
+   static bool isMaster();
 };
 
 
