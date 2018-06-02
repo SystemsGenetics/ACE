@@ -12,7 +12,6 @@ DEPENDPATH += $$PWD/../
 TEMPLATE = lib
 
 SOURCES += \
-    opencldevicedialog.cpp \
     eapplication.cpp \
     ace_mainwindow.cpp \
     ace_datawindow.cpp \
@@ -20,10 +19,10 @@ SOURCES += \
     ace_analyticdialog.cpp \
     ace_analyticthread.cpp \
     ace_metadatadialog.cpp \
-    ace_metadatadialog_imageviewdialog.cpp
+    ace_metadatadialog_imageviewdialog.cpp \
+    ace_settingsdialog.cpp
 
 HEADERS += \
-    opencldevicedialog.h \
     eapplication.h \
     ace_mainwindow.h \
     ace_datawindow.h \
@@ -32,7 +31,8 @@ HEADERS += \
     ace_analyticthread.h \
     ace.h \
     ace_metadatadialog.h \
-    ace_metadatadialog_imageviewdialog.h
+    ace_metadatadialog_imageviewdialog.h \
+    ace_settingsdialog.h
 
 DEFINES += QT_DEPRECATED_WARNINGS
 

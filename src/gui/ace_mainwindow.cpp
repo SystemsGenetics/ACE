@@ -11,7 +11,7 @@
 #include <core/ace_dataobject.h>
 #include <core/ace_settings.h>
 #include "ace_datawindow.h"
-#include "opencldevicedialog.h"
+#include "ace_settingsdialog.h"
 #include "ace_setupanalyticdialog.h"
 #include "ace_analyticdialog.h"
 
@@ -146,7 +146,8 @@ void MainWindow::runTriggered(quint16 type)
  */
 void MainWindow::settingsTriggered()
 {
-   //TODO: open new settings dialog yet to be made.
+   SettingsDialog dialog;
+   dialog.exec();
 }
 
 

@@ -288,7 +288,8 @@ void Kernel::setDimensions(cl_uint size)
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(tr("Invalid Argument"));
-      e.setDetails(tr("%1 is not a valid dimension size for an OpenCL Kernel (must be 1 or geater)."));
+      e.setDetails(tr("%1 is not a valid dimension size for an OpenCL Kernel (must be 1 or geater).")
+                   .arg(size));
       throw e;
    }
    if ( size != _size )
@@ -349,7 +350,9 @@ void Kernel::setSizes(cl_uint dimension, qint64 globalSize, qint64 localSize)
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(tr("Invalid Argument"));
-      e.setDetails(tr("%1 and %2 are not valid global and local OpenCL kernel sizes, respectively."));
+      e.setDetails(tr("%1 and %2 are not valid global and local OpenCL kernel sizes, respectively.")
+                   .arg(globalSize)
+                   .arg(localSize));
       throw e;
    }
    _globalSizes[dimension] = globalSize;
