@@ -3,9 +3,9 @@
 #include <QAction>
 #include <QMenuBar>
 #include <QSettings>
-#include <core/ace_dataobject.h>
-#include <core/ace_settings.h>
-#include <core/eabstractdata.h>
+#include <../core/ace_dataobject.h>
+#include <../core/ace_settings.h>
+#include <../core/eabstractdata.h>
 #include "ace_metadatadialog.h"
 
 

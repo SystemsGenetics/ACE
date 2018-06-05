@@ -1,9 +1,9 @@
 #include "eapplication.h"
 #include <QMessageBox>
-#include <core/ace_settings.h>
-#include <core/eabstractdatafactory.h>
-#include <core/eabstractanalyticfactory.h>
-#include <core/eexception.h>
+#include <../core/ace_settings.h>
+#include <../core/eabstractdatafactory.h>
+#include <../core/eabstractanalyticfactory.h>
+#include <../core/eexception.h>
 #include "ace_mainwindow.h"
 //
 

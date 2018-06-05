@@ -1,10 +1,10 @@
 #include "eapplication.h"
 #include <QTextStream>
-#include <core/ace_settings.h>
-#include <core/ace_dataobject.h>
-#include <core/eabstractdatafactory.h>
-#include <core/eabstractanalyticfactory.h>
-#include <core/eexception.h>
+#include <../core/ace_settings.h>
+#include <../core/ace_dataobject.h>
+#include <../core/eabstractdatafactory.h>
+#include <../core/eabstractanalyticfactory.h>
+#include <../core/eexception.h>
 #include "ace_run.h"
 #include "ace_settingsrun.h"
 //

@@ -5,11 +5,11 @@
 #include <QFileDialog>
 #include <QCloseEvent>
 #include <QSettings>
-#include <core/eabstractdatafactory.h>
-#include <core/eabstractanalyticfactory.h>
-#include <core/ace_analytic_abstractmanager.h>
-#include <core/ace_dataobject.h>
-#include <core/ace_settings.h>
+#include <../core/eabstractdatafactory.h>
+#include <../core/eabstractanalyticfactory.h>
+#include <../core/ace_analytic_abstractmanager.h>
+#include <../core/ace_dataobject.h>
+#include <../core/ace_settings.h>
 #include "ace_datawindow.h"
 #include "ace_settingsdialog.h"
 #include "ace_setupanalyticdialog.h"
@@ -127,8 +127,7 @@ void MainWindow::runTriggered(quint16 type)
 {
    EAbstractAnalyticFactory& factory {EAbstractAnalyticFactory::instance()};
    unique_ptr<Analytic::AbstractManager> manager {Analytic::AbstractManager::makeManager(type,0,1)};
-   SetupAnalyticDialog dialog(manager.get());
-   dialog.setWindowTitle(tr("Execute %1").arg(factory.name(type)));
+   SetupAnalyticDialog dialog(manager.get(),type);
    if ( dialog.exec() )
    {
       AnalyticDialog runDialog(std::move(manager));
@@ -147,6 +146,7 @@ void MainWindow::runTriggered(quint16 type)
 void MainWindow::settingsTriggered()
 {
    SettingsDialog dialog;
+   dialog.setWindowTitle(tr("Settings"));
    dialog.exec();
 }
 

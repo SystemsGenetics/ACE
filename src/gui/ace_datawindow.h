@@ -2,7 +2,7 @@
 #define ACE_DATAWINDOW_H
 #include <memory>
 #include <QMainWindow>
-#include <core/ace.h>
+#include <../core/ace.h>
 //
 
 

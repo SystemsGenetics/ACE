@@ -2,8 +2,8 @@
 #define ACE_ANALYTICTHREAD_H
 #include <memory>
 #include <QThread>
-#include <core/ace_analytic.h>
-#include <core/global.h>
+#include <../core/ace_analytic.h>
+#include <../core/global.h>
 //
 
 

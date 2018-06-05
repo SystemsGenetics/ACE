@@ -5,9 +5,9 @@
 #include <QSpinBox>
 #include <QLineEdit>
 #include <QPushButton>
-#include <core/ace_settings.h>
-#include <core/opencl_platform.h>
-#include <core/opencl_device.h>
+#include <../core/ace_settings.h>
+#include <../core/opencl_platform.h>
+#include <../core/opencl_device.h>
 
 
 
@@ -85,7 +85,7 @@ void SettingsDialog::currentPlatformChanged(int index)
    {
       for (int i = 0; i < OpenCL::Platform::get(index)->deviceSize() ;++i)
       {
-         _platformCombo->addItem(OpenCL::Platform::get(index)->device(i)->name());
+         _deviceCombo->addItem(OpenCL::Platform::get(index)->device(i)->name());
       }
    }
 }
@@ -177,6 +177,10 @@ QLayout* SettingsDialog::createOpenCL()
    {
       _platformCombo->setCurrentIndex(OpenCL::Platform::size());
    }
+   connect(_platformCombo
+           ,QOverload<int>::of(&QComboBox::currentIndexChanged)
+           ,this
+           ,&SettingsDialog::currentPlatformChanged);
 
    QHBoxLayout* ret {new QHBoxLayout};
    ret->addWidget(_platformCombo);

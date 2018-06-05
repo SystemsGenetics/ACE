@@ -2,7 +2,7 @@
 #define EAPPLICATION_H
 #include <memory>
 #include <QCoreApplication>
-#include <core/global.h>
+#include <../core/global.h>
 #include "ace_options.h"
 #include "ace_command.h"
 //

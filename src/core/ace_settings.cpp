@@ -565,7 +565,7 @@ void Settings::setChunkPrefix(const QString& prefix)
 {
    if ( prefix != _chunkPrefix )
    {
-      _chunkDir = prefix;
+      _chunkPrefix = prefix;
       setValue(_chunkPrefixKey,_chunkPrefix);
    }
 }

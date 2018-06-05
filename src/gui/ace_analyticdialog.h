@@ -3,7 +3,7 @@
 #include <memory>
 #include <QDialog>
 #include <QTime>
-#include <core/ace_analytic.h>
+#include <../core/ace_analytic.h>
 #include "ace.h"
 
 

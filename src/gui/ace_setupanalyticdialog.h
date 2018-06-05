@@ -1,7 +1,7 @@
 #ifndef ACE_SETUPANALYTICDIALOG_H
 #define ACE_SETUPANALYTICDIALOG_H
 #include <QDialog>
-#include <core/ace_analytic.h>
+#include <../core/ace_analytic.h>
 
 
 
@@ -18,7 +18,7 @@ namespace Ace
    {
       Q_OBJECT
    public:
-      SetupAnalyticDialog(Analytic::AbstractManager* manager);
+      SetupAnalyticDialog(Analytic::AbstractManager* manager, quint16 type);
    private slots:
       void findFile(int index);
       void findDataObject(int index);
@@ -40,6 +40,9 @@ namespace Ace
       /*!
        */
       Analytic::AbstractManager* _manager;
+      /*!
+       */
+      quint16 _type;
       /*!
        */
       QList<QWidget*> _edits;

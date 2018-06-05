@@ -13,10 +13,11 @@
 #include <QComboBox>
 #include <QFileDialog>
 #include <QSpinBox>
-#include <core/ace_analytic_abstractmanager.h>
-#include <core/ace_settings.h>
-#include <core/eabstractdatafactory.h>
-#include <core/eexception.h>
+#include <../core/ace_analytic_abstractmanager.h>
+#include <../core/ace_settings.h>
+#include <../core/eabstractdatafactory.h>
+#include <../core/eabstractanalyticfactory.h>
+#include <../core/eexception.h>
 #include "ace_mainwindow.h"
 
 
@@ -32,10 +33,19 @@ using namespace Ace;
 /*!
  *
  * @param manager  
+ *
+ * @param type  
  */
-SetupAnalyticDialog::SetupAnalyticDialog(Analytic::AbstractManager* manager):
-   _manager(manager)
-{}
+SetupAnalyticDialog::SetupAnalyticDialog(Analytic::AbstractManager* manager, quint16 type):
+   _manager(manager),
+   _type(type)
+{
+   QVBoxLayout* layout {new QVBoxLayout};
+   layout->addLayout(createForm());
+   layout->addLayout(createButtons());
+   setLayout(layout);
+   setWindowTitle(tr("Execute %1").arg(EAbstractAnalyticFactory::instance().name(_type)));
+}
 
 
 
@@ -124,7 +134,7 @@ void SetupAnalyticDialog::findDataObject(int index)
  */
 void SetupAnalyticDialog::executeTriggered()
 {
-   QString command = Settings::instance().application();
+   QString command {EAbstractAnalyticFactory::instance().commandName(_type)};
    for (int i = 0; i < _manager->size() ;++i)
    {
       QString bit(" --");

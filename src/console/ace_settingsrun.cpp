@@ -1,9 +1,9 @@
 #include "ace_settingsrun.h"
 #include <QTextStream>
-#include <core/ace_settings.h>
-#include <core/opencl_platform.h>
-#include <core/opencl_device.h>
-#include <core/eexception.h>
+#include <../core/ace_settings.h>
+#include <../core/opencl_platform.h>
+#include <../core/opencl_device.h>
+#include <../core/eexception.h>
 
 
 

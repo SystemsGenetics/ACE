@@ -1,7 +1,7 @@
 #include "ace_run.h"
-#include <core/ace_analytic_abstractmanager.h>
-#include <core/eabstractanalyticfactory.h>
-#include <core/eexception.h>
+#include <../core/ace_analytic_abstractmanager.h>
+#include <../core/eabstractanalyticfactory.h>
+#include <../core/eexception.h>
 
 
 

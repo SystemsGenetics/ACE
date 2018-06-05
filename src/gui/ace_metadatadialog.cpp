@@ -5,9 +5,9 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QPushButton>
-#include <core/ace_metadatamodel.h>
-#include <core/emetadata.h>
-#include <core/ace_dataobject.h>
+#include <../core/ace_metadatamodel.h>
+#include <../core/emetadata.h>
+#include <../core/ace_dataobject.h>
 #include "ace_metadatadialog_imageviewdialog.h"
 
 

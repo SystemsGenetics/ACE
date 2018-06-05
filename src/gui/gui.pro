@@ -7,9 +7,6 @@ DESTDIR = $$PWD/../../build/libs/
 TARGET = acegui
 CONFIG += c++11
 
-INCLUDEPATH += $$PWD/../
-DEPENDPATH += $$PWD/../
-
 TEMPLATE = lib
 
 SOURCES += \

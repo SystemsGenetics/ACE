@@ -2,7 +2,7 @@
 #define EAPPLICATION_H
 #include <memory>
 #include <QApplication>
-#include <core/global.h>
+#include <../core/global.h>
 //
 
 
