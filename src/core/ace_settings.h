@@ -36,15 +36,15 @@ namespace Ace
       /*!
        * The major version of the ACE library. 
        */
-      constexpr static int _majorVersion {0};
+      constexpr static int _majorVersion {MAJOR_VERSION};
       /*!
        * The minor version of the ACE library. 
        */
-      constexpr static int _minorVersion {0};
+      constexpr static int _minorVersion {MINOR_VERSION};
       /*!
        * The revision of the ACE library. 
        */
-      constexpr static int _revision {999};
+      constexpr static int _revision {REVISION};
       int openCLPlatform() const;
       int openCLDevice() const;
       OpenCL::Device* openCLDevicePointer() const;

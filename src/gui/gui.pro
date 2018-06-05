@@ -1,6 +1,7 @@
 
+include(../ACE.pri)
+
 QT += core gui widgets
-VERSION = 0.0.999
 
 DESTDIR = $$PWD/../../build/libs/
 TARGET = acegui

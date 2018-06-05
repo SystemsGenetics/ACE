@@ -1,6 +1,7 @@
 
+include(../../ACE.pri)
+
 QT += core
-VERSION = 0.0.999
 
 TARGET = aceex
 CONFIG += c++11
