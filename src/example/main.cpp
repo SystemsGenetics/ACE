@@ -20,9 +20,9 @@ int main(int argc, char *argv[])
 {
    EApplication application(""
                             ,"aceex"
-                            ,0
-                            ,0
-                            ,999
+                            ,MAJOR_VERSION
+                            ,MINOR_VERSION
+                            ,REVISION
                             ,unique_ptr<DataFactory>(new DataFactory)
                             ,unique_ptr<AnalyticFactory>(new AnalyticFactory)
                             ,argc

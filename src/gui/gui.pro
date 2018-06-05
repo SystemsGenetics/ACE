@@ -1,11 +1,10 @@
 
 include(../ACE.pri)
 
-QT += core gui widgets
+QT += gui widgets
 
 DESTDIR = $$PWD/../../build/libs/
 TARGET = acegui
-CONFIG += c++11
 
 TEMPLATE = lib
 
@@ -32,12 +31,8 @@ HEADERS += \
     ace_metadatadialog_imageviewdialog.h \
     ace_settingsdialog.h
 
-DEFINES += QT_DEPRECATED_WARNINGS
-
 RESOURCES += \
     resources.qrc
-
-QMAKE_CXX = mpic++
 
 isEmpty(PREFIX) { PREFIX = /usr/local }
 library.path = $${PREFIX}/lib

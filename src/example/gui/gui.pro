@@ -1,28 +1,17 @@
 
 include(../../ACE.pri)
+include(../example.pri)
 
-QT += core gui widgets
+QT += gui widgets
 
 TARGET = qaceex
-CONFIG += c++11
 
-LIBS += -lmpi -lmpi_cxx -lOpenCL -L$${PWD}/../../../build/libs -lacecore -lacegui -laceexcore
-
-INCLUDEPATH += $${PWD}/../../ $${PWD}/../core/
-DEPENDPATH += $${PWD}/../../ $${PWD}/../core/
-
-TEMPLATE = app
+LIBS += -lacegui
 
 SOURCES += \
     ../main.cpp \
 
-RESOURCES += \
-    ../resources.qrc
-
-DEFINES += QT_DEPRECATED_WARNINGS GUI=1
-
-QMAKE_CXX = mpic++
-QMAKE_CXXFLAGS += -Wno-ignored-attributes
+DEFINES += GUI=1
 
 isEmpty(PREFIX) { PREFIX = /usr/local }
 program.path = $${PREFIX}/bin

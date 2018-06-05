@@ -1,13 +1,9 @@
 
 include(../../ACE.pri)
 
-QT += core
-
 DESTDIR = $$PWD/../../../build/libs/
 TARGET = aceexcore
-CONFIG += c++11 staticlib
-
-LIBS += -lmpi -lmpi_cxx -lOpenCL -L$${PWD}/../../../build/libs -lacecore
+CONFIG += staticlib
 
 INCLUDEPATH += $${PWD}/../../
 DEPENDPATH += $${PWD}/../../
@@ -47,7 +43,4 @@ HEADERS += \
     mathtransform_opencl_kernel.h \
     mathtransform_opencl_worker.h
 
-DEFINES += QT_DEPRECATED_WARNINGS
-
-QMAKE_CXX = mpic++
 QMAKE_CXXFLAGS += -Wno-ignored-attributes

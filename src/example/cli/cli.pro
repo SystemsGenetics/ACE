@@ -1,28 +1,15 @@
 
 include(../../ACE.pri)
-
-QT += core
+include(../example.pri)
 
 TARGET = aceex
-CONFIG += c++11
 
-LIBS += -lmpi -lmpi_cxx -lOpenCL -L$${PWD}/../../../build/libs -lacecore -laceconsole -laceexcore
-
-INCLUDEPATH += $${PWD}/../../ $${PWD}/../core/
-DEPENDPATH += $${PWD}/../../ $${PWD}/../core/
-
-TEMPLATE = app
+LIBS += -laceconsole
 
 SOURCES += \
     ../main.cpp \
 
-RESOURCES += \
-    ../resources.qrc
-
-DEFINES += QT_DEPRECATED_WARNINGS
-
-QMAKE_CXX = mpic++
-QMAKE_CXXFLAGS += -Wno-ignored-attributes
+DEFINES += GUI=0
 
 isEmpty(PREFIX) { PREFIX = /usr/local }
 program.path = $${PREFIX}/bin

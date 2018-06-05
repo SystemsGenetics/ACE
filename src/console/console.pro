@@ -1,11 +1,8 @@
 
 include(../ACE.pri)
 
-QT += core
-
 DESTDIR = $$PWD/../../build/libs/
 TARGET = aceconsole
-CONFIG += c++11
 
 TEMPLATE = lib
 
@@ -23,10 +20,6 @@ HEADERS += \
     ace.h \
     eapplication.h \
     ace_settingsrun.h
-
-DEFINES += QT_DEPRECATED_WARNINGS
-
-QMAKE_CXX = mpic++
 
 isEmpty(PREFIX) { PREFIX = /usr/local }
 library.path = $${PREFIX}/lib

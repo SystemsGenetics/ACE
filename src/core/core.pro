@@ -1,13 +1,8 @@
 
 include(../ACE.pri)
 
-QT += core
-
 DESTDIR = $${PWD}/../../build/libs/
 TARGET = acecore
-CONFIG += c++11
-
-LIBS += -lmpi -lmpi_cxx -lOpenCL
 
 TEMPLATE = lib
 
@@ -109,10 +104,6 @@ HEADERS += \
     ace_analytic_abstractinput.h \
     ace_analytic_abstractmanager.h \
     ace_analytic_abstractmpi.h
-
-DEFINES += QT_DEPRECATED_WARNINGS
-
-QMAKE_CXX = mpic++
 
 isEmpty(PREFIX) { PREFIX = /usr/local }
 library.path = $${PREFIX}/lib
