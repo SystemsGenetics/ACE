@@ -1,10 +1,15 @@
 
+isEmpty(GUI) { GUI = "yes" }
+
 TEMPLATE = subdirs
 
 SUBDIRS += \
     core \
-    cli \
-    gui
+    cli
 
 cli.depends = core
-gui.depends = core
+
+equals(GUI,"yes") {
+    SUBDIRS += gui
+    gui.depends = core
+}
