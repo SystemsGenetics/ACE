@@ -1,5 +1,9 @@
 #include <core/core.h>
+#if(GUI == 0)
 #include <console/eapplication.h>
+#else
+#include <gui/eapplication.h>
+#endif
 #include "analyticfactory.h"
 #include "datafactory.h"
 
