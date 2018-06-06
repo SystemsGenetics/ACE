@@ -1,5 +1,4 @@
 #include "ace_analytic_openclrun.h"
-#include <QSignalMapper>
 #include "ace_analytic_openclrun_thread.h"
 #include "ace_analytic_abstractinput.h"
 #include "ace_settings.h"
@@ -53,18 +52,15 @@ OpenCLRun::OpenCLRun(EAbstractAnalytic::OpenCL* opencl, OpenCL::Device* device, 
    _threads(Settings::instance().threadSize())
 {
    opencl->initialize(_context);
-   QSignalMapper* mapper {new QSignalMapper(this)};
-   connect(mapper,QOverload<int>::of(&QSignalMapper::mapped),this,&OpenCLRun::blockFinished);
    for (int i = 0; i < _threads.size() ;++i)
    {
       Thread* thread {new Thread(_opencl->makeWorker())};
       _threads[i] = thread;
       _idle << thread;
-      mapper->setMapping(thread,i);
       connect(thread
               ,&Thread::finished
-              ,mapper
-              ,QOverload<>::of(&QSignalMapper::map)
+              ,this
+              ,[this,i]{ blockFinished(i); }
               ,Qt::QueuedConnection);
    }
 }

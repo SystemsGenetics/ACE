@@ -262,7 +262,7 @@ QLayout* SetupAnalyticDialog::createForm()
    {
       QLabel* label = new QLabel(_manager->data(i,EAbstractAnalytic::Input::Title).toString());
       label->setWhatsThis(_manager->data(i,EAbstractAnalytic::Input::WhatsThis).toString());
-      QWidget* field;
+      QWidget* field {nullptr};
       switch (_manager->type(i))
       {
       case EAbstractAnalytic::Input::Type::Boolean:

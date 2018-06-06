@@ -19,4 +19,5 @@ example.depends = core console
 equals(GUI,"yes") {
     SUBDIRS += gui
     gui.depends = core
+    example.depends += gui
 }
