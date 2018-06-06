@@ -30,6 +30,7 @@ namespace Ace
    private slots:
       void progressed(int percentComplete);
       void done();
+      void finished();
    private:
       static QString secondsToString(int seconds);
       static QString numberToString(int value);

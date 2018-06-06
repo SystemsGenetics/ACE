@@ -15,20 +15,10 @@ using namespace Ace;
 /*!
  *
  * @param manager  
- *
- * @param parent  
  */
-AnalyticThread::AnalyticThread(std::unique_ptr<Analytic::AbstractManager>&& manager, QObject* parent):
-   QThread(parent),
-   _manager(manager.get())
-{
-   _manager->moveToThread(this);
-   manager.release()->setParent(this);
-   connect(_manager,&Analytic::AbstractManager::finished
-           ,this
-           ,&AnalyticThread::managerFinished
-           ,Qt::QueuedConnection);
-}
+AnalyticThread::AnalyticThread(Analytic::AbstractManager* manager):
+   _manager(manager)
+{}
 
 
 
@@ -54,18 +44,15 @@ void AnalyticThread::check()
 
 
 /*!
+ *
+ * @param exception  
  */
-void AnalyticThread::run()
+void AnalyticThread::setException(const EException& exception)
 {
-   try
-   {
-      _manager->initialize();
-      exec();
-   }
-   catch (EException e)
-   {
-      _exception = new EException(e);
-   }
+   delete _exception;
+   _exception = new EException(exception);
+   _manager->deleteLater();
+   exit(-1);
 }
 
 
@@ -75,7 +62,7 @@ void AnalyticThread::run()
 
 /*!
  */
-void AnalyticThread::managerFinished()
+void AnalyticThread::run()
 {
-   exit(0);
+   QThread::run();
 }

@@ -164,9 +164,9 @@ void AbstractManager::set(int index, const QVariant& value)
 
 
 /*!
- * Finalizes all input to this manager's analytic and calls the analytic object's 
- * initialize interface. This also emits a signal to call the start slot once the 
- * event loop is started. 
+ * Called to Finalize all input to this manager's analytic and calls the analytic 
+ * object's initialize interface. This also emits a signal to call the start slot 
+ * once the event loop is started. 
  *
  *
  * Steps of Operation: 

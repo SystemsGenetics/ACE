@@ -31,7 +31,11 @@ AnalyticDialog::AnalyticDialog(std::unique_ptr<Analytic::AbstractManager>&& mana
    _info = new QLabel(tr("Remaining Time Unknown."));
    _button = new QPushButton(tr("&Done"));
    _button->setDisabled(true);
+   connect(_button,&QPushButton::clicked,this,&QDialog::accept);
 
+   _thread = new AnalyticThread(manager.get());
+   manager->moveToThread(_thread);
+   connect(_thread,&QThread::started,manager.get(),&Analytic::AbstractManager::initialize);
    connect(manager.get()
            ,&Analytic::AbstractManager::progressed
            ,this
@@ -42,9 +46,9 @@ AnalyticDialog::AnalyticDialog(std::unique_ptr<Analytic::AbstractManager>&& mana
            ,this
            ,&AnalyticDialog::done
            ,Qt::QueuedConnection);
-
-   _thread = new AnalyticThread(std::move(manager),this);
-   connect(_thread,&AnalyticThread::finished,this,&QDialog::accept);
+   connect(_thread,&QThread::finished,this,&AnalyticDialog::finished,Qt::QueuedConnection);
+   connect(manager.get(),&Analytic::AbstractManager::finished,manager.get(),&QObject::deleteLater);
+   manager.release();
 
    QVBoxLayout* layout = new QVBoxLayout;
    layout->addWidget(_bar);
@@ -78,7 +82,14 @@ int AnalyticDialog::exec()
  */
 void AnalyticDialog::closeEvent(QCloseEvent* event)
 {
-   event->ignore();
+   if ( _thread->isRunning() )
+   {
+      event->ignore();
+   }
+   else
+   {
+      event->accept();
+   }
 }
 
 
@@ -132,6 +143,27 @@ void AnalyticDialog::done()
    killTimer(_timerId);
    _info->setText(tr("Finished in %1 (D:HH:MM:SS)").arg(secondsToString(_secondsElapsed)));
    _button->setDisabled(false);
+}
+
+
+
+
+
+
+/*!
+ */
+void AnalyticDialog::finished()
+{
+   try
+   {
+      _thread->deleteLater();
+      _thread->check();
+   }
+   catch (...)
+   {
+      reject();
+      throw;
+   }
 }
 
 

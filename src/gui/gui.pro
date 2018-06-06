@@ -13,8 +13,8 @@ SOURCES += \
     ace_mainwindow.cpp \
     ace_datawindow.cpp \
     ace_setupanalyticdialog.cpp \
-    ace_analyticdialog.cpp \
     ace_analyticthread.cpp \
+    ace_analyticdialog.cpp \
     ace_metadatadialog.cpp \
     ace_metadatadialog_imageviewdialog.cpp \
     ace_settingsdialog.cpp
@@ -24,8 +24,8 @@ HEADERS += \
     ace_mainwindow.h \
     ace_datawindow.h \
     ace_setupanalyticdialog.h \
-    ace_analyticdialog.h \
     ace_analyticthread.h \
+    ace_analyticdialog.h \
     ace.h \
     ace_metadatadialog.h \
     ace_metadatadialog_imageviewdialog.h \

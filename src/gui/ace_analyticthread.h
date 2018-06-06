@@ -16,12 +16,11 @@ namespace Ace
    {
       Q_OBJECT
    public:
-      AnalyticThread(std::unique_ptr<Analytic::AbstractManager>&& manager, QObject* parent = nullptr);
+      AnalyticThread(Analytic::AbstractManager* manager);
       void check();
+      void setException(const EException& exception);
    protected:
       virtual void run() override final;
-   private slots:
-      void managerFinished();
    private:
       /*!
        */

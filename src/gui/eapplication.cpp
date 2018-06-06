@@ -5,6 +5,7 @@
 #include <../core/eabstractanalyticfactory.h>
 #include <../core/eexception.h>
 #include "ace_mainwindow.h"
+#include "ace_analyticthread.h"
 //
 
 
@@ -80,7 +81,14 @@ bool EApplication::notify(QObject* receiver, QEvent* event)
    }
    catch (EException e)
    {
-      showException(e);
+      if ( QThread::currentThread() == instance()->thread() )
+      {
+         showException(e);
+      }
+      else if ( Ace::AnalyticThread* valid = qobject_cast<Ace::AnalyticThread*>(QThread::currentThread()) )
+      {
+         valid->setException(e);
+      }
    }
    catch (std::exception e)
    {

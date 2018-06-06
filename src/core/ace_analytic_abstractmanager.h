@@ -38,7 +38,6 @@ namespace Ace
          EAbstractAnalytic::Input::Type type(int index) const;
          QVariant data(int index, EAbstractAnalytic::Input::Role role) const;
          void set(int index, const QVariant& value);
-         void initialize();
       signals:
          /*!
           * Signals the running analytic has made progress to the given percentage. 
@@ -56,6 +55,7 @@ namespace Ace
           */
          void finished();
       public slots:
+         void initialize();
          void terminationRequested();
          void finish();
       protected:
