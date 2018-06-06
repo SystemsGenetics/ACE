@@ -52,7 +52,6 @@ void AnalyticThread::setException(const EException& exception)
    delete _exception;
    _exception = new EException(exception);
    _manager->deleteLater();
-   exit(-1);
 }
 
 
@@ -64,5 +63,6 @@ void AnalyticThread::setException(const EException& exception)
  */
 void AnalyticThread::run()
 {
+   connect(_manager,&QObject::destroyed,this,&QThread::quit);
    QThread::run();
 }
