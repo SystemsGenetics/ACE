@@ -310,7 +310,7 @@ QString MetadataModel::Node::key() const
 bool MetadataModel::Node::setKey(const QString& newKey)
 {
    Node* parent_ {parent()};
-   if ( !parent_ || parent_->isObject() || parent_->contains(newKey) )
+   if ( !parent_ || !parent_->isObject() || parent_->contains(newKey) )
    {
       return false;
    }
@@ -567,16 +567,17 @@ QMap<QString,MetadataModel::Node*>::const_iterator MetadataModel::Node::objectEn
 MetadataModel::Node* MetadataModel::Node::get(int index) const
 {
    Node* ret {nullptr};
-   if ( index > 0 )
+   if ( index < 0 )
    {
-      if ( isArray() && index < _array.size() )
-      {
-         ret = _array.at(index);
-      }
-      else if ( isObject() && index < _map.size() )
-      {
-         ret = _map.values().at(index);
-      }
+      return ret;
+   }
+   if ( isArray() && index < _array.size() )
+   {
+      ret = _array.at(index);
+   }
+   else if ( isObject() && index < _map.size() )
+   {
+      ret = _map.values().at(index);
    }
    return ret;
 }
@@ -753,16 +754,17 @@ std::unique_ptr<MetadataModel::Node> MetadataModel::Node::copy(int index)
 std::unique_ptr<MetadataModel::Node> MetadataModel::Node::cut(int index)
 {
    unique_ptr<Node> ret;
-   if ( index > 0 )
+   if ( index < 0 )
    {
-      if ( isArray() && index < _array.size() )
-      {
-         ret.reset(_array.takeAt(index));
-      }
-      else if ( isObject() && index < _map.size() )
-      {
-         ret.reset(_map.take(_map.keys().at(index)));
-      }
+      return ret;
+   }
+   if ( isArray() && index < _array.size() )
+   {
+      ret.reset(_array.takeAt(index));
+   }
+   else if ( isObject() && index < _map.size() )
+   {
+      ret.reset(_map.take(_map.keys().at(index)));
    }
    if ( ret )
    {

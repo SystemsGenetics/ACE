@@ -16,8 +16,9 @@ namespace Ace
       Q_OBJECT
    public:
       DataWindow(std::unique_ptr<DataObject>&& data, QWidget* parent = nullptr);
-      ~DataWindow();
       void setWindowTitle(const QString& title);
+   protected:
+      virtual void closeEvent(QCloseEvent* event) override final;
    private slots:
       void systemMetaTriggered();
       void userMetaTriggered();

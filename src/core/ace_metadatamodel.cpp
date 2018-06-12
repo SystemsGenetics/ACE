@@ -99,13 +99,13 @@ Qt::DropActions MetadataModel::supportedDropActions() const
  */
 QVariant MetadataModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-   if ( role != Qt::DisplayRole || orientation != Qt::Vertical )
+   if ( role != Qt::DisplayRole || orientation != Qt::Horizontal )
    {
       return QVariant();
    }
    switch (section)
    {
-   case 0: return tr("Name");
+   case 0: return tr("Key");
    case 1: return tr("Type");
    case 2: return tr("Value");
    default: return QVariant();
@@ -231,11 +231,15 @@ QModelIndex MetadataModel::parent(const QModelIndex& child) const
 Qt::ItemFlags MetadataModel::flags(const QModelIndex& index) const
 {
    Qt::ItemFlags ret {Qt::ItemIsSelectable|Qt::ItemIsEnabled};
+   Node* node {pointer(index)};
+   if ( _readOnly )
+   {
+      return ret;
+   }
    if ( index.isValid() )
    {
       ret |= Qt::ItemIsDragEnabled;
    }
-   Node* node {pointer(index)};
    if ( node->isContainer() )
    {
       ret |= Qt::ItemIsDropEnabled;
@@ -273,6 +277,7 @@ Qt::ItemFlags MetadataModel::flags(const QModelIndex& index) const
  */
 int MetadataModel::rowCount(const QModelIndex& parent) const
 {
+   if ( !_root ) return 0;
    return pointer(parent)->size();
 }
 
@@ -380,7 +385,17 @@ QVariant MetadataModel::data(const QModelIndex& index, int role) const
    {
       return QVariant();
    }
-   return node->value();
+   switch (index.column())
+   {
+   case 0:
+      return node->key();
+   case 1:
+      return node->type();
+   case 2:
+      return node->value();
+   default:
+      return QVariant();
+   }
 }
 
 
@@ -482,7 +497,7 @@ bool MetadataModel::setData(const QModelIndex& index, const QVariant& value, int
 bool MetadataModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent)
 {
    Q_UNUSED(column)
-   if ( action != Qt::CopyAction || action != Qt::MoveAction )
+   if ( action != Qt::CopyAction && action != Qt::MoveAction )
    {
       return false;
    }
@@ -551,6 +566,38 @@ bool MetadataModel::isContainer(const QModelIndex& index) const
 
 
 /*!
+ * Returns the read only state of this model. 
+ *
+ * @return True if this model is read only or false otherwise. 
+ */
+bool MetadataModel::readOnly() const
+{
+   return _readOnly;
+}
+
+
+
+
+
+
+/*!
+ * Returns this model's data tree in the form of metadata objects. The root 
+ * metadata object returned is an object type that is the root of the tree for the 
+ * model. 
+ *
+ * @return Root metadata object of this model's data tree. 
+ */
+EMetadata MetadataModel::meta() const
+{
+   return buildMeta(_root);
+}
+
+
+
+
+
+
+/*!
  * Inserts a new empty node with the given metadata type into the given parent. If 
  * the parent is a map type a new key is generated else if the parent is an array 
  * type the new node is prepended to the array. 
@@ -609,23 +656,6 @@ bool MetadataModel::remove(const QModelIndex& index)
 
 
 /*!
- * Returns this model's data tree in the form of metadata objects. The root 
- * metadata object returned is an object type that is the root of the tree for the 
- * model. 
- *
- * @return Root metadata object of this model's data tree. 
- */
-EMetadata MetadataModel::meta() const
-{
-   return buildMeta(_root);
-}
-
-
-
-
-
-
-/*!
  * This sets its model's data to the given metadata value. Any data stored within 
  * the model is removed and overwritten. The metadata object given must be an 
  * object type or this will throw an exception. 
@@ -657,6 +687,29 @@ void MetadataModel::setMeta(const EMetadata& newRoot)
    delete _root;
    _root = buildNode(newRoot).release();
    _root->setParent(this);
+   endResetModel();
+}
+
+
+
+
+
+
+/*!
+ * Set the read only state of this model. 
+ *
+ * @param state New boolean value for this model's read only state. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Update this model's read only state with the new value, signaling this model 
+ *    is resetting. 
+ */
+void MetadataModel::setReadOnly(bool state)
+{
+   beginResetModel();
+   _readOnly = state;
    endResetModel();
 }
 

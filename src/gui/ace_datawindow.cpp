@@ -3,6 +3,7 @@
 #include <QAction>
 #include <QMenuBar>
 #include <QSettings>
+#include <QCloseEvent>
 #include <../core/ace_dataobject.h>
 #include <../core/ace_settings.h>
 #include <../core/eabstractdata.h>
@@ -55,20 +56,6 @@ DataWindow::DataWindow(std::unique_ptr<DataObject>&& data, QWidget* parent):
 
 
 /*!
- */
-DataWindow::~DataWindow()
-{
-   QSettings settings(Settings::instance().organization(),Settings::instance().application());
-   settings.setValue(_stateKey,saveState());
-   settings.setValue(_geometryKey,saveGeometry());
-}
-
-
-
-
-
-
-/*!
  *
  * @param title  
  */
@@ -84,10 +71,28 @@ void DataWindow::setWindowTitle(const QString& title)
 
 
 /*!
+ *
+ * @param event  
+ */
+void DataWindow::closeEvent(QCloseEvent* event)
+{
+   QSettings settings(Settings::instance().organization(),Settings::instance().application());
+   settings.setValue(_stateKey,saveState());
+   settings.setValue(_geometryKey,saveGeometry());
+   event->accept();
+}
+
+
+
+
+
+
+/*!
  */
 void DataWindow::systemMetaTriggered()
 {
    MetadataDialog dialog(_data);
+   dialog.setWindowTitle(tr("System Metadata"));
    dialog.exec();
 }
 
@@ -101,6 +106,7 @@ void DataWindow::systemMetaTriggered()
 void DataWindow::userMetaTriggered()
 {
    MetadataDialog dialog(_data,false);
+   dialog.setWindowTitle(tr("User Metadata"));
    dialog.exec();
 }
 

@@ -48,10 +48,12 @@ namespace Ace
       virtual bool dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) override final;
       bool isImage(const QModelIndex& index) const;
       bool isContainer(const QModelIndex& index) const;
+      bool readOnly() const;
+      EMetadata meta() const;
       bool insert(const QModelIndex& parent, EMetadata::Type type);
       bool remove(const QModelIndex& index);
-      EMetadata meta() const;
       void setMeta(const EMetadata& newRoot);
+      void setReadOnly(bool state);
    private:
       class Node;
       MetadataModel::Node* pointer(const QModelIndex& index) const;
@@ -70,6 +72,10 @@ namespace Ace
        * the an object type. 
        */
       Node* _root;
+      /*!
+       * True if this model is read only and cannot be edited or false otherwise. 
+       */
+      bool _readOnly {false};
    };
 }
 

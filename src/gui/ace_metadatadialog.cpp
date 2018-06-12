@@ -34,6 +34,7 @@ MetadataDialog::MetadataDialog(DataObject* data, bool system):
    _view = new QTreeView;
    if ( _system )
    {
+      _model->setReadOnly(true);
       _model->setMeta(_data->systemMeta());
    }
    else
@@ -61,6 +62,12 @@ MetadataDialog::MetadataDialog(DataObject* data, bool system):
    connect(okButton,&QPushButton::clicked,this,&MetadataDialog::okClicked);
    connect(applyButton,&QPushButton::clicked,this,&MetadataDialog::applyClicked);
    connect(cancelButton,&QPushButton::clicked,this,&QDialog::reject);
+
+   if ( _system )
+   {
+      okButton->setDisabled(true);
+      applyButton->setDisabled(true);
+   }
 
    QHBoxLayout* buttonLayout = new QHBoxLayout;
    buttonLayout->addWidget(okButton);
