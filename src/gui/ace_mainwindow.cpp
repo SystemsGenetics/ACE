@@ -127,7 +127,7 @@ void MainWindow::runTriggered(quint16 type)
 {
    EAbstractAnalyticFactory& factory {EAbstractAnalyticFactory::instance()};
    unique_ptr<Analytic::AbstractManager> manager {Analytic::AbstractManager::makeManager(type,0,1)};
-   SetupAnalyticDialog dialog(manager.get(),type);
+   SetupAnalyticDialog dialog(manager.get());
    if ( dialog.exec() )
    {
       AnalyticDialog runDialog(std::move(manager));

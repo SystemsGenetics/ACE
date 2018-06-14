@@ -93,6 +93,21 @@ std::unique_ptr<Ace::Analytic::AbstractManager> AbstractManager::makeManager(qui
 
 
 /*!
+ * Returns the analytic type this analytic manager contains. 
+ *
+ * @return Analytic type this analytic manager contains. 
+ */
+quint16 AbstractManager::analyticType() const
+{
+   return _type;
+}
+
+
+
+
+
+
+/*!
  * Returns the number of arguments this manager's analytic has for user input. 
  *
  * @return Number of analytic arguments for this manager. 

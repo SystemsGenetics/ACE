@@ -34,6 +34,7 @@ namespace Ace
          Q_OBJECT
       public:
          static std::unique_ptr<Ace::Analytic::AbstractManager> makeManager(quint16 type, int index, int size);
+         quint16 analyticType() const;
          int size() const;
          EAbstractAnalytic::Input::Type type(int index) const;
          QVariant data(int index, EAbstractAnalytic::Input::Role role) const;
