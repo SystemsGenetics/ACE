@@ -53,7 +53,7 @@ AnalyticDialog::AnalyticDialog(std::unique_ptr<Analytic::AbstractManager>&& mana
    _info = new QLabel(tr("Remaining Time Unknown."));
    _button = new QPushButton(tr("&Done"));
    _button->setDisabled(true);
-   connect(_button,&QPushButton::clicked,this,&QDialog::accept);
+   connect(_button,&QPushButton::clicked,this,&QDialog::close);
 
    // Step 3
    _thread = new AnalyticThread(manager.get());
@@ -252,6 +252,7 @@ void AnalyticDialog::finished()
    catch (...)
    {
       reject();
+      close();
       throw;
    }
 }

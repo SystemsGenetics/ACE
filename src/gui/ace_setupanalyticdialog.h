@@ -27,7 +27,8 @@ namespace Ace
    private slots:
       void findFile(int index);
       void findDataObject(int index);
-      void executeTriggered();
+      void executeClicked();
+      void cancelClicked();
    private:
       QString processBool(quint16 index);
       QString processInteger(quint16 index);

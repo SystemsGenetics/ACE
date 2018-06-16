@@ -214,7 +214,7 @@ void SetupAnalyticDialog::findDataObject(int index)
  * 3. Add the command line version of this analytic run to the main window and 
  *    close with dialog with success. 
  */
-void SetupAnalyticDialog::executeTriggered()
+void SetupAnalyticDialog::executeClicked()
 {
    // Step 1
    QString command {EAbstractAnalyticFactory::instance().commandName(_manager->analyticType())};
@@ -253,6 +253,22 @@ void SetupAnalyticDialog::executeTriggered()
    // Step 3
    MainWindow::instance().addCommand(command);
    accept();
+   close();
+}
+
+
+
+
+
+
+/*!
+ * Called when the cancel button is clicked. This rejects the dialog and closes it. 
+ */
+void SetupAnalyticDialog::cancelClicked()
+{
+   // Reject the dialog and close it.
+   reject();
+   close();
 }
 
 
@@ -502,8 +518,8 @@ QLayout* SetupAnalyticDialog::createButtons()
    // Step 1
    QPushButton* execute {new QPushButton(tr("&Execute"))};
    QPushButton* cancel {new QPushButton(tr("&Cancel"))};
-   connect(execute,&QPushButton::clicked,this,&SetupAnalyticDialog::executeTriggered);
-   connect(cancel,&QPushButton::clicked,this,&QDialog::reject);
+   connect(execute,&QPushButton::clicked,this,&SetupAnalyticDialog::executeClicked);
+   connect(cancel,&QPushButton::clicked,this,&SetupAnalyticDialog::cancelClicked);
 
    // Step 2
    QHBoxLayout* ret {new QHBoxLayout};
