@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/56720539.svg)](https://zenodo.org/badge/latestdoi/56720539)
+
 # Accelerated Computational Engine (ACE)
 
 ACE is a generic framework for creating GPU-accelerated applications.
