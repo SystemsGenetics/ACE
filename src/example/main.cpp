@@ -1,7 +1,9 @@
-#include <core/AceCore.h>
-
-#include "../gui/Application.h"
-
+#include <core/core.h>
+#if(GUI == 0)
+#include <console/eapplication.h>
+#else
+#include <gui/eapplication.h>
+#endif
 #include "analyticfactory.h"
 #include "datafactory.h"
 
@@ -16,19 +18,14 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-   // Make a new analytic factory
-   unique_ptr<AnalyticFactory> analyticFactory(new AnalyticFactory);
-
-   // Make a new data factory
-   unique_ptr<DataFactory> dataFactory(new DataFactory);
-
-   // Set ACE's global analytic factory to the one created
-   EAbstractAnalyticFactory::setInstance(move(analyticFactory));
-
-   // Set ACE's global data factory to the one created
-   EAbstractDataFactory::setInstance(move(dataFactory));
-
-   // Start ACE application and execute it
-   EApplication application(argc,argv,"Example ACE Program","example");
+   EApplication application(""
+                            ,"aceex"
+                            ,MAJOR_VERSION
+                            ,MINOR_VERSION
+                            ,REVISION
+                            ,unique_ptr<DataFactory>(new DataFactory)
+                            ,unique_ptr<AnalyticFactory>(new AnalyticFactory)
+                            ,argc
+                            ,argv);
    return application.exec();
 }

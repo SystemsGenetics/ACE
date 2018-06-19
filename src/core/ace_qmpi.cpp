@@ -1,21 +1,20 @@
 #include "ace_qmpi.h"
-#include <mpi.h>
-#include "exception.h"
+#include "eexception.h"
 
 
 
 using namespace Ace;
+//
 
 
 
 /*!
- * Keeps track if an instance of this class has already been created then 
- * destroyed in shutdown. This is so a second instance is never made after the 
- * MPI system was shutdown with finalize. 
+ * True if an instance of this class has already been deleted or false otherwise. 
+ * This is used to make sure a second class is never deleted. 
  */
 bool QMPI::_hasShutdown {false};
 /*!
- * This is a pointer to the single instance of this class. 
+ * Pointer to the singleton instance of this class. 
  */
 QMPI* QMPI::_instance {nullptr};
 
@@ -25,30 +24,30 @@ QMPI* QMPI::_instance {nullptr};
 
 
 /*!
- * This returns a reference to the singleton instance of this class if shutdown 
- * of another instance has not occurred. If MPI was already initialized it 
- * simply returns a reference to the instance. 
+ * This returns a reference to the singleton instance of this class if shutdown of 
+ * another instance has not occurred. If MPI was already initialized it simply 
+ * returns a reference to the instance. 
  *
  * @return Reference to the singleton instance of this class. 
  *
  *
  * Steps of Operation: 
  *
- * 1. If shutdown has already been called on another instance of this class 
- *    throw an exception about this fact. 
+ * 1. If shutdown has already been called on another instance of this class throw 
+ *    an exception about this fact. 
  *
- * 2. If the instance pointer is null then create new instance of the class and 
- *    set pointer to its address. 
+ * 2. If the instance pointer is null then create new instance of the class and set 
+ *    pointer to its address. 
  *
  * 3. Return reference to instance pointed to by the instance pointer. 
  */
-QMPI& QMPI::initialize()
+QMPI& QMPI::instance()
 {
    if ( _hasShutdown )
    {
       E_MAKE_EXCEPTION(e);
-      e.setTitle(tr("MPI Initialize Failed"));
-      e.setDetails(tr("An instance of QMPI already existed and as shutdown."));
+      e.setTitle(tr("Logical Error"));
+      e.setDetails(tr("An instance of QMPI already existed and shutdown."));
       throw e;
    }
    if ( !_instance )
@@ -64,15 +63,14 @@ QMPI& QMPI::initialize()
 
 
 /*!
- * This deletes the singleton instance of this class thereby shutting down the 
- * MPI system. After calling this another instance cannot be initialized or 
- * referenced. 
+ * This deletes the singleton instance of this class thereby shutting down the MPI 
+ * system. After calling this another instance cannot be initialized or referenced. 
  *
  *
  * Steps of Operation: 
  *
- * 1. If an instance of this class exists in the static pointer delete it and 
- *    set the shutdown flag to true to prevent initializing another instance. 
+ * 1. If an instance of this class exists in the static pointer delete it and set 
+ *    the shutdown flag to true to prevent initializing another instance. 
  */
 void QMPI::shutdown()
 {
@@ -89,39 +87,9 @@ void QMPI::shutdown()
 
 
 /*!
- * Returns size of MPI run. 
+ * Tests if this process is the master node (rank 0). 
  *
- * @return Size of MPI run. 
- */
-int QMPI::size() const
-{
-   return _size;
-}
-
-
-
-
-
-
-/*!
- * Returns rank of this process to identify it within the MPI run. 
- *
- * @return Rank of this process. 
- */
-int QMPI::rank() const
-{
-   return _rank;
-}
-
-
-
-
-
-
-/*!
- * Tests if this process is the master process (rank 0) of the MPI run. 
- *
- * @return Returns true if this process is the master else returns false. 
+ * @return Returns true if this is the master node else returns false. 
  */
 bool QMPI::isMaster() const
 {
@@ -134,28 +102,124 @@ bool QMPI::isMaster() const
 
 
 /*!
- * This slot is called to send data to another process within the MPI run. 
+ * Returns world node size. 
+ *
+ * @return World node size. 
+ */
+int QMPI::size() const
+{
+   return _size;
+}
+
+
+
+
+
+
+/*!
+ * Returns the world rank of this node. 
+ *
+ * @return World rank of this node. 
+ */
+int QMPI::rank() const
+{
+   return _rank;
+}
+
+
+
+
+
+
+/*!
+ * Returns the local size representing the number of nodes that share local 
+ * resources. 
+ *
+ * @return Size of nodes that share local resources. 
+ */
+int QMPI::localSize() const
+{
+   return _localSize;
+}
+
+
+
+
+
+
+/*!
+ * Returns the local rank of this node to identify it within the number of other 
+ * nodes that share its local resources. 
+ *
+ * @return Local rank of this node. 
+ */
+int QMPI::localRank() const
+{
+   return _localRank;
+}
+
+
+
+
+
+
+/*!
+ * Called to send data to another node using the world MPI comm. This is 
+ * asynchronous and returns immediately. 
+ *
+ * @param toRank The rank of the node to send this data to. 
+ *
+ * @param data The data that is sent to the node with the given rank. 
+ */
+void QMPI::sendData(int toRank, const QByteArray& data)
+{
+   sendData(MPI_COMM_WORLD,toRank,data);
+}
+
+
+
+
+
+
+/*!
+ * Called to send data to another node using the local MPI comm. This is 
+ * asynchronous and returns immediately. 
  *
  * @param toRank The rank of the process to send this data to. 
  *
  * @param data Stores the raw data that will be sent to the given process. 
+ */
+void QMPI::sendLocalData(int toRank, const QByteArray& data)
+{
+   sendData(_local,toRank,data);
+}
+
+
+
+
+
+
+/*!
+ * Implements the QObject interface that is called whenever the timer event is 
+ * fired. This function is used to poll for new data from the MPI system without 
+ * blocking and firing signals for any new data received. 
+ *
+ * @param event Ignored Qt event data since this class only has a single timer 
+ *              event active. 
  *
  *
  * Steps of Operation: 
  *
- * 1. Call the MPI system to send new byte data to the specified rank. If the 
- *    call was successful then end operation else go to step 2. 
- *
- * 2. Create exception detailing failure and throw it. 
+ * 1. Iterate through all ranks, probing for new data received from the world and 
+ *    local MPI comm channels for each rank. 
  */
-void QMPI::sendData(int toRank, const QByteArray& data)
+void QMPI::timerEvent(QTimerEvent* event)
 {
-   if ( MPI_Send(data.data(),data.size(),MPI_CHAR,toRank,0,MPI_COMM_WORLD) )
+   Q_UNUSED(event)
+   for (int i = 0; i < _size ;++i)
    {
-      E_MAKE_EXCEPTION(e);
-      e.setTitle(tr("MPI_Send Failed"));
-      e.setDetails(tr("MPI_Send failed."));
-      throw e;
+      probe(MPI_COMM_WORLD,i);
+      probe(_local,i);
    }
 }
 
@@ -165,69 +229,121 @@ void QMPI::sendData(int toRank, const QByteArray& data)
 
 
 /*!
- * This is the timer event function re implemented from the QObject class that 
- * is called whenever the timer event is fired. This function is used to poll 
- * for new data from other MPI processes without blocking and firing signals for 
- * any new data received. 
- *
- * @param event Ignored Qt event data since this class only has a single timer 
- *              event active. 
+ * Constructs a new QMPI object initializing the MPI system it represents. 
  *
  *
  * Steps of Operation: 
  *
- * 1. Iterate through all ranks, excluding this process's rank, going to step 2 
- *    for each iteration. Once iteration is complete end operation. 
+ * 1. Initialize the MPI system. If it failed then set this object to a single 
+ *    process state and exit, else go to the next step. 
  *
- * 2. Probe for incoming data from given rank using MPI system. If MPI calls 
- *    fail go to step 5. If the probe indicates there is a pending block of data 
- *    proceed else go back to step 1. 
- *
- * 3. Receive the data block using the MPI system, storing it in a Qt byte 
- *    array. If the MPI system fails go to step 5. 
- *
- * 4. Emit the data received signal with the byte array and what process it came 
- *    from identified by rank. Go back to step 1. 
- *
- * 5. Throw an exception detailing the error that occurred. 
+ * 2. Setup the world and local MPI comm channels and then start this object's qt 
+ *    object timer for data received polling. 
  */
-void QMPI::timerEvent(QTimerEvent* event)
+QMPI::QMPI()
 {
-   Q_UNUSED(event)
-   for (int i = 0; i < _size ;++i)
+   if ( MPI_Init(nullptr,nullptr) )
    {
-      if ( i != _rank )
+      _failed = true;
+      _size = 1;
+      _rank = 0;
+      _localSize = 1;
+      _localRank = 0;
+      return;
+   }
+   setupWorld();
+   setupLocal();
+   startTimer(_timerPeriod);
+}
+
+
+
+
+
+
+/*!
+ * Frees local MPI resources and finalizes the MPI system. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If MPI initialization did not fail for this object then free the local MPI 
+ *    comm and call the MPI finalize function. 
+ */
+QMPI::~QMPI()
+{
+   if ( !_failed )
+   {
+      MPI_Comm_free(&_local);
+      MPI_Finalize();
+   }
+}
+
+
+
+
+
+
+/*!
+ * Probe the given MPI comm for any received data from the node with the given 
+ * rank, emitting a data received signal if data is found. This does not block and 
+ * returns immediately if there is no pending data to receive. 
+ *
+ * @param comm The MPI comm that is proved. This is either the world or local comm. 
+ *
+ * @param rank The from rank that is checked for new data received. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Probe to see if there is pending data for the given MPI comm from the given 
+ *    rank. If probing fails then throw an exception, else if there is no pending 
+ *    data then do nothing and exit, else go to the next step. 
+ *
+ * 2. Get the size of the pending data that is assumed to be of type MPI_CHAR and 
+ *    then get the data itself. If getting the size of the data or getting the data 
+ *    fails then throw an exception, else go to the next step. 
+ *
+ * 3. Emit a local data received or data received signal, depending on if the given 
+ *    comm is the world or local one. 
+ */
+void QMPI::probe(MPI_Comm comm, int rank)
+{
+   int flag;
+   MPI_Status status;
+   if ( MPI_Iprobe(rank,0,comm,&flag,&status) )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("MPI Failed"));
+      e.setDetails(tr("MPI_Iprobe failed."));
+      throw e;
+   }
+   if ( flag )
+   {
+      int count;
+      if ( MPI_Get_count(&status,MPI_CHAR,&count) )
       {
-         int flag;
-         MPI_Status status;
-         if ( MPI_Iprobe(i,0,MPI_COMM_WORLD,&flag,&status) )
-         {
-            E_MAKE_EXCEPTION(e);
-            e.setTitle(tr("MPI_Iprobe Failed"));
-            e.setDetails(tr("MPI_Iprobe failed."));
-            throw e;
-         }
-         if ( flag )
-         {
-            int count;
-            if ( MPI_Get_count(&status,MPI_CHAR,&count) )
-            {
-               E_MAKE_EXCEPTION(e);
-               e.setTitle(tr("MPI_Get_count Failed"));
-               e.setDetails(tr("MPI_Get_count failed."));
-               throw e;
-            }
-            QByteArray data;
-            data.resize(count);
-            if ( MPI_Recv(data.data(),count,MPI_CHAR,i,0,MPI_COMM_WORLD,MPI_STATUS_IGNORE) )
-            {
-               E_MAKE_EXCEPTION(e);
-               e.setTitle(tr("MPI_Recv Failed"));
-               e.setDetails(tr("MPI_Recv failed."));
-               throw e;
-            }
-            emit dataReceived(data,i);
-         }
+         E_MAKE_EXCEPTION(e);
+         e.setTitle(tr("MPI Failed"));
+         e.setDetails(tr("MPI_Get_count failed."));
+         throw e;
+      }
+      QByteArray data;
+      data.resize(count);
+      if ( MPI_Recv(data.data(),count,MPI_CHAR,rank,0,comm,MPI_STATUS_IGNORE) )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setTitle(tr("MPI Failed"));
+         e.setDetails(tr("MPI_Recv failed."));
+         throw e;
+      }
+      if ( comm == _local )
+      {
+         emit localDataReceived(data,rank);
+      }
+      else
+      {
+         emit dataReceived(data,rank);
       }
    }
 }
@@ -238,40 +354,34 @@ void QMPI::timerEvent(QTimerEvent* event)
 
 
 /*!
- * This is the private and only constructor for this class. It is private so no 
- * one except this class itself can make an instance of it thereby enforcing its 
- * singleton property. 
+ * Send the given data to the given rank or local rank, depending on the given comm 
+ * being world or local. This is asynchronous and returns immediately. 
+ *
+ * @param comm The MPI comm used to send the data. This is either world or local. 
+ *
+ * @param toRank The rank or local rank, depending on if the given comm is world or 
+ *               local respectively, of the node to send this data to. 
+ *
+ * @param data The data that is sent to the node with the given rank or local rank. 
  *
  *
  * Steps of Operation: 
  *
- * 1. Initialize the MPI system. If it failed go to step 4. 
- *
- * 2. Query the MPI system for the size and rank. If the query failed go to step 
- *    4. 
- *
- * 3. Initialize a QObject timer event used for polling of new data received and 
- *    end operation. 
- *
- * 4. Throw an exception detailing the error that occurred. 
+ * 1. Send the given data to the node with the given rank using the given MPI comm, 
+ *    using the MPI function that does not block to do so. If sending fails then 
+ *    throw an exception. 
  */
-QMPI::QMPI()
+void QMPI::sendData(MPI_Comm comm, int toRank, const QByteArray& data)
 {
-   if ( MPI_Init(nullptr,nullptr) )
+   MPI_Request request;
+   if ( MPI_Isend(data.data(),data.size(),MPI_CHAR,toRank,0,comm,&request) )
    {
       E_MAKE_EXCEPTION(e);
-      e.setTitle(tr("MPI_Init Failed"));
-      e.setDetails(tr("MPI_Init failed."));
+      e.setTitle(tr("MPI Failed"));
+      e.setDetails(tr("MPI_Send failed."));
       throw e;
    }
-   if ( MPI_Comm_size(MPI_COMM_WORLD,&_size) || MPI_Comm_rank(MPI_COMM_WORLD,&_rank) )
-   {
-      E_MAKE_EXCEPTION(e);
-      e.setTitle(tr("MPI_Comm Failed"));
-      e.setDetails(tr("MPI_Comm failed."));
-      throw e;
-   }
-   startTimer(_timerPeriod);
+   MPI_Request_free(&request);
 }
 
 
@@ -280,15 +390,70 @@ QMPI::QMPI()
 
 
 /*!
- * This simply calls the finalize function for MPI to shutdown the system. 
+ * Sets up the world MPI comm by simply getting its size and this node's rank since 
+ * MPI itself creates the world comm. 
  *
  *
  * Steps of Operation: 
  *
- * 1. Call MPI finalize. 
+ * 1. Get the world MPI comm size and this node's rank, saving it to this object. 
+ *    If any MPI call fails then throw an exception. 
  */
-QMPI::~QMPI()
+void QMPI::setupWorld()
 {
-   MPI_Finalize();
+   if ( MPI_Comm_size(MPI_COMM_WORLD,&_size) )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("MPI Failed"));
+      e.setDetails(tr("MPI_Comm_size failed."));
+      throw e;
+   }
+   if (MPI_Comm_rank(MPI_COMM_WORLD,&_rank) )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("MPI Failed"));
+      e.setDetails(tr("MPI_Comm_rank failed."));
+      throw e;
+   }
 }
 
+
+
+
+
+
+/*!
+ * Sets up the local MPI comm which is determined by all nodes that share local 
+ * resources, getting the local size and this node's local rank rank from it. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Create the local comm and save it to this object, along with getting the 
+ *    local size and this node's local rank from the created local comm. If any MPI 
+ *    call fails then throw an exception. 
+ */
+void QMPI::setupLocal()
+{
+   if ( MPI_Comm_split_type(MPI_COMM_WORLD,MPI_COMM_TYPE_SHARED,0,MPI_INFO_NULL,&_local) )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("MPI Failed"));
+      e.setDetails(tr("MPI_Comm_split_type failed."));
+      throw e;
+   }
+   if ( MPI_Comm_size(_local,&_localSize) )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("MPI Failed"));
+      e.setDetails(tr("MPI_Comm_size failed."));
+      throw e;
+   }
+   if ( MPI_Comm_rank(_local,&_localRank) )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("MPI Failed"));
+      e.setDetails(tr("MPI_Comm_rank failed."));
+      throw e;
+   }
+}

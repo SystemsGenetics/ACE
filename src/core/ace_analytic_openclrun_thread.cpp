@@ -1,0 +1,145 @@
+#include "ace_analytic_openclrun_thread.h"
+#include "eabstractanalytic_opencl_worker.h"
+#include "eabstractanalytic_block.h"
+#include "eexception.h"
+
+
+
+using namespace std;
+using namespace Ace::Analytic;
+//
+
+
+
+
+
+
+/*!
+ * Constructs a new thread object with the given abstract OpenCL worker and 
+ * optional parent. 
+ *
+ * @param worker An abstract OpenCL worker used to do the actual processing of work 
+ *               blocks into result blocks. 
+ *
+ * @param parent Optional parent of this new thread object. 
+ */
+OpenCLRun::Thread::Thread(std::unique_ptr<EAbstractAnalytic::OpenCL::Worker>&& worker, QObject* parent):
+   QThread(parent),
+   _worker(worker.release())
+{
+   _worker->setParent(this);
+}
+
+
+
+
+
+
+/*!
+ * Executes the processing of the given work block on a separate thread from the 
+ * one called this method. This returns immediately after starting the separate 
+ * thread. If this thread already contains a result block then an exception is 
+ * thrown. 
+ *
+ * @param block The work block that is processed on a separate thread. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If this thread already contains a result block then throw an exception, else 
+ *    go to the next step. 
+ *
+ * 2. Delete any previous work block this object contains, set the given work block 
+ *    as this objects new work block and then start its separate thread. 
+ */
+void OpenCLRun::Thread::execute(std::unique_ptr<EAbstractAnalytic::Block>&& block)
+{
+   if ( _result )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Logic Error"));
+      e.setDetails(tr("Cannot execute OpenCL engine piston that contains a result."));
+      throw e;
+   }
+   delete _work;
+   _work = block.release();
+   _work->setParent(this);
+   start();
+}
+
+
+
+
+
+
+/*!
+ * Returns the result block produces on this object's separate thread after 
+ * finishing. If the separate thread threw an exception that exception is thrown 
+ * again on the thread calling this method. If there is not result block an 
+ * exception is also thrown. 
+ *
+ * @return Result block produced by this object's separate thread execution. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. If this object has a saved exception from its separate thread then copy it 
+ *    and throw it on this thread, else go to the next step. 
+ *
+ * 2. If this object does not contain a result block then throw an exception, else 
+ *    go the next step. 
+ *
+ * 3. Release this object's saved result block from its ownership and return it. 
+ */
+std::unique_ptr<EAbstractAnalytic::Block> OpenCLRun::Thread::result()
+{
+   if ( _exception )
+   {
+      EException e(*_exception);
+      delete _exception;
+      _exception = nullptr;
+      throw e;
+   }
+   if ( !_result )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Logic Error"));
+      e.setDetails(tr("Cannot get result from OpenCL engine piston that contains none."));
+      throw e;
+   }
+   _result->setParent(nullptr);
+   unique_ptr<EAbstractAnalytic::Block> ret {_result};
+   _result = nullptr;
+   return ret;
+}
+
+
+
+
+
+
+/*!
+ * Executes this object's saved work block on its separate thread, saving the 
+ * result block. If any exception is thrown within this separate thread it is 
+ * caught and saved. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Process this object's saved work block, saving the result block and 
+ *    transferring it to this object's main thread. If any ACE exception occurs 
+ *    then catch it and save it. 
+ */
+void OpenCLRun::Thread::run()
+{
+   try
+   {
+      _result = _worker->execute(_work).release();
+      _result->moveToThread(thread());
+      _result->setParent(this);
+   }
+   catch (EException e)
+   {
+      _exception = new EException(e);
+   }
+}

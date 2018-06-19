@@ -1,0 +1,64 @@
+#include "ace_analytic_serialrun.h"
+#include <memory>
+#include <QTimer>
+#include "ace_analytic_abstractinput.h"
+#include "eabstractanalytic_block.h"
+#include "eabstractanalytic_serial.h"
+
+
+
+using namespace std;
+using namespace Ace::Analytic;
+//
+
+
+
+
+
+
+/*!
+ * Constructs a new serial run object with the given abstract serial object, 
+ * abstract input object, and optional parent. 
+ *
+ * @param serial Pointer to the abstract serial object produced by the analytic 
+ *               that is being ran. 
+ *
+ * @param base Pointer to the abstract input used to save all result blocks. 
+ *
+ * @param parent Optional parent for this new serial run. 
+ */
+SerialRun::SerialRun(EAbstractAnalytic::Serial* serial, AbstractInput* base, QObject* parent):
+   AbstractRun(parent),
+   _serial(serial),
+   _base(base)
+{}
+
+
+
+
+
+
+/*!
+ * Implements the interface that is called to add a work block to be processed by 
+ * this abstract run. This implementation simply processes the block and saves the 
+ * result immediately because it is serial. 
+ *
+ * @param block The work block that is processed. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Process the given work block by calling this object's abstract serial execute 
+ *    interface, saving the returned result block. If this object's abstract input 
+ *    is finished then emit the finished signal. 
+ */
+void SerialRun::addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block)
+{
+   unique_ptr<EAbstractAnalytic::Block> result {_serial->execute(block.get())};
+   block.reset();
+   _base->saveResult(std::move(result));
+   if ( _base->isFinished() )
+   {
+      emit finished();
+   }
+}

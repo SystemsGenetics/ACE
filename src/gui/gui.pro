@@ -1,39 +1,42 @@
 
-QT += core gui widgets
+include(../ACE.pri)
+
+QT += gui widgets
 
 DESTDIR = $$PWD/../../build/libs/
 TARGET = acegui
-CONFIG += c++11
-VERSION = 3.0.0
-
-INCLUDEPATH += $$PWD/../core/
-DEPENDPATH += $$PWD/../core/
 
 TEMPLATE = lib
 
 SOURCES += \
-   opencldevicedialog.cpp \
-   mainwindow.cpp \
-   setupanalyticdialog.cpp \
-   Application.cpp \
-    analyticdialog.cpp \
-    datawindow.cpp \
-    metadatadialog.cpp \
-    imageviewer.cpp
+    eapplication.cpp \
+    ace_mainwindow.cpp \
+    ace_datawindow.cpp \
+    ace_setupanalyticdialog.cpp \
+    ace_analyticthread.cpp \
+    ace_analyticdialog.cpp \
+    ace_metadatadialog.cpp \
+    ace_metadatadialog_imageviewdialog.cpp \
+    ace_settingsdialog.cpp
 
 HEADERS += \
-   opencldevicedialog.h \
-   mainwindow.h \
-   setupanalyticdialog.h \
-   Application.h \
-    analyticdialog.h \
-    datawindow.h \
-    metadatadialog.h \
-    imageviewer.h
-
-DEFINES += QT_DEPRECATED_WARNINGS
+    eapplication.h \
+    ace_mainwindow.h \
+    ace_datawindow.h \
+    ace_setupanalyticdialog.h \
+    ace_analyticthread.h \
+    ace_analyticdialog.h \
+    ace.h \
+    ace_metadatadialog.h \
+    ace_metadatadialog_imageviewdialog.h \
+    ace_settingsdialog.h
 
 RESOURCES += \
     resources.qrc
 
-QMAKE_CXX = mpic++
+isEmpty(PREFIX) { PREFIX = /usr/local }
+library.path = $${PREFIX}/lib
+library.extra = cp -fd $${PWD}/../../build/libs/lib$${TARGET}.so* $${PREFIX}/lib/
+includes.path = $${PREFIX}/include/ace/gui
+includes.files = $${PWD}/*.h
+INSTALLS += library includes

@@ -1,22 +1,29 @@
 
-QT += core
+include(../ACE.pri)
 
 DESTDIR = $$PWD/../../build/libs/
 TARGET = aceconsole
-CONFIG += c++11
-VERSION = 3.0.0
-
-INCLUDEPATH += $$PWD/../core/
-DEPENDPATH += $$PWD/../core/
 
 TEMPLATE = lib
 
 SOURCES += \
-    Application.cpp
+    ace_options.cpp \
+    ace_command.cpp \
+    ace_run.cpp \
+    eapplication.cpp \
+    ace_settingsrun.cpp
 
 HEADERS += \
-    Application.h
+    ace_options.h \
+    ace_command.h \
+    ace_run.h \
+    ace.h \
+    eapplication.h \
+    ace_settingsrun.h
 
-DEFINES += QT_DEPRECATED_WARNINGS
-
-QMAKE_CXX = mpic++
+isEmpty(PREFIX) { PREFIX = /usr/local }
+library.path = $${PREFIX}/lib
+library.extra = cp -fd $${PWD}/../../build/libs/lib$${TARGET}.so* $${PREFIX}/lib/
+includes.path = $${PREFIX}/include/ace/console
+includes.files = $${PWD}/*.h
+INSTALLS += library includes

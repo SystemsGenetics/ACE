@@ -1,0 +1,161 @@
+#include "eabstractanalytic.h"
+#include "eabstractanalytic_block.h"
+#include "ace_qmpi.h"
+//
+
+
+
+
+
+
+/*!
+ * This interface creates and returns a work block for this analytic with the given 
+ * index. The default implementation throws an exception because this should never 
+ * be called if it is not implemented by an analytic. 
+ *
+ * @param index Index used to make the block of work. 
+ *
+ * @return Pointer new work block with the given index. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Throw an exception. 
+ */
+std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeWork(int index) const
+{
+   Q_UNUSED(index)
+   E_MAKE_EXCEPTION(e);
+   e.setTitle(tr("Logic Error"));
+   e.setDetails(tr("Attempting to make an abstract analytic block with a simple analytic."));
+   throw e;
+}
+
+
+
+
+
+
+/*!
+ * This interface creates an empty and uninitialized work block. This is used by 
+ * MPI and chunk runs for reading in work blocks from byte arrays. The default 
+ * implementation throws an exception because this should never be called if it is 
+ * not implemented by an analytic. 
+ *
+ * @return Pointer uninitialized work block. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Throw an exception. 
+ */
+std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeWork() const
+{
+   E_MAKE_EXCEPTION(e);
+   e.setTitle(tr("Logic Error"));
+   e.setDetails(tr("Attempting to make an abstract analytic block with a simple analytic."));
+   throw e;
+}
+
+
+
+
+
+
+/*!
+ * This interface creates an empty and uninitialized result block. This is used by 
+ * MPI and chunk runs for reading in work blocks from byte arrays. The default 
+ * implementation throws an exception because this should never be called if it is 
+ * not implemented by an analytic. 
+ *
+ * @return Pointer uninitialized result block. 
+ *
+ *
+ * Steps of Operation: 
+ *
+ * 1. Throw an exception. 
+ */
+std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeResult() const
+{
+   E_MAKE_EXCEPTION(e);
+   e.setTitle(tr("Logic Error"));
+   e.setDetails(tr("Attempting to make an abstract analytic block with a simple analytic."));
+   throw e;
+}
+
+
+
+
+
+
+/*!
+ * This interface makes a new serial object and returns its pointer. If this 
+ * analytic type does not support serial then a null pointer is returned. The 
+ * default implementation returns a null pointer. 
+ *
+ * @return Pointer to new serial object or null if no serial support. 
+ */
+EAbstractAnalytic::Serial* EAbstractAnalytic::makeSerial()
+{
+   return nullptr;
+}
+
+
+
+
+
+
+/*!
+ * This interface makes a new OpenCL object and returns its pointer. If this 
+ * analytic type does not support OpenCL then a null pointer is returned. The 
+ * default implementation returns a null pointer. 
+ *
+ * @return Pointer to new OpenCL object or null if this analytic does not support 
+ *         OpenCL. 
+ */
+EAbstractAnalytic::OpenCL* EAbstractAnalytic::makeOpenCL()
+{
+   return nullptr;
+}
+
+
+
+
+
+
+/*!
+ * This interface initializes this analytic. This is called only once before any 
+ * other interface is called for this analytic. The default implementation does 
+ * nothing. 
+ */
+void EAbstractAnalytic::initialize()
+{}
+
+
+
+
+
+
+/*!
+ * This interface is called to finish this analytic. This is called at the very end 
+ * after every other interface call. The default implementation does nothing. 
+ */
+void EAbstractAnalytic::finish()
+{}
+
+
+
+
+
+
+/*!
+ * Tests if this is the master node in an MPI run. If this is not an MPI run then 
+ * this will also return true. 
+ *
+ * @return True if this is the master node of an MPI run or this is not running in 
+ *         MPI mode, otherwise false is returned. 
+ */
+bool EAbstractAnalytic::isMaster()
+{
+   return Ace::QMPI::instance().isMaster();
+}
