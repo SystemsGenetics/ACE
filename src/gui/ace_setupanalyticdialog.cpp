@@ -13,11 +13,11 @@
 #include <QComboBox>
 #include <QFileDialog>
 #include <QSpinBox>
-#include <../core/ace_analytic_abstractmanager.h>
-#include <../core/ace_settings.h>
-#include <../core/eabstractdatafactory.h>
-#include <../core/eabstractanalyticfactory.h>
-#include <../core/eexception.h>
+#include "../core/ace_analytic_abstractmanager.h"
+#include "../core/ace_settings.h"
+#include "../core/eabstractdatafactory.h"
+#include "../core/eabstractanalyticfactory.h"
+#include "../core/eexception.h"
 #include "ace_mainwindow.h"
 
 

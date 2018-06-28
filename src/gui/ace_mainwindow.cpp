@@ -5,11 +5,11 @@
 #include <QFileDialog>
 #include <QCloseEvent>
 #include <QSettings>
-#include <../core/eabstractdatafactory.h>
-#include <../core/eabstractanalyticfactory.h>
-#include <../core/ace_analytic_abstractmanager.h>
-#include <../core/ace_dataobject.h>
-#include <../core/ace_settings.h>
+#include "../core/eabstractdatafactory.h"
+#include "../core/eabstractanalyticfactory.h"
+#include "../core/ace_analytic_abstractmanager.h"
+#include "../core/ace_dataobject.h"
+#include "../core/ace_settings.h"
 #include "ace_datawindow.h"
 #include "ace_settingsdialog.h"
 #include "ace_setupanalyticdialog.h"

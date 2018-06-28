@@ -5,7 +5,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QBuffer>
-#include <../core/ace_metadatamodel.h>
+#include "../core/ace_metadatamodel.h"
 
 
 

@@ -251,6 +251,7 @@ Qt::ItemFlags MetadataModel::flags(const QModelIndex& index) const
       {
          ret |= Qt::ItemIsEditable;
       }
+      break;
    case 2:
       if ( node->isEditable() )
       {
@@ -443,11 +444,13 @@ bool MetadataModel::setData(const QModelIndex& index, const QVariant& value, int
       {
       case 0:
          ret = setKey(index,value.toString());
+         break;
       case 2:
          if ( (ret = pointer(index)->setValue(value)) )
          {
             dataChanged(index,index);
          }
+         break;
       }
    }
    return ret;

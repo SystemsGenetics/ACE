@@ -2,7 +2,7 @@
 #define ACE_METADATADIALOG_H
 #include <QDialog>
 #include <QModelIndex>
-#include <../core/ace.h>
+#include "../core/ace.h"
 
 
 

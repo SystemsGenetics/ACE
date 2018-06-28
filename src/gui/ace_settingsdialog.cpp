@@ -5,9 +5,9 @@
 #include <QSpinBox>
 #include <QLineEdit>
 #include <QPushButton>
-#include <../core/ace_settings.h>
-#include <../core/opencl_platform.h>
-#include <../core/opencl_device.h>
+#include "../core/ace_settings.h"
+#include "../core/opencl_platform.h"
+#include "../core/opencl_device.h"
 
 
 

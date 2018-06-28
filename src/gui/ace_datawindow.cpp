@@ -4,9 +4,9 @@
 #include <QMenuBar>
 #include <QSettings>
 #include <QCloseEvent>
-#include <../core/ace_dataobject.h>
-#include <../core/ace_settings.h>
-#include <../core/eabstractdata.h>
+#include "../core/ace_dataobject.h"
+#include "../core/ace_settings.h"
+#include "../core/eabstractdata.h"
 #include "ace_metadatadialog.h"
 
 
