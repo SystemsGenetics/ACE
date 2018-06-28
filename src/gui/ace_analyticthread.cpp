@@ -1,6 +1,6 @@
 #include "ace_analyticthread.h"
-#include <../core/ace_analytic_abstractmanager.h>
-#include <../core/eexception.h>
+#include "../core/ace_analytic_abstractmanager.h"
+#include "../core/eexception.h"
 
 
 

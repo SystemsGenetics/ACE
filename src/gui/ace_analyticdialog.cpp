@@ -4,7 +4,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QCloseEvent>
-#include <../core/ace_analytic_abstractmanager.h>
+#include "../core/ace_analytic_abstractmanager.h"
 #include "ace_analyticthread.h"
 
 

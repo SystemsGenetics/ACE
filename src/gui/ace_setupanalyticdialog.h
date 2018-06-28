@@ -1,7 +1,7 @@
 #ifndef ACE_SETUPANALYTICDIALOG_H
 #define ACE_SETUPANALYTICDIALOG_H
 #include <QDialog>
-#include <../core/ace_analytic.h>
+#include "../core/ace_analytic.h"
 
 
 

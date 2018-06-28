@@ -169,7 +169,8 @@ void MPIMaster::processCode(int code, int fromRank)
    switch (code)
    {
    case ReadyAsOpenCL:
-      amount += settings.threadSize();
+      amount += settings.threadSize() + 1;
+      break;
    case ReadyAsSerial:
       ++amount;
       break;
