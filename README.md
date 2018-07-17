@@ -11,8 +11,6 @@ To build ACE:
 cd build
 qmake ../src/ACE.pro
 make qmake_all
-make
-make qmake_all
 ```
 
 To install ACE globally (requires root):
@@ -24,8 +22,6 @@ To build & install ACE locally:
 ```
 cd build
 qmake ../src/ACE.pro PREFIX=$HOME/software
-make qmake_all
-make
 make qmake_all
 make install
 
