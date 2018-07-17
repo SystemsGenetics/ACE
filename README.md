@@ -39,3 +39,12 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/software/lib
 ## Usage
 
 For a example use of ACE, run the `aceex` or `qaceex` application after building.
+
+## Troubleshooting
+### cannot find -lmpi_cxx
+If you receive the error ```/usr/bin/ld: cannot find -lmpi_cxx``` try adding the MPICXX=no flag to the qmake command:
+```
+cd build
+qmake ../src/ACE.pro -spec linux-g++ PREFIX=$HOME/ACE-3.0.1 MPICXX=no
+```
+
