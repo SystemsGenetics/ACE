@@ -219,6 +219,9 @@ void QMPI::timerEvent(QTimerEvent* event)
    for (int i = 0; i < _size ;++i)
    {
       probe(MPI_COMM_WORLD,i);
+   }
+   for (int i = 0; i < _localSize ;++i)
+   {
       probe(_local,i);
    }
 }
