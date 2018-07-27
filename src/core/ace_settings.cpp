@@ -314,7 +314,7 @@ OpenCL::Device* Settings::openCLDevicePointer() const
    if ( _openCLPlatform < 0
         || _openCLDevice < 0
         || _openCLPlatform >= OpenCL::Platform::size()
-        || _openCLDevice >= OpenCL::Platform::get(_openCLPlatform)->size() )
+        || _openCLDevice >= OpenCL::Platform::get(_openCLPlatform)->deviceSize() )
    {
       return nullptr;
    }
