@@ -370,21 +370,18 @@ void QMPI::probe(MPI_Comm comm, int rank)
  *
  * Steps of Operation: 
  *
- * 1. Send the given data to the node with the given rank using the given MPI comm, 
- *    using the MPI function that does not block to do so. If sending fails then 
- *    throw an exception. 
+ * 1. Send the given data to the node with the given rank using the given MPI comm.
+ *    If sending fails then throw an exception.
  */
 void QMPI::sendData(MPI_Comm comm, int toRank, const QByteArray& data)
 {
-   MPI_Request request;
-   if ( MPI_Isend(data.data(),data.size(),MPI_CHAR,toRank,0,comm,&request) )
+   if ( MPI_Send(data.data(),data.size(),MPI_CHAR,toRank,0,comm) )
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(tr("MPI Failed"));
       e.setDetails(tr("MPI_Send failed."));
       throw e;
    }
-   MPI_Request_free(&request);
 }
 
 

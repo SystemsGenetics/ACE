@@ -346,7 +346,7 @@ void Kernel::setSizes(cl_uint dimension, qint64 globalSize, qint64 localSize)
                    .arg(_size));
       throw e;
    }
-   if ( globalSize < 1 || localSize < 1 || globalSize&localSize )
+   if ( globalSize < 1 || localSize < 1 || globalSize%localSize )
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(tr("Invalid Argument"));

@@ -109,6 +109,13 @@ void MPISlave::mpiStart(Type type, int platform, int device)
          setupSerial();
       }
       break;
+   default:
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setTitle(tr("Invalid MPI Starting type."));
+         e.setDetails(tr("The given type for starting this MPI slave is invalid."));
+         throw e;
+      }
    }
    connect(_runner,&AbstractRun::finished,this,&AbstractManager::finish);
    unique_ptr<EAbstractAnalytic::Block> block {new EAbstractAnalytic::Block(code)};
