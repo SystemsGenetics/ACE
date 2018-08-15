@@ -22,7 +22,6 @@ class EDataStream : public QObject
 {
    Q_OBJECT
 public:
-   explicit EDataStream(Ace::DataObject* parent);
    const EDataStream& operator>>(qint8& value) const;
    const EDataStream& operator>>(qint16& value) const;
    const EDataStream& operator>>(qint32& value) const;
@@ -47,6 +46,8 @@ public:
    EDataStream& operator<<(double value);
    EDataStream& operator<<(const QString& value);
    EDataStream& operator<<(const QByteArray& value);
+public:
+   explicit EDataStream(Ace::DataObject* parent);
 private:
    /*!
     * Defines special byte markers used to identify strings and byte arrays in this 

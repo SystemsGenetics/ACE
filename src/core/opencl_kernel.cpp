@@ -20,14 +20,10 @@ using namespace OpenCL;
 
 /*!
  * Clears all resources this kernel contains. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Release the OpenCL kernel and clear all arrays. 
  */
 Kernel::~Kernel()
 {
+   // Release the OpenCL kernel and clear all arrays. 
    clReleaseKernel(_id);
    clear();
 }
@@ -45,17 +41,13 @@ Kernel::~Kernel()
  * @param queue  
  *
  * @return The event for the kernel command running on the given command queue. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Add a ND range kernel execution command to the given command queue with this 
- *    objects dimensions of offsets, global sizes, and local sizes, returning the 
- *    event for the added command. If adding the command fails then throw an 
- *    exception. 
  */
 Event Kernel::execute(CommandQueue* queue)
 {
+   // Add a ND range kernel execution command to the given command queue with this 
+   // objects dimensions of offsets, global sizes, and local sizes, returning the 
+   // event for the added command. If adding the command fails then throw an 
+   // exception. 
    cl_event id;
    cl_int code
    {
@@ -85,19 +77,12 @@ Event Kernel::execute(CommandQueue* queue)
  * @param name The name of the kernel that is created. 
  *
  * @param parent Optional parent for this new kernel object. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Create a new OpenCL kernel from the given program with the given name, 
- *    storing its id to this object. If creating the kernel fails then throw an 
- *    exception. 
- *
- * 2. Allocate all dimension arrays. 
  */
 Kernel::Kernel(Program* program, const QString& name, QObject* parent):
    QObject(parent)
 {
+   // Create a new OpenCL kernel from the given program with the given name, storing 
+   // its id to this object. If creating the kernel fails then throw an exception. 
    cl_int code;
    _id = clCreateKernel(program->id(),name.toLocal8Bit().data(),&code);
    if ( code != CL_SUCCESS )
@@ -106,6 +91,8 @@ Kernel::Kernel(Program* program, const QString& name, QObject* parent):
       fillException(&e,code);
       throw e;
    }
+
+   // Allocate all dimension arrays. 
    allocate();
 }
 
@@ -119,15 +106,11 @@ Kernel::Kernel(Program* program, const QString& name, QObject* parent):
  * and returning a locker object that unlocks this kernel on its destruction. 
  *
  * @return Locker object that unlocks this kernel upon its destruction. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Lock this kernel's mutex, set this object as locked, and return a locker 
- *    object pointing to this kernel. 
  */
 Kernel::Locker Kernel::lock()
 {
+   // Lock this kernel's mutex, set this object as locked, and return a locker object 
+   // pointing to this kernel. 
    _lock.lock();
    _isLocked = true;
    return Locker(this);
@@ -141,14 +124,10 @@ Kernel::Locker Kernel::lock()
 /*!
  * Unlocks this kernel object after which parameters cannot be set and allows other 
  * threads to lock it. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Unlock this kernel's mutex and set this object as unlocked. 
  */
 void Kernel::unlock()
 {
+   // Unlock this kernel's mutex and set this object as unlocked. 
    _lock.unlock();
    _isLocked = false;
 }
@@ -165,18 +144,10 @@ void Kernel::unlock()
  * @param device  
  *
  * @return Maximum work group size this kernel can possess for the given device. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If this kernel is not locked then throw an exception, else go to the next 
- *    step. 
- *
- * 2. Get the maximum work group size for this kernel if ran on the given device 
- *    and return it. If getting that information fails then throw an exception. 
  */
 int Kernel::maxWorkGroupSize(Device* device) const
 {
+   // If this kernel is not locked then throw an exception, else go to the next step. 
    if ( !_isLocked )
    {
       E_MAKE_EXCEPTION(e);
@@ -184,6 +155,9 @@ int Kernel::maxWorkGroupSize(Device* device) const
       e.setDetails(tr("Cannot set OpenCL kernel parameters without locking the object first."));
       throw e;
    }
+
+   // Get the maximum work group size for this kernel if ran on the given device and 
+   // return it. If getting that information fails then throw an exception. 
    size_t size;
    cl_int code
    {
@@ -215,18 +189,10 @@ int Kernel::maxWorkGroupSize(Device* device) const
  * @param device  
  *
  * @return Work group multiple for the given device. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If this kernel is not locked then throw an exception, else go to the next 
- *    step. 
- *
- * 2. Get the work group multiple for the given device and return it. If getting 
- *    that information fails then throw an exception. 
  */
 int Kernel::workGroupMultiple(Device* device) const
 {
+   // If this kernel is not locked then throw an exception, else go to the next step. 
    if ( !_isLocked )
    {
       E_MAKE_EXCEPTION(e);
@@ -234,6 +200,9 @@ int Kernel::workGroupMultiple(Device* device) const
       e.setDetails(tr("Cannot set OpenCL kernel parameters without locking the object first."));
       throw e;
    }
+
+   // Get the work group multiple for the given device and return it. If getting that 
+   // information fails then throw an exception. 
    size_t size;
    cl_int code
    {
@@ -264,19 +233,11 @@ int Kernel::workGroupMultiple(Device* device) const
  * is thrown. 
  *
  * @param size The number of dimensions for this kernel. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If this kernel is not locked or the given size is less than one then throw an 
- *    exception, else go to the next step. 
- *
- * 2. if the new given size is different form this object's current dimension size 
- *    then change it to the new size, clear the previous arrays, and allocate new 
- *    arrays. 
  */
 void Kernel::setDimensions(cl_uint size)
 {
+   // If this kernel is not locked or the given size is less than one then throw an 
+   // exception, else go to the next step. 
    if ( !_isLocked )
    {
       E_MAKE_EXCEPTION(e);
@@ -292,6 +253,10 @@ void Kernel::setDimensions(cl_uint size)
                    .arg(size));
       throw e;
    }
+
+   // if the new given size is different form this object's current dimension size 
+   // then change it to the new size, clear the previous arrays, and allocate new 
+   // arrays. 
    if ( size != _size )
    {
       _size = size;
@@ -318,18 +283,12 @@ void Kernel::setDimensions(cl_uint size)
  *
  * @param localSize The new local or work group size that is set. This must be 
  *                  divisible of the global size. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If this kernel is not locked, the given dimension is out of rage, the global 
- *    or local sizes are less then one, or the global size is not a multiple of the 
- *    local size then throw an exception, else go to the next step. 
- *
- * 2. Set the global and local sizes of the given dimension to the given values. 
  */
 void Kernel::setSizes(cl_uint dimension, qint64 globalSize, qint64 localSize)
 {
+   // If this kernel is not locked, the given dimension is out of rage, the global or 
+   // local sizes are less then one, or the global size is not a multiple of the 
+   // local size then throw an exception, else go to the next step. 
    if ( !_isLocked )
    {
       E_MAKE_EXCEPTION(e);
@@ -355,6 +314,8 @@ void Kernel::setSizes(cl_uint dimension, qint64 globalSize, qint64 localSize)
                    .arg(localSize));
       throw e;
    }
+
+   // Set the global and local sizes of the given dimension to the given values. 
    _globalSizes[dimension] = globalSize;
    _localSizes[dimension] = localSize;
 }
@@ -369,21 +330,17 @@ void Kernel::setSizes(cl_uint dimension, qint64 globalSize, qint64 localSize)
  * object used for adding a kernel parallel execution command. The dimension size 
  * is used for the new sizes. Any memory pointed to previously is overwritten and 
  * not deleted. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Allocate new arrays for offsets, global sizes, and local sizes, setting this 
- *    object's pointers to the new arrays. 
- *
- * 2. Iterate through all new arrays and set their offsets to 0, global size to 1, 
- *    and local size to 1. 
  */
 void Kernel::allocate()
 {
+   // Allocate new arrays for offsets, global sizes, and local sizes, setting this 
+   // object's pointers to the new arrays. 
    _offsets = new size_t[_size];
    _globalSizes = new size_t[_size];
    _localSizes = new size_t[_size];
+
+   // Iterate through all new arrays and set their offsets to 0, global size to 1, 
+   // and local size to 1. 
    for (cl_uint i = 0; i < _size ;++i)
    {
       _offsets[i] = 0;
@@ -400,14 +357,10 @@ void Kernel::allocate()
 /*!
  * Deletes arrays pointed to by this object's offsets, global sizes, and local 
  * sizes array pointers. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Delete all arrays this object points to. 
  */
 void Kernel::clear()
 {
+   // Delete all arrays this object points to. 
    delete[] _offsets;
    delete[] _globalSizes;
    delete[] _localSizes;

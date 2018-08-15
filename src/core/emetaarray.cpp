@@ -1,5 +1,8 @@
 #include "emetaarray.h"
 #include "emetadata.h"
+
+
+
 //
 
 
@@ -14,17 +17,70 @@
  * @param object Array that this object will be assigned to. 
  *
  * @return Reference to this object. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Assign this object to the given array. 
- *
- * 2. Return reference to this object. 
  */
 EMetaArray& EMetaArray::operator=(const EMetaArray& object)
 {
+   // Assign this object to the given array. 
    QList<EMetadata>::operator=(object);
+
+   // Return reference to this object. 
+   return *this;
+}
+
+
+
+
+
+
+/*!
+ * Returns reference to metadata object with the given index. If the index is out 
+ * of range of the array then Qt will force exit the program. 
+ *
+ * @param index Index of requested metadata object within the array. 
+ *
+ * @return Reference to metadata object. 
+ */
+EMetadata& EMetaArray::operator[](int index)
+{
+   return QList<EMetadata>::operator[](index);
+}
+
+
+
+
+
+
+/*!
+ * Returns constant reference to metadata object with the given index. If the index 
+ * is out of range of the array then Qt will force exit the program. 
+ *
+ * @param index Index of requested metadata object within the array. 
+ *
+ * @return Constant reference to metadata object. 
+ */
+const EMetadata& EMetaArray::operator[](int index) const
+{
+   return QList<EMetadata>::operator[](index);
+}
+
+
+
+
+
+
+/*!
+ * Appends a new metadata value to the end of the array. 
+ *
+ * @param value The new metadata value to be appended to the end of the array. 
+ *
+ * @return Reference to this object. 
+ */
+EMetaArray& EMetaArray::operator<<(const EMetadata& value)
+{
+   // Append new metadata value to array. 
+   QList<EMetadata>::operator<<(value);
+
+   // Return reference to this object. 
    return *this;
 }
 
@@ -212,65 +268,4 @@ void EMetaArray::append(const EMetadata& value)
 void EMetaArray::clear()
 {
    QList<EMetadata>::clear();
-}
-
-
-
-
-
-
-/*!
- * Returns reference to metadata object with the given index. If the index is out 
- * of range of the array then Qt will force exit the program. 
- *
- * @param index Index of requested metadata object within the array. 
- *
- * @return Reference to metadata object. 
- */
-EMetadata& EMetaArray::operator[](int index)
-{
-   return QList<EMetadata>::operator[](index);
-}
-
-
-
-
-
-
-/*!
- * Returns constant reference to metadata object with the given index. If the index 
- * is out of range of the array then Qt will force exit the program. 
- *
- * @param index Index of requested metadata object within the array. 
- *
- * @return Constant reference to metadata object. 
- */
-const EMetadata& EMetaArray::operator[](int index) const
-{
-   return QList<EMetadata>::operator[](index);
-}
-
-
-
-
-
-
-/*!
- * Appends a new metadata value to the end of the array. 
- *
- * @param value The new metadata value to be appended to the end of the array. 
- *
- * @return Reference to this object. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Append new metadata value to array. 
- *
- * 2. Return reference to this object. 
- */
-EMetaArray& EMetaArray::operator<<(const EMetadata& value)
-{
-   QList<EMetadata>::operator<<(value);
-   return *this;
 }

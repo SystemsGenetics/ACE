@@ -43,14 +43,10 @@ Kernel::Locker::Locker(Locker&& other):
 
 /*!
  * Unlocks the kernel object this locker object contains. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If this object contains a kernel object then call its unlock method. 
  */
 Kernel::Locker::~Locker()
 {
+   // If this object contains a kernel object then call its unlock method. 
    if ( _kernel )
    {
       _kernel->unlock();

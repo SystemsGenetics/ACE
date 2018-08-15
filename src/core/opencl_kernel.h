@@ -93,18 +93,10 @@ namespace OpenCL
     * @param index The kernel argument index whose value is set. 
     *
     * @param value The value that the given kernel argument is set to. 
-    *
-    *
-    * Steps of Operation: 
-    *
-    * 1. If this kernel is not locked then throw an exception, else go to the next 
-    *    step. 
-    *
-    * 2. Set the kernel argument with the given index to the given value. If setting 
-    *    the argument fails then throw an exception. 
     */
    template<class T> void Kernel::setArgument(cl_uint index, T value)
    {
+      // If this kernel is not locked then throw an exception, else go to the next step. 
       if ( !_isLocked )
       {
          E_MAKE_EXCEPTION(e);
@@ -112,6 +104,9 @@ namespace OpenCL
          e.setDetails(tr("Cannot set OpenCL kernel parameters without locking the object first."));
          throw e;
       }
+   
+      // Set the kernel argument with the given index to the given value. If setting the 
+      // argument fails then throw an exception. 
       cl_int code {clSetKernelArg(_id,index,sizeof(T),&value)};
       if ( code != CL_SUCCESS )
       {
@@ -136,18 +131,10 @@ namespace OpenCL
     * @param index The kernel argument index whose value is set. 
     *
     * @param buffer The buffer object that the given kernel argument is set to. 
-    *
-    *
-    * Steps of Operation: 
-    *
-    * 1. If this kernel is not locked then throw an exception, else go to the next 
-    *    step. 
-    *
-    * 2. Set the kernel argument with the given index to the given OpenCL buffer. If 
-    *    setting the argument fails then throw an exception. 
     */
    template<class T> void Kernel::setBuffer(cl_uint index, Buffer<T>* buffer)
    {
+      // If this kernel is not locked then throw an exception, else go to the next step. 
       if ( !_isLocked )
       {
          E_MAKE_EXCEPTION(e);
@@ -155,6 +142,9 @@ namespace OpenCL
          e.setDetails(tr("Cannot set OpenCL kernel parameters without locking the object first."));
          throw e;
       }
+   
+      // Set the kernel argument with the given index to the given OpenCL buffer. If 
+      // setting the argument fails then throw an exception. 
       cl_mem id {buffer->id()};
       cl_int code {clSetKernelArg(_id,index,sizeof(cl_mem),&id)};
       if ( code != CL_SUCCESS )
@@ -182,18 +172,11 @@ namespace OpenCL
     *
     * @param size The number of elements of template type which is allocated in local 
     *             memory. 
-    *
-    *
-    * Steps of Operation: 
-    *
-    * 1. If this kernel is not locked or the given size is less than one then throw an 
-    *    exception, else go to the next step. 
-    *
-    * 2. Set the kernel argument with the given index to allocate the given amount of 
-    *    local memory. If setting the argument fails then throw an exception. 
     */
    template<class T> void Kernel::setLocalMemory(cl_uint index, qint64 size)
    {
+      // If this kernel is not locked or the given size is less than one then throw an 
+      // exception, else go to the next step. 
       if ( !_isLocked )
       {
          E_MAKE_EXCEPTION(e);
@@ -208,6 +191,9 @@ namespace OpenCL
          e.setDetails(tr("Cannot set local memory argument of OpenCL kernel with a size of less than 1."));
          throw e;
       }
+   
+      // Set the kernel argument with the given index to allocate the given amount of 
+      // local memory. If setting the argument fails then throw an exception. 
       cl_int code {clSetKernelArg(_id,index,sizeof(T)*size,nullptr)};
       if ( code != CL_SUCCESS )
       {

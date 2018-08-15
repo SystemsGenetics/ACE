@@ -23,17 +23,11 @@ EAbstractDataFactory* EAbstractDataFactory::_instance {nullptr};
  * factory. If no instance has ever been set than an exception is thrown. 
  *
  * @return Reference to the global instance of this object's implementation. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the global instance pointer is null then throw an exception, else go the 
- *    next step. 
- *
- * 2. Return reference to the global instance. 
  */
 EAbstractDataFactory& EAbstractDataFactory::instance()
 {
+   // If the global instance pointer is null then throw an exception, else go the 
+   // next step. 
    if ( !_instance )
    {
       E_MAKE_EXCEPTION(e);
@@ -41,6 +35,8 @@ EAbstractDataFactory& EAbstractDataFactory::instance()
       e.setDetails(QObject::tr("Attempting to get abstract analytic factory when none has been set."));
       throw e;
    }
+
+   // Return reference to the global instance. 
    return *_instance;
 }
 
@@ -54,15 +50,11 @@ EAbstractDataFactory& EAbstractDataFactory::instance()
  * already exists then it is deleted and replaced with the new one given. 
  *
  * @param instance Pointer to the new global instance for this factory. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Delete any existing global instance and set the global pointer to the new 
- *    given instance. 
  */
 void EAbstractDataFactory::setInstance(std::unique_ptr<EAbstractDataFactory>&& instance)
 {
+   // Delete any existing global instance and set the global pointer to the new given 
+   // instance. 
    delete _instance;
    _instance = instance.release();
 }

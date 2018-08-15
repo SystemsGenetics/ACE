@@ -17,6 +17,32 @@ using namespace Ace::Analytic;
 
 
 /*!
+ * Implements the interface that is called to add a work block to be processed by 
+ * this abstract run. This implementation simply processes the block and saves the 
+ * result immediately because it is serial. 
+ *
+ * @param block The work block that is processed. 
+ */
+void SerialRun::addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block)
+{
+   // Process the given work block by calling this object's abstract serial execute 
+   // interface, saving the returned result block. If this object's abstract input is 
+   // finished then emit the finished signal. 
+   unique_ptr<EAbstractAnalytic::Block> result {_serial->execute(block.get())};
+   block.reset();
+   _base->saveResult(std::move(result));
+   if ( _base->isFinished() )
+   {
+      emit finished();
+   }
+}
+
+
+
+
+
+
+/*!
  * Constructs a new serial run object with the given abstract serial object, 
  * abstract input object, and optional parent. 
  *
@@ -32,33 +58,3 @@ SerialRun::SerialRun(EAbstractAnalytic::Serial* serial, AbstractInput* base, QOb
    _serial(serial),
    _base(base)
 {}
-
-
-
-
-
-
-/*!
- * Implements the interface that is called to add a work block to be processed by 
- * this abstract run. This implementation simply processes the block and saves the 
- * result immediately because it is serial. 
- *
- * @param block The work block that is processed. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Process the given work block by calling this object's abstract serial execute 
- *    interface, saving the returned result block. If this object's abstract input 
- *    is finished then emit the finished signal. 
- */
-void SerialRun::addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block)
-{
-   unique_ptr<EAbstractAnalytic::Block> result {_serial->execute(block.get())};
-   block.reset();
-   _base->saveResult(std::move(result));
-   if ( _base->isFinished() )
-   {
-      emit finished();
-   }
-}

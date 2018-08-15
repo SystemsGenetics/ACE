@@ -16,6 +16,22 @@ using namespace Ace::Analytic;
 
 
 /*!
+ * Implements the interface that tests if this abstract input is finished and 
+ * received all result blocks for its analytic. 
+ *
+ * @return True if this abstract input is finished or false otherwise. 
+ */
+bool Merge::isFinished() const
+{
+   return _nextResult >= analytic()->size();
+}
+
+
+
+
+
+
+/*!
  * Constructs a new merge manager with the given analytic type and the given chunk 
  * size. 
  *
@@ -28,22 +44,6 @@ Merge::Merge(quint16 type, int size):
    AbstractManager(type),
    _size(size)
 {}
-
-
-
-
-
-
-/*!
- * Implements the interface that tests if this abstract input is finished and 
- * received all result blocks for its analytic. 
- *
- * @return True if this abstract input is finished or false otherwise. 
- */
-bool Merge::isFinished() const
-{
-   return _nextResult >= analytic()->size();
-}
 
 
 
@@ -73,16 +73,12 @@ int Merge::index() const
  *
  * @param result The result block that is processed by this manager's abstract 
  *               analytic. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Write the given result block to this manager's analytic and increment the 
- *    next result index. If this abstract input is finished with all results then 
- *    emit the done signal and call this manager's finish slot. 
  */
 void Merge::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 {
+   // Write the given result block to this manager's analytic and increment the next 
+   // result index. If this abstract input is finished with all results then emit the 
+   // done signal and call this manager's finish slot. 
    AbstractManager::writeResult(std::move(result),_nextResult++);
    if ( isFinished() )
    {
@@ -99,15 +95,11 @@ void Merge::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 /*!
  * Implements the interface that is called once to begin the analytic run for this 
  * manager after all argument input has been set. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Calculate the chunk size for this merge and schedule this object's process 
- *    slot to be called. 
  */
 void Merge::start()
 {
+   // Calculate the chunk size for this merge and schedule this object's process slot 
+   // to be called. 
    _chunkSize  = analytic()->size()/_size + (analytic()->size()%_size ? 1 : 0);
    QTimer::singleShot(0,this,&Merge::process);
 }
@@ -120,14 +112,10 @@ void Merge::start()
 /*!
  * Called to process all temporary chunk files, merging them all together by 
  * sorting all result blocks and processing them with this manager's analytic. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Iterate through all temporary chunk files, reading in each one. 
  */
 void Merge::process()
 {
+   // Iterate through all temporary chunk files, reading in each one. 
    for (int i = 0; i < _size ;++i)
    {
       readChunk(i);
@@ -147,27 +135,19 @@ void Merge::process()
  *
  * @param index The chunk index whose temporary binary file of result blocks is 
  *              read in. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Determine the range of indexes this chunk file should contain. 
- *
- * 2. Determine the file path for the chunk file with the given index and open it 
- *    as read only. If opening fails then throw an exception, else go to the next 
- *    step. 
- *
- * 3. Create a qt data stream with the open file and read in the total number of 
- *    expected result blocks. 
  */
 void Merge::readChunk(int index)
 {
+   // Determine the range of indexes this chunk file should contain. 
    int nextWork {index*_chunkSize};
    int end {(index + 1)*_chunkSize};
    if ( end > analytic()->size() )
    {
       end = analytic()->size();
    }
+
+   // Determine the file path for the chunk file with the given index and open it as 
+   // read only. If opening fails then throw an exception, else go to the next step. 
    Settings& settings {Settings::instance()};
    QString path
    {
@@ -187,6 +167,9 @@ void Merge::readChunk(int index)
                    .arg(file.errorString()));
       throw e;
    }
+
+   // Create a qt data stream with the open file and read in the total number of 
+   // expected result blocks. 
    QDataStream stream(&file);
    while ( nextWork++ < end )
    {
@@ -204,21 +187,11 @@ void Merge::readChunk(int index)
  * abstract input's hopper for sorting and processing. 
  *
  * @param stream  
- *
- *
- * Steps of Operation: 
- *
- * 1. Read in the next result block in byte array format from the data stream. If 
- *    any read error occurs then throw an exception, else go to the next step. 
- *
- * 2. Create a blank result block from this manager's analytic. If creation of the 
- *    result block fails then throw an exception, else go to the next step. 
- *
- * 3. Load the blank result block with the byte array data and save it to this 
- *    abstract input for sorting and processing. 
  */
 void Merge::readBlock(QDataStream& stream)
 {
+   // Read in the next result block in byte array format from the data stream. If any 
+   // read error occurs then throw an exception, else go to the next step. 
    int size;
    stream >> size;
    QByteArray data {stream.device()->read(size)};
@@ -229,6 +202,9 @@ void Merge::readBlock(QDataStream& stream)
       e.setDetails(tr("Failed reading temporary chunk file."));
       throw e;
    }
+
+   // Create a blank result block from this manager's analytic. If creation of the 
+   // result block fails then throw an exception, else go to the next step. 
    unique_ptr<EAbstractAnalytic::Block> result {analytic()->makeResult()};
    if ( !result )
    {
@@ -237,6 +213,9 @@ void Merge::readBlock(QDataStream& stream)
       e.setDetails(tr("Analytic returned null result block pointer."));
       throw e;
    }
+
+   // Load the blank result block with the byte array data and save it to this 
+   // abstract input for sorting and processing. 
    result->fromBytes(data);
    saveResult(std::move(result));
 }

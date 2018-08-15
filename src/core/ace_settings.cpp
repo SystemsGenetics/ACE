@@ -207,18 +207,11 @@ int Settings::appRevision()
  * @param minorVersion Minor version of the application using ACE. 
  *
  * @param revision Revision of the application using ACE. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the given application name is equal to ace then throw an exception, else 
- *    go to the next step. 
- *
- * 2. Set the organization name, name, and version numbers from the given 
- *    application info. 
  */
 void Settings::initialize(QString organization, QString application, int majorVersion, int minorVersion, int revision)
 {
+   // If the given application name is equal to ace then throw an exception, else go 
+   // to the next step. 
    if ( application == QString("ace") )
    {
       E_MAKE_EXCEPTION(e);
@@ -226,6 +219,9 @@ void Settings::initialize(QString organization, QString application, int majorVe
       e.setDetails(QObject::tr("Cannot set application name to 'ace'."));
       throw e;
    }
+
+   // Set the organization name, name, and version numbers from the given application 
+   // info. 
    _organization = organization;
    _application = application;
    _appMajorVersion = majorVersion;
@@ -243,21 +239,17 @@ void Settings::initialize(QString organization, QString application, int majorVe
  * instance has not yet been created then it is before returning. 
  *
  * @return Reference to the singleton instance of this class. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the global pointer to the singleton instance of this class is null then 
- *    create a new instance and set it to the global pointer. 
- *
- * 2. Return a reference to the singleton instance at the global pointer. 
  */
 Settings& Settings::instance()
 {
+   // If the global pointer to the singleton instance of this class is null then 
+   // create a new instance and set it to the global pointer. 
    if ( !_instance )
    {
       _instance = new Settings;
    }
+
+   // Return a reference to the singleton instance at the global pointer. 
    return *_instance;
 }
 
@@ -301,16 +293,12 @@ int Settings::openCLDevice() const
  * none. 
  *
  * @return Pointer to preferred OpenCL device or null if none is preferred. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the platform index is out of range or the device index is out of range 
- *    then return a null pointer, else return a pointer to the device with the 
- *    platform and device indexes. 
  */
 OpenCL::Device* Settings::openCLDevicePointer() const
 {
+   // If the platform index is out of range or the device index is out of range then 
+   // return a null pointer, else return a pointer to the device with the platform 
+   // and device indexes. 
    if ( _openCLPlatform < 0
         || _openCLDevice < 0
         || _openCLPlatform >= OpenCL::Platform::size()
@@ -406,15 +394,11 @@ QString Settings::chunkExtension() const
  * Sets the platform index for the preferred OpenCL device. 
  *
  * @param index Index of the platform of the preferred OpenCL device. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the new given platform index is different from the current platform index 
- *    then set it to the new one and set the value in persistent storage. 
  */
 void Settings::setOpenCLPlatform(int index)
 {
+   // If the new given platform index is different from the current platform index 
+   // then set it to the new one and set the value in persistent storage. 
    if ( index != _openCLPlatform )
    {
       _openCLPlatform = index;
@@ -431,15 +415,11 @@ void Settings::setOpenCLPlatform(int index)
  * Sets the index of the preferred OpenCL device. 
  *
  * @param index Index of the preferred OpenCL device. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the new given device index is different from the current device index then 
- *    set it to the new one and set the value in persistent storage. 
  */
 void Settings::setOpenCLDevice(int index)
 {
+   // If the new given device index is different from the current device index then 
+   // set it to the new one and set the value in persistent storage. 
    if ( index != _openCLDevice )
    {
       _openCLDevice = index;
@@ -457,18 +437,11 @@ void Settings::setOpenCLDevice(int index)
  * exception is thrown. 
  *
  * @param size Thread size for accelerated runs. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the new given thread size is less than one then throw an exception, else 
- *    go to the next step. 
- *
- * 2. If the new given thread size is different from the current thread size then 
- *    set it to the new one and set the value in persistent storage. 
  */
 void Settings::setThreadSize(int size)
 {
+   // If the new given thread size is less than one then throw an exception, else go 
+   // to the next step. 
    if ( size < 1 )
    {
       E_MAKE_EXCEPTION(e);
@@ -476,6 +449,9 @@ void Settings::setThreadSize(int size)
       e.setDetails(QObject::tr("Cannot set thread size to %1 (1 is smallest allowed).").arg(size));
       throw e;
    }
+
+   // If the new given thread size is different from the current thread size then set 
+   // it to the new one and set the value in persistent storage. 
    if ( size != _threadSize )
    {
       _threadSize = size;
@@ -493,18 +469,11 @@ void Settings::setThreadSize(int size)
  * input to each slave node. 
  *
  * @param size new MPI buffer size. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the new given buffer size is less than one then throw an exception, else 
- *    go to the next step. 
- *
- * 2. If the new given buffer size is different from the current buffer size then 
- *    set it to the new one and set the value in persistent storage. 
  */
 void Settings::setBufferSize(int size)
 {
+   // If the new given buffer size is less than one then throw an exception, else go 
+   // to the next step. 
    if ( size < 1 )
    {
       E_MAKE_EXCEPTION(e);
@@ -512,6 +481,9 @@ void Settings::setBufferSize(int size)
       e.setDetails(QObject::tr("Cannot set buffer size to %1 (1 is smallest allowed).").arg(size));
       throw e;
    }
+
+   // If the new given buffer size is different from the current buffer size then set 
+   // it to the new one and set the value in persistent storage. 
    if ( size != _bufferSize )
    {
       _bufferSize = size;
@@ -528,16 +500,12 @@ void Settings::setBufferSize(int size)
  * Sets the working directory for chunk runs. 
  *
  * @param path Working directory path for chunk runs. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the new given working directory path is different from the current working 
- *    directory path then set it to the new one and set the value in persistent 
- *    storage. 
  */
 void Settings::setChunkDir(const QString& path)
 {
+   // If the new given working directory path is different from the current working 
+   // directory path then set it to the new one and set the value in persistent 
+   // storage. 
    if ( path != _chunkDir )
    {
       _chunkDir = path;
@@ -554,15 +522,11 @@ void Settings::setChunkDir(const QString& path)
  * Sets the chunk file name prefix. 
  *
  * @param prefix New chunk file name prefix. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the new given chunk file prefix is different from the current chunk file 
- *    prefix then set it to the new one and set the value in persistent storage. 
  */
 void Settings::setChunkPrefix(const QString& prefix)
 {
+   // If the new given chunk file prefix is different from the current chunk file 
+   // prefix then set it to the new one and set the value in persistent storage. 
    if ( prefix != _chunkPrefix )
    {
       _chunkPrefix = prefix;
@@ -579,16 +543,11 @@ void Settings::setChunkPrefix(const QString& prefix)
  * Sets the chunk file extension. 
  *
  * @param extension New chunk file extension. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the new given chunk file extension is different from the current chunk 
- *    file extension then set it to the new one and set the value in persistent 
- *    storage. 
  */
 void Settings::setChunkExtension(const QString& extension)
 {
+   // If the new given chunk file extension is different from the current chunk file 
+   // extension then set it to the new one and set the value in persistent storage. 
    if ( extension != _chunkExtension )
    {
       _chunkExtension = extension;
@@ -603,15 +562,11 @@ void Settings::setChunkExtension(const QString& extension)
 
 /*!
  * Constructs a new settings object. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Initialize all settings this class stores, setting them to their default 
- *    values if their values do not exist in qt settings with their given key. 
  */
 Settings::Settings()
 {
+   // Initialize all settings this class stores, setting them to their default values 
+   // if their values do not exist in qt settings with their given key. 
    QSettings settings(_organization,_application);
    _openCLPlatform = settings.value(_openCLPlatformKey,_openCLPlatformDefault).toInt();
    _openCLDevice = settings.value(_openCLDeviceKey,_openCLDeviceDefault).toInt();
@@ -633,14 +588,10 @@ Settings::Settings()
  * @param key The key used to save the given value. 
  *
  * @param value The given value that is saved. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Initialize qt settings and save the given value to the given key. 
  */
 void Settings::setValue(const QString& key, const QVariant& value)
 {
+   // Initialize qt settings and save the given value to the given key. 
    QSettings settings(_organization,_application);
    settings.setValue(key,value);
 }

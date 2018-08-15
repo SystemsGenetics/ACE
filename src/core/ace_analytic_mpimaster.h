@@ -24,9 +24,10 @@ namespace Ace
       {
          Q_OBJECT
       public:
+         virtual bool isFinished() const override final;
+      public:
          explicit MPIMaster(quint16 type);
          virtual ~MPIMaster() override final;
-         virtual bool isFinished() const override final;
       protected:
          virtual int index() const override final;
          virtual void writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result) override final;

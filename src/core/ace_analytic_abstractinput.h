@@ -25,11 +25,6 @@ namespace Ace
       {
       public:
          /*!
-          * Constructs a new abstract input with an default empty hopper. 
-          */
-         AbstractInput() = default;
-         ~AbstractInput();
-         /*!
           * This interface tests if this abstract input is finished and received all result 
           * blocks for its analytic. 
           *
@@ -37,6 +32,12 @@ namespace Ace
           */
          virtual bool isFinished() const = 0;
          virtual void saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result);
+      public:
+         /*!
+          * Constructs a new abstract input with an default empty hopper. 
+          */
+         AbstractInput() = default;
+         ~AbstractInput();
       protected:
          virtual int index() const;
          virtual void writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result);

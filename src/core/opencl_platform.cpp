@@ -24,14 +24,10 @@ QList<OpenCL::Platform*>* Platform::_platforms {nullptr};
  * Returns the number of OpenCL platforms that exist. 
  *
  * @return Number of OpenCL platforms. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Populate platform list and return its size. 
  */
 int Platform::size()
 {
+   // Populate platform list and return its size. 
    populate();
    return _platforms->size();
 }
@@ -48,18 +44,11 @@ int Platform::size()
  * @param index Index of OpenCL platform whose reference is returned. 
  *
  * @return Pointer to OpenCL platform with given index. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Populate platform list and make sure given index is within range. If the 
- *    given index is out of range then throw an exception, else go to the next 
- *    step. 
- *
- * 2. Return pointer to platform with the given index. 
  */
 OpenCL::Platform* Platform::get(int index)
 {
+   // Populate platform list and make sure given index is within range. If the given 
+   // index is out of range then throw an exception, else go to the next step. 
    populate();
    if ( index < 0 || index >= _platforms->size() )
    {
@@ -70,6 +59,8 @@ OpenCL::Platform* Platform::get(int index)
                    .arg(_platforms->size()));
       throw e;
    }
+
+   // Return pointer to platform with the given index. 
    return _platforms->at(index);
 }
 
@@ -190,17 +181,11 @@ int Platform::deviceSize() const
  * @param index Index of OpenCL device of this platform whose pointer is returned. 
  *
  * @return Pointer to OpenCL device of this platform with the given index. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the given index is out of range then throw an exception, else go to the 
- *    next step. 
- *
- * 2. Return pointer to the OpenCL device of this platform with the given index. 
  */
 OpenCL::Device* Platform::device(int index) const
 {
+   // If the given index is out of range then throw an exception, else go to the next 
+   // step. 
    if ( index < 0 || index >= _devices.size() )
    {
       E_MAKE_EXCEPTION(e);
@@ -210,6 +195,8 @@ OpenCL::Device* Platform::device(int index) const
                    .arg(_devices.size()));
       throw e;
    }
+
+   // Return pointer to the OpenCL device of this platform with the given index. 
    return _devices.at(index);
 }
 
@@ -221,21 +208,16 @@ OpenCL::Device* Platform::device(int index) const
 /*!
  * Populates the global list of OpenCL platforms if it has not already been 
  * populated. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the global pointer to the platforms list is null then go to the next step, 
- *    else do nothing and exit. 
- *
- * 2. Query the list of OpenCL platform IDs and create a new OpenCL platform object 
- *    for each ID, adding its pointer to the global list of platforms. If any 
- *    OpenCL error occurs then set the list of platforms to empty and return. 
  */
 void Platform::populate()
 {
+   // If the global pointer to the platforms list is null then go to the next step, 
+   // else do nothing and exit. 
    if ( !_platforms )
    {
+      // Query the list of OpenCL platform IDs and create a new OpenCL platform object 
+      // for each ID, adding its pointer to the global list of platforms. If any OpenCL 
+      // error occurs then set the list of platforms to empty and return. 
       _platforms = new QList<Platform*>();
       cl_uint size;
       cl_int code {clGetPlatformIDs(0,nullptr,&size)};
@@ -289,16 +271,12 @@ Platform::Platform(cl_platform_id id, QObject* parent):
 
 /*!
  * Populates this platform's list of OpenCL devices. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Query the list of OpenCL device IDs for this OpenCL platform, creating a new 
- *    OpenCL device with each ID and appending their pointer to this platform's 
- *    list of devices. If any OpenCL error occurs then throw an exception. 
  */
 void Platform::populateDevices()
 {
+   // Query the list of OpenCL device IDs for this OpenCL platform, creating a new 
+   // OpenCL device with each ID and appending their pointer to this platform's list 
+   // of devices. If any OpenCL error occurs then throw an exception. 
    cl_uint size;
    cl_int code {clGetDeviceIDs(_id,CL_DEVICE_TYPE_ALL,0,nullptr,&size)};
    if ( code != CL_SUCCESS )
@@ -333,16 +311,12 @@ void Platform::populateDevices()
  * @param type The information type that is returned. 
  *
  * @return Information of this platform with the given info type. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Query the size of the information requested, then get the information as a C 
- *    style string, and then return it as a qt string. If any OpenCL error occurs 
- *    then throw and exception. 
  */
 QString Platform::getInfo(cl_platform_info type) const
 {
+   // Query the size of the information requested, then get the information as a C 
+   // style string, and then return it as a qt string. If any OpenCL error occurs 
+   // then throw and exception. 
    size_t size;
    cl_int code {clGetPlatformInfo(_id,type,0,nullptr,&size)};
    if ( code != CL_SUCCESS )

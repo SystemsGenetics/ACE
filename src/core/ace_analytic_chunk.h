@@ -24,9 +24,10 @@ namespace Ace
       {
          Q_OBJECT
       public:
+         virtual bool isFinished() const override final;
+      public:
          explicit Chunk(quint16 type, int index, int size);
          virtual ~Chunk() override final;
-         virtual bool isFinished() const override final;
       protected:
          virtual QFile* addOutputFile(const QString& path) override final;
          virtual Ace::DataObject* addOutputData(const QString& path, quint16 type, const EMetadata& system) override final;

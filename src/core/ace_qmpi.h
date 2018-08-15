@@ -53,6 +53,12 @@ namespace Ace
    protected:
       virtual void timerEvent(QTimerEvent* event) override final;
    private:
+      explicit QMPI();
+      ~QMPI();
+      void probe(MPI_Comm comm, int rank);
+      void sendData(MPI_Comm comm, int toRank, const QByteArray& data);
+      void setupWorld();
+      void setupLocal();
       /*!
        * The period, in milliseconds, between each time this class checks for new data 
        * received from the MPI system. 
@@ -67,12 +73,6 @@ namespace Ace
        * Pointer to the singleton instance of this class. 
        */
       static QMPI* _instance;
-      explicit QMPI();
-      ~QMPI();
-      void probe(MPI_Comm comm, int rank);
-      void sendData(MPI_Comm comm, int toRank, const QByteArray& data);
-      void setupWorld();
-      void setupLocal();
       /*!
        * The total number of nodes of the MPI run. 
        */

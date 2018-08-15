@@ -29,6 +29,7 @@ public:
    class Input;
    class Serial;
    class OpenCL;
+public:
    /*!
     * This interface returns the total number of blocks this analytic must process as 
     * steps or blocks of work. If this analytic produces no work blocks then this 

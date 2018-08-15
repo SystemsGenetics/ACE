@@ -60,9 +60,10 @@ namespace Ace
          void terminationRequested();
          void finish();
       protected:
-         explicit AbstractManager(quint16 type);
          virtual QFile* addOutputFile(const QString& path);
          virtual Ace::DataObject* addOutputData(const QString& path, quint16 type, const EMetadata& system);
+      protected:
+         explicit AbstractManager(quint16 type);
          std::unique_ptr<EAbstractAnalytic::Block> makeWork(int index);
          void writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result, int expectedIndex);
          EAbstractAnalytic* analytic();

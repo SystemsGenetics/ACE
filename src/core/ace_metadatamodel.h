@@ -22,18 +22,6 @@ namespace Ace
    {
       Q_OBJECT
    public:
-      /*!
-       * This contains custom data roles for this model. 
-       */
-      enum Roles
-      {
-         /*!
-          * This is for the data role of getting the byte array of a bytes metadata type. 
-          * The normal display role for a bytes type will just return an "IMAGE" string. 
-          */
-         RawImageData = 10000
-      };
-      explicit MetadataModel(QObject* parent = nullptr);
       virtual QStringList mimeTypes() const override final;
       virtual Qt::DropActions supportedDropActions() const override final;
       virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const override final;
@@ -46,6 +34,19 @@ namespace Ace
       virtual QVariant data(const QModelIndex& index, int role) const override final;
       virtual bool setData(const QModelIndex& index, const QVariant& value, int role) override final;
       virtual bool dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) override final;
+   public:
+      /*!
+       * This contains custom data roles for this model. 
+       */
+      enum Roles
+      {
+         /*!
+          * This is for the data role of getting the byte array of a bytes metadata type. 
+          * The normal display role for a bytes type will just return an "IMAGE" string. 
+          */
+         RawImageData = 10000
+      };
+      explicit MetadataModel(QObject* parent = nullptr);
       bool isImage(const QModelIndex& index) const;
       bool isContainer(const QModelIndex& index) const;
       bool readOnly() const;
@@ -56,6 +57,7 @@ namespace Ace
       void setReadOnly(bool state);
    private:
       class Node;
+   private:
       MetadataModel::Node* pointer(const QModelIndex& index) const;
       bool setKey(const QModelIndex& index, const QString& newKey);
       std::unique_ptr<MetadataModel::Node> take(Node* node);

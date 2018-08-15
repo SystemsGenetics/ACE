@@ -29,20 +29,11 @@ QMPI* QMPI::_instance {nullptr};
  * returns a reference to the instance. 
  *
  * @return Reference to the singleton instance of this class. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If shutdown has already been called on another instance of this class throw 
- *    an exception about this fact. 
- *
- * 2. If the instance pointer is null then create new instance of the class and set 
- *    pointer to its address. 
- *
- * 3. Return reference to instance pointed to by the instance pointer. 
  */
 QMPI& QMPI::instance()
 {
+   // If shutdown has already been called on another instance of this class throw an 
+   // exception about this fact. 
    if ( _hasShutdown )
    {
       E_MAKE_EXCEPTION(e);
@@ -50,10 +41,15 @@ QMPI& QMPI::instance()
       e.setDetails(tr("An instance of QMPI already existed and shutdown."));
       throw e;
    }
+
+   // If the instance pointer is null then create new instance of the class and set 
+   // pointer to its address. 
    if ( !_instance )
    {
       _instance = new QMPI;
    }
+
+   // Return reference to instance pointed to by the instance pointer. 
    return *_instance;
 }
 
@@ -65,15 +61,11 @@ QMPI& QMPI::instance()
 /*!
  * This deletes the singleton instance of this class thereby shutting down the MPI 
  * system. After calling this another instance cannot be initialized or referenced. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If an instance of this class exists in the static pointer delete it and set 
- *    the shutdown flag to true to prevent initializing another instance. 
  */
 void QMPI::shutdown()
 {
+   // If an instance of this class exists in the static pointer delete it and set the 
+   // shutdown flag to true to prevent initializing another instance. 
    if ( _instance )
    {
       delete _instance;
@@ -206,15 +198,11 @@ void QMPI::sendLocalData(int toRank, const QByteArray& data)
  *
  * @param event Ignored Qt event data since this class only has a single timer 
  *              event active. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Iterate through all ranks, probing for new data received from the world and 
- *    local MPI comm channels for each rank. 
  */
 void QMPI::timerEvent(QTimerEvent* event)
 {
+   // Iterate through all ranks, probing for new data received from the world and 
+   // local MPI comm channels for each rank. 
    Q_UNUSED(event)
    for (int i = 0; i < _size ;++i)
    {
@@ -233,18 +221,11 @@ void QMPI::timerEvent(QTimerEvent* event)
 
 /*!
  * Constructs a new QMPI object initializing the MPI system it represents. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Initialize the MPI system. If it failed then set this object to a single 
- *    process state and exit, else go to the next step. 
- *
- * 2. Setup the world and local MPI comm channels and then start this object's qt 
- *    object timer for data received polling. 
  */
 QMPI::QMPI()
 {
+   // Initialize the MPI system. If it failed then set this object to a single 
+   // process state and exit, else go to the next step. 
    if ( MPI_Init(nullptr,nullptr) )
    {
       _failed = true;
@@ -254,6 +235,9 @@ QMPI::QMPI()
       _localRank = 0;
       return;
    }
+
+   // Setup the world and local MPI comm channels and then start this object's qt 
+   // object timer for data received polling. 
    setupWorld();
    setupLocal();
    startTimer(_timerPeriod);
@@ -266,15 +250,11 @@ QMPI::QMPI()
 
 /*!
  * Frees local MPI resources and finalizes the MPI system. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If MPI initialization did not fail for this object then free the local MPI 
- *    comm and call the MPI finalize function. 
  */
 QMPI::~QMPI()
 {
+   // If MPI initialization did not fail for this object then free the local MPI comm 
+   // and call the MPI finalize function. 
    if ( !_failed )
    {
       MPI_Comm_free(&_local);
@@ -295,23 +275,12 @@ QMPI::~QMPI()
  * @param comm The MPI comm that is proved. This is either the world or local comm. 
  *
  * @param rank The from rank that is checked for new data received. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Probe to see if there is pending data for the given MPI comm from the given 
- *    rank. If probing fails then throw an exception, else if there is no pending 
- *    data then do nothing and exit, else go to the next step. 
- *
- * 2. Get the size of the pending data that is assumed to be of type MPI_CHAR and 
- *    then get the data itself. If getting the size of the data or getting the data 
- *    fails then throw an exception, else go to the next step. 
- *
- * 3. Emit a local data received or data received signal, depending on if the given 
- *    comm is the world or local one. 
  */
 void QMPI::probe(MPI_Comm comm, int rank)
 {
+   // Probe to see if there is pending data for the given MPI comm from the given 
+   // rank. If probing fails then throw an exception, else if there is no pending 
+   // data then do nothing and exit, else go to the next step. 
    int flag;
    MPI_Status status;
    if ( MPI_Iprobe(rank,0,comm,&flag,&status) )
@@ -323,6 +292,9 @@ void QMPI::probe(MPI_Comm comm, int rank)
    }
    if ( flag )
    {
+      // Get the size of the pending data that is assumed to be of type MPI_CHAR and 
+      // then get the data itself. If getting the size of the data or getting the data 
+      // fails then throw an exception, else go to the next step. 
       int count;
       if ( MPI_Get_count(&status,MPI_CHAR,&count) )
       {
@@ -340,6 +312,9 @@ void QMPI::probe(MPI_Comm comm, int rank)
          e.setDetails(tr("MPI_Recv failed."));
          throw e;
       }
+
+      // Emit a local data received or data received signal, depending on if the given 
+      // comm is the world or local one. 
       if ( comm == _local )
       {
          emit localDataReceived(data,rank);
@@ -366,15 +341,11 @@ void QMPI::probe(MPI_Comm comm, int rank)
  *               local respectively, of the node to send this data to. 
  *
  * @param data The data that is sent to the node with the given rank or local rank. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Send the given data to the node with the given rank using the given MPI comm.
- *    If sending fails then throw an exception.
  */
 void QMPI::sendData(MPI_Comm comm, int toRank, const QByteArray& data)
 {
+   // Send the given data to the node with the given rank using the given MPI comm. 
+   // If sending fails then throw an exception. 
    if ( MPI_Send(data.data(),data.size(),MPI_CHAR,toRank,0,comm) )
    {
       E_MAKE_EXCEPTION(e);
@@ -392,15 +363,11 @@ void QMPI::sendData(MPI_Comm comm, int toRank, const QByteArray& data)
 /*!
  * Sets up the world MPI comm by simply getting its size and this node's rank since 
  * MPI itself creates the world comm. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Get the world MPI comm size and this node's rank, saving it to this object. 
- *    If any MPI call fails then throw an exception. 
  */
 void QMPI::setupWorld()
 {
+   // Get the world MPI comm size and this node's rank, saving it to this object. If 
+   // any MPI call fails then throw an exception. 
    if ( MPI_Comm_size(MPI_COMM_WORLD,&_size) )
    {
       E_MAKE_EXCEPTION(e);
@@ -425,16 +392,12 @@ void QMPI::setupWorld()
 /*!
  * Sets up the local MPI comm which is determined by all nodes that share local 
  * resources, getting the local size and this node's local rank rank from it. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Create the local comm and save it to this object, along with getting the 
- *    local size and this node's local rank from the created local comm. If any MPI 
- *    call fails then throw an exception. 
  */
 void QMPI::setupLocal()
 {
+   // Create the local comm and save it to this object, along with getting the local 
+   // size and this node's local rank from the created local comm. If any MPI call 
+   // fails then throw an exception. 
    if ( MPI_Comm_split_type(MPI_COMM_WORLD,MPI_COMM_TYPE_SHARED,0,MPI_INFO_NULL,&_local) )
    {
       E_MAKE_EXCEPTION(e);

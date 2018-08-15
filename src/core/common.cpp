@@ -3,6 +3,9 @@
 #include "emetadata.h"
 #include "emetaarray.h"
 #include "emetaobject.h"
+
+
+
 //
 
 
@@ -20,35 +23,22 @@
  *             from the data stream. 
  *
  * @return Constant reference to data stream object. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Read in the metadata type and overwrite the given metadata with a new object 
- *    of that type. 
- *
- * 2. If the type is an array go to step 4, else if the type is an object go to 
- *    step 5, else go to step 3. 
- *
- * 3. Read in the value of the metadata to the given object. Return a reference to 
- *    the data stream. 
- *
- * 4. Read in the size of metadata objects the array contains in the data stream. 
- *    Read in all metadata objects the array contains, inserting each one into the 
- *    given metadata array object. Return a reference to the data stream. 
- *
- * 5. Read in the size of key and metadata value pairs the object contains in the 
- *    data stream. Read in all keys and metadata objects the object contains, 
- *    inserting each key and metadata value pair into the object. Return a 
- *    reference to the data stream. 
  */
 const EDataStream& operator>>(const EDataStream& stream, EMetadata& meta)
 {
+   // Read in the metadata type and overwrite the given metadata with a new object of 
+   // that type. 
    quint8 type;
    stream >> type;
    meta = EMetadata(static_cast<EMetadata::Type>(type));
+
+   // If the type is an array go to step 4, else if the type is an object go to step 
+   // 5, else go to step 3. 
    switch (meta.type())
    {
+
+   // Read in the value of the metadata to the given object. Return a reference to 
+   // the data stream. 
    case EMetadata::Bool:
    {
       quint8 val;
@@ -65,6 +55,10 @@ const EDataStream& operator>>(const EDataStream& stream, EMetadata& meta)
    case EMetadata::Bytes:
       stream >> meta.toBytes();
       break;
+
+   // Read in the size of metadata objects the array contains in the data stream. 
+   // Read in all metadata objects the array contains, inserting each one into the 
+   // given metadata array object. Return a reference to the data stream. 
    case EMetadata::Array:
       {
          quint32 size;
@@ -77,6 +71,11 @@ const EDataStream& operator>>(const EDataStream& stream, EMetadata& meta)
          }
          break;
       }
+
+   // Read in the size of key and metadata value pairs the object contains in the 
+   // data stream. Read in all keys and metadata objects the object contains, 
+   // inserting each key and metadata value pair into the object. Return a reference 
+   // to the data stream. 
    case EMetadata::Object:
       {
          quint32 size;
@@ -110,31 +109,19 @@ const EDataStream& operator>>(const EDataStream& stream, EMetadata& meta)
  * @param meta The metadata object whose value will be written to the data stream. 
  *
  * @return Reference to data stream object. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Write out the metadata type from the given object to the data stream. 
- *
- * 2. If the type is an array go to step 4, else if the type is an object go to 
- *    step 5, else go to step 3. 
- *
- * 3. Write out the value of the given metadata object to the data stream. 
- *
- * 4. Write out the number of metadata objects the array contains. Write out all 
- *    metadata values the array contains to the data stream. Return a reference to 
- *    the data stream. 
- *
- * 5. Write out the number of key and metadata value pairs the object contains. 
- *    Write out all key and metadata value pairs the object contains to the data 
- *    stream. Return a reference to the data stream. 
  */
 EDataStream& operator<<(EDataStream& stream, const EMetadata& meta)
 {
+   // Write out the metadata type from the given object to the data stream. 
    quint8 type {static_cast<quint8>(meta.type())};
    stream << type;
+
+   // If the type is an array go to step 4, else if the type is an object go to step 
+   // 5, else go to step 3. 
    switch (meta.type())
    {
+
+   // Write out the value of the given metadata object to the data stream. 
    case EMetadata::Bool:
       stream << meta.toBool();
       break;
@@ -147,6 +134,10 @@ EDataStream& operator<<(EDataStream& stream, const EMetadata& meta)
    case EMetadata::Bytes:
       stream << meta.toBytes();
       break;
+
+   // Write out the number of metadata objects the array contains. Write out all 
+   // metadata values the array contains to the data stream. Return a reference to 
+   // the data stream. 
    case EMetadata::Array:
       stream << static_cast<quint32>(meta.toArray().size());
       for (auto child : meta.toArray())
@@ -154,6 +145,10 @@ EDataStream& operator<<(EDataStream& stream, const EMetadata& meta)
          stream << child;
       }
       break;
+
+   // Write out the number of key and metadata value pairs the object contains. Write 
+   // out all key and metadata value pairs the object contains to the data stream. 
+   // Return a reference to the data stream. 
    case EMetadata::Object:
       stream << static_cast<quint32>(meta.toObject().size());
       for (auto i = meta.toObject().begin(); i != meta.toObject().end() ;++i)

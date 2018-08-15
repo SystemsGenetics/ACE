@@ -25,9 +25,10 @@ namespace Ace
       {
          Q_OBJECT
       public:
+         virtual bool isFinished() const override final;
+      public:
          explicit MPISlave(quint16 type);
          virtual ~MPISlave() override final;
-         virtual bool isFinished() const override final;
       protected:
          virtual void mpiStart(Type type, int platform, int device) override final;
          virtual QFile* addOutputFile(const QString& path) override final;

@@ -24,18 +24,14 @@ using namespace OpenCL;
  * @param device Pointer to device this command queue is created from. 
  *
  * @param parent Optional parent for this new command queue. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Create a new OpenCL command queue with the given context and device, setting 
- *    it to out of order execution and saving the new ID to this object. If 
- *    creation fails then throw an exception. 
  */
 CommandQueue::CommandQueue(Context* context, Device* device, QObject* parent):
    QObject(parent),
    _device(device)
 {
+   // Create a new OpenCL command queue with the given context and device, setting it 
+   // to out of order execution and saving the new ID to this object. If creation 
+   // fails then throw an exception. 
    cl_int code;
    _id = clCreateCommandQueue(context->id()
                               ,device->id()

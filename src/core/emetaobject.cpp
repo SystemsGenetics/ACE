@@ -1,5 +1,8 @@
 #include "emetaobject.h"
 #include "emetadata.h"
+
+
+
 //
 
 
@@ -14,18 +17,51 @@
  * @param object Map that this object will be assigned to. 
  *
  * @return Reference to this object. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Assign this object to the given mapping. 
- *
- * 2. Return reference to this object. 
  */
 EMetaObject& EMetaObject::operator=(const EMetaObject& object)
 {
+   // Assign this object to the given mapping. 
    QMap<QString,EMetadata>::operator=(object);
+
+   // Return reference to this object. 
    return *this;
+}
+
+
+
+
+
+
+/*!
+ * Returns reference to metadata object with the given key. If no metadata object 
+ * is mapped to the given key a new null metadata object is created, mapped with 
+ * the given key, and returned as the reference. 
+ *
+ * @param key Key of requested metadata object within the mapping of objects. 
+ *
+ * @return Reference to metadata object. 
+ */
+EMetadata& EMetaObject::operator[](const QString& key)
+{
+   return QMap<QString,EMetadata>::operator[](key);
+}
+
+
+
+
+
+
+/*!
+ * Returns copy of metadata object with the given key. If no metadata object is 
+ * mapped to the given key a new null metadata object is created and returned. 
+ *
+ * @param key Key of requested metadata object within the mapping of objects. 
+ *
+ * @return Copy of metadata object. 
+ */
+EMetadata EMetaObject::operator[](const QString& key) const
+{
+   return QMap<QString,EMetadata>::operator[](key);
 }
 
 
@@ -197,41 +233,4 @@ void EMetaObject::insert(const QString& key, const EMetadata& value)
 void EMetaObject::clear()
 {
    QMap<QString,EMetadata>::clear();
-}
-
-
-
-
-
-
-/*!
- * Returns reference to metadata object with the given key. If no metadata object 
- * is mapped to the given key a new null metadata object is created, mapped with 
- * the given key, and returned as the reference. 
- *
- * @param key Key of requested metadata object within the mapping of objects. 
- *
- * @return Reference to metadata object. 
- */
-EMetadata& EMetaObject::operator[](const QString& key)
-{
-   return QMap<QString,EMetadata>::operator[](key);
-}
-
-
-
-
-
-
-/*!
- * Returns copy of metadata object with the given key. If no metadata object is 
- * mapped to the given key a new null metadata object is created and returned. 
- *
- * @param key Key of requested metadata object within the mapping of objects. 
- *
- * @return Copy of metadata object. 
- */
-EMetadata EMetaObject::operator[](const QString& key) const
-{
-   return QMap<QString,EMetadata>::operator[](key);
 }

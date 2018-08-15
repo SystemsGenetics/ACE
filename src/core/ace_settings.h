@@ -33,18 +33,6 @@ namespace Ace
       static int appRevision();
       static void initialize(QString organization, QString application, int majorVersion, int minorVersion, int revision);
       static Settings& instance();
-      /*!
-       * The major version of the ACE library. 
-       */
-      constexpr static int _majorVersion {MAJOR_VERSION};
-      /*!
-       * The minor version of the ACE library. 
-       */
-      constexpr static int _minorVersion {MINOR_VERSION};
-      /*!
-       * The revision of the ACE library. 
-       */
-      constexpr static int _revision {REVISION};
       int openCLPlatform() const;
       int openCLDevice() const;
       OpenCL::Device* openCLDevicePointer() const;
@@ -60,7 +48,21 @@ namespace Ace
       void setChunkDir(const QString& path);
       void setChunkPrefix(const QString& prefix);
       void setChunkExtension(const QString& extension);
+      /*!
+       * The major version of the ACE library. 
+       */
+      constexpr static int _majorVersion {MAJOR_VERSION};
+      /*!
+       * The minor version of the ACE library. 
+       */
+      constexpr static int _minorVersion {MINOR_VERSION};
+      /*!
+       * The revision of the ACE library. 
+       */
+      constexpr static int _revision {REVISION};
    private:
+      Settings();
+      void setValue(const QString& key, const QVariant& value);
       /*!
        * Major version of the application using ACE. 
        */
@@ -142,8 +144,6 @@ namespace Ace
        * Points to the global singleton instance of this class. 
        */
       static Settings* _instance;
-      Settings();
-      void setValue(const QString& key, const QVariant& value);
       /*!
        * The platform index for the preferred OpenCL device. 
        */

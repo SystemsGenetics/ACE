@@ -19,12 +19,6 @@ using namespace OpenCL;
  * @param id OpenCL device ID used to construct this new device object. 
  *
  * @param parent Optional parent for this new object. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Initialize all data and query the device type, setting this object's device 
- *    type to the type returned. 
  */
 Device::Device(cl_device_id id, QObject* parent):
    QObject(parent),
@@ -39,6 +33,8 @@ Device::Device(cl_device_id id, QObject* parent):
    _name(getStringInfo(CL_DEVICE_NAME)),
    _platform(getInfo<cl_platform_id,cl_platform_id>(CL_DEVICE_PLATFORM))
 {
+   // Initialize all data and query the device type, setting this object's device 
+   // type to the type returned. 
    switch (getInfo<cl_device_type,cl_device_type>(CL_DEVICE_TYPE))
    {
    case CL_DEVICE_TYPE_CPU:
@@ -239,16 +235,12 @@ cl_platform_id Device::platform() const
  * @param type  
  *
  * @return Information of this device with the given info type. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Query the requested information from OpenCL using the T type and then return 
- *    it as a static cast of the R type. If any OpenCL error occurs then throw and 
- *    exception. 
  */
 template<class R,class T> R Device::getInfo(cl_device_info type) const
 {
+   // Query the requested information from OpenCL using the T type and then return it 
+   // as a static cast of the R type. If any OpenCL error occurs then throw and 
+   // exception. 
    T data;
    cl_int code {clGetDeviceInfo(_id,type,sizeof(T),&data,nullptr)};
    if ( code != CL_SUCCESS )
@@ -271,16 +263,12 @@ template<class R,class T> R Device::getInfo(cl_device_info type) const
  * @param type The information type that is returned. 
  *
  * @return Information of this device with the given info type. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Query the size of the information requested, then get the information as a C 
- *    style string, and then return it as a qt string. If any OpenCL error occurs 
- *    then throw an exception. 
  */
 QString Device::getStringInfo(cl_device_info type) const
 {
+   // Query the size of the information requested, then get the information as a C 
+   // style string, and then return it as a qt string. If any OpenCL error occurs 
+   // then throw an exception. 
    size_t size;
    cl_int code {clGetDeviceInfo(_id,type,0,nullptr,&size)};
    if ( code != CL_SUCCESS )

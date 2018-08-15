@@ -1,4 +1,7 @@
 #include "eabstractanalytic_opencl.h"
+
+
+
 //
 
 
