@@ -4,6 +4,7 @@
 #include "mathtransform_serial.h"
 #include "mathtransform_opencl.h"
 #include "integerarray.h"
+#include "core/elog.h"
 
 
 
@@ -42,6 +43,10 @@ int MathTransform::size() const
  */
 std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeWork(int index) const
 {
+   if ( ELog::isActive() )
+   {
+      ELog() << tr("Making work index %1 of %2.\n").arg(index).arg(size());
+   }
    return unique_ptr<EAbstractAnalytic::Block>(new Block(index,_in->_numbers.at(index)));
 }
 
@@ -95,6 +100,10 @@ std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeResult() const
  */
 void MathTransform::process(const EAbstractAnalytic::Block* result)
 {
+   if ( ELog::isActive() )
+   {
+      ELog() << tr("Processing result %1 of %2.\n").arg(result->index()).arg(size());
+   }
    // 1
    const Block* valid {result->cast<Block>()};
    _out->_numbers << valid->_number;

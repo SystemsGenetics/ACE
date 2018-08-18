@@ -1,5 +1,6 @@
 #include "mathtransform_serial.h"
 #include "mathtransform_block.h"
+#include "core/elog.h"
 
 
 
@@ -50,6 +51,10 @@ MathTransform::Serial::Serial(MathTransform* parent):
  */
 std::unique_ptr<EAbstractAnalytic::Block> MathTransform::Serial::execute(const EAbstractAnalytic::Block* block)
 {
+   if ( ELog::isActive() )
+   {
+      ELog() << tr("Executing(serial) work index %1.\n").arg(block->index());
+   }
    // 1
    const Block* valid {block->cast<Block>()};
    qint32 value {valid->_number};

@@ -1,6 +1,7 @@
 #include "mathtransform_opencl_worker.h"
 #include "mathtransform_opencl_kernel.h"
 #include "mathtransform_block.h"
+#include "core/elog.h"
 
 
 
@@ -67,6 +68,10 @@ MathTransform::OpenCL::Worker::Worker(MathTransform* base, ::OpenCL::Context* co
  */
 std::unique_ptr<EAbstractAnalytic::Block> MathTransform::OpenCL::Worker::execute(const EAbstractAnalytic::Block* block)
 {
+   if ( ELog::isActive() )
+   {
+      ELog() << tr("Executing(OpenCL) work index %1.\n").arg(block->index());
+   }
    // 1
    const MathTransform::Block* valid {block->cast<const MathTransform::Block>()};
 

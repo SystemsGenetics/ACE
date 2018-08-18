@@ -5,6 +5,7 @@
  */
 namespace Ace
 {
+   class LogServer;
    class Settings;
    class DataManager;
    class DataObject;

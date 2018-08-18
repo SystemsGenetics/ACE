@@ -41,6 +41,8 @@ namespace Ace
       QString chunkDir() const;
       QString chunkPrefix() const;
       QString chunkExtension() const;
+      bool loggingEnabled() const;
+      int loggingPort() const;
       void setOpenCLPlatform(int index);
       void setOpenCLDevice(int index);
       void setThreadSize(int size);
@@ -48,6 +50,8 @@ namespace Ace
       void setChunkDir(const QString& path);
       void setChunkPrefix(const QString& prefix);
       void setChunkExtension(const QString& extension);
+      void setLoggingEnabled(int state);
+      void setLoggingPort(int port);
       /*!
        * The major version of the ACE library. 
        */
@@ -112,6 +116,12 @@ namespace Ace
        */
       static const char* _chunkExtensionDefault;
       /*!
+       */
+      static const bool _loggingEnabledDefault;
+      /*!
+       */
+      static const int _loggingPortDefault;
+      /*!
        * The qt settings key used to persistently store the platform index value. 
        */
       static const char* _openCLPlatformKey;
@@ -140,6 +150,12 @@ namespace Ace
        * The qt settings key used to persistently store the chunk file extension value. 
        */
       static const char* _chunkExtensionKey;
+      /*!
+       */
+      static const char* _loggingEnabledKey;
+      /*!
+       */
+      static const char* _loggingPortKey;
       /*!
        * Points to the global singleton instance of this class. 
        */
@@ -173,6 +189,12 @@ namespace Ace
        * The extension for temporary chunk files. 
        */
       QString _chunkExtension;
+      /*!
+       */
+      bool _loggingEnabled;
+      /*!
+       */
+      int _loggingPort;
    };
 }
 

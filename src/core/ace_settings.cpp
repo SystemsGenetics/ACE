@@ -43,6 +43,12 @@ const char* Settings::_chunkPrefixDefault {"chunk"};
  */
 const char* Settings::_chunkExtensionDefault {"abd"};
 /*!
+ */
+const bool Settings::_loggingEnabledDefault {true};
+/*!
+ */
+const int Settings::_loggingPortDefault {40000};
+/*!
  * The qt settings key used to persistently store the platform index value. 
  */
 const char* Settings::_openCLPlatformKey {"opencl.platform"};
@@ -71,6 +77,12 @@ const char* Settings::_chunkPrefixKey {"chunk.prefix"};
  * The qt settings key used to persistently store the chunk file extension value. 
  */
 const char* Settings::_chunkExtensionKey {"chunk.extension"};
+/*!
+ */
+const char* Settings::_loggingEnabledKey {"logging.enabled"};
+/*!
+ */
+const char* Settings::_loggingPortKey {"logging.port"};
 /*!
  * Points to the global singleton instance of this class. 
  */
@@ -391,6 +403,36 @@ QString Settings::chunkExtension() const
 
 
 /*!
+ * Returns the logging enabled state. 
+ *
+ * @return Logging enabled state. 
+ */
+bool Settings::loggingEnabled() const
+{
+   return _loggingEnabled;
+}
+
+
+
+
+
+
+/*!
+ * Returns the logging port number. 
+ *
+ * @return Logging port number. 
+ */
+int Settings::loggingPort() const
+{
+   return _loggingPort;
+}
+
+
+
+
+
+
+/*!
  * Sets the platform index for the preferred OpenCL device. 
  *
  * @param index Index of the platform of the preferred OpenCL device. 
@@ -561,6 +603,48 @@ void Settings::setChunkExtension(const QString& extension)
 
 
 /*!
+ * Set the logging enabled state. 
+ *
+ * @param state New logging enabled state. 
+ */
+void Settings::setLoggingEnabled(int state)
+{
+   // If the new value is different from the current value then set it to the new one 
+   // and set the value in persistent storage. 
+   if ( state != _loggingEnabled )
+   {
+      _loggingEnabled = state;
+      setValue(_loggingEnabledKey,_loggingEnabled);
+   }
+}
+
+
+
+
+
+
+/*!
+ * Set the logging port. 
+ *
+ * @param port New logging port number. 
+ */
+void Settings::setLoggingPort(int port)
+{
+   // If the new value is different from the current value then set it to the new one 
+   // and set the value in persistent storage. 
+   if ( port != _loggingPort )
+   {
+      _loggingPort = port;
+      setValue(_loggingPortKey,_loggingPort);
+   }
+}
+
+
+
+
+
+
+/*!
  * Constructs a new settings object. 
  */
 Settings::Settings()
@@ -575,6 +659,8 @@ Settings::Settings()
    _chunkDir = settings.value(_chunkDirKey,_chunkDirDefault).toString();
    _chunkPrefix = settings.value(_chunkPrefixKey,_chunkPrefixDefault).toString();
    _chunkExtension = settings.value(_chunkExtensionKey,_chunkExtensionDefault).toString();
+   _loggingEnabled = settings.value(_loggingEnabledKey,_loggingEnabledDefault).toBool();
+   _loggingPort = settings.value(_loggingPortKey,_loggingPortDefault).toInt();
 }
 
 

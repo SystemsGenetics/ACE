@@ -2,6 +2,9 @@
 #include "../core/ace_analytic_abstractmanager.h"
 #include "../core/eabstractanalyticfactory.h"
 #include "../core/eexception.h"
+#include "../core/ace_logserver.h"
+#include "../core/ace_settings.h"
+#include "../core/ace_qmpi.h"
 
 
 
@@ -294,7 +297,20 @@ void Run::setupManager(quint16 type)
    connect(_manager,&Analytic::AbstractManager::done,this,&Run::done);
    connect(_manager,&Analytic::AbstractManager::finished,this,&Run::finished);
    addArguments();
-   _manager->initialize();
+
+   //. Different!
+   if ( Ace::Settings::instance().loggingEnabled() )
+   {
+      int port {Ace::Settings::instance().loggingPort() + Ace::QMPI::instance().localRank()};
+      Ace::LogServer::initialize(port);
+      _stream << tr("Log server listening on %1:%2, waiting for connection...\n").arg(Ace::LogServer::host()).arg(port);
+      _stream.flush();
+      connect(Ace::LogServer::log(),&LogServer::firstConnection,_manager,&Analytic::AbstractManager::initialize);
+   }
+   else
+   {
+      _manager->initialize();
+   }
 }
 
 
