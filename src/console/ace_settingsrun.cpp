@@ -53,6 +53,7 @@ void SettingsRun::execute()
       stream << "Chunk Working Directory: " << settings.chunkDir() << "\n";
       stream << "           Chunk Prefix: " << settings.chunkPrefix() << "\n";
       stream << "        Chunk Extension: " << settings.chunkExtension() << "\n";
+      stream << "                Logging: " << ( settings.loggingEnabled() ? QStringLiteral("on") : QStringLiteral("off") ) << "\n";
    }
    else
    {
@@ -147,7 +148,7 @@ QString SettingsRun::openCLDeviceString()
  */
 void SettingsRun::set()
 {
-   enum {Unknown=-1,OpenCLCom,Threads,Buffer,ChunkDir,ChunkPre,ChunkExt};
+   enum {Unknown=-1,OpenCLCom,Threads,Buffer,ChunkDir,ChunkPre,ChunkExt,Logging};
    if ( _command.size() < 1 )
    {
       E_MAKE_EXCEPTION(e);
@@ -155,7 +156,7 @@ void SettingsRun::set()
       e.setDetails(QObject::tr("Settings set requires sub argument, exiting..."));
       throw e;
    }
-   QStringList list {"opencl","threads","buffer","chunkdir","chunkpre","chunkext"};
+   QStringList list {"opencl","threads","buffer","chunkdir","chunkpre","chunkext","logging"};
    switch (_command.peek(list))
    {
    case OpenCLCom:
@@ -181,6 +182,13 @@ void SettingsRun::set()
    case ChunkExt:
       _command.pop();
       setChunkExt();
+      break;
+   case Logging:
+      _command.pop();
+      if ( _command.size() > 0 )
+      {
+         Ace::Settings::instance().setLoggingEnabled(_command.first() == QStringLiteral("on"));
+      }
       break;
    case Unknown:
       {
