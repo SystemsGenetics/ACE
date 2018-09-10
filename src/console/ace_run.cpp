@@ -305,7 +305,7 @@ void Run::setupManager(quint16 type)
       Ace::LogServer::initialize(port);
       _stream << tr("Log server listening on %1:%2, waiting for connection...\n").arg(Ace::LogServer::host()).arg(port);
       _stream.flush();
-      connect(Ace::LogServer::log(),&LogServer::firstConnection,_manager,&Analytic::AbstractManager::initialize);
+      connect(Ace::LogServer::log(),&LogServer::readyToStart,_manager,&Analytic::AbstractManager::initialize);
    }
    else
    {

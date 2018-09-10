@@ -23,15 +23,22 @@ LogServer* LogServer::_log {nullptr};
 
 
 /*!
- * Writes out the given byte array to this logger and all its connected clients. 
+ * Writes out the given message to all connected clients. 
  *
- * @param data The data that is relayed by this logger to all clients and saved in 
- *             its buffer for new clients. 
+ * @param type The message type being broadcast to all clients. 
+ *
+ * @param data Any optional data that is appended to the message. 
  *
  * @return Reference to this logger. 
  */
-LogServer& LogServer::operator<<(const QByteArray& data)
+LogServer& LogServer::broadcast(int type, const QByteArray& data)
 {
+   // Construct the message that will be broadcast to all connected clients. 
+   QByteArray message;
+   QDataStream stream(&message,QIODevice::WriteOnly);
+   stream << (qint32)type << (qint32)data.size();
+   stream.writeBytes(data.data(),data.size());
+
    // Iterate through all connected clients of this log server, locking its mutex for 
    // thread safety. 
    _mutex.lock();
@@ -52,7 +59,7 @@ LogServer& LogServer::operator<<(const QByteArray& data)
       // socket. 
       else
       {
-         client->write(data);
+         client->write(message);
       }
    }
 
@@ -162,6 +169,25 @@ void LogServer::flush()
 
 
 /*!
+ * Called when a connected client has sent data that signals the ACE program should 
+ * start execution. 
+ */
+void LogServer::clientSignalsStart()
+{
+   // If the start signal has not yet been emitted then emit it. 
+   if ( !_first )
+   {
+      _first = true;
+      emit readyToStart();
+   }
+}
+
+
+
+
+
+
+/*!
  * Called when there is a new connection established for this log server from a new 
  * client. 
  */
@@ -171,19 +197,12 @@ void LogServer::newConnectionMade()
    // mutex for thread safety. 
    while ( hasPendingConnections() )
    {
-      // Add the new client to this log server's list of clients, using its mutex for 
-      // thread safety. 
+      // Add the new client to this log server's list of clients and connect its signal 
+      // start signal, using its mutex for thread safety. 
       _mutex.lock();
       _clients << nextPendingConnection();
+      connect(_clients.back(),&QTcpSocket::readyRead,this,&LogServer::clientSignalsStart);
       _mutex.unlock();
-
-      // If the is the first connection made to the log server then emit the first 
-      // connection signal. 
-      if ( !_first )
-      {
-         _first = true;
-         emit firstConnection();
-      }
    }
 }
 

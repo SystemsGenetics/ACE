@@ -20,7 +20,17 @@ namespace Ace
    {
       Q_OBJECT
    public:
-      LogServer& operator<<(const QByteArray& data);
+      /*!
+       * Defines all message types that can be broadcast to clients. 
+       */
+      enum Types
+      {
+         /*!
+          * Defines the log message type that is meant for normal logging messages. 
+          */
+         Log
+      };
+      LogServer& broadcast(int type, const QByteArray& data);
    public:
       static void initialize(int port);
       static LogServer* log();
@@ -28,10 +38,11 @@ namespace Ace
       void flush();
    signals:
       /*!
-       * Signals that the very first client connected to this log server. 
+       * Signals that the this ACE program is ready to begin execution. 
        */
-      void firstConnection();
+      void readyToStart();
    private slots:
+      void clientSignalsStart();
       void newConnectionMade();
    private:
       explicit LogServer(int port);

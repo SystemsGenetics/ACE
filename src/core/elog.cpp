@@ -27,8 +27,9 @@ ELog::~ELog()
       qDebug().noquote().nospace() << QObject::tr("Attempting to write a log message when logging is disabled!");
       return;
    }
+
    // Write this log's message to the log server and flush its output. 
-   *log << _message;
+   log->broadcast(Ace::LogServer::Log,_message);
    log->flush();
 }
 
