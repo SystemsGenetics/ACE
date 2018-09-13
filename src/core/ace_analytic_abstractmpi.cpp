@@ -71,6 +71,9 @@ AbstractMPI::AbstractMPI(quint16 type):
  */
 void AbstractMPI::start()
 {
+   // Start MPI listening for incoming messages. 
+   _mpi.start();
+
    // If this node's local rank is not 0 then do nothing and exit, else go to the 
    // next step. 
    if ( _mpi.localRank() == 0 )

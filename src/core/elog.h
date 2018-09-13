@@ -14,7 +14,6 @@
 class ELog
 {
 public:
-   ~ELog();
    ELog& operator<<(qint8 value);
    ELog& operator<<(qint16 value);
    ELog& operator<<(qint32 value);
@@ -28,6 +27,7 @@ public:
    ELog& operator<<(const QString& value);
 public:
    static bool isActive();
+   ~ELog();
 private:
    /*!
     * The message being constructed by this log message and written to the logging 

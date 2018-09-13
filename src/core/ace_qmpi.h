@@ -18,6 +18,9 @@ namespace Ace
     * single instance you can access through a special static function. This singleton 
     * class is however special in it has to be shutdown before exiting the program and 
     * cannot be initialized more than once. This requirement is due to how MPI works. 
+    * 
+    * Listening for incoming MPI messages can also be enabled or disabled, and is 
+    * disabled by default. 
     */
    class QMPI : public QObject
    {
@@ -30,6 +33,8 @@ namespace Ace
       int rank() const;
       int localSize() const;
       int localRank() const;
+      void start();
+      void stop();
    signals:
       /*!
        * Signals that new data has been received from the world MPI comm. 
@@ -98,6 +103,11 @@ namespace Ace
        * false otherwise. 
        */
       bool _failed {false};
+      /*!
+       * True to ignore all incoming MPI messages or false to read them in and emit 
+       * signals. 
+       */
+      bool _ignore {true};
    };
 }
 

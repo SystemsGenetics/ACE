@@ -29,27 +29,29 @@ namespace Ace
           * Defines the log message type that is meant for normal logging messages. 
           */
          Log
+         /*!
+          * Defines the debug message type that is meant for all debugging log messages. 
+          */
+         ,Debug
       };
-      LogServer& broadcast(int type, const QByteArray& data);
    public:
       static void initialize(int port);
       static LogServer* log();
       static QString host();
+   public:
+      void wait();
+      LogServer& broadcast(int type, const QByteArray& data);
       void flush();
-   signals:
-      /*!
-       * Signals that the this ACE program is ready to begin execution. 
-       */
-      void readyToStart();
    private slots:
       void clientSignalsStart();
       void newConnectionMade();
    private:
-      explicit LogServer(int port);
       /*!
        * Pointer to the global instance of this application's log server. 
        */
       static LogServer* _log;
+   private:
+      explicit LogServer(int port);
       /*!
        * List of pointers to the sockets of connected clients to this log server. 
        */

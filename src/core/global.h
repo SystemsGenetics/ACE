@@ -1,6 +1,7 @@
 
 class EException;
 class ELog;
+class EDebug;
 class EAbstractAnalyticFactory;
 class EAbstractDataFactory;
 class EAbstractData;

@@ -13,32 +13,6 @@
 
 
 /*!
- * Writes the fully constructed message to the logging system of this application. 
- * Uses a mutex to safely write to the logging system inside any thread. If logging 
- * is not active this will do nothing. If logging is disabled then this reports the 
- * misuse of logging and does nothing else. 
- */
-ELog::~ELog()
-{
-   // Get the pointer to the global log server and make sure it is not null. 
-   Ace::LogServer* log {Ace::LogServer::log()};
-   if ( !log )
-   {
-      qDebug().noquote().nospace() << QObject::tr("Attempting to write a log message when logging is disabled!");
-      return;
-   }
-
-   // Write this log's message to the log server and flush its output. 
-   log->broadcast(Ace::LogServer::Log,_message);
-   log->flush();
-}
-
-
-
-
-
-
-/*!
  * Adds the given value to this log message. 
  *
  * @param value The value that is written out. 
@@ -266,4 +240,30 @@ ELog& ELog::operator<<(const QString& value)
 bool ELog::isActive()
 {
    return Ace::Settings::instance().loggingEnabled();
+}
+
+
+
+
+
+
+/*!
+ * Writes the fully constructed message to the logging system of this application. 
+ * Uses a mutex to safely write to the logging system inside any thread. If logging 
+ * is not active this will do nothing. If logging is disabled then this reports the 
+ * misuse of logging and does nothing else. 
+ */
+ELog::~ELog()
+{
+   // Get the pointer to the global log server and make sure it is not null. 
+   Ace::LogServer* log {Ace::LogServer::log()};
+   if ( !log )
+   {
+      qDebug().noquote().nospace() << QObject::tr("Attempting to write a log message when logging is disabled!");
+      return;
+   }
+
+   // Write this log's message to the log server and flush its output. 
+   log->broadcast(Ace::LogServer::Log,_message);
+   log->flush();
 }

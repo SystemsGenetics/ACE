@@ -51,7 +51,8 @@ SOURCES += \
     eabstractanalytic_opencl_worker.cpp \
     ace_analytic_abstractmpi.cpp \
     ace_logserver.cpp \
-    elog.cpp
+    elog.cpp \
+    edebug.cpp
 
 HEADERS += \
     opencl.h \
@@ -107,7 +108,8 @@ HEADERS += \
     ace_analytic_abstractmanager.h \
     ace_analytic_abstractmpi.h \
     ace_logserver.h \
-    elog.h
+    elog.h \
+    edebug.h
 
 isEmpty(PREFIX) { PREFIX = /usr/local }
 library.path = $${PREFIX}/lib

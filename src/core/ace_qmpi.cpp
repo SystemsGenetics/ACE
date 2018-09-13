@@ -156,6 +156,30 @@ int QMPI::localRank() const
 
 
 /*!
+ * Enables listening to incoming MPI messages and emitting signals when they are 
+ * received. 
+ */
+void QMPI::start()
+{}
+
+
+
+
+
+
+/*!
+ * Disables listening to incoming MPI messages, leaving any pending messages until 
+ * it is enabled. 
+ */
+void QMPI::stop()
+{}
+
+
+
+
+
+
+/*!
  * Called to send data to another node using the world MPI comm. This is 
  * asynchronous and returns immediately. 
  *
@@ -201,6 +225,7 @@ void QMPI::sendLocalData(int toRank, const QByteArray& data)
  */
 void QMPI::timerEvent(QTimerEvent* event)
 {
+   if ( _ignore ) return;
    // Iterate through all ranks, probing for new data received from the world and 
    // local MPI comm channels for each rank. 
    Q_UNUSED(event)
