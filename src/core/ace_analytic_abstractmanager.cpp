@@ -12,6 +12,7 @@
 #include "eabstractdata.h"
 #include "emetaobject.h"
 #include "eexception.h"
+#include "edebug.h"
 
 
 
@@ -46,6 +47,8 @@ using namespace Ace::Analytic;
  */
 std::unique_ptr<Ace::Analytic::AbstractManager> AbstractManager::makeManager(quint16 type, int index, int size)
 {
+   EDEBUG_FUNC(type,index,size)
+
    // If the given size is greater than 1 and the given index is less than zero then 
    // return a new merge manager, else if the index is greater to or equal to 0 then 
    // return a new chunk manager, else go to the next step. 
@@ -95,6 +98,8 @@ std::unique_ptr<Ace::Analytic::AbstractManager> AbstractManager::makeManager(qui
  */
 quint16 AbstractManager::analyticType() const
 {
+   EDEBUG_FUNC(this)
+
    return _type;
 }
 
@@ -110,6 +115,8 @@ quint16 AbstractManager::analyticType() const
  */
 int AbstractManager::size() const
 {
+   EDEBUG_FUNC(this)
+
    return _input->size();
 }
 
@@ -128,6 +135,8 @@ int AbstractManager::size() const
  */
 EAbstractAnalytic::Input::Type AbstractManager::type(int index) const
 {
+   EDEBUG_FUNC(this,index)
+
    return _input->type(index);
 }
 
@@ -147,6 +156,8 @@ EAbstractAnalytic::Input::Type AbstractManager::type(int index) const
  */
 QVariant AbstractManager::data(int index, EAbstractAnalytic::Input::Role role) const
 {
+   EDEBUG_FUNC(this,role)
+
    return _input->data(index,role);
 }
 
@@ -166,6 +177,8 @@ QVariant AbstractManager::data(int index, EAbstractAnalytic::Input::Role role) c
  */
 void AbstractManager::set(int index, const QVariant& value)
 {
+   EDEBUG_FUNC(this,index,value)
+
    _inputs[index] = value;
 }
 
@@ -181,6 +194,8 @@ void AbstractManager::set(int index, const QVariant& value)
  */
 void AbstractManager::initialize()
 {
+   EDEBUG_FUNC(this)
+
    // Set analytic input arguments for basic types, files, and data objects. 
    inputBasic();
    inputFiles();
@@ -204,6 +219,8 @@ void AbstractManager::initialize()
  */
 void AbstractManager::terminationRequested()
 {
+   EDEBUG_FUNC(this)
+
    deleteLater();
 }
 
@@ -218,6 +235,8 @@ void AbstractManager::terminationRequested()
  */
 void AbstractManager::finish()
 {
+   EDEBUG_FUNC(this)
+
    // Call the finish interface for this manager's analytic. 
    _analytic->finish();
 
@@ -249,6 +268,8 @@ void AbstractManager::finish()
  */
 QFile* AbstractManager::addOutputFile(const QString& path)
 {
+   EDEBUG_FUNC(this,path)
+
    // If the given path is empty then return a null pointer, else go to the next 
    // step. 
    if ( path.isEmpty() )
@@ -291,6 +312,8 @@ QFile* AbstractManager::addOutputFile(const QString& path)
  */
 Ace::DataObject* AbstractManager::addOutputData(const QString& path, quint16 type, const EMetadata& system)
 {
+   EDEBUG_FUNC(this,path,type,system)
+
    // If the given path is empty then return a null pointer, else go to the next 
    // step. 
    if ( path.isEmpty() )
@@ -318,6 +341,8 @@ Ace::DataObject* AbstractManager::addOutputData(const QString& path, quint16 typ
 AbstractManager::AbstractManager(quint16 type):
    _type(type)
 {
+   EDEBUG_FUNC(this,type)
+
    // If the given analytic type is out of range then throw an exception, else go to 
    // the next step. 
    EAbstractAnalyticFactory& factory {EAbstractAnalyticFactory::instance()};
@@ -355,6 +380,8 @@ AbstractManager::AbstractManager(quint16 type):
  */
 std::unique_ptr<EAbstractAnalytic::Block> AbstractManager::makeWork(int index)
 {
+   EDEBUG_FUNC(this,index)
+
    // Call this manager's analytic interface to make a new work block with the given 
    // index. If the analytic returned a null pointer or the work block has an 
    // incorrect index then throw an exception, else return the new work block. 
@@ -394,6 +421,8 @@ std::unique_ptr<EAbstractAnalytic::Block> AbstractManager::makeWork(int index)
  */
 void AbstractManager::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result, int expectedIndex)
 {
+   EDEBUG_FUNC(this,result.get(),expectedIndex)
+
    // If the given result block's index is not equal to the expected index then throw 
    // an exception, else go to the next step. 
    if ( result->index() != expectedIndex )
@@ -433,6 +462,8 @@ void AbstractManager::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& re
  */
 EAbstractAnalytic* AbstractManager::analytic()
 {
+   EDEBUG_FUNC(this)
+
    return _analytic;
 }
 
@@ -448,6 +479,8 @@ EAbstractAnalytic* AbstractManager::analytic()
  */
 const EAbstractAnalytic* AbstractManager::analytic() const
 {
+   EDEBUG_FUNC(this)
+
    return _analytic;
 }
 
@@ -461,7 +494,9 @@ const EAbstractAnalytic* AbstractManager::analytic() const
  * all argument input has been set. The default implementation does nothing. 
  */
 void AbstractManager::start()
-{}
+{
+   EDEBUG_FUNC(this)
+}
 
 
 
@@ -473,6 +508,8 @@ void AbstractManager::start()
  */
 void AbstractManager::setupInput()
 {
+   EDEBUG_FUNC(this)
+
    // Create a new abstract analytic input from this manager's analytic, resize the 
    // array of inputs to the argument size of the abstract input object, and then 
    // populate all inputs with their default values. 
@@ -495,6 +532,8 @@ void AbstractManager::setupInput()
  */
 void AbstractManager::inputBasic()
 {
+   EDEBUG_FUNC(this)
+
    // Iterate through all of this manager's array of argument settings for the 
    // proceeding steps. 
    for (int i = 0; i < _inputs.size() ;++i)
@@ -527,6 +566,8 @@ void AbstractManager::inputBasic()
  */
 void AbstractManager::inputFiles()
 {
+   EDEBUG_FUNC(this)
+
    // Iterate through all of this manager's array of argument settings for the 
    // proceeding steps. 
    for (int i = 0; i < _inputs.size() ;++i)
@@ -573,6 +614,8 @@ void AbstractManager::inputFiles()
  */
 QFile* AbstractManager::addInputFile(const QString& path)
 {
+   EDEBUG_FUNC(this,path)
+
    // if the given path string is empty then return a null pointer, else go to the 
    // next step. 
    if ( path.isEmpty() )
@@ -608,6 +651,8 @@ QFile* AbstractManager::addInputFile(const QString& path)
  */
 void AbstractManager::inputData()
 {
+   EDEBUG_FUNC(this)
+
    // Initialize all input data objects, build the system metadata for output data 
    // objects, and initialize all output data objects. 
    EMetadata system{inputDataIn()};
@@ -626,6 +671,8 @@ void AbstractManager::inputData()
  */
 EMetadata AbstractManager::inputDataIn()
 {
+   EDEBUG_FUNC(this)
+
    // Iterate through all of this manager's array of argument settings for steps 2 
    // and 3. 
    QList<Ace::DataObject*> inputs;
@@ -667,6 +714,8 @@ EMetadata AbstractManager::inputDataIn()
  */
 Ace::DataObject* AbstractManager::addInputData(const QString& path)
 {
+   EDEBUG_FUNC(this,path)
+
    // If the given path string is empty then return a null pointer, else go to the 
    // next step. 
    if ( path.isEmpty() )
@@ -694,6 +743,8 @@ Ace::DataObject* AbstractManager::addInputData(const QString& path)
  */
 EMetadata AbstractManager::buildMeta(const QList<Ace::DataObject*>& inputs)
 {
+   EDEBUG_FUNC(this,&inputs)
+
    // Create and return a metadata object type, inserting the input, command, uuid, 
    // and version keys with the input and command sections of system metadata. 
    EMetadata ret(EMetadata::Object);
@@ -716,6 +767,8 @@ EMetadata AbstractManager::buildMeta(const QList<Ace::DataObject*>& inputs)
  */
 EMetadata AbstractManager::buildMetaVersion()
 {
+   EDEBUG_FUNC(this)
+
    // Create a new metadata object for the application setting the keys for the major 
    // version, minor version, and revision. 
    EMetadata application(EMetadata::Object);
@@ -754,6 +807,8 @@ EMetadata AbstractManager::buildMetaVersion()
  */
 EMetadata AbstractManager::buildMetaInput(const QList<Ace::DataObject*>& inputs)
 {
+   EDEBUG_FUNC(this,&inputs)
+
    // Iterate through all input data objects in given list of them for step 2. 
    EMetadata ret(EMetadata::Object);
    for (auto input: inputs)
@@ -786,6 +841,8 @@ EMetadata AbstractManager::buildMetaInput(const QList<Ace::DataObject*>& inputs)
  */
 EMetadata AbstractManager::buildMetaCommand()
 {
+   EDEBUG_FUNC(this)
+
    // Create a metadata object for the command options, populating it with all 
    // analytic input options using the command line name for the keys and values for 
    // the values. 
@@ -819,6 +876,8 @@ EMetadata AbstractManager::buildMetaCommand()
  */
 void AbstractManager::inputDataOut(const EMetadata& system)
 {
+   EDEBUG_FUNC(this,system)
+
    // Iterate through all of this manager's array of argument settings for the 
    // proceeding steps. 
    for (int i = 0; i < _inputs.size() ;++i)

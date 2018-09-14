@@ -7,6 +7,7 @@
 #include "eabstractanalytic_serial.h"
 #include "eabstractanalytic_opencl.h"
 #include "ace_settings.h"
+#include "edebug.h"
 
 
 
@@ -27,6 +28,8 @@ using namespace Ace::Analytic;
  */
 bool Single::isFinished() const
 {
+   EDEBUG_FUNC(this)
+
    return _nextResult >= analytic()->size();
 }
 
@@ -42,7 +45,9 @@ bool Single::isFinished() const
  */
 Single::Single(quint16 type):
    AbstractManager(type)
-{}
+{
+   EDEBUG_FUNC(this,type)
+}
 
 
 
@@ -57,6 +62,8 @@ Single::Single(quint16 type):
  */
 int Single::index() const
 {
+   EDEBUG_FUNC(this)
+
    return _nextResult;
 }
 
@@ -74,6 +81,8 @@ int Single::index() const
  */
 void Single::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 {
+   EDEBUG_FUNC(this,result.get())
+
    // Write the given result block to the underlying analytic. If this manager is 
    // finished then emit the done signal. 
    AbstractManager::writeResult(std::move(result),_nextResult++);
@@ -95,6 +104,8 @@ void Single::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
  */
 void Single::start()
 {
+   EDEBUG_FUNC(this)
+
    // Setup OpenCL, setup serial if OpenCL fails, and then connect this object's 
    // abstract runner class finished signal with this manager's finish slot. 
    setupOpenCL();
@@ -116,6 +127,8 @@ void Single::start()
  */
 void Single::process()
 {
+   EDEBUG_FUNC(this)
+
    // While the next work index is less than the size of this object's analytic do 
    // the following steps. 
    while ( _nextWork < analytic()->size() )
@@ -147,6 +160,8 @@ void Single::process()
  */
 void Single::setupOpenCL()
 {
+   EDEBUG_FUNC(this)
+
    // If the singleton settings object has a valid OpenCL device pointer and this 
    // manager's analytic creates a valid abstract OpenCL object then create a new 
    // OpenCL run object, setting this manager's run pointer to the new object. 
@@ -173,6 +188,8 @@ void Single::setupOpenCL()
  */
 void Single::setupSerial()
 {
+   EDEBUG_FUNC(this)
+
    // If this object's abstract run object has already been set then do nothing and 
    // exit, else go to the next step. 
    if ( !_runner )

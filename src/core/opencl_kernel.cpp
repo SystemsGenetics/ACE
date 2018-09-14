@@ -23,6 +23,8 @@ using namespace OpenCL;
  */
 Kernel::~Kernel()
 {
+   EDEBUG_FUNC(this)
+
    // Release the OpenCL kernel and clear all arrays. 
    clReleaseKernel(_id);
    clear();
@@ -44,6 +46,8 @@ Kernel::~Kernel()
  */
 Event Kernel::execute(CommandQueue* queue)
 {
+   EDEBUG_FUNC(this,queue)
+
    // Add a ND range kernel execution command to the given command queue with this 
    // objects dimensions of offsets, global sizes, and local sizes, returning the 
    // event for the added command. If adding the command fails then throw an 
@@ -81,6 +85,8 @@ Event Kernel::execute(CommandQueue* queue)
 Kernel::Kernel(Program* program, const QString& name, QObject* parent):
    QObject(parent)
 {
+   EDEBUG_FUNC(this,program,name,parent)
+
    // Create a new OpenCL kernel from the given program with the given name, storing 
    // its id to this object. If creating the kernel fails then throw an exception. 
    cl_int code;
@@ -109,6 +115,8 @@ Kernel::Kernel(Program* program, const QString& name, QObject* parent):
  */
 Kernel::Locker Kernel::lock()
 {
+   EDEBUG_FUNC(this)
+
    // Lock this kernel's mutex, set this object as locked, and return a locker object 
    // pointing to this kernel. 
    _lock.lock();
@@ -127,6 +135,8 @@ Kernel::Locker Kernel::lock()
  */
 void Kernel::unlock()
 {
+   EDEBUG_FUNC(this)
+
    // Unlock this kernel's mutex and set this object as unlocked. 
    _lock.unlock();
    _isLocked = false;
@@ -147,6 +157,8 @@ void Kernel::unlock()
  */
 int Kernel::maxWorkGroupSize(Device* device) const
 {
+   EDEBUG_FUNC(this,device)
+
    // If this kernel is not locked then throw an exception, else go to the next step. 
    if ( !_isLocked )
    {
@@ -192,6 +204,8 @@ int Kernel::maxWorkGroupSize(Device* device) const
  */
 int Kernel::workGroupMultiple(Device* device) const
 {
+   EDEBUG_FUNC(this,device)
+
    // If this kernel is not locked then throw an exception, else go to the next step. 
    if ( !_isLocked )
    {
@@ -236,6 +250,8 @@ int Kernel::workGroupMultiple(Device* device) const
  */
 void Kernel::setDimensions(cl_uint size)
 {
+   EDEBUG_FUNC(this,size)
+
    // If this kernel is not locked or the given size is less than one then throw an 
    // exception, else go to the next step. 
    if ( !_isLocked )
@@ -286,6 +302,8 @@ void Kernel::setDimensions(cl_uint size)
  */
 void Kernel::setSizes(cl_uint dimension, qint64 globalSize, qint64 localSize)
 {
+   EDEBUG_FUNC(this,dimension,globalSize,localSize)
+
    // If this kernel is not locked, the given dimension is out of rage, the global or 
    // local sizes are less then one, or the global size is not a multiple of the 
    // local size then throw an exception, else go to the next step. 
@@ -333,6 +351,8 @@ void Kernel::setSizes(cl_uint dimension, qint64 globalSize, qint64 localSize)
  */
 void Kernel::allocate()
 {
+   EDEBUG_FUNC(this)
+
    // Allocate new arrays for offsets, global sizes, and local sizes, setting this 
    // object's pointers to the new arrays. 
    _offsets = new size_t[_size];
@@ -360,6 +380,8 @@ void Kernel::allocate()
  */
 void Kernel::clear()
 {
+   EDEBUG_FUNC(this)
+
    // Delete all arrays this object points to. 
    delete[] _offsets;
    delete[] _globalSizes;

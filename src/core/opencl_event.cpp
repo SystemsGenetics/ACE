@@ -1,6 +1,7 @@
 #include "opencl_event.h"
 #include "opencl_common.h"
 #include "eexception.h"
+#include "edebug.h"
 
 
 
@@ -20,6 +21,8 @@ using namespace OpenCL;
  */
 void Event::operator=(const Event& other)
 {
+   EDEBUG_FUNC(this,&other)
+
    // If this object contains an event ID then release it. 
    if ( _id )
    {
@@ -60,6 +63,8 @@ void Event::operator=(const Event& other)
  */
 void Event::operator=(Event&& other)
 {
+   EDEBUG_FUNC(this,&other)
+
    // If this object has an event ID then release and delete it. 
    if ( _id )
    {
@@ -86,6 +91,8 @@ void Event::operator=(Event&& other)
 Event::Event(cl_event id):
    _id(new cl_event)
 {
+   EDEBUG_FUNC(this,(void*)id)
+
    *_id = id;
 }
 
@@ -101,6 +108,8 @@ Event::Event(cl_event id):
  */
 Event::Event(const Event& other)
 {
+   EDEBUG_FUNC(this,&other)
+
    // If the other event is null then do nothing and exit, else go to the next step. 
    if ( other._id )
    {
@@ -125,6 +134,8 @@ Event::Event(const Event& other)
 Event::Event(Event&& other):
    _id(other._id)
 {
+   EDEBUG_FUNC(this,&other)
+
    other._id = nullptr;
 }
 
@@ -138,6 +149,8 @@ Event::Event(Event&& other):
  */
 Event::~Event()
 {
+   EDEBUG_FUNC(this)
+
    // If this object has an allocated event ID then release the ID and delete it. 
    if ( _id )
    {
@@ -158,6 +171,8 @@ Event::~Event()
  */
 bool Event::isNull() const
 {
+   EDEBUG_FUNC(this)
+
    return !_id;
 }
 
@@ -172,6 +187,8 @@ bool Event::isNull() const
  */
 void Event::wait() const
 {
+   EDEBUG_FUNC(this)
+
    // If this object is not null then wait for its event to complete. If waiting 
    // fails then throw an exception. 
    if ( _id )
@@ -198,6 +215,8 @@ void Event::wait() const
  */
 bool Event::isDone() const
 {
+   EDEBUG_FUNC(this)
+
    // If this event is null then return true, else go to the next step. 
    if ( !_id )
    {
@@ -233,6 +252,8 @@ bool Event::isDone() const
  */
 void Event::release()
 {
+   EDEBUG_FUNC(this)
+
    // Release this object's OpenCL event, throwing an exception if it fails. 
    cl_int code {clRetainEvent(*_id)};
    if ( code != CL_SUCCESS )
@@ -253,6 +274,8 @@ void Event::release()
  */
 void Event::retain()
 {
+   EDEBUG_FUNC(this)
+
    // Retain this object's OpenCL event, throwing an exception if it fails. 
    cl_int code {clRetainEvent(*_id)};
    if ( code != CL_SUCCESS )

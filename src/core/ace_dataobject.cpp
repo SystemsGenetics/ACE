@@ -5,6 +5,7 @@
 #include "eabstractdatafactory.h"
 #include "common.h"
 #include "eexception.h"
+#include "edebug.h"
 
 
 
@@ -28,6 +29,8 @@ DataObject::DataObject(const QString& path, QObject* parent):
    QObject(parent),
    _rawPath(path)
 {
+   EDEBUG_FUNC(this,path,parent)
+
    // Open the data object file, read in the header data, and call the read data 
    // interface of this object's abstract data object. 
    try
@@ -75,6 +78,8 @@ DataObject::DataObject(const QString& path, quint16 type, const EMetadata& syste
    _type(type),
    _system(system)
 {
+   EDEBUG_FUNC(this,path,type,system,parent)
+
    // Open the data object file, signal this new data object is overwriting the file, 
    // write out the header data, and call the new data interface for this object's 
    // abstract data object. 
@@ -110,6 +115,8 @@ DataObject::DataObject(const QString& path, quint16 type, const EMetadata& syste
  */
 QString DataObject::rawPath() const
 {
+   EDEBUG_FUNC(this)
+
    return _rawPath;
 }
 
@@ -125,6 +132,8 @@ QString DataObject::rawPath() const
  */
 QString DataObject::path() const
 {
+   EDEBUG_FUNC(this)
+
    return _path;
 }
 
@@ -140,6 +149,8 @@ QString DataObject::path() const
  */
 QString DataObject::fileName() const
 {
+   EDEBUG_FUNC(this)
+
    return _fileName;
 }
 
@@ -155,6 +166,8 @@ QString DataObject::fileName() const
  */
 quint16 DataObject::type() const
 {
+   EDEBUG_FUNC(this)
+
    return _type;
 }
 
@@ -171,6 +184,8 @@ quint16 DataObject::type() const
  */
 qint64 DataObject::size() const
 {
+   EDEBUG_FUNC(this)
+
    return _file->size() - _headerOffset;
 }
 
@@ -187,6 +202,8 @@ qint64 DataObject::size() const
  */
 EMetadata DataObject::systemMeta() const
 {
+   EDEBUG_FUNC(this)
+
    return _system;
 }
 
@@ -203,6 +220,8 @@ EMetadata DataObject::systemMeta() const
  */
 EMetadata DataObject::userMeta() const
 {
+   EDEBUG_FUNC(this)
+
    // If this data object's user metadata has not been written to file then return 
    // its temporary user metadata stored in system memory. 
    if ( !_userMetaWritten )
@@ -233,6 +252,8 @@ EMetadata DataObject::userMeta() const
  */
 void DataObject::seek(qint64 index) const
 {
+   EDEBUG_FUNC(this,index)
+
    // If the given index is less than 0 then throw an exception, else to go the next 
    // step. 
    if ( index < 0 )
@@ -266,6 +287,8 @@ void DataObject::seek(qint64 index) const
  */
 const EDataStream& DataObject::stream() const
 {
+   EDEBUG_FUNC(this)
+
    return *_stream;
 }
 
@@ -288,6 +311,8 @@ const EDataStream& DataObject::stream() const
  */
 void DataObject::allocate(int size)
 {
+   EDEBUG_FUNC(this,size)
+
    // If the given size is less than 0 then throw an exception, else go to the next 
    // step. 
    if ( size < 0 )
@@ -321,6 +346,8 @@ void DataObject::allocate(int size)
  */
 EDataStream& DataObject::stream()
 {
+   EDEBUG_FUNC(this)
+
    return *_stream;
 }
 
@@ -336,6 +363,8 @@ EDataStream& DataObject::stream()
  */
 EAbstractData* DataObject::data()
 {
+   EDEBUG_FUNC(this)
+
    return _data;
 }
 
@@ -353,6 +382,8 @@ EAbstractData* DataObject::data()
  */
 void DataObject::setUserMeta(const EMetadata& newRoot)
 {
+   EDEBUG_FUNC(this,newRoot)
+
    // If the given metadata is not an object type then throw on an exception, else go 
    // to the next step. 
    if ( !newRoot.isObject() )
@@ -388,6 +419,8 @@ void DataObject::setUserMeta(const EMetadata& newRoot)
  */
 void DataObject::finalize()
 {
+   EDEBUG_FUNC(this)
+
    // If this object's user metadata has not been written then write it with an empty 
    // metadata object type. 
    if ( !_userMetaWritten )
@@ -414,6 +447,8 @@ void DataObject::finalize()
  */
 void DataObject::read(char* data, qint64 size) const
 {
+   EDEBUG_FUNC(this,(void*)data,size)
+
    // If this data object's file cursor position is less than the header offset and 
    // this object's header has already been read then throw an exception, else go the 
    // next step. 
@@ -455,6 +490,8 @@ void DataObject::read(char* data, qint64 size) const
  */
 void DataObject::write(const char* data, qint64 size)
 {
+   EDEBUG_FUNC(this,(void*)data,size)
+
    // If this data object's file cursor position is less than the header offset and 
    // this object's header has already been read then throw an exception, else go the 
    // next step. 
@@ -493,6 +530,8 @@ void DataObject::write(const char* data, qint64 size)
  */
 void DataObject::dataOverwritten(const QString& canonicalPath, Ace::DataObject* object)
 {
+   EDEBUG_FUNC(this,canonicalPath,object)
+
    // If the given path matches this object's path and the given object pointer does 
    // not match this object's pointer then emit the overwritten signal. 
    if ( canonicalPath == _path && object != this )
@@ -513,6 +552,8 @@ void DataObject::dataOverwritten(const QString& canonicalPath, Ace::DataObject* 
  */
 void DataObject::openObject()
 {
+   EDEBUG_FUNC(this)
+
    // Open this data object's file. If opening the file failed then throw an 
    // exception, else go to the next step. 
    _file = new QFile(_rawPath,this);
@@ -551,6 +592,8 @@ void DataObject::openObject()
  */
 void DataObject::readHeader()
 {
+   EDEBUG_FUNC(this)
+
    // Read in this data object's special value, type, name, extension, and system 
    // metadata of this data object's file. If the special value is incorrect then 
    // throw an exception, else go to the next step. 
@@ -589,6 +632,8 @@ void DataObject::readHeader()
  */
 void DataObject::writeHeader()
 {
+   EDEBUG_FUNC(this)
+
    // If this new data object's system metadata is not an object type then throw an 
    // exception, else go to the next step. 
    if ( !_system.isObject() )
@@ -647,6 +692,8 @@ void DataObject::writeHeader()
  */
 void DataObject::makeData(const QString& name, const QString& extension)
 {
+   EDEBUG_FUNC(this,name,extension)
+
    // If the given name or extension does not match would they should be for the 
    // given data type then throw an exception, else create a new abstract data object 
    // setting its parent to this data object. 

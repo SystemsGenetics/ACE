@@ -1,6 +1,7 @@
 #include "opencl_device.h"
 #include "opencl_common.h"
 #include "eexception.h"
+#include "edebug.h"
 
 
 
@@ -33,6 +34,8 @@ Device::Device(cl_device_id id, QObject* parent):
    _name(getStringInfo(CL_DEVICE_NAME)),
    _platform(getInfo<cl_platform_id,cl_platform_id>(CL_DEVICE_PLATFORM))
 {
+   EDEBUG_FUNC(this,(void*)id,parent)
+
    // Initialize all data and query the device type, setting this object's device 
    // type to the type returned. 
    switch (getInfo<cl_device_type,cl_device_type>(CL_DEVICE_TYPE))
@@ -64,6 +67,8 @@ Device::Device(cl_device_id id, QObject* parent):
  */
 cl_device_id Device::id() const
 {
+   EDEBUG_FUNC(this)
+
    return _id;
 }
 
@@ -79,6 +84,8 @@ cl_device_id Device::id() const
  */
 bool Device::isAvailable() const
 {
+   EDEBUG_FUNC(this)
+
    return _available;
 }
 
@@ -94,6 +101,8 @@ bool Device::isAvailable() const
  */
 bool Device::hasCompiler() const
 {
+   EDEBUG_FUNC(this)
+
    return _compiler;
 }
 
@@ -109,6 +118,8 @@ bool Device::hasCompiler() const
  */
 const QStringList& Device::extensions() const
 {
+   EDEBUG_FUNC(this)
+
    return _extensions;
 }
 
@@ -124,6 +135,8 @@ const QStringList& Device::extensions() const
  */
 qint64 Device::globalMemorySize() const
 {
+   EDEBUG_FUNC(this)
+
    return _globalMemorySize;
 }
 
@@ -139,6 +152,8 @@ qint64 Device::globalMemorySize() const
  */
 qint64 Device::localMemorySize() const
 {
+   EDEBUG_FUNC(this)
+
    return _localMemorySize;
 }
 
@@ -155,6 +170,8 @@ qint64 Device::localMemorySize() const
  */
 int Device::computeUnitSize() const
 {
+   EDEBUG_FUNC(this)
+
    return _computeUnitSize;
 }
 
@@ -171,6 +188,8 @@ int Device::computeUnitSize() const
  */
 int Device::clockFrequency() const
 {
+   EDEBUG_FUNC(this)
+
    return _clockFrequency;
 }
 
@@ -186,6 +205,8 @@ int Device::clockFrequency() const
  */
 QString Device::name() const
 {
+   EDEBUG_FUNC(this)
+
    return _name;
 }
 
@@ -201,6 +222,8 @@ QString Device::name() const
  */
 OpenCL::Device::Type Device::type() const
 {
+   EDEBUG_FUNC(this)
+
    return _type;
 }
 
@@ -216,6 +239,8 @@ OpenCL::Device::Type Device::type() const
  */
 cl_platform_id Device::platform() const
 {
+   EDEBUG_FUNC(this)
+
    return _platform;
 }
 
@@ -238,6 +263,8 @@ cl_platform_id Device::platform() const
  */
 template<class R,class T> R Device::getInfo(cl_device_info type) const
 {
+   EDEBUG_FUNC(this,type)
+
    // Query the requested information from OpenCL using the T type and then return it 
    // as a static cast of the R type. If any OpenCL error occurs then throw and 
    // exception. 
@@ -266,6 +293,8 @@ template<class R,class T> R Device::getInfo(cl_device_info type) const
  */
 QString Device::getStringInfo(cl_device_info type) const
 {
+   EDEBUG_FUNC(this,type)
+
    // Query the size of the information requested, then get the information as a C 
    // style string, and then return it as a qt string. If any OpenCL error occurs 
    // then throw an exception. 

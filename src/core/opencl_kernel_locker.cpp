@@ -1,4 +1,5 @@
 #include "opencl_kernel_locker.h"
+#include "edebug.h"
 
 
 
@@ -17,7 +18,9 @@ using namespace OpenCL;
  */
 Kernel::Locker::Locker(Kernel* kernel):
    _kernel(kernel)
-{}
+{
+   EDEBUG_FUNC(this,kernel)
+}
 
 
 
@@ -33,6 +36,8 @@ Kernel::Locker::Locker(Kernel* kernel):
 Kernel::Locker::Locker(Locker&& other):
    _kernel(other._kernel)
 {
+   EDEBUG_FUNC(this,&other)
+
    other._kernel = nullptr;
 }
 
@@ -46,6 +51,8 @@ Kernel::Locker::Locker(Locker&& other):
  */
 Kernel::Locker::~Locker()
 {
+   EDEBUG_FUNC(this)
+
    // If this object contains a kernel object then call its unlock method. 
    if ( _kernel )
    {

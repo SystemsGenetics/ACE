@@ -3,6 +3,7 @@
 #include <QPixmap>
 #include "ace_dataobject.h"
 #include "eexception.h"
+#include "edebug.h"
 
 
 
@@ -23,6 +24,8 @@
  */
 const EDataStream& EDataStream::operator>>(qint8& value) const
 {
+   EDEBUG_FUNC(this,&value)
+
    return read(value);
 }
 
@@ -41,6 +44,8 @@ const EDataStream& EDataStream::operator>>(qint8& value) const
  */
 const EDataStream& EDataStream::operator>>(qint16& value) const
 {
+   EDEBUG_FUNC(this,&value)
+
    return read(value);
 }
 
@@ -59,6 +64,8 @@ const EDataStream& EDataStream::operator>>(qint16& value) const
  */
 const EDataStream& EDataStream::operator>>(qint32& value) const
 {
+   EDEBUG_FUNC(this,&value)
+
    return read(value);
 }
 
@@ -77,6 +84,8 @@ const EDataStream& EDataStream::operator>>(qint32& value) const
  */
 const EDataStream& EDataStream::operator>>(qint64& value) const
 {
+   EDEBUG_FUNC(this,&value)
+
    return read(value);
 }
 
@@ -95,6 +104,8 @@ const EDataStream& EDataStream::operator>>(qint64& value) const
  */
 const EDataStream& EDataStream::operator>>(quint8& value) const
 {
+   EDEBUG_FUNC(this,&value)
+
    return read(value);
 }
 
@@ -113,6 +124,8 @@ const EDataStream& EDataStream::operator>>(quint8& value) const
  */
 const EDataStream& EDataStream::operator>>(quint16& value) const
 {
+   EDEBUG_FUNC(this,&value)
+
    return read(value);
 }
 
@@ -131,6 +144,8 @@ const EDataStream& EDataStream::operator>>(quint16& value) const
  */
 const EDataStream& EDataStream::operator>>(quint32& value) const
 {
+   EDEBUG_FUNC(this,&value)
+
    return read(value);
 }
 
@@ -149,6 +164,8 @@ const EDataStream& EDataStream::operator>>(quint32& value) const
  */
 const EDataStream& EDataStream::operator>>(quint64& value) const
 {
+   EDEBUG_FUNC(this,&value)
+
    return read(value);
 }
 
@@ -167,6 +184,8 @@ const EDataStream& EDataStream::operator>>(quint64& value) const
  */
 const EDataStream& EDataStream::operator>>(float& value) const
 {
+   EDEBUG_FUNC(this,&value)
+
    return read(value);
 }
 
@@ -185,6 +204,8 @@ const EDataStream& EDataStream::operator>>(float& value) const
  */
 const EDataStream& EDataStream::operator>>(double& value) const
 {
+   EDEBUG_FUNC(this,&value)
+
    return read(value);
 }
 
@@ -203,7 +224,9 @@ const EDataStream& EDataStream::operator>>(double& value) const
  */
 const EDataStream& EDataStream::operator>>(QString& value) const
 {
-   // Read in the type marker from the data stream. If the type is not a string then 
+   EDEBUG_FUNC(this,&value)
+
+   // Read in the type marker from the data stream. If the type is not a string then
    // throw an exception, else go to the next step. 
    quint8 type;
    *this >> type;
@@ -242,7 +265,9 @@ const EDataStream& EDataStream::operator>>(QString& value) const
  */
 const EDataStream& EDataStream::operator>>(QByteArray& value) const
 {
-   // Read in type marker from the data stream. If the type is not a byte array then 
+   EDEBUG_FUNC(this,&value)
+
+   // Read in type marker from the data stream. If the type is not a byte array then
    // throw an exception, else go to the next step. 
    quint8 type;
    *this >> type;
@@ -280,6 +305,8 @@ const EDataStream& EDataStream::operator>>(QByteArray& value) const
  */
 EDataStream& EDataStream::operator<<(qint8 value)
 {
+   EDEBUG_FUNC(this,value)
+
    return write(value);
 }
 
@@ -297,6 +324,8 @@ EDataStream& EDataStream::operator<<(qint8 value)
  */
 EDataStream& EDataStream::operator<<(qint16 value)
 {
+   EDEBUG_FUNC(this,value)
+
    return write(value);
 }
 
@@ -314,6 +343,8 @@ EDataStream& EDataStream::operator<<(qint16 value)
  */
 EDataStream& EDataStream::operator<<(qint32 value)
 {
+   EDEBUG_FUNC(this,value)
+
    return write(value);
 }
 
@@ -331,6 +362,8 @@ EDataStream& EDataStream::operator<<(qint32 value)
  */
 EDataStream& EDataStream::operator<<(qint64 value)
 {
+   EDEBUG_FUNC(this,value)
+
    return write(value);
 }
 
@@ -348,6 +381,8 @@ EDataStream& EDataStream::operator<<(qint64 value)
  */
 EDataStream& EDataStream::operator<<(quint8 value)
 {
+   EDEBUG_FUNC(this,value)
+
    return write(value);
 }
 
@@ -365,6 +400,8 @@ EDataStream& EDataStream::operator<<(quint8 value)
  */
 EDataStream& EDataStream::operator<<(quint16 value)
 {
+   EDEBUG_FUNC(this,value)
+
    return write(value);
 }
 
@@ -382,6 +419,8 @@ EDataStream& EDataStream::operator<<(quint16 value)
  */
 EDataStream& EDataStream::operator<<(quint32 value)
 {
+   EDEBUG_FUNC(this,value)
+
    return write(value);
 }
 
@@ -399,6 +438,8 @@ EDataStream& EDataStream::operator<<(quint32 value)
  */
 EDataStream& EDataStream::operator<<(quint64 value)
 {
+   EDEBUG_FUNC(this,value)
+
    return write(value);
 }
 
@@ -416,6 +457,8 @@ EDataStream& EDataStream::operator<<(quint64 value)
  */
 EDataStream& EDataStream::operator<<(float value)
 {
+   EDEBUG_FUNC(this,value)
+
    return write(value);
 }
 
@@ -433,6 +476,8 @@ EDataStream& EDataStream::operator<<(float value)
  */
 EDataStream& EDataStream::operator<<(double value)
 {
+   EDEBUG_FUNC(this,value)
+
    return write(value);
 }
 
@@ -450,7 +495,9 @@ EDataStream& EDataStream::operator<<(double value)
  */
 EDataStream& EDataStream::operator<<(const QString& value)
 {
-   // Write out the string type marker and the string itself as a byte array encoded 
+   EDEBUG_FUNC(this,value)
+
+   // Write out the string type marker and the string itself as a byte array encoded
    // with UTF-8. 
    *this << static_cast<quint8>(Tag::String);
    *this << value.toUtf8();
@@ -475,7 +522,9 @@ EDataStream& EDataStream::operator<<(const QString& value)
  */
 EDataStream& EDataStream::operator<<(const QByteArray& value)
 {
-   // Write out the byte array type marker, the size of the byte array, and the byte 
+   EDEBUG_FUNC(this,&value)
+
+   // Write out the byte array type marker, the size of the byte array, and the byte
    // array itself. 
    *this << static_cast<quint8>(Tag::ByteArray);
    *this << static_cast<quint32>(value.size());
@@ -499,7 +548,9 @@ EDataStream& EDataStream::operator<<(const QByteArray& value)
  */
 EDataStream::EDataStream(Ace::DataObject* parent):
    _parent(parent)
-{}
+{
+   EDEBUG_FUNC(this,parent)
+}
 
 
 
@@ -517,6 +568,8 @@ EDataStream::EDataStream(Ace::DataObject* parent):
  */
 template<class T> const EDataStream& EDataStream::read(T& value) const
 {
+   EDEBUG_FUNC(this,&value)
+
    // Read in the given value from this data stream, flipping the bytes of the read 
    // in value if required. 
    _parent->read(reinterpret_cast<char*>(&value),sizeof(T));
@@ -542,6 +595,8 @@ template<class T> const EDataStream& EDataStream::read(T& value) const
  */
 template<class T> EDataStream& EDataStream::write(T value)
 {
+   EDEBUG_FUNC(this,&value)
+
    // Write out the given value to the data stream, flipping the bytes before writing 
    // if required. 
    value = qToBigEndian(value);

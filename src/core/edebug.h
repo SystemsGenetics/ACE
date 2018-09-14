@@ -4,6 +4,9 @@
 #include <QAtomicInteger>
 #include <QVector>
 #include <QTextStream>
+#include "eabstractanalytic.h"
+#include "eabstractanalytic_input.h"
+#include "ace_analytic_abstractmpi.h"
 #ifdef QT_DEBUG
 #define EDEBUG_FUNC(...) EDebug debug(__PRETTY_FUNCTION__,#__VA_ARGS__); debug.setArguments(__VA_ARGS__);
 #else
@@ -18,6 +21,19 @@
 class EDebug
 {
 public:
+   /*!
+    */
+   enum Token
+   {
+      /*!
+       */
+      Quote
+      /*!
+       */
+      ,NoQuote
+   };
+public:
+   EDebug& operator<<(Token token);
    EDebug& operator<<(bool value);
    EDebug& operator<<(qint8 value);
    EDebug& operator<<(qint16 value);
@@ -29,10 +45,17 @@ public:
    EDebug& operator<<(quint64 value);
    EDebug& operator<<(float value);
    EDebug& operator<<(double value);
+   EDebug& operator<<(const char* value);
    EDebug& operator<<(const void*const value);
-   EDebug& operator<<(const QObject*const value);
    EDebug& operator<<(const QString& value);
    EDebug& operator<<(const QStringList& value);
+   EDebug& operator<<(const QObject*const value);
+   EDebug& operator<<(const QVariant& value);
+   EDebug& operator<<(const EMetadata& value);
+   EDebug& operator<<(const EAbstractAnalytic::Block*const value);
+   EDebug& operator<<(EAbstractAnalytic::Input::Type value);
+   EDebug& operator<<(EAbstractAnalytic::Input::Role value);
+   EDebug& operator<<(Ace::Analytic::AbstractMPI::Type value);
 public:
    static int threadId();
    EDebug(const char* function, const char* argumentNames);
@@ -51,6 +74,9 @@ private:
    /*!
     */
    static thread_local int _stackDepth;
+   /*!
+    */
+   static thread_local bool _active;
    void setArgument(int depth);
    void setupArguments(const char* argumentNames);
    /*!
@@ -68,6 +94,9 @@ private:
    /*!
     */
    QByteArray _holder;
+   /*!
+    */
+   bool _quote {true};
 };
 
 
@@ -83,7 +112,13 @@ private:
  */
 template<class... Args> void EDebug::setArguments(Args... arguments)
 {
+   if ( _active )
+   {
+      return;
+   }
+   _active = true;
    setArgument(0,arguments...);
+   _active = false;
 }
 
 
@@ -101,6 +136,7 @@ template<class... Args> void EDebug::setArguments(Args... arguments)
  */
 template<class T> void EDebug::setArgument(int depth, T last)
 {
+   _quote = true;
    _holder.clear();
    *this << last;
    _argumentValues[depth] = _holder;
@@ -130,6 +166,7 @@ template<class T> void EDebug::setArgument(int depth, T last)
  */
 template<class T,class... Args> void EDebug::setArgument(int depth, T first, Args... arguments)
 {
+   _quote = true;
    _holder.clear();
    *this << first;
    _argumentValues[depth] = _holder;

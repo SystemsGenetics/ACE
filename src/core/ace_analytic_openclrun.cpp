@@ -7,6 +7,7 @@
 #include "opencl_device.h"
 #include "opencl_context.h"
 #include "eexception.h"
+#include "edebug.h"
 
 
 
@@ -29,6 +30,8 @@ using namespace Ace::Analytic;
  */
 void OpenCLRun::addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block)
 {
+   EDEBUG_FUNC(this,block.get())
+
    // Wait until there is at least one idle thread, blocking execution until that is 
    // the case. 
    while ( _idle.isEmpty() )
@@ -66,6 +69,8 @@ OpenCLRun::OpenCLRun(EAbstractAnalytic::OpenCL* opencl, OpenCL::Device* device, 
    _base(base),
    _threads(Settings::instance().threadSize())
 {
+   EDEBUG_FUNC(this,opencl,device,base,parent)
+
    // Initialize the given abstract OpenCL object, create a qt mapper and connect its 
    // mapped signal. 
    opencl->initialize(_context);
@@ -100,6 +105,8 @@ OpenCLRun::OpenCLRun(EAbstractAnalytic::OpenCL* opencl, OpenCL::Device* device, 
  */
 OpenCLRun::~OpenCLRun()
 {
+   EDEBUG_FUNC(this)
+
    // Iterate through all threads, for each one waiting until it is no longer running 
    // and then deleting it. 
    for (auto thread: _threads)
@@ -122,6 +129,8 @@ OpenCLRun::~OpenCLRun()
  */
 void OpenCLRun::blockFinished(int index)
 {
+   EDEBUG_FUNC(this,index)
+
    // Get the result block from the thread that finished execution, saving it to this 
    // object's abstract input and adding the thread to this object's idle queue. 
    Thread* thread {_threads.at(index)};

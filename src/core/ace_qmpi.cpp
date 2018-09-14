@@ -1,5 +1,6 @@
 #include "ace_qmpi.h"
 #include "eexception.h"
+#include "edebug.h"
 
 
 
@@ -32,6 +33,8 @@ QMPI* QMPI::_instance {nullptr};
  */
 QMPI& QMPI::instance()
 {
+   EDEBUG_FUNC()
+
    // If shutdown has already been called on another instance of this class throw an 
    // exception about this fact. 
    if ( _hasShutdown )
@@ -64,6 +67,8 @@ QMPI& QMPI::instance()
  */
 void QMPI::shutdown()
 {
+   EDEBUG_FUNC()
+
    // If an instance of this class exists in the static pointer delete it and set the 
    // shutdown flag to true to prevent initializing another instance. 
    if ( _instance )
@@ -85,6 +90,8 @@ void QMPI::shutdown()
  */
 bool QMPI::isMaster() const
 {
+   EDEBUG_FUNC(this)
+
    return _rank == 0;
 }
 
@@ -100,6 +107,8 @@ bool QMPI::isMaster() const
  */
 int QMPI::size() const
 {
+   EDEBUG_FUNC(this)
+
    return _size;
 }
 
@@ -115,6 +124,8 @@ int QMPI::size() const
  */
 int QMPI::rank() const
 {
+   EDEBUG_FUNC(this)
+
    return _rank;
 }
 
@@ -131,6 +142,8 @@ int QMPI::rank() const
  */
 int QMPI::localSize() const
 {
+   EDEBUG_FUNC(this)
+
    return _localSize;
 }
 
@@ -147,6 +160,8 @@ int QMPI::localSize() const
  */
 int QMPI::localRank() const
 {
+   EDEBUG_FUNC(this)
+
    return _localRank;
 }
 
@@ -160,7 +175,11 @@ int QMPI::localRank() const
  * received. 
  */
 void QMPI::start()
-{}
+{
+   EDEBUG_FUNC(this)
+
+   _ignore = false;
+}
 
 
 
@@ -172,7 +191,11 @@ void QMPI::start()
  * it is enabled. 
  */
 void QMPI::stop()
-{}
+{
+   EDEBUG_FUNC(this)
+
+   _ignore = true;
+}
 
 
 
@@ -189,6 +212,8 @@ void QMPI::stop()
  */
 void QMPI::sendData(int toRank, const QByteArray& data)
 {
+   EDEBUG_FUNC(this,toRank,&data)
+
    sendData(MPI_COMM_WORLD,toRank,data);
 }
 
@@ -207,6 +232,8 @@ void QMPI::sendData(int toRank, const QByteArray& data)
  */
 void QMPI::sendLocalData(int toRank, const QByteArray& data)
 {
+   EDEBUG_FUNC(this,toRank,&data)
+
    sendData(_local,toRank,data);
 }
 
@@ -249,6 +276,8 @@ void QMPI::timerEvent(QTimerEvent* event)
  */
 QMPI::QMPI()
 {
+   EDEBUG_FUNC(this)
+
    // Initialize the MPI system. If it failed then set this object to a single 
    // process state and exit, else go to the next step. 
    if ( MPI_Init(nullptr,nullptr) )
@@ -278,6 +307,8 @@ QMPI::QMPI()
  */
 QMPI::~QMPI()
 {
+   EDEBUG_FUNC(this)
+
    // If MPI initialization did not fail for this object then free the local MPI comm 
    // and call the MPI finalize function. 
    if ( !_failed )
@@ -369,6 +400,8 @@ void QMPI::probe(MPI_Comm comm, int rank)
  */
 void QMPI::sendData(MPI_Comm comm, int toRank, const QByteArray& data)
 {
+   EDEBUG_FUNC(this,&comm,toRank,&data)
+
    // Send the given data to the node with the given rank using the given MPI comm. 
    // If sending fails then throw an exception. 
    if ( MPI_Send(data.data(),data.size(),MPI_CHAR,toRank,0,comm) )
@@ -391,6 +424,8 @@ void QMPI::sendData(MPI_Comm comm, int toRank, const QByteArray& data)
  */
 void QMPI::setupWorld()
 {
+   EDEBUG_FUNC(this)
+
    // Get the world MPI comm size and this node's rank, saving it to this object. If 
    // any MPI call fails then throw an exception. 
    if ( MPI_Comm_size(MPI_COMM_WORLD,&_size) )
@@ -420,6 +455,8 @@ void QMPI::setupWorld()
  */
 void QMPI::setupLocal()
 {
+   EDEBUG_FUNC(this)
+
    // Create the local comm and save it to this object, along with getting the local 
    // size and this node's local rank from the created local comm. If any MPI call 
    // fails then throw an exception. 

@@ -8,6 +8,8 @@
 #include "opencl_device.h"
 #include "eabstractanalytic_block.h"
 #include "eexception.h"
+#include "edebug.h"
+#include "emetadata.h"
 
 
 
@@ -30,6 +32,8 @@ using namespace Ace::Analytic;
  */
 bool MPISlave::isFinished() const
 {
+   EDEBUG_FUNC(this)
+
    return _finished && _workSize == 0;
 }
 
@@ -47,6 +51,8 @@ MPISlave::MPISlave(quint16 type):
    AbstractMPI(type),
    _mpi(QMPI::instance())
 {
+   EDEBUG_FUNC(this,type)
+
    connect(&_mpi,&QMPI::dataReceived,this,&MPISlave::dataReceived);
 }
 
@@ -60,6 +66,8 @@ MPISlave::MPISlave(quint16 type):
  */
 MPISlave::~MPISlave()
 {
+   EDEBUG_FUNC(this)
+
    QMPI::shutdown();
 }
 
@@ -82,6 +90,8 @@ MPISlave::~MPISlave()
  */
 void MPISlave::mpiStart(Type type, int platform, int device)
 {
+   EDEBUG_FUNC(this,type,platform,device)
+
    // Initialize a serial or OpenCL abstract run object depending on whether the 
    // given resource type is serial or OpenCL, respectively. If initializing OpenCL 
    // fails then fall back to initializing a serial run object. 
@@ -134,6 +144,8 @@ void MPISlave::mpiStart(Type type, int platform, int device)
  */
 QFile* MPISlave::addOutputFile(const QString& path)
 {
+   EDEBUG_FUNC(this,path)
+
    Q_UNUSED(path)
    return nullptr;
 }
@@ -159,6 +171,8 @@ QFile* MPISlave::addOutputFile(const QString& path)
  */
 Ace::DataObject* MPISlave::addOutputData(const QString& path, quint16 type, const EMetadata& system)
 {
+   EDEBUG_FUNC(this,path,type,system)
+
    Q_UNUSED(path)
    Q_UNUSED(type)
    Q_UNUSED(system)
@@ -179,6 +193,8 @@ Ace::DataObject* MPISlave::addOutputData(const QString& path, quint16 type, cons
  */
 void MPISlave::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 {
+   EDEBUG_FUNC(this,result.get())
+
    // Send the result block to the master node as byte data, deleting the result 
    // block and decreasing this object's work size. 
    _mpi.sendData(0,result->toBytes());
@@ -202,6 +218,8 @@ void MPISlave::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
  */
 void MPISlave::dataReceived(const QByteArray& data, int fromRank)
 {
+   EDEBUG_FUNC(this,&data,fromRank)
+
    // If the given rank is not from the master node then throw an exception, else go 
    // to the next step. 
    if ( fromRank != 0 )
@@ -239,6 +257,8 @@ void MPISlave::dataReceived(const QByteArray& data, int fromRank)
  */
 void MPISlave::processCode(int code)
 {
+   EDEBUG_FUNC(this,code)
+
    // If the special code is to terminate then go to the next step, else throw an 
    // exception. 
    if ( code == MPIMaster::Terminate )
@@ -275,6 +295,8 @@ void MPISlave::processCode(int code)
  */
 void MPISlave::process(const QByteArray& data)
 {
+   EDEBUG_FUNC(this,&data)
+
    // Create a blank work block from this object's analytic reading in the given data 
    // to it. If this object's analytic fails in creating a blank work block then 
    // throw an exception. 
@@ -314,6 +336,8 @@ void MPISlave::process(const QByteArray& data)
  */
 bool MPISlave::setupOpenCL(int platform, int device)
 {
+   EDEBUG_FUNC(this,platform,device)
+
    // If the given platform and device indexes are invalid then throw an exception, 
    // else go to the next step. 
    if ( platform < 0
@@ -352,6 +376,8 @@ bool MPISlave::setupOpenCL(int platform, int device)
  */
 void MPISlave::setupSerial()
 {
+   EDEBUG_FUNC(this)
+
    // Create a new abstract serial object from this manager's analytic. If creating a 
    // new abstract serial object fails then throw an exception, else go to the next 
    // step. 

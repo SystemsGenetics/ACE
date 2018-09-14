@@ -1,6 +1,7 @@
 #include "ace_analytic_simplerun.h"
 #include "ace_analytic_abstractinput.h"
 #include "eabstractanalytic_block.h"
+#include "edebug.h"
 
 
 
@@ -21,6 +22,8 @@ using namespace Ace::Analytic;
  */
 void SimpleRun::addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block)
 {
+   EDEBUG_FUNC(this,block.get())
+
    // Save the result with a null pointer because this is simple. If the input is 
    // finished then emit the finished signal. 
    Q_UNUSED(block)
@@ -48,4 +51,6 @@ void SimpleRun::addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block)
 SimpleRun::SimpleRun(AbstractInput* base, QObject* parent):
    AbstractRun(parent),
    _base(base)
-{}
+{
+   EDEBUG_FUNC(this,base,parent)
+}

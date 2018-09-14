@@ -2,6 +2,7 @@
 #include "eabstractanalytic_opencl_worker.h"
 #include "eabstractanalytic_block.h"
 #include "eexception.h"
+#include "edebug.h"
 
 
 
@@ -27,6 +28,8 @@ OpenCLRun::Thread::Thread(std::unique_ptr<EAbstractAnalytic::OpenCL::Worker>&& w
    QThread(parent),
    _worker(worker.release())
 {
+   EDEBUG_FUNC(this,worker.get(),parent)
+
    _worker->setParent(this);
 }
 
@@ -45,6 +48,8 @@ OpenCLRun::Thread::Thread(std::unique_ptr<EAbstractAnalytic::OpenCL::Worker>&& w
  */
 void OpenCLRun::Thread::execute(std::unique_ptr<EAbstractAnalytic::Block>&& block)
 {
+   EDEBUG_FUNC(this,block.get())
+
    // If this thread already contains a result block then throw an exception, else go 
    // to the next step. 
    if ( _result )
@@ -78,6 +83,8 @@ void OpenCLRun::Thread::execute(std::unique_ptr<EAbstractAnalytic::Block>&& bloc
  */
 std::unique_ptr<EAbstractAnalytic::Block> OpenCLRun::Thread::result()
 {
+   EDEBUG_FUNC(this)
+
    // If this object has a saved exception from its separate thread then copy it and 
    // throw it on this thread, else go to the next step. 
    if ( _exception )
@@ -117,6 +124,8 @@ std::unique_ptr<EAbstractAnalytic::Block> OpenCLRun::Thread::result()
  */
 void OpenCLRun::Thread::run()
 {
+   EDEBUG_FUNC(this)
+
    // Process this object's saved work block, saving the result block and 
    // transferring it to this object's main thread. If any ACE exception occurs then 
    // catch it and save it. 

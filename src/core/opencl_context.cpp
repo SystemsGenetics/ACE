@@ -3,6 +3,7 @@
 #include "opencl_device.h"
 #include "opencl_common.h"
 #include "eexception.h"
+#include "edebug.h"
 
 
 
@@ -28,6 +29,8 @@ Context::Context(const QList<Device*>& devices, QObject* parent):
    QObject(parent),
    _devices(devices)
 {
+   EDEBUG_FUNC(this,&devices,parent)
+
    // If the given device list is empty then throw an exception, else go to the next 
    // step. 
    if ( devices.isEmpty() )
@@ -72,6 +75,8 @@ Context::Context(const QList<Device*>& devices, QObject* parent):
  */
 Context::~Context()
 {
+   EDEBUG_FUNC(this)
+
    clReleaseContext(_id);
 }
 
@@ -87,6 +92,8 @@ Context::~Context()
  */
 cl_context Context::id() const
 {
+   EDEBUG_FUNC(this)
+
    return _id;
 }
 
@@ -103,5 +110,7 @@ cl_context Context::id() const
  */
 const QList<Device*>& Context::devices() const
 {
+   EDEBUG_FUNC(this)
+
    return _devices;
 }

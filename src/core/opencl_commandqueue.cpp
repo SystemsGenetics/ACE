@@ -3,6 +3,7 @@
 #include "opencl_device.h"
 #include "opencl_common.h"
 #include "eexception.h"
+#include "edebug.h"
 
 
 
@@ -29,6 +30,8 @@ CommandQueue::CommandQueue(Context* context, Device* device, QObject* parent):
    QObject(parent),
    _device(device)
 {
+   EDEBUG_FUNC(this,context,device,parent)
+
    // Create a new OpenCL command queue with the given context and device, setting it 
    // to out of order execution and saving the new ID to this object. If creation 
    // fails then throw an exception. 
@@ -55,6 +58,8 @@ CommandQueue::CommandQueue(Context* context, Device* device, QObject* parent):
  */
 CommandQueue::~CommandQueue()
 {
+   EDEBUG_FUNC(this)
+
    clReleaseCommandQueue(_id);
 }
 
@@ -70,6 +75,8 @@ CommandQueue::~CommandQueue()
  */
 cl_command_queue CommandQueue::id() const
 {
+   EDEBUG_FUNC(this)
+
    return _id;
 }
 
@@ -85,5 +92,7 @@ cl_command_queue CommandQueue::id() const
  */
 Device* CommandQueue::device() const
 {
+   EDEBUG_FUNC(this)
+
    return _device;
 }

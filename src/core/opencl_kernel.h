@@ -4,6 +4,7 @@
 #include <QObject>
 #include "opencl_buffer.h"
 #include "opencl.h"
+#include "edebug.h"
 //
 
 
@@ -96,6 +97,8 @@ namespace OpenCL
     */
    template<class T> void Kernel::setArgument(cl_uint index, T value)
    {
+      EDEBUG_FUNC(this,index,value)
+
       // If this kernel is not locked then throw an exception, else go to the next step. 
       if ( !_isLocked )
       {
@@ -134,6 +137,8 @@ namespace OpenCL
     */
    template<class T> void Kernel::setBuffer(cl_uint index, Buffer<T>* buffer)
    {
+      EDEBUG_FUNC(this,index,buffer)
+
       // If this kernel is not locked then throw an exception, else go to the next step. 
       if ( !_isLocked )
       {
@@ -175,6 +180,8 @@ namespace OpenCL
     */
    template<class T> void Kernel::setLocalMemory(cl_uint index, qint64 size)
    {
+      EDEBUG_FUNC(this,index,size)
+
       // If this kernel is not locked or the given size is less than one then throw an 
       // exception, else go to the next step. 
       if ( !_isLocked )

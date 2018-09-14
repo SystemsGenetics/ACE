@@ -5,6 +5,7 @@
 #include "eexception.h"
 #include "emetaarray.h"
 #include "emetaobject.h"
+#include "edebug.h"
 
 
 
@@ -24,6 +25,8 @@
  */
 EMetadata& EMetadata::operator=(const EMetadata& object)
 {
+   EDEBUG_FUNC(this,object)
+
    // Delete any data this object contains. 
    clear();
 
@@ -50,6 +53,8 @@ EMetadata& EMetadata::operator=(const EMetadata& object)
  */
 EMetadata& EMetadata::operator=(EMetadata&& object)
 {
+   EDEBUG_FUNC(this,object)
+
    // Delete any data this object contains. 
    clear();
 
@@ -78,6 +83,8 @@ EMetadata& EMetadata::operator=(EMetadata&& object)
 EMetadata::EMetadata(Type type):
    _type(type)
 {
+   EDEBUG_FUNC(this,type)
+
    create();
 }
 
@@ -95,6 +102,8 @@ EMetadata::EMetadata(Type type):
 EMetadata::EMetadata(double value):
    EMetadata(Double)
 {
+   EDEBUG_FUNC(this,value)
+
    toDouble() = value;
 }
 
@@ -112,6 +121,8 @@ EMetadata::EMetadata(double value):
 EMetadata::EMetadata(const QString& value):
    EMetadata(String)
 {
+   EDEBUG_FUNC(this,value)
+
    toString() = value;
 }
 
@@ -129,6 +140,8 @@ EMetadata::EMetadata(const QString& value):
 EMetadata::EMetadata(const QByteArray& value):
    EMetadata(Bytes)
 {
+   EDEBUG_FUNC(this,&value)
+
    toBytes() = value;
 }
 
@@ -146,6 +159,8 @@ EMetadata::EMetadata(const QByteArray& value):
 EMetadata::EMetadata(const EMetaArray& value):
    EMetadata(Array)
 {
+   EDEBUG_FUNC(this,value)
+
    toArray() = value;
 }
 
@@ -163,6 +178,8 @@ EMetadata::EMetadata(const EMetaArray& value):
 EMetadata::EMetadata(const EMetaObject& value):
    EMetadata(Object)
 {
+   EDEBUG_FUNC(this,value)
+
    toObject() = value;
 }
 
@@ -180,6 +197,8 @@ EMetadata::EMetadata(const EMetaObject& value):
  */
 EMetadata::EMetadata(const QJsonValue& value)
 {
+   EDEBUG_FUNC(this,&value)
+
    // If the given json value is a boolean, double, or string then initialize this 
    // metadata object to that type, set its value to the json value, and exit, else 
    // go to the next step. 
@@ -266,6 +285,8 @@ EMetadata::EMetadata(EMetadata&& object):
    _type(object._type),
    _data(object._data)
 {
+   EDEBUG_FUNC(this,object)
+
    // Set the supplied metadata object to Null. 
    object._type = Null;
    object._data = nullptr;
@@ -281,6 +302,8 @@ EMetadata::EMetadata(EMetadata&& object):
  */
 EMetadata::~EMetadata()
 {
+   EDEBUG_FUNC(this)
+
    clear();
 }
 
@@ -299,6 +322,8 @@ EMetadata::~EMetadata()
  */
 QJsonValue EMetadata::toJson() const
 {
+   EDEBUG_FUNC(this)
+
    switch (_type)
    {
    // If this metadata is a boolean, double, or string then return the JSON value of 
@@ -370,6 +395,8 @@ EMetadata::Type EMetadata::type() const
  */
 bool EMetadata::isNull() const
 {
+   EDEBUG_FUNC(this)
+
    return _type == Null;
 }
 
@@ -385,6 +412,8 @@ bool EMetadata::isNull() const
  */
 bool EMetadata::isBool() const
 {
+   EDEBUG_FUNC(this)
+
    return _type == Bool;
 }
 
@@ -400,6 +429,8 @@ bool EMetadata::isBool() const
  */
 bool EMetadata::isDouble() const
 {
+   EDEBUG_FUNC(this)
+
    return _type == Double;
 }
 
@@ -415,6 +446,8 @@ bool EMetadata::isDouble() const
  */
 bool EMetadata::isString() const
 {
+   EDEBUG_FUNC(this)
+
    return _type == String;
 }
 
@@ -430,6 +463,8 @@ bool EMetadata::isString() const
  */
 bool EMetadata::isBytes() const
 {
+   EDEBUG_FUNC(this)
+
    return _type == Bytes;
 }
 
@@ -445,6 +480,8 @@ bool EMetadata::isBytes() const
  */
 bool EMetadata::isArray() const
 {
+   EDEBUG_FUNC(this)
+
    return _type == Array;
 }
 
@@ -460,6 +497,8 @@ bool EMetadata::isArray() const
  */
 bool EMetadata::isObject() const
 {
+   EDEBUG_FUNC(this)
+
    return _type == Object;
 }
 
@@ -476,6 +515,8 @@ bool EMetadata::isObject() const
  */
 const bool& EMetadata::toBool() const
 {
+   EDEBUG_FUNC(this)
+
    checkType(Bool);
    return *static_cast<bool*>(_data);
 }
@@ -493,6 +534,8 @@ const bool& EMetadata::toBool() const
  */
 const double& EMetadata::toDouble() const
 {
+   EDEBUG_FUNC(this)
+
    checkType(Double);
    return *static_cast<double*>(_data);
 }
@@ -510,6 +553,8 @@ const double& EMetadata::toDouble() const
  */
 const QString& EMetadata::toString() const
 {
+   EDEBUG_FUNC(this)
+
    checkType(String);
    return *static_cast<QString*>(_data);
 }
@@ -527,6 +572,8 @@ const QString& EMetadata::toString() const
  */
 const QByteArray& EMetadata::toBytes() const
 {
+   EDEBUG_FUNC(this)
+
    checkType(Bytes);
    return *static_cast<QByteArray*>(_data);
 }
@@ -544,6 +591,8 @@ const QByteArray& EMetadata::toBytes() const
  */
 const EMetaArray& EMetadata::toArray() const
 {
+   EDEBUG_FUNC(this)
+
    checkType(Array);
    return *static_cast<EMetaArray*>(_data);
 }
@@ -561,6 +610,8 @@ const EMetaArray& EMetadata::toArray() const
  */
 const EMetaObject& EMetadata::toObject() const
 {
+   EDEBUG_FUNC(this)
+
    checkType(Object);
    return *static_cast<EMetaObject*>(_data);
 }
@@ -578,6 +629,8 @@ const EMetaObject& EMetadata::toObject() const
  */
 bool& EMetadata::toBool()
 {
+   EDEBUG_FUNC(this)
+
    checkType(Bool);
    return *static_cast<bool*>(_data);
 }
@@ -595,6 +648,8 @@ bool& EMetadata::toBool()
  */
 double& EMetadata::toDouble()
 {
+   EDEBUG_FUNC(this)
+
    checkType(Double);
    return *static_cast<double*>(_data);
 }
@@ -612,6 +667,8 @@ double& EMetadata::toDouble()
  */
 QString& EMetadata::toString()
 {
+   EDEBUG_FUNC(this)
+
    checkType(String);
    return *static_cast<QString*>(_data);
 }
@@ -629,6 +686,8 @@ QString& EMetadata::toString()
  */
 QByteArray& EMetadata::toBytes()
 {
+   EDEBUG_FUNC(this)
+
    checkType(Bytes);
    return *static_cast<QByteArray*>(_data);
 }
@@ -646,6 +705,8 @@ QByteArray& EMetadata::toBytes()
  */
 EMetaArray& EMetadata::toArray()
 {
+   EDEBUG_FUNC(this)
+
    checkType(Array);
    return *static_cast<EMetaArray*>(_data);
 }
@@ -663,6 +724,8 @@ EMetaArray& EMetadata::toArray()
  */
 EMetaObject& EMetadata::toObject()
 {
+   EDEBUG_FUNC(this)
+
    checkType(Object);
    return *static_cast<EMetaObject*>(_data);
 }
@@ -681,6 +744,8 @@ EMetaObject& EMetadata::toObject()
  */
 QString EMetadata::typeName(Type type)
 {
+   EDEBUG_FUNC()
+
    // Return constant string of correct type name from given type. 
    switch (type)
    {
@@ -708,6 +773,8 @@ QString EMetadata::typeName(Type type)
  */
 void EMetadata::checkType(Type type) const
 {
+   EDEBUG_FUNC(this,type)
+
    // If the given type does not match with this object's type then throw an 
    // exception, else return from operation. 
    if ( _type != type )
@@ -733,6 +800,8 @@ void EMetadata::checkType(Type type) const
  */
 void EMetadata::clear()
 {
+   EDEBUG_FUNC(this)
+
    // Delete the underlying data the data pointer points to, if any. 
    switch (_type)
    {
@@ -770,6 +839,8 @@ void EMetadata::clear()
  */
 void EMetadata::create()
 {
+   EDEBUG_FUNC(this)
+
    // Create new data based off the type of this object, setting this object's data 
    // pointer to the new data. 
    switch (_type)
@@ -811,6 +882,8 @@ void EMetadata::create()
  */
 void EMetadata::copy(const void* data)
 {
+   EDEBUG_FUNC(this,data)
+
    // Copy the data pointed to by this object's data pointer from a data pointed to 
    // by the supplied data pointer based of this object's type. If the type is Null 
    // then the data pointer is set to null and the supplied data pointer is ignored. 

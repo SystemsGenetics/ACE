@@ -1,5 +1,6 @@
 #include "emetaobject.h"
 #include "emetadata.h"
+#include "edebug.h"
 
 
 
@@ -20,6 +21,8 @@
  */
 EMetaObject& EMetaObject::operator=(const EMetaObject& object)
 {
+   EDEBUG_FUNC(this,object)
+
    // Assign this object to the given mapping. 
    QMap<QString,EMetadata>::operator=(object);
 
@@ -43,6 +46,8 @@ EMetaObject& EMetaObject::operator=(const EMetaObject& object)
  */
 EMetadata& EMetaObject::operator[](const QString& key)
 {
+   EDEBUG_FUNC(this,key)
+
    return QMap<QString,EMetadata>::operator[](key);
 }
 
@@ -61,6 +66,8 @@ EMetadata& EMetaObject::operator[](const QString& key)
  */
 EMetadata EMetaObject::operator[](const QString& key) const
 {
+   EDEBUG_FUNC(this,key)
+
    return QMap<QString,EMetadata>::operator[](key);
 }
 
@@ -76,6 +83,8 @@ EMetadata EMetaObject::operator[](const QString& key) const
  */
 bool EMetaObject::isEmpty() const
 {
+   EDEBUG_FUNC(this)
+
    return QMap<QString,EMetadata>::isEmpty();
 }
 
@@ -91,6 +100,8 @@ bool EMetaObject::isEmpty() const
  */
 int EMetaObject::size() const
 {
+   EDEBUG_FUNC(this)
+
    return QMap<QString,EMetadata>::size();
 }
 
@@ -106,6 +117,8 @@ int EMetaObject::size() const
  */
 QMap<QString,EMetadata>::iterator EMetaObject::begin()
 {
+   EDEBUG_FUNC(this)
+
    return QMap<QString,EMetadata>::begin();
 }
 
@@ -121,6 +134,8 @@ QMap<QString,EMetadata>::iterator EMetaObject::begin()
  */
 QMap<QString,EMetadata>::const_iterator EMetaObject::begin() const
 {
+   EDEBUG_FUNC(this)
+
    return QMap<QString,EMetadata>::begin();
 }
 
@@ -136,6 +151,8 @@ QMap<QString,EMetadata>::const_iterator EMetaObject::begin() const
  */
 QMap<QString,EMetadata>::const_iterator EMetaObject::cbegin() const
 {
+   EDEBUG_FUNC(this)
+
    return QMap<QString,EMetadata>::cbegin();
 }
 
@@ -151,6 +168,8 @@ QMap<QString,EMetadata>::const_iterator EMetaObject::cbegin() const
  */
 QMap<QString,EMetadata>::iterator EMetaObject::end()
 {
+   EDEBUG_FUNC(this)
+
    return QMap<QString,EMetadata>::end();
 }
 
@@ -166,6 +185,8 @@ QMap<QString,EMetadata>::iterator EMetaObject::end()
  */
 QMap<QString,EMetadata>::const_iterator EMetaObject::end() const
 {
+   EDEBUG_FUNC(this)
+
    return QMap<QString,EMetadata>::end();
 }
 
@@ -181,6 +202,8 @@ QMap<QString,EMetadata>::const_iterator EMetaObject::end() const
  */
 QMap<QString,EMetadata>::const_iterator EMetaObject::cend() const
 {
+   EDEBUG_FUNC(this)
+
    return QMap<QString,EMetadata>::cend();
 }
 
@@ -200,6 +223,8 @@ QMap<QString,EMetadata>::const_iterator EMetaObject::cend() const
  */
 EMetadata EMetaObject::at(const QString& key) const
 {
+   EDEBUG_FUNC(this,key)
+
    return QMap<QString,EMetadata>::operator[](key);
 }
 
@@ -219,6 +244,8 @@ EMetadata EMetaObject::at(const QString& key) const
  */
 void EMetaObject::insert(const QString& key, const EMetadata& value)
 {
+   EDEBUG_FUNC(this,key,value)
+
    QMap<QString,EMetadata>::operator[](key) = value;
 }
 
@@ -232,5 +259,7 @@ void EMetaObject::insert(const QString& key, const EMetadata& value)
  */
 void EMetaObject::clear()
 {
+   EDEBUG_FUNC(this)
+
    QMap<QString,EMetadata>::clear();
 }

@@ -2,6 +2,7 @@
 #include "ace_qmpi.h"
 #include "ace_settings.h"
 #include "eabstractanalytic_block.h"
+#include "edebug.h"
 
 
 
@@ -22,6 +23,8 @@ using namespace Ace::Analytic;
  */
 bool MPIMaster::isFinished() const
 {
+   EDEBUG_FUNC(this)
+
    return _nextResult >= analytic()->size();
 }
 
@@ -39,6 +42,8 @@ MPIMaster::MPIMaster(quint16 type):
    AbstractMPI(type),
    _mpi(QMPI::instance())
 {
+   EDEBUG_FUNC(this,type)
+
    connect(&_mpi,&QMPI::dataReceived,this,&MPIMaster::dataReceived);
 }
 
@@ -52,6 +57,8 @@ MPIMaster::MPIMaster(quint16 type):
  */
 MPIMaster::~MPIMaster()
 {
+   EDEBUG_FUNC(this)
+
    QMPI::shutdown();
 }
 
@@ -68,6 +75,8 @@ MPIMaster::~MPIMaster()
  */
 int MPIMaster::index() const
 {
+   EDEBUG_FUNC(this)
+
    return _nextResult;
 }
 
@@ -85,6 +94,8 @@ int MPIMaster::index() const
  */
 void MPIMaster::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 {
+   EDEBUG_FUNC(this,result.get())
+
    // Write the result block to this manager's underlying analytic. If this manager 
    // is finished with all result blocks then emit the done signal and call the 
    // manager's finish slot. 
@@ -111,6 +122,8 @@ void MPIMaster::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
  */
 void MPIMaster::dataReceived(const QByteArray& data, int fromRank)
 {
+   EDEBUG_FUNC(this,&data,fromRank)
+
    // Extract the index from the given data. If the index is less than 0 and a code 
    // then process it as a code, else process it as a result block. 
    int index {EAbstractAnalytic::Block::extractIndex(data)};
@@ -140,6 +153,8 @@ void MPIMaster::dataReceived(const QByteArray& data, int fromRank)
  */
 void MPIMaster::processCode(int code, int fromRank)
 {
+   EDEBUG_FUNC(this,code,fromRank)
+
    // Initialize the amount of blocks to send using the global setting buffer size. 
    Settings& settings {Settings::instance()};
    int amount {settings.bufferSize()};
@@ -199,6 +214,8 @@ void MPIMaster::processCode(int code, int fromRank)
  */
 void MPIMaster::process(const QByteArray& data, int fromRank)
 {
+   EDEBUG_FUNC(this,&data,fromRank)
+
    // Make a blank result block from this manager's analytic and load the given data 
    // into it. If the analytic fails making a blank result block then throw an 
    // exception, else go to the next step. 
@@ -241,6 +258,8 @@ void MPIMaster::process(const QByteArray& data, int fromRank)
  */
 void MPIMaster::terminate(int rank)
 {
+   EDEBUG_FUNC(this,rank)
+
    // Create a special data block with the terminate signal and send it to the slave 
    // node with the given rank. 
    unique_ptr<EAbstractAnalytic::Block> code {new EAbstractAnalytic::Block(Terminate)};

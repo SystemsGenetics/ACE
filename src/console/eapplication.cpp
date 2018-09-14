@@ -56,20 +56,6 @@ EApplication::EApplication(const QString& organization, const QString& applicati
       Ace::Settings::initialize(organization,application,majorVersion,minorVersion,revision);
       EAbstractDataFactory::setInstance(std::move(data));
       EAbstractAnalyticFactory::setInstance(std::move(analytic));
-
-      // .
-      if ( Ace::Settings::instance().loggingEnabled() )
-      {
-         // .
-         QTextStream out(stdout);
-         int port {Ace::Settings::instance().loggingPort() + Ace::QMPI::instance().localRank()};
-         Ace::LogServer::initialize(port);
-
-         // .
-         out << tr("Log server listening on %1:%2, waiting for connection...\n").arg(Ace::LogServer::host()).arg(port);
-         out.flush();
-         Ace::LogServer::log()->wait();
-      }
    }
 
    // If any exception is caught then report it to the user and forcefully exit the 
@@ -186,6 +172,21 @@ int EApplication::exec()
       case ChunkRun:
       case Merge:
          {
+            // .
+            if ( Ace::Settings::instance().loggingEnabled() )
+            {
+               // .
+               QTextStream out(stdout);
+               int port {Ace::Settings::instance().loggingPort() + Ace::QMPI::instance().localRank()};
+               Ace::LogServer::initialize(port);
+
+               // .
+               out << tr("Log server listening on %1:%2, waiting for connection...\n").arg(Ace::LogServer::host()).arg(port);
+               out.flush();
+               Ace::LogServer::log()->wait();
+            }
+
+            // .
             Ace::Run* run {new Ace::Run(_command,_options)};
             connect(run,&Ace::Run::destroyed,this,&QCoreApplication::quit);
             return QCoreApplication::exec();

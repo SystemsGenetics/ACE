@@ -1,6 +1,7 @@
 #include "ace_analytic_abstractinput.h"
 #include "eabstractanalytic_block.h"
 #include "eexception.h"
+#include "edebug.h"
 
 
 
@@ -24,6 +25,8 @@ using namespace Ace::Analytic;
  */
 void AbstractInput::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 {
+   EDEBUG_FUNC(this,result.get())
+
    // If the given result block is a null pointer then make a new generic abstract 
    // analytic block with the next index expected, setting the given result block 
    // pointer to this new block. 
@@ -63,6 +66,8 @@ void AbstractInput::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& resul
  */
 AbstractInput::~AbstractInput()
 {
+   EDEBUG_FUNC(this)
+
    // Iterate through the list of result block pointers in this object's hopper 
    // container, deleting each one. 
    for (auto result: _hopper.values())
@@ -85,6 +90,8 @@ AbstractInput::~AbstractInput()
  */
 int AbstractInput::index() const
 {
+   EDEBUG_FUNC(this)
+
    // Throw an exception. 
    E_MAKE_EXCEPTION(e);
    e.setTitle(QObject::tr("Logic Error"));
@@ -107,6 +114,8 @@ int AbstractInput::index() const
  */
 void AbstractInput::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 {
+   EDEBUG_FUNC(this,result.get())
+
    // Delete the given result block and throw and exception. 
    result.reset();
    E_MAKE_EXCEPTION(e);

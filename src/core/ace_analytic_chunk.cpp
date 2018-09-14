@@ -6,6 +6,8 @@
 #include "opencl_platform.h"
 #include "opencl_device.h"
 #include "eabstractanalytic_block.h"
+#include "edebug.h"
+#include "emetadata.h"
 
 
 
@@ -28,6 +30,8 @@ using namespace Ace::Analytic;
  */
 bool Chunk::isFinished() const
 {
+   EDEBUG_FUNC(this)
+
    return _nextResult >= _end;
 }
 
@@ -51,7 +55,9 @@ Chunk::Chunk(quint16 type, int index, int size):
    AbstractManager(type),
    _index(index),
    _size(size)
-{}
+{
+   EDEBUG_FUNC(this,type,index,size)
+}
 
 
 
@@ -63,6 +69,8 @@ Chunk::Chunk(quint16 type, int index, int size):
  */
 Chunk::~Chunk()
 {
+   EDEBUG_FUNC(this)
+
    delete _stream;
 }
 
@@ -80,6 +88,8 @@ Chunk::~Chunk()
  */
 QFile* Chunk::addOutputFile(const QString& path)
 {
+   EDEBUG_FUNC(this,path)
+
    Q_UNUSED(path)
    return nullptr;
 }
@@ -103,6 +113,8 @@ QFile* Chunk::addOutputFile(const QString& path)
  */
 Ace::DataObject* Chunk::addOutputData(const QString& path, quint16 type, const EMetadata& system)
 {
+   EDEBUG_FUNC(this,path,type,system)
+
    Q_UNUSED(path)
    Q_UNUSED(type)
    Q_UNUSED(system)
@@ -123,6 +135,8 @@ Ace::DataObject* Chunk::addOutputData(const QString& path, quint16 type, const E
  */
 void Chunk::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 {
+   EDEBUG_FUNC(this,result.get())
+
    // save the given result block to the temporary binary file deleting it and 
    // increment the next result. If any write error to the file occurs then throw an 
    // exception. 
@@ -154,6 +168,8 @@ void Chunk::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
  */
 void Chunk::start()
 {
+   EDEBUG_FUNC(this)
+
    // Setup OpenCL, setup serial if OpenCL fails, and connect this abstract run's 
    // finished signal with this manager's finish slot. 
    if ( !setupOpenCL() )
@@ -180,6 +196,8 @@ void Chunk::start()
  */
 void Chunk::process()
 {
+   EDEBUG_FUNC(this)
+
    // While this manager still has work block indexes to process make the next work 
    // block and add it to this manager's abstract run object. 
    while ( _nextWork < _end )
@@ -200,6 +218,8 @@ void Chunk::process()
  */
 void Chunk::setupFile()
 {
+   EDEBUG_FUNC(this)
+
    // Determine this chunk's file name from the global settings object. 
    Settings& settings {Settings::instance()};
    _fileName = settings.chunkDir().append("/")
@@ -238,6 +258,8 @@ void Chunk::setupFile()
  */
 void Chunk::setupIndexes()
 {
+   EDEBUG_FUNC(this)
+
    // Determine the chunk size, or how many blocks each chunk is responsible for, and 
    // then determine the first next work index and the end index for this chunk 
    // manager. 
@@ -258,6 +280,8 @@ void Chunk::setupIndexes()
  */
 bool Chunk::setupOpenCL()
 {
+   EDEBUG_FUNC(this)
+
    // If the singleton settings object does not contain a valid OpenCL device pointer 
    // then do nothing and exit, else go to the next step. 
    bool ret {false};
@@ -309,6 +333,8 @@ bool Chunk::setupOpenCL()
  */
 void Chunk::setupSerial()
 {
+   EDEBUG_FUNC(this)
+
    // If this object already has an abstract run object then do nothing and exit, 
    // else go to the next step. 
    if ( !_runner )

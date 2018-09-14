@@ -4,6 +4,7 @@
 #include "ace_analytic_abstractinput.h"
 #include "eabstractanalytic_block.h"
 #include "eabstractanalytic_serial.h"
+#include "edebug.h"
 
 
 
@@ -25,6 +26,8 @@ using namespace Ace::Analytic;
  */
 void SerialRun::addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block)
 {
+   EDEBUG_FUNC(this,block.get())
+
    // Process the given work block by calling this object's abstract serial execute 
    // interface, saving the returned result block. If this object's abstract input is 
    // finished then emit the finished signal. 
@@ -57,4 +60,6 @@ SerialRun::SerialRun(EAbstractAnalytic::Serial* serial, AbstractInput* base, QOb
    AbstractRun(parent),
    _serial(serial),
    _base(base)
-{}
+{
+   EDEBUG_FUNC(this,serial,base,parent)
+}

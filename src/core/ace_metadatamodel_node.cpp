@@ -1,5 +1,6 @@
 #include "ace_metadatamodel_node.h"
 #include "eexception.h"
+#include "edebug.h"
 
 
 
@@ -22,7 +23,9 @@ using namespace Ace;
 MetadataModel::Node::Node(EMetadata::Type type, QObject* parent):
    QObject(parent),
    _meta(type)
-{}
+{
+   EDEBUG_FUNC(this,type,parent)
+}
 
 
 
@@ -42,6 +45,8 @@ MetadataModel::Node::Node(EMetadata::Type type, QObject* parent):
 MetadataModel::Node::Node(const EMetadata& meta, QObject* parent):
    QObject(parent)
 {
+   EDEBUG_FUNC(this,meta,parent)
+
    if ( meta.isArray() || meta.isObject() )
    {
       _meta = EMetadata(meta.type());
@@ -66,6 +71,8 @@ MetadataModel::Node::Node(const Node& object):
    QObject(),
    _meta(object._meta)
 {
+   EDEBUG_FUNC(this,&object)
+
    // Iterate through the given object's internal array, creating a new node that is 
    // a copy of the node pointed to from the given object's array, and save each new 
    // pointer to this node's array. 
@@ -95,6 +102,8 @@ MetadataModel::Node::Node(const Node& object):
  */
 bool MetadataModel::Node::isBytes() const
 {
+   EDEBUG_FUNC(this)
+
    return _meta.isBytes();
 }
 
@@ -110,6 +119,8 @@ bool MetadataModel::Node::isBytes() const
  */
 bool MetadataModel::Node::isEditable() const
 {
+   EDEBUG_FUNC(this)
+
    return _meta.isBool() || _meta.isDouble() || _meta.isString();
 }
 
@@ -125,6 +136,8 @@ bool MetadataModel::Node::isEditable() const
  */
 bool MetadataModel::Node::isContainer() const
 {
+   EDEBUG_FUNC(this)
+
    return _meta.type() == EMetadata::Array || _meta.type() == EMetadata::Object;
 }
 
@@ -140,6 +153,8 @@ bool MetadataModel::Node::isContainer() const
  */
 bool MetadataModel::Node::isArray() const
 {
+   EDEBUG_FUNC(this)
+
    return _meta.type() == EMetadata::Array;
 }
 
@@ -155,6 +170,8 @@ bool MetadataModel::Node::isArray() const
  */
 bool MetadataModel::Node::isObject() const
 {
+   EDEBUG_FUNC(this)
+
    return _meta.type() == EMetadata::Object;
 }
 
@@ -171,6 +188,8 @@ bool MetadataModel::Node::isObject() const
  */
 int MetadataModel::Node::size() const
 {
+   EDEBUG_FUNC(this)
+
    // If this node is an array type then return this node's array size, else proceed 
    // to the next step. 
    if ( isArray() )
@@ -204,6 +223,8 @@ int MetadataModel::Node::size() const
  */
 MetadataModel::Node* MetadataModel::Node::parent() const
 {
+   EDEBUG_FUNC(this)
+
    return qobject_cast<Node*>(QObject::parent());
 }
 
@@ -220,6 +241,8 @@ MetadataModel::Node* MetadataModel::Node::parent() const
  */
 QString MetadataModel::Node::key() const
 {
+   EDEBUG_FUNC(this)
+
    // Get a pointer to this node's parent, casting it is a node pointer itself. 
    const Node* parent_ {qobject_cast<const Node*>(parent())};
 
@@ -279,6 +302,8 @@ QString MetadataModel::Node::key() const
  */
 bool MetadataModel::Node::setKey(const QString& newKey)
 {
+   EDEBUG_FUNC(this,newKey)
+
    // Get pointer to this node's parent. 
    Node* parent_ {parent()};
 
@@ -312,6 +337,8 @@ bool MetadataModel::Node::setKey(const QString& newKey)
  */
 QString MetadataModel::Node::type() const
 {
+   EDEBUG_FUNC(this)
+
    return EMetadata::typeName(_meta.type());
 }
 
@@ -328,6 +355,8 @@ QString MetadataModel::Node::type() const
  */
 QByteArray MetadataModel::Node::bytes() const
 {
+   EDEBUG_FUNC(this)
+
    // Initialize return byte array variable to an empty array. 
    QByteArray ret;
 
@@ -353,6 +382,8 @@ QByteArray MetadataModel::Node::bytes() const
  */
 EMetadata MetadataModel::Node::meta() const
 {
+   EDEBUG_FUNC(this)
+
    return _meta;
 }
 
@@ -372,6 +403,8 @@ EMetadata MetadataModel::Node::meta() const
  */
 QVariant MetadataModel::Node::value() const
 {
+   EDEBUG_FUNC(this)
+
    // If this node is not a container or bytes type simply return the metadata value, 
    // else proceed to the next step. 
    switch (_meta.type())
@@ -422,6 +455,8 @@ QVariant MetadataModel::Node::value() const
  */
 bool MetadataModel::Node::setValue(const QVariant& value)
 {
+   EDEBUG_FUNC(this,value)
+
    // If this node is not a container type then set its value and return true, else 
    // do nothing and return false. 
    switch (_meta.type())
@@ -456,6 +491,8 @@ bool MetadataModel::Node::setValue(const QVariant& value)
  */
 QList<MetadataModel::Node*>::const_iterator MetadataModel::Node::arrayBegin() const
 {
+   EDEBUG_FUNC(this)
+
    return _array.begin();
 }
 
@@ -472,6 +509,8 @@ QList<MetadataModel::Node*>::const_iterator MetadataModel::Node::arrayBegin() co
  */
 QList<MetadataModel::Node*>::const_iterator MetadataModel::Node::arrayEnd() const
 {
+   EDEBUG_FUNC(this)
+
    return _array.end();
 }
 
@@ -488,6 +527,8 @@ QList<MetadataModel::Node*>::const_iterator MetadataModel::Node::arrayEnd() cons
  */
 QMap<QString,MetadataModel::Node*>::const_iterator MetadataModel::Node::objectBegin() const
 {
+   EDEBUG_FUNC(this)
+
    return _map.begin();
 }
 
@@ -504,6 +545,8 @@ QMap<QString,MetadataModel::Node*>::const_iterator MetadataModel::Node::objectBe
  */
 QMap<QString,MetadataModel::Node*>::const_iterator MetadataModel::Node::objectEnd() const
 {
+   EDEBUG_FUNC(this)
+
    return _map.end();
 }
 
@@ -523,6 +566,8 @@ QMap<QString,MetadataModel::Node*>::const_iterator MetadataModel::Node::objectEn
  */
 MetadataModel::Node* MetadataModel::Node::get(int index) const
 {
+   EDEBUG_FUNC(this,index)
+
    // Initialize return pointer variable to null. 
    Node* ret {nullptr};
 
@@ -562,6 +607,8 @@ MetadataModel::Node* MetadataModel::Node::get(int index) const
  */
 int MetadataModel::Node::indexOf(const Node* pointer) const
 {
+   EDEBUG_FUNC(this,pointer)
+
    // If this node is not a container then return -1, else go to next step. 
    if ( !isContainer() )
    {
@@ -616,6 +663,8 @@ int MetadataModel::Node::indexOf(const Node* pointer) const
  */
 bool MetadataModel::Node::contains(const QString& key) const
 {
+   EDEBUG_FUNC(this,key)
+
    return _map.contains(key);
 }
 
@@ -635,6 +684,8 @@ bool MetadataModel::Node::contains(const QString& key) const
  */
 int MetadataModel::Node::getFutureIndex(const QString& key) const
 {
+   EDEBUG_FUNC(this,key)
+
    return std::distance(_map.begin(),_map.lowerBound(key));
 }
 
@@ -653,6 +704,8 @@ int MetadataModel::Node::getFutureIndex(const QString& key) const
  */
 std::unique_ptr<MetadataModel::Node> MetadataModel::Node::copy(int index)
 {
+   EDEBUG_FUNC(this,index)
+
    // Initialize the return smart pointer to null. 
    unique_ptr<Node> ret;
 
@@ -693,6 +746,8 @@ std::unique_ptr<MetadataModel::Node> MetadataModel::Node::copy(int index)
  */
 std::unique_ptr<MetadataModel::Node> MetadataModel::Node::cut(int index)
 {
+   EDEBUG_FUNC(this,index)
+
    // Initialize the return smart pointer to null. 
    unique_ptr<Node> ret;
 
@@ -742,6 +797,8 @@ std::unique_ptr<MetadataModel::Node> MetadataModel::Node::cut(int index)
  */
 void MetadataModel::Node::insertArray(int index, std::unique_ptr<Node>&& node)
 {
+   EDEBUG_FUNC(this,index,node.get())
+
    // If this node is an array type then insert the given node pointer into this 
    // node's internal array setting the new node's parent to this node, else delete 
    // the node pointed to. 
@@ -773,6 +830,8 @@ void MetadataModel::Node::insertArray(int index, std::unique_ptr<Node>&& node)
  */
 void MetadataModel::Node::insertObject(const QString& key, std::unique_ptr<Node>&& node)
 {
+   EDEBUG_FUNC(this,key,node.get())
+
    // If this node is an object type then go to the next step, else delete the node 
    // pointed to and exit. 
    if ( isObject() )
@@ -804,6 +863,8 @@ void MetadataModel::Node::insertObject(const QString& key, std::unique_ptr<Node>
  */
 void MetadataModel::Node::remove(int index)
 {
+   EDEBUG_FUNC(this,index)
+
    // If the index is greater then 0 go to the next step, else exit the function. 
    if ( index > 0 )
    {

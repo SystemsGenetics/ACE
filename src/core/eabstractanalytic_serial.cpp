@@ -1,4 +1,5 @@
 #include "eabstractanalytic_serial.h"
+#include "edebug.h"
 
 
 
@@ -16,4 +17,6 @@
  */
 EAbstractAnalytic::Serial::Serial(EAbstractAnalytic* parent):
    QObject(parent)
-{}
+{
+   EDEBUG_FUNC(this,parent)
+}

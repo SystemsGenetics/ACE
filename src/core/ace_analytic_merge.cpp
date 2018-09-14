@@ -3,6 +3,7 @@
 #include <QDataStream>
 #include "ace_settings.h"
 #include "eabstractanalytic_block.h"
+#include "edebug.h"
 
 
 
@@ -23,6 +24,8 @@ using namespace Ace::Analytic;
  */
 bool Merge::isFinished() const
 {
+   EDEBUG_FUNC(this)
+
    return _nextResult >= analytic()->size();
 }
 
@@ -43,7 +46,9 @@ bool Merge::isFinished() const
 Merge::Merge(quint16 type, int size):
    AbstractManager(type),
    _size(size)
-{}
+{
+   EDEBUG_FUNC(this,type,size)
+}
 
 
 
@@ -58,6 +63,8 @@ Merge::Merge(quint16 type, int size):
  */
 int Merge::index() const
 {
+   EDEBUG_FUNC(this)
+
    return _nextResult;
 }
 
@@ -76,6 +83,8 @@ int Merge::index() const
  */
 void Merge::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 {
+   EDEBUG_FUNC(this,result.get())
+
    // Write the given result block to this manager's analytic and increment the next 
    // result index. If this abstract input is finished with all results then emit the 
    // done signal and call this manager's finish slot. 
@@ -98,6 +107,8 @@ void Merge::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
  */
 void Merge::start()
 {
+   EDEBUG_FUNC(this)
+
    // Calculate the chunk size for this merge and schedule this object's process slot 
    // to be called. 
    _chunkSize  = analytic()->size()/_size + (analytic()->size()%_size ? 1 : 0);
@@ -115,6 +126,8 @@ void Merge::start()
  */
 void Merge::process()
 {
+   EDEBUG_FUNC(this)
+
    // Iterate through all temporary chunk files, reading in each one. 
    for (int i = 0; i < _size ;++i)
    {
@@ -138,6 +151,8 @@ void Merge::process()
  */
 void Merge::readChunk(int index)
 {
+   EDEBUG_FUNC(this,index)
+
    // Determine the range of indexes this chunk file should contain. 
    int nextWork {index*_chunkSize};
    int end {(index + 1)*_chunkSize};
@@ -190,6 +205,8 @@ void Merge::readChunk(int index)
  */
 void Merge::readBlock(QDataStream& stream)
 {
+   EDEBUG_FUNC(this,&stream)
+
    // Read in the next result block in byte array format from the data stream. If any 
    // read error occurs then throw an exception, else go to the next step. 
    int size;

@@ -5,6 +5,7 @@
 #include "opencl_platform.h"
 #include "opencl_device.h"
 #include "eexception.h"
+#include "edebug.h"
 
 
 
@@ -32,6 +33,8 @@ using namespace Ace::Analytic;
  */
 void AbstractMPI::mpiStart(Type type, int platform, int device)
 {
+   EDEBUG_FUNC(this,type,platform,device)
+
    // Throw an exception. 
    Q_UNUSED(type)
    Q_UNUSED(platform)
@@ -56,6 +59,8 @@ AbstractMPI::AbstractMPI(quint16 type):
    AbstractManager(type),
    _mpi(QMPI::instance())
 {
+   EDEBUG_FUNC(this,type)
+
    connect(&_mpi,&QMPI::localDataReceived,this,&AbstractMPI::localDataReceived);
 }
 
@@ -71,6 +76,8 @@ AbstractMPI::AbstractMPI(quint16 type):
  */
 void AbstractMPI::start()
 {
+   EDEBUG_FUNC(this)
+
    // Start MPI listening for incoming messages. 
    _mpi.start();
 
@@ -128,6 +135,8 @@ void AbstractMPI::start()
  */
 void AbstractMPI::localDataReceived(const QByteArray& data, int fromRank)
 {
+   EDEBUG_FUNC(this,&data,fromRank)
+
    // If this node has already been started then throw an exception, else go to the 
    // next step. 
    Q_UNUSED(fromRank)
@@ -172,6 +181,8 @@ void AbstractMPI::localDataReceived(const QByteArray& data, int fromRank)
  */
 void AbstractMPI::sendStart(int rank, Type type, int platform, int device)
 {
+   EDEBUG_FUNC(this,rank,type,platform,device)
+
    // Encode a byte array with the resource type, platform index, and device index, 
    // sending the byte array to the node with the given local rank. 
    QByteArray data;

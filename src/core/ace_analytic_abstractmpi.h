@@ -22,7 +22,7 @@ namespace Ace
       class AbstractMPI : public AbstractManager
       {
          Q_OBJECT
-      protected:
+      public:
          /*!
           * Defines the resource types that slave nodes can be assigned to execute as. 
           */
@@ -39,6 +39,7 @@ namespace Ace
              */
             ,OpenCL
          };
+      protected:
          virtual void mpiStart(Type type, int platform, int device);
       protected:
          /*!

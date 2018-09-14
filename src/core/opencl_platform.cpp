@@ -2,6 +2,7 @@
 #include "opencl_device.h"
 #include "opencl_common.h"
 #include "eexception.h"
+#include "edebug.h"
 
 
 
@@ -27,6 +28,8 @@ QList<OpenCL::Platform*>* Platform::_platforms {nullptr};
  */
 int Platform::size()
 {
+   EDEBUG_FUNC()
+
    // Populate platform list and return its size. 
    populate();
    return _platforms->size();
@@ -47,6 +50,8 @@ int Platform::size()
  */
 OpenCL::Platform* Platform::get(int index)
 {
+   EDEBUG_FUNC(index)
+
    // Populate platform list and make sure given index is within range. If the given 
    // index is out of range then throw an exception, else go to the next step. 
    populate();
@@ -76,6 +81,8 @@ OpenCL::Platform* Platform::get(int index)
  */
 cl_platform_id Platform::id() const
 {
+   EDEBUG_FUNC(this)
+
    return _id;
 }
 
@@ -91,6 +98,8 @@ cl_platform_id Platform::id() const
  */
 QString Platform::profile() const
 {
+   EDEBUG_FUNC(this)
+
    return _profile;
 }
 
@@ -106,6 +115,8 @@ QString Platform::profile() const
  */
 QString Platform::version() const
 {
+   EDEBUG_FUNC(this)
+
    return _version;
 }
 
@@ -121,6 +132,8 @@ QString Platform::version() const
  */
 QString Platform::name() const
 {
+   EDEBUG_FUNC(this)
+
    return _name;
 }
 
@@ -136,6 +149,8 @@ QString Platform::name() const
  */
 QString Platform::vendor() const
 {
+   EDEBUG_FUNC(this)
+
    return _vendor;
 }
 
@@ -151,6 +166,8 @@ QString Platform::vendor() const
  */
 const QStringList& Platform::extensions() const
 {
+   EDEBUG_FUNC(this)
+
    return _extensions;
 }
 
@@ -166,6 +183,8 @@ const QStringList& Platform::extensions() const
  */
 int Platform::deviceSize() const
 {
+   EDEBUG_FUNC(this)
+
    return _devices.size();
 }
 
@@ -184,6 +203,8 @@ int Platform::deviceSize() const
  */
 OpenCL::Device* Platform::device(int index) const
 {
+   EDEBUG_FUNC(this,index)
+
    // If the given index is out of range then throw an exception, else go to the next 
    // step. 
    if ( index < 0 || index >= _devices.size() )
@@ -211,6 +232,8 @@ OpenCL::Device* Platform::device(int index) const
  */
 void Platform::populate()
 {
+   EDEBUG_FUNC()
+
    // If the global pointer to the platforms list is null then go to the next step, 
    // else do nothing and exit. 
    if ( !_platforms )
@@ -261,6 +284,8 @@ Platform::Platform(cl_platform_id id, QObject* parent):
    _vendor(getInfo(CL_PLATFORM_VENDOR)),
    _extensions(getInfo(CL_PLATFORM_EXTENSIONS).split(' '))
 {
+   EDEBUG_FUNC(this,(void*)id,parent)
+
    populateDevices();
 }
 
@@ -274,6 +299,8 @@ Platform::Platform(cl_platform_id id, QObject* parent):
  */
 void Platform::populateDevices()
 {
+   EDEBUG_FUNC(this)
+
    // Query the list of OpenCL device IDs for this OpenCL platform, creating a new 
    // OpenCL device with each ID and appending their pointer to this platform's list 
    // of devices. If any OpenCL error occurs then throw an exception. 
@@ -314,6 +341,8 @@ void Platform::populateDevices()
  */
 QString Platform::getInfo(cl_platform_info type) const
 {
+   EDEBUG_FUNC(this,type)
+
    // Query the size of the information requested, then get the information as a C 
    // style string, and then return it as a qt string. If any OpenCL error occurs 
    // then throw and exception. 

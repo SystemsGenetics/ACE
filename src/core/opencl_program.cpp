@@ -3,6 +3,7 @@
 #include "opencl_device.h"
 #include "opencl_common.h"
 #include "eexception.h"
+#include "edebug.h"
 
 
 
@@ -29,6 +30,8 @@ using namespace OpenCL;
 Program::Program(Context* context, const QStringList& paths, QObject* parent):
    QObject(parent)
 {
+   EDEBUG_FUNC(this,context,paths,parent)
+
    // For the following steps if any exception is thrown then delete the list of C 
    // style strings if they are not null and throw the exception again. 
    const char* sources[paths.size()] {nullptr};
@@ -80,6 +83,8 @@ Program::Program(Context* context, const QStringList& paths, QObject* parent):
  */
 Program::~Program()
 {
+   EDEBUG_FUNC(this)
+
    clReleaseProgram(_id);
 }
 
@@ -95,6 +100,8 @@ Program::~Program()
  */
 cl_program Program::id() const
 {
+   EDEBUG_FUNC(this)
+
    return _id;
 }
 
@@ -117,6 +124,8 @@ cl_program Program::id() const
  */
 char* Program::readSourceFile(const QString& path, size_t* size)
 {
+   EDEBUG_FUNC(this,path,size)
+
    // Open the source code file with the given path as read only. If opening fails 
    // then throw an exception. 
    QFile file(path);
@@ -153,6 +162,8 @@ char* Program::readSourceFile(const QString& path, size_t* size)
  */
 void Program::deleteStrings(const char** sources, int size)
 {
+   EDEBUG_FUNC(this,(void*)sources,size)
+
    // Iterate through the list of C style strings and delete each one of them. 
    for (int i = 0; i < size ;++i)
    {
@@ -173,6 +184,8 @@ void Program::deleteStrings(const char** sources, int size)
  */
 void Program::build(Device* device)
 {
+   EDEBUG_FUNC(this,device)
+
    // Build the source code of this program for the given device. If a build error 
    // occurred then throw an exception with the build log, else if a general error 
    // occurs then throw a general OpenCL exception. 
@@ -209,6 +222,8 @@ void Program::build(Device* device)
  */
 QString Program::getBuildLog(Device* device) const
 {
+   EDEBUG_FUNC(this,device)
+
    // Get the size of the given device's build log, then get the C style string of 
    // the given device's build log, and then return the build log as a qt string. If 
    // any error occurs then throw an OpenCL exception. 

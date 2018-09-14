@@ -3,6 +3,7 @@
 #include "emetadata.h"
 #include "emetaarray.h"
 #include "emetaobject.h"
+#include "edebug.h"
 
 
 
@@ -26,6 +27,8 @@
  */
 const EDataStream& operator>>(const EDataStream& stream, EMetadata& meta)
 {
+   EDEBUG_FUNC(&stream,meta)
+
    // Read in the metadata type and overwrite the given metadata with a new object of 
    // that type. 
    quint8 type;
@@ -112,6 +115,8 @@ const EDataStream& operator>>(const EDataStream& stream, EMetadata& meta)
  */
 EDataStream& operator<<(EDataStream& stream, const EMetadata& meta)
 {
+   EDEBUG_FUNC(&stream,meta)
+
    // Write out the metadata type from the given object to the data stream. 
    quint8 type {static_cast<quint8>(meta.type())};
    stream << type;

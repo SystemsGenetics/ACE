@@ -4,6 +4,7 @@
 #include "emetaarray.h"
 #include "emetaobject.h"
 #include "eexception.h"
+#include "edebug.h"
 
 
 
@@ -32,6 +33,8 @@ const char* MetadataModel::_mimeType {"ace/metadatamodel.node.pointer"};
  */
 QStringList MetadataModel::mimeTypes() const
 {
+   EDEBUG_FUNC(this)
+
    return QStringList() << _mimeType;
 }
 
@@ -49,6 +52,8 @@ QStringList MetadataModel::mimeTypes() const
  */
 Qt::DropActions MetadataModel::supportedDropActions() const
 {
+   EDEBUG_FUNC(this)
+
    return Qt::CopyAction|Qt::MoveAction;
 }
 
@@ -75,6 +80,8 @@ Qt::DropActions MetadataModel::supportedDropActions() const
  */
 QVariant MetadataModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
+   EDEBUG_FUNC(this,section,orientation,role)
+
    // If this is not the display role or the orientation is not vertical then return 
    // a null variant else go to the next step. 
    if ( role != Qt::DisplayRole || orientation != Qt::Horizontal )
@@ -112,6 +119,8 @@ QVariant MetadataModel::headerData(int section, Qt::Orientation orientation, int
  */
 QModelIndex MetadataModel::index(int row, int column, const QModelIndex& parent) const
 {
+   EDEBUG_FUNC(this,row,column,parent)
+
    // Get the node pointer of the given parent index. 
    Node* parent_ {pointer(parent)};
 
@@ -151,6 +160,8 @@ QModelIndex MetadataModel::index(int row, int column, const QModelIndex& parent)
  */
 QModelIndex MetadataModel::parent(const QModelIndex& child) const
 {
+   EDEBUG_FUNC(this,child)
+
    // Get node pointer to parent of the given child index. If the parent is null then 
    // return an invalid index else go to the next step. 
    Node* parent {pointer(child)->parent()};
@@ -186,6 +197,8 @@ QModelIndex MetadataModel::parent(const QModelIndex& child) const
  */
 Qt::ItemFlags MetadataModel::flags(const QModelIndex& index) const
 {
+   EDEBUG_FUNC(this,index)
+
    // Create return flag variable with default flags all indexes contain. 
    Qt::ItemFlags ret {Qt::ItemIsSelectable|Qt::ItemIsEnabled};
    Node* node {pointer(index)};
@@ -245,6 +258,8 @@ Qt::ItemFlags MetadataModel::flags(const QModelIndex& index) const
  */
 int MetadataModel::rowCount(const QModelIndex& parent) const
 {
+   EDEBUG_FUNC(this,parent)
+
    if ( !_root ) return 0;
    return pointer(parent)->size();
 }
@@ -264,6 +279,8 @@ int MetadataModel::rowCount(const QModelIndex& parent) const
  */
 int MetadataModel::columnCount(const QModelIndex& parent) const
 {
+   EDEBUG_FUNC(this,parent)
+
    Q_UNUSED(parent)
    return 3;
 }
@@ -287,6 +304,8 @@ int MetadataModel::columnCount(const QModelIndex& parent) const
  */
 QMimeData* MetadataModel::mimeData(const QModelIndexList& indexes) const
 {
+   EDEBUG_FUNC(this,&indexes)
+
    // Initialize byte array and stream for writing to it. 
    QByteArray bytes;
    QDataStream stream(&bytes,QIODevice::WriteOnly);
@@ -327,6 +346,8 @@ QMimeData* MetadataModel::mimeData(const QModelIndexList& indexes) const
  */
 QVariant MetadataModel::data(const QModelIndex& index, int role) const
 {
+   EDEBUG_FUNC(this,index,role)
+
    // Get the node pointer for the given index. 
    Node* node {pointer(index)};
 
@@ -379,6 +400,8 @@ QVariant MetadataModel::data(const QModelIndex& index, int role) const
  */
 bool MetadataModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
+   EDEBUG_FUNC(this,index,value,role)
+
    // Initialize return value to false. 
    bool ret {false};
 
@@ -435,6 +458,8 @@ bool MetadataModel::setData(const QModelIndex& index, const QVariant& value, int
  */
 bool MetadataModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent)
 {
+   EDEBUG_FUNC(this,data,action,row,column,parent)
+
    // If the drag and drop action is not copy or move then return false, else go to 
    // the next step. 
    Q_UNUSED(column)
@@ -492,7 +517,9 @@ bool MetadataModel::dropMimeData(const QMimeData* data, Qt::DropAction action, i
 MetadataModel::MetadataModel(QObject* parent):
    QAbstractItemModel(parent),
    _root(new Node(EMetadata::Object,this))
-{}
+{
+   EDEBUG_FUNC(this,parent)
+}
 
 
 
@@ -508,6 +535,8 @@ MetadataModel::MetadataModel(QObject* parent):
  */
 bool MetadataModel::isImage(const QModelIndex& index) const
 {
+   EDEBUG_FUNC(this,index)
+
    return pointer(index)->isBytes();
 }
 
@@ -525,6 +554,8 @@ bool MetadataModel::isImage(const QModelIndex& index) const
  */
 bool MetadataModel::isContainer(const QModelIndex& index) const
 {
+   EDEBUG_FUNC(this,index)
+
    return pointer(index)->isContainer();
 }
 
@@ -540,6 +571,8 @@ bool MetadataModel::isContainer(const QModelIndex& index) const
  */
 bool MetadataModel::readOnly() const
 {
+   EDEBUG_FUNC(this)
+
    return _readOnly;
 }
 
@@ -557,6 +590,8 @@ bool MetadataModel::readOnly() const
  */
 EMetadata MetadataModel::meta() const
 {
+   EDEBUG_FUNC(this)
+
    return buildMeta(_root);
 }
 
@@ -578,6 +613,8 @@ EMetadata MetadataModel::meta() const
  */
 bool MetadataModel::insert(const QModelIndex& parent, EMetadata::Type type)
 {
+   EDEBUG_FUNC(this,parent,type)
+
    return insert(parent,0,unique_ptr<Node>(new Node(type)));
 }
 
@@ -595,6 +632,8 @@ bool MetadataModel::insert(const QModelIndex& parent, EMetadata::Type type)
  */
 bool MetadataModel::remove(const QModelIndex& index)
 {
+   EDEBUG_FUNC(this,index)
+
    // If the given index is not valid then return false, else go to the next step. 
    if ( !index.isValid() )
    {
@@ -629,6 +668,8 @@ bool MetadataModel::remove(const QModelIndex& index)
  */
 void MetadataModel::setMeta(const EMetadata& newRoot)
 {
+   EDEBUG_FUNC(this,newRoot)
+
    // If the given metadata object is not an object type then throw an exception, 
    // else go to the next step. 
    if ( !newRoot.isObject() )
@@ -662,6 +703,8 @@ void MetadataModel::setMeta(const EMetadata& newRoot)
  */
 void MetadataModel::setReadOnly(bool state)
 {
+   EDEBUG_FUNC(this,state)
+
    // Update this model's read only state with the new value, signaling this model is 
    // resetting. 
    beginResetModel();
@@ -684,6 +727,8 @@ void MetadataModel::setReadOnly(bool state)
  */
 MetadataModel::Node* MetadataModel::pointer(const QModelIndex& index) const
 {
+   EDEBUG_FUNC(this,index)
+
    // If the index is valid extract its internal pointer and return it as a node 
    // pointer, else return this model's root node pointer. 
    Node* ret;
@@ -714,6 +759,8 @@ MetadataModel::Node* MetadataModel::pointer(const QModelIndex& index) const
  */
 bool MetadataModel::setKey(const QModelIndex& index, const QString& newKey)
 {
+   EDEBUG_FUNC(this,index,newKey)
+
    // If the parent of the given index is not object type and/or already contains the 
    // new key then return false, else go to the next step. 
    bool ret {false};
@@ -760,6 +807,8 @@ bool MetadataModel::setKey(const QModelIndex& index, const QString& newKey)
  */
 std::unique_ptr<MetadataModel::Node> MetadataModel::take(Node* node)
 {
+   EDEBUG_FUNC(this,node)
+
    // If the node does not have a parent because it is the root node then return a 
    // null pointer, else go to the next step. 
    Node* parent {node->parent()};
@@ -808,6 +857,8 @@ std::unique_ptr<MetadataModel::Node> MetadataModel::take(Node* node)
  */
 bool MetadataModel::insert(const QModelIndex& parent, int row, std::unique_ptr<Node>&& node)
 {
+   EDEBUG_FUNC(this,parent,row,node.get())
+
    // Get node pointer of given parent index. 
    Node* parent_ {pointer(parent)};
 
@@ -877,6 +928,8 @@ bool MetadataModel::insert(const QModelIndex& parent, int row, std::unique_ptr<N
  */
 EMetadata MetadataModel::buildMeta(const Node* node) const
 {
+   EDEBUG_FUNC(this,node)
+
    // Create a new metadata variable that is a copy of the node's metadata value. If 
    // the metadata variable is a container type then recursively copy all children 
    // nodes into the metadata variable with the same keys if it is an object type. 
@@ -914,6 +967,8 @@ EMetadata MetadataModel::buildMeta(const Node* node) const
  */
 std::unique_ptr<MetadataModel::Node> MetadataModel::buildNode(const EMetadata& meta)
 {
+   EDEBUG_FUNC(this,meta)
+
    // Create a new node variable, storing its pointer, setting it's metadata type as 
    // the given metadata value's type. If the given metadata type is a container then 
    // recursively copy all children metadata into the new node with the same keys if 

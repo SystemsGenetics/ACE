@@ -1,6 +1,7 @@
 #include "eabstractanalytic.h"
 #include "eabstractanalytic_block.h"
 #include "ace_qmpi.h"
+#include "edebug.h"
 
 
 
@@ -22,6 +23,8 @@
  */
 std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeWork(int index) const
 {
+   EDEBUG_FUNC(this,index)
+
    // Throw an exception. 
    Q_UNUSED(index)
    E_MAKE_EXCEPTION(e);
@@ -45,6 +48,8 @@ std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeWork(int index)
  */
 std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeWork() const
 {
+   EDEBUG_FUNC(this)
+
    // Throw an exception. 
    E_MAKE_EXCEPTION(e);
    e.setTitle(tr("Logic Error"));
@@ -67,6 +72,8 @@ std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeWork() const
  */
 std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeResult() const
 {
+   EDEBUG_FUNC(this)
+
    // Throw an exception. 
    E_MAKE_EXCEPTION(e);
    e.setTitle(tr("Logic Error"));
@@ -88,6 +95,8 @@ std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeResult() const
  */
 EAbstractAnalytic::Serial* EAbstractAnalytic::makeSerial()
 {
+   EDEBUG_FUNC(this)
+
    return nullptr;
 }
 
@@ -106,6 +115,8 @@ EAbstractAnalytic::Serial* EAbstractAnalytic::makeSerial()
  */
 EAbstractAnalytic::OpenCL* EAbstractAnalytic::makeOpenCL()
 {
+   EDEBUG_FUNC(this)
+
    return nullptr;
 }
 
@@ -120,7 +131,9 @@ EAbstractAnalytic::OpenCL* EAbstractAnalytic::makeOpenCL()
  * nothing. 
  */
 void EAbstractAnalytic::initialize()
-{}
+{
+   EDEBUG_FUNC(this)
+}
 
 
 
@@ -132,7 +145,9 @@ void EAbstractAnalytic::initialize()
  * after every other interface call. The default implementation does nothing. 
  */
 void EAbstractAnalytic::finish()
-{}
+{
+   EDEBUG_FUNC(this)
+}
 
 
 
@@ -148,5 +163,7 @@ void EAbstractAnalytic::finish()
  */
 bool EAbstractAnalytic::isMaster()
 {
+   EDEBUG_FUNC()
+
    return Ace::QMPI::instance().isMaster();
 }
