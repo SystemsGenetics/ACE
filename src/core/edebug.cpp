@@ -1,8 +1,10 @@
 #include "edebug.h"
 #include <string.h>
+#include <QTextStream>
 #include "eabstractanalytic_block.h"
 #include "emetadata.h"
 #include "eexception.h"
+#include "ace_logserver.h"
 
 
 
@@ -523,9 +525,17 @@ EDebug::EDebug(const char* function, const char* argumentNames):
       return;
    }
    setupArguments(argumentNames);
-   QTextStream out(stdout);
-   out << "[" << _threadId << "]" << QString(_stackDepth*3,' ') << function << "\n";
-   out << "[" << _threadId << "]" << QString(_stackDepth*3,' ') << "{\n";
+   QByteArray message(_stackDepth*3,' ');
+   message.append(function)
+          .append("\n")
+          .append(QByteArray(_stackDepth*3,' '))
+          .append("{");
+   Ace::LogServer* log {Ace::LogServer::log()};
+   if ( log )
+   {
+      log->broadcast(Ace::LogServer::Debug,_threadId,message);
+      log->flush();
+   }
    if ( _active )
    {
       E_MAKE_EXCEPTION(e);
@@ -555,8 +565,14 @@ EDebug::~EDebug()
    {
       _stackDepth = 0;
    }
-   QTextStream out(stdout);
-   out << "[" << _threadId << "]" << QString(_stackDepth*3,' ') << "}\n";
+   QByteArray message(_stackDepth*3,' ');
+   message.append("}");
+   Ace::LogServer* log {Ace::LogServer::log()};
+   if ( log )
+   {
+      log->broadcast(Ace::LogServer::Debug,_threadId,message);
+      log->flush();
+   }
 }
 
 
@@ -602,4 +618,30 @@ void EDebug::setupArguments(const char* argumentNames)
       }
    }
    _argumentValues.resize(_argumentIndexes.size());
+}
+
+
+
+
+
+void EDebug::dumpArguments()
+{
+   QByteArray message;
+   for (int i = 0; i < _argumentIndexes.size() ;++i)
+   {
+      message.append(QByteArray(_stackDepth*3,' '))
+             .append(&_argumentNames[_argumentIndexes[i]])
+             .append(" = ")
+             .append(_argumentValues[i]);
+      if ( i < (_argumentIndexes.size() - 1) )
+      {
+         message.append("\n");
+      }
+   }
+   Ace::LogServer* log {Ace::LogServer::log()};
+   if ( log )
+   {
+      log->broadcast(Ace::LogServer::Debug,_threadId,message);
+      log->flush();
+   }
 }

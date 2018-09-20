@@ -70,7 +70,7 @@ std::unique_ptr<EAbstractAnalytic::Block> MathTransform::OpenCL::Worker::execute
 {
    if ( ELog::isActive() )
    {
-      ELog() << tr("Executing(OpenCL) work index %1.\n").arg(block->index());
+      ELog() << tr("Executing(OpenCL) work index %1.").arg(block->index());
    }
    // 1
    const MathTransform::Block* valid {block->cast<const MathTransform::Block>()};

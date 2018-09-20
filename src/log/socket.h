@@ -11,6 +11,8 @@
 class Socket : public QTcpSocket
 {
    Q_OBJECT
+public:
+   Socket();
 signals:
    /*!
     *
@@ -20,7 +22,7 @@ signals:
     *
     * @param message  
     */
-   void messageReceived(Ace::LogServer::Types type, int thread, const QByteArray& message);
+   void messageReceived(Ace::LogServer::Type type, int thread, const QByteArray& message);
 private slots:
    void readyRead();
 private:

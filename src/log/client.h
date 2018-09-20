@@ -18,7 +18,7 @@ class Client : public QObject
 public:
    explicit Client();
 private slots:
-   void messageReceived(int socket, Ace::LogServer::Types type, int thread, const QByteArray& message);
+   void messageReceived(int socket, Ace::LogServer::Type type, int thread, const QByteArray& message);
    void connected();
    void disconnected();
 private:
@@ -30,7 +30,7 @@ private:
    bool _isDebug {false};
    /*!
     */
-   int _debugThread {-1};
+   int _debugThread {0};
    /*!
     */
    int _waiting {0};

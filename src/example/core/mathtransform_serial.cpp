@@ -53,7 +53,7 @@ std::unique_ptr<EAbstractAnalytic::Block> MathTransform::Serial::execute(const E
 {
    if ( ELog::isActive() )
    {
-      ELog() << tr("Executing(serial) work index %1.\n").arg(block->index());
+      ELog() << tr("Executing(serial) work index %1.").arg(block->index());
    }
    // 1
    const Block* valid {block->cast<Block>()};

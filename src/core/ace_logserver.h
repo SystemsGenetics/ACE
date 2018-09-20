@@ -23,7 +23,7 @@ namespace Ace
       /*!
        * Defines all message types that can be broadcast to clients. 
        */
-      enum Types
+      enum Type
       {
          /*!
           * Defines the log message type that is meant for normal logging messages. 
@@ -40,7 +40,7 @@ namespace Ace
       static QString host();
    public:
       void wait();
-      LogServer& broadcast(int type, const QByteArray& data);
+      LogServer& broadcast(Type type, int thread, const QByteArray& data);
       void flush();
    private slots:
       void clientSignalsStart();

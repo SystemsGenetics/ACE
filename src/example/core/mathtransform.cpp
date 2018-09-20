@@ -45,7 +45,7 @@ std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeWork(int index) con
 {
    if ( ELog::isActive() )
    {
-      ELog() << tr("Making work index %1 of %2.\n").arg(index).arg(size());
+      ELog() << tr("Making work index %1 of %2.").arg(index).arg(size());
    }
    return unique_ptr<EAbstractAnalytic::Block>(new Block(index,_in->_numbers.at(index)));
 }
@@ -102,7 +102,7 @@ void MathTransform::process(const EAbstractAnalytic::Block* result)
 {
    if ( ELog::isActive() )
    {
-      ELog() << tr("Processing result %1 of %2.\n").arg(result->index()).arg(size());
+      ELog() << tr("Processing result %1 of %2.").arg(result->index()).arg(size());
    }
    // 1
    const Block* valid {result->cast<Block>()};

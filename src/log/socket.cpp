@@ -1,12 +1,16 @@
 #include "socket.h"
 #include <QDataStream>
+#include <QTimer>
 
 
 
 //
 
 
-
+Socket::Socket()
+{
+   connect(this,&QIODevice::readyRead,this,&Socket::readyRead);
+}
 
 
 
@@ -33,7 +37,10 @@ void Socket::readyRead()
  */
 void Socket::readHeader()
 {
-   _buffer += read(qMin((qint64)9 - _buffer.size(),bytesAvailable()));
+   while ( _buffer.size() < 9 && bytesAvailable() )
+   {
+      _buffer += read(1);
+   }
    if ( _buffer.size() == 9 )
    {
       QDataStream in(_buffer);
@@ -41,7 +48,7 @@ void Socket::readHeader()
       _buffer.clear();
       if ( bytesAvailable() > 0 )
       {
-         readMessage();
+         QTimer::singleShot(0,this,&Socket::readyRead);
       }
    }
 }
@@ -55,15 +62,20 @@ void Socket::readHeader()
  */
 void Socket::readMessage()
 {
-   _buffer += read(qMin((qint64)_sizeToRead - _buffer.size(),bytesAvailable()));
+   while ( _buffer.size() < _sizeToRead && bytesAvailable() )
+   {
+      _buffer += read(1);
+   }
    if ( _buffer.size() == _sizeToRead )
    {
-      emit messageReceived(static_cast<Ace::LogServer::Types>(_type),_thread,_buffer);
+      emit messageReceived(static_cast<Ace::LogServer::Type>(_type),_thread,_buffer);
+      write("A",1);
+      flush();
       _buffer.clear();
       _sizeToRead = -1;
       if ( bytesAvailable() > 0 )
       {
-         readHeader();
+         QTimer::singleShot(0,this,&Socket::readyRead);
       }
    }
 }

@@ -47,7 +47,7 @@ Client::Client()
             connect(socket,&QTcpSocket::connected,this,&Client::connected);
             connect(socket,&QTcpSocket::disconnected,this,&Client::disconnected);
             connect(socket,&Socket::messageReceived
-                    ,[this,i](Ace::LogServer::Types type, int thread, const QByteArray& message)
+                    ,[this,i](Ace::LogServer::Type type, int thread, const QByteArray& message)
                     { messageReceived(i,type,thread,message); }
             );
             socket->connectToHost(split.at(0),port);
@@ -75,7 +75,7 @@ Client::Client()
  *
  * @param message  
  */
-void Client::messageReceived(int socket, Ace::LogServer::Types type, int thread, const QByteArray& message)
+void Client::messageReceived(int socket, Ace::LogServer::Type type, int thread, const QByteArray& message)
 {
    if ( _isDebug && type == Ace::LogServer::Debug )
    {
@@ -111,6 +111,7 @@ void Client::connected()
       for (auto socket: qAsConst(_sockets))
       {
          socket->write("S",1);
+         socket->flush();
       }
    }
 }

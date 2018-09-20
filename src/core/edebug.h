@@ -3,7 +3,6 @@
 #include <QObject>
 #include <QAtomicInteger>
 #include <QVector>
-#include <QTextStream>
 #include "eabstractanalytic.h"
 #include "eabstractanalytic_input.h"
 #include "ace_analytic_abstractmpi.h"
@@ -79,6 +78,7 @@ private:
    static thread_local bool _active;
    void setArgument(int depth);
    void setupArguments(const char* argumentNames);
+   void dumpArguments();
    /*!
     */
    const char* _function;
@@ -140,11 +140,7 @@ template<class T> void EDebug::setArgument(int depth, T last)
    _holder.clear();
    *this << last;
    _argumentValues[depth] = _holder;
-   QTextStream out(stdout);
-   for (int i = 0; i < _argumentIndexes.size() ;++i)
-   {
-      out << "[" << _threadId << "]" << QString(_stackDepth*3,' ') << &_argumentNames[_argumentIndexes[i]] << " = " << _argumentValues[i] << "\n";
-   }
+   dumpArguments();
 }
 
 

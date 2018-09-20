@@ -107,18 +107,23 @@ void LogServer::wait()
  *
  * @return Reference to this logger. 
  */
-LogServer& LogServer::broadcast(int type, const QByteArray& data)
+LogServer& LogServer::broadcast(Type type, int thread, const QByteArray& data)
 {
+   if ( data.isEmpty() )
+   {
+      return *this;
+   }
+
    // Construct the message that will be broadcast to all connected clients. 
    QByteArray message;
    QDataStream stream(&message,QIODevice::WriteOnly);
-   stream << (qint32)type << (qint32)data.size();
-   stream.writeBytes(data.data(),data.size());
+   stream << (qint8)type << (qint32)thread << (qint32)data.size();
+   stream.writeRawData(data.data(),data.size());
 
    // Iterate through all connected clients of this log server, locking its mutex for 
    // thread safety. 
    _mutex.lock();
-   for (auto i = _clients.begin(); i != _clients.end() ;++i)
+   for (auto i = _clients.begin(); i != _clients.end() ;)
    {
       // Get the TCP socket of the client. 
       QTcpSocket* client {*i};
@@ -136,6 +141,9 @@ LogServer& LogServer::broadcast(int type, const QByteArray& data)
       else
       {
          client->write(message);
+         client->waitForReadyRead(-1);
+         client->read(client->bytesAvailable());
+         ++i;
       }
    }
 
@@ -159,7 +167,7 @@ void LogServer::flush()
    // Iterate through all connected clients of this log server, locking its mutex for 
    // thread safety. 
    _mutex.lock();
-   for (auto i = _clients.begin(); i != _clients.end() ;++i)
+   for (auto i = _clients.begin(); i != _clients.end() ;)
    {
       // Get the TCP socket of the client. 
       QTcpSocket* client {*i};
@@ -176,6 +184,7 @@ void LogServer::flush()
       else
       {
          client->flush();
+         ++i;
       }
    }
 

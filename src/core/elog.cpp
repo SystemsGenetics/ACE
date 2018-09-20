@@ -264,6 +264,6 @@ ELog::~ELog()
    }
 
    // Write this log's message to the log server and flush its output. 
-   log->broadcast(Ace::LogServer::Log,_message);
+   log->broadcast(Ace::LogServer::Log,-1,_message);
    log->flush();
 }
