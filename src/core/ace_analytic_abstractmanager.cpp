@@ -312,7 +312,7 @@ QFile* AbstractManager::addOutputFile(const QString& path)
  */
 Ace::DataObject* AbstractManager::addOutputData(const QString& path, quint16 type, const EMetadata& system)
 {
-   EDEBUG_FUNC(this,path,type,system)
+   EDEBUG_FUNC(this,path,type,&system)
 
    // If the given path is empty then return a null pointer, else go to the next 
    // step. 
@@ -876,7 +876,7 @@ EMetadata AbstractManager::buildMetaCommand()
  */
 void AbstractManager::inputDataOut(const EMetadata& system)
 {
-   EDEBUG_FUNC(this,system)
+   EDEBUG_FUNC(this,&system)
 
    // Iterate through all of this manager's array of argument settings for the 
    // proceeding steps. 

@@ -258,6 +258,21 @@ EDebug& EDebug::operator<<(const void*const value)
  *
  * @param value  
  */
+EDebug& EDebug::operator<<(const QByteArray& value)
+{
+   _holder += QStringLiteral("\"") + value.data() + QStringLiteral("\"");
+   return *this;
+}
+
+
+
+
+
+
+/*!
+ *
+ * @param value  
+ */
 EDebug& EDebug::operator<<(const QString& value)
 {
    if ( _quote )
@@ -334,41 +349,6 @@ EDebug& EDebug::operator<<(const QObject*const value)
 EDebug& EDebug::operator<<(const QVariant& value)
 {
    *this << value.toString();
-   return *this;
-}
-
-
-
-
-
-
-/*!
- *
- * @param value  
- */
-EDebug& EDebug::operator<<(const EMetadata& value)
-{
-   *this << NoQuote << EMetadata::typeName(value.type()) << Quote;
-   switch (value.type())
-   {
-   case EMetadata::Bool:
-      *this << NoQuote << QStringLiteral("(") << value.toBool() << QStringLiteral(")") << Quote;
-      break;
-   case EMetadata::Double:
-      *this << NoQuote << QStringLiteral("(") << value.toDouble() << QStringLiteral(")") << Quote;
-      break;
-   case EMetadata::String:
-      *this << NoQuote
-            << QStringLiteral("(")
-            << Quote
-            << value.toString()
-            << NoQuote
-            << QStringLiteral(")")
-            << Quote;
-      break;
-   default:
-      break;
-   }
    return *this;
 }
 

@@ -67,7 +67,7 @@ EMetadata EAbstractData::meta() const
  */
 void EAbstractData::setMeta(const EMetadata& newMeta)
 {
-   EDEBUG_FUNC(this,newMeta)
+   EDEBUG_FUNC(this,&newMeta)
 
    qobject_cast<Ace::DataObject*>(parent())->setUserMeta(newMeta);
 }

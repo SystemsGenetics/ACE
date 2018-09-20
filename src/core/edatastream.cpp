@@ -226,7 +226,7 @@ const EDataStream& EDataStream::operator>>(QString& value) const
 {
    EDEBUG_FUNC(this,&value)
 
-   // Read in the type marker from the data stream. If the type is not a string then
+   // Read in the type marker from the data stream. If the type is not a string then 
    // throw an exception, else go to the next step. 
    quint8 type;
    *this >> type;
@@ -267,7 +267,7 @@ const EDataStream& EDataStream::operator>>(QByteArray& value) const
 {
    EDEBUG_FUNC(this,&value)
 
-   // Read in type marker from the data stream. If the type is not a byte array then
+   // Read in type marker from the data stream. If the type is not a byte array then 
    // throw an exception, else go to the next step. 
    quint8 type;
    *this >> type;
@@ -497,7 +497,7 @@ EDataStream& EDataStream::operator<<(const QString& value)
 {
    EDEBUG_FUNC(this,value)
 
-   // Write out the string type marker and the string itself as a byte array encoded
+   // Write out the string type marker and the string itself as a byte array encoded 
    // with UTF-8. 
    *this << static_cast<quint8>(Tag::String);
    *this << value.toUtf8();
@@ -522,9 +522,9 @@ EDataStream& EDataStream::operator<<(const QString& value)
  */
 EDataStream& EDataStream::operator<<(const QByteArray& value)
 {
-   EDEBUG_FUNC(this,&value)
+   EDEBUG_FUNC(this,value)
 
-   // Write out the byte array type marker, the size of the byte array, and the byte
+   // Write out the byte array type marker, the size of the byte array, and the byte 
    // array itself. 
    *this << static_cast<quint8>(Tag::ByteArray);
    *this << static_cast<quint32>(value.size());

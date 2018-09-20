@@ -25,7 +25,7 @@
  */
 EMetadata& EMetadata::operator=(const EMetadata& object)
 {
-   EDEBUG_FUNC(this,object)
+   EDEBUG_FUNC(this,&object)
 
    // Delete any data this object contains. 
    clear();
@@ -53,7 +53,7 @@ EMetadata& EMetadata::operator=(const EMetadata& object)
  */
 EMetadata& EMetadata::operator=(EMetadata&& object)
 {
-   EDEBUG_FUNC(this,object)
+   EDEBUG_FUNC(this,&object)
 
    // Delete any data this object contains. 
    clear();
@@ -140,7 +140,7 @@ EMetadata::EMetadata(const QString& value):
 EMetadata::EMetadata(const QByteArray& value):
    EMetadata(Bytes)
 {
-   EDEBUG_FUNC(this,&value)
+   EDEBUG_FUNC(this,value)
 
    toBytes() = value;
 }
@@ -159,7 +159,7 @@ EMetadata::EMetadata(const QByteArray& value):
 EMetadata::EMetadata(const EMetaArray& value):
    EMetadata(Array)
 {
-   EDEBUG_FUNC(this,value)
+   EDEBUG_FUNC(this,&value)
 
    toArray() = value;
 }
@@ -178,7 +178,7 @@ EMetadata::EMetadata(const EMetaArray& value):
 EMetadata::EMetadata(const EMetaObject& value):
    EMetadata(Object)
 {
-   EDEBUG_FUNC(this,value)
+   EDEBUG_FUNC(this,&value)
 
    toObject() = value;
 }
@@ -265,6 +265,8 @@ EMetadata::EMetadata(const QJsonValue& value)
 EMetadata::EMetadata(const EMetadata& object):
    _type(object._type)
 {
+   EDEBUG_FUNC(this,&object)
+
    // Copy the type and data of the supplied metadata object. 
    create();
    copy(object._data);
@@ -285,7 +287,7 @@ EMetadata::EMetadata(EMetadata&& object):
    _type(object._type),
    _data(object._data)
 {
-   EDEBUG_FUNC(this,object)
+   EDEBUG_FUNC(this,&object)
 
    // Set the supplied metadata object to Null. 
    object._type = Null;
@@ -380,6 +382,8 @@ QJsonValue EMetadata::toJson() const
  */
 EMetadata::Type EMetadata::type() const
 {
+   EDEBUG_FUNC(this)
+
    return _type;
 }
 

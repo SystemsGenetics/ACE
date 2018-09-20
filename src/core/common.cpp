@@ -27,7 +27,7 @@
  */
 const EDataStream& operator>>(const EDataStream& stream, EMetadata& meta)
 {
-   EDEBUG_FUNC(&stream,meta)
+   EDEBUG_FUNC(&stream,&meta)
 
    // Read in the metadata type and overwrite the given metadata with a new object of 
    // that type. 
@@ -115,7 +115,7 @@ const EDataStream& operator>>(const EDataStream& stream, EMetadata& meta)
  */
 EDataStream& operator<<(EDataStream& stream, const EMetadata& meta)
 {
-   EDEBUG_FUNC(&stream,meta)
+   EDEBUG_FUNC(&stream,&meta)
 
    // Write out the metadata type from the given object to the data stream. 
    quint8 type {static_cast<quint8>(meta.type())};
@@ -164,4 +164,54 @@ EDataStream& operator<<(EDataStream& stream, const EMetadata& meta)
    default: break;
    }
    return stream;
+}
+
+
+
+
+
+
+/*!
+ *
+ * @param debug  
+ *
+ * @param meta  
+ */
+EDebug& operator<<(EDebug& debug, const EMetadata*const meta)
+{
+   switch (meta->_type)
+   {
+   case EMetadata::Null:
+      debug << EDebug::NoQuote << QStringLiteral("EMetadata(null)") << EDebug::Quote;
+      break;
+   case EMetadata::Bool:
+      debug << EDebug::NoQuote
+            << QStringLiteral("EMetadata(bool,")
+            << ( *reinterpret_cast<bool*>(meta->_data) ? QStringLiteral("TRUE") : QStringLiteral("FALSE") )
+            << QStringLiteral(")")
+            << EDebug::Quote;
+      break;
+   case EMetadata::Double:
+      debug << EDebug::NoQuote << QStringLiteral("EMetadata(double,")
+            << *reinterpret_cast<double*>(meta->_data)
+            << QStringLiteral(")")
+            << EDebug::Quote;
+      break;
+   case EMetadata::String:
+      debug << EDebug::NoQuote << QStringLiteral("EMetadata(string,\"")
+            << *reinterpret_cast<QString*>(meta->_data)
+            << QStringLiteral("\")")
+            << EDebug::Quote;
+      break;
+   case EMetadata::Bytes:
+      debug << EDebug::NoQuote << QStringLiteral("EMetadata(bytes)") << EDebug::Quote;
+      break;
+   case EMetadata::Array:
+      debug << EDebug::NoQuote << QStringLiteral("EMetadata(array)") << EDebug::Quote;
+      break;
+   case EMetadata::Object:
+      debug << EDebug::NoQuote << QStringLiteral("EMetadata(object)") << EDebug::Quote;
+      break;
+   }
+   return debug;
 }

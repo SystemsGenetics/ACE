@@ -122,7 +122,7 @@ void MPIMaster::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
  */
 void MPIMaster::dataReceived(const QByteArray& data, int fromRank)
 {
-   EDEBUG_FUNC(this,&data,fromRank)
+   EDEBUG_FUNC(this,data,fromRank)
 
    // Extract the index from the given data. If the index is less than 0 and a code 
    // then process it as a code, else process it as a result block. 
@@ -214,7 +214,7 @@ void MPIMaster::processCode(int code, int fromRank)
  */
 void MPIMaster::process(const QByteArray& data, int fromRank)
 {
-   EDEBUG_FUNC(this,&data,fromRank)
+   EDEBUG_FUNC(this,data,fromRank)
 
    // Make a blank result block from this manager's analytic and load the given data 
    // into it. If the analytic fails making a blank result block then throw an 

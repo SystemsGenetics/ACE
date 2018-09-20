@@ -15,5 +15,5 @@ DEFINES += GUI=1
 
 isEmpty(PREFIX) { PREFIX = /usr/local }
 program.path = $${PREFIX}/bin
-program.files = $${PWD}/../../../build/example/gui/$${TARGET}
+program.files = $${TARGET}
 INSTALLS += program

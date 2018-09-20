@@ -47,11 +47,11 @@ public:
    EDebug& operator<<(double value);
    EDebug& operator<<(const char* value);
    EDebug& operator<<(const void*const value);
+   EDebug& operator<<(const QByteArray& value);
    EDebug& operator<<(const QString& value);
    EDebug& operator<<(const QStringList& value);
    EDebug& operator<<(const QObject*const value);
    EDebug& operator<<(const QVariant& value);
-   EDebug& operator<<(const EMetadata& value);
    EDebug& operator<<(const EAbstractAnalytic::Block*const value);
    EDebug& operator<<(EAbstractAnalytic::Input::Type value);
    EDebug& operator<<(EAbstractAnalytic::Input::Role value);

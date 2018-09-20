@@ -212,7 +212,7 @@ void QMPI::stop()
  */
 void QMPI::sendData(int toRank, const QByteArray& data)
 {
-   EDEBUG_FUNC(this,toRank,&data)
+   EDEBUG_FUNC(this,toRank,data)
 
    sendData(MPI_COMM_WORLD,toRank,data);
 }
@@ -232,7 +232,7 @@ void QMPI::sendData(int toRank, const QByteArray& data)
  */
 void QMPI::sendLocalData(int toRank, const QByteArray& data)
 {
-   EDEBUG_FUNC(this,toRank,&data)
+   EDEBUG_FUNC(this,toRank,data)
 
    sendData(_local,toRank,data);
 }

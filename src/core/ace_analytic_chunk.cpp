@@ -113,7 +113,7 @@ QFile* Chunk::addOutputFile(const QString& path)
  */
 Ace::DataObject* Chunk::addOutputData(const QString& path, quint16 type, const EMetadata& system)
 {
-   EDEBUG_FUNC(this,path,type,system)
+   EDEBUG_FUNC(this,path,type,&system)
 
    Q_UNUSED(path)
    Q_UNUSED(type)

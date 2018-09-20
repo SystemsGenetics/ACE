@@ -21,7 +21,7 @@
  */
 EMetaObject& EMetaObject::operator=(const EMetaObject& object)
 {
-   EDEBUG_FUNC(this,object)
+   EDEBUG_FUNC(this,&object)
 
    // Assign this object to the given mapping. 
    QMap<QString,EMetadata>::operator=(object);
@@ -244,7 +244,7 @@ EMetadata EMetaObject::at(const QString& key) const
  */
 void EMetaObject::insert(const QString& key, const EMetadata& value)
 {
-   EDEBUG_FUNC(this,key,value)
+   EDEBUG_FUNC(this,key,&value)
 
    QMap<QString,EMetadata>::operator[](key) = value;
 }

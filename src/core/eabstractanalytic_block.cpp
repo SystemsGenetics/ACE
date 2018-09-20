@@ -21,7 +21,7 @@
  */
 int EAbstractAnalytic::Block::extractIndex(const QByteArray& data)
 {
-   EDEBUG_FUNC(&data)
+   EDEBUG_FUNC(data)
 
    // Read the index from the byte array and return it. If reading fails then throw 
    // an exception. 
@@ -117,7 +117,7 @@ QByteArray EAbstractAnalytic::Block::toBytes() const
  */
 void EAbstractAnalytic::Block::fromBytes(const QByteArray& data)
 {
-   EDEBUG_FUNC(this,&data)
+   EDEBUG_FUNC(this,data)
 
    // Read in this block's index and call this block's read interface for its 
    // implementation to read its data. If any reading fails then throw an exception. 

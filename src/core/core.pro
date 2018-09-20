@@ -113,7 +113,7 @@ HEADERS += \
 
 isEmpty(PREFIX) { PREFIX = /usr/local }
 library.path = $${PREFIX}/lib
-library.extra = cp -fd $${PWD}/../../build/libs/lib$${TARGET}.so* $${PREFIX}/lib/
+library.extra = cp -fd ../libs/lib$${TARGET}.so* $${PREFIX}/lib/
 includes.path = $${PREFIX}/include/ace/core
 includes.files = $${PWD}/*.h
 INSTALLS += library includes

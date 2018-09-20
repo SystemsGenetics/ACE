@@ -668,7 +668,7 @@ bool MetadataModel::remove(const QModelIndex& index)
  */
 void MetadataModel::setMeta(const EMetadata& newRoot)
 {
-   EDEBUG_FUNC(this,newRoot)
+   EDEBUG_FUNC(this,&newRoot)
 
    // If the given metadata object is not an object type then throw an exception, 
    // else go to the next step. 
@@ -967,7 +967,7 @@ EMetadata MetadataModel::buildMeta(const Node* node) const
  */
 std::unique_ptr<MetadataModel::Node> MetadataModel::buildNode(const EMetadata& meta)
 {
-   EDEBUG_FUNC(this,meta)
+   EDEBUG_FUNC(this,&meta)
 
    // Create a new node variable, storing its pointer, setting it's metadata type as 
    // the given metadata value's type. If the given metadata type is a container then 

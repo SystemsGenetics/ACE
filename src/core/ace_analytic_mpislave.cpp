@@ -171,7 +171,7 @@ QFile* MPISlave::addOutputFile(const QString& path)
  */
 Ace::DataObject* MPISlave::addOutputData(const QString& path, quint16 type, const EMetadata& system)
 {
-   EDEBUG_FUNC(this,path,type,system)
+   EDEBUG_FUNC(this,path,type,&system)
 
    Q_UNUSED(path)
    Q_UNUSED(type)
@@ -218,7 +218,7 @@ void MPISlave::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
  */
 void MPISlave::dataReceived(const QByteArray& data, int fromRank)
 {
-   EDEBUG_FUNC(this,&data,fromRank)
+   EDEBUG_FUNC(this,data,fromRank)
 
    // If the given rank is not from the master node then throw an exception, else go 
    // to the next step. 
@@ -295,7 +295,7 @@ void MPISlave::processCode(int code)
  */
 void MPISlave::process(const QByteArray& data)
 {
-   EDEBUG_FUNC(this,&data)
+   EDEBUG_FUNC(this,data)
 
    // Create a blank work block from this object's analytic reading in the given data 
    // to it. If this object's analytic fails in creating a blank work block then 

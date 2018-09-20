@@ -45,7 +45,7 @@ MetadataModel::Node::Node(EMetadata::Type type, QObject* parent):
 MetadataModel::Node::Node(const EMetadata& meta, QObject* parent):
    QObject(parent)
 {
-   EDEBUG_FUNC(this,meta,parent)
+   EDEBUG_FUNC(this,&meta,parent)
 
    if ( meta.isArray() || meta.isObject() )
    {

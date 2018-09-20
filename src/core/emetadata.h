@@ -22,6 +22,8 @@ class QJsonValue;
 class EMetadata
 {
 public:
+   friend EDebug& operator<<(EDebug& debug, const EMetadata*const meta);
+public:
    EMetadata& operator=(const EMetadata& object);
    EMetadata& operator=(EMetadata&& object);
 public:

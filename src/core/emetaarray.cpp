@@ -21,7 +21,7 @@
  */
 EMetaArray& EMetaArray::operator=(const EMetaArray& object)
 {
-   EDEBUG_FUNC(this,object)
+   EDEBUG_FUNC(this,&object)
 
    // Assign this object to the given array. 
    QList<EMetadata>::operator=(object);
@@ -84,7 +84,7 @@ const EMetadata& EMetaArray::operator[](int index) const
  */
 EMetaArray& EMetaArray::operator<<(const EMetadata& value)
 {
-   EDEBUG_FUNC(this,value)
+   EDEBUG_FUNC(this,&value)
 
    // Append new metadata value to array. 
    QList<EMetadata>::operator<<(value);
@@ -266,7 +266,7 @@ const EMetadata& EMetaArray::at(int index) const
  */
 void EMetaArray::insert(int index, const EMetadata& value)
 {
-   EDEBUG_FUNC(this,index,value)
+   EDEBUG_FUNC(this,index,&value)
 
    QList<EMetadata>::insert(index,value);
 }
@@ -283,7 +283,7 @@ void EMetaArray::insert(int index, const EMetadata& value)
  */
 void EMetaArray::append(const EMetadata& value)
 {
-   EDEBUG_FUNC(this,value)
+   EDEBUG_FUNC(this,&value)
 
    QList<EMetadata>::append(value);
 }

@@ -78,7 +78,7 @@ DataObject::DataObject(const QString& path, quint16 type, const EMetadata& syste
    _type(type),
    _system(system)
 {
-   EDEBUG_FUNC(this,path,type,system,parent)
+   EDEBUG_FUNC(this,path,type,&system,parent)
 
    // Open the data object file, signal this new data object is overwriting the file, 
    // write out the header data, and call the new data interface for this object's 
@@ -382,7 +382,7 @@ EAbstractData* DataObject::data()
  */
 void DataObject::setUserMeta(const EMetadata& newRoot)
 {
-   EDEBUG_FUNC(this,newRoot)
+   EDEBUG_FUNC(this,&newRoot)
 
    // If the given metadata is not an object type then throw on an exception, else go 
    // to the next step. 

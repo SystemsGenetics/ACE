@@ -135,7 +135,7 @@ void AbstractMPI::start()
  */
 void AbstractMPI::localDataReceived(const QByteArray& data, int fromRank)
 {
-   EDEBUG_FUNC(this,&data,fromRank)
+   EDEBUG_FUNC(this,data,fromRank)
 
    // If this node has already been started then throw an exception, else go to the 
    // next step. 
