@@ -10,6 +10,7 @@
  */
 class Socket : public QTcpSocket
 {
+   Q_OBJECT
 signals:
    /*!
     *

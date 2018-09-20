@@ -5,7 +5,7 @@
 
 
 
-class QTcpSocket;
+class Socket;
 //
 
 
@@ -16,9 +16,10 @@ class Client : public QObject
 {
    Q_OBJECT
 public:
-   explicit Client(int& argc, char** argv);
+   explicit Client();
 private slots:
    void messageReceived(int socket, Ace::LogServer::Types type, int thread, const QByteArray& message);
+   void connected();
    void disconnected();
 private:
    /*!
@@ -32,7 +33,7 @@ private:
    int _debugThread {-1};
    /*!
     */
-   int _waiting;
+   int _waiting {0};
    /*!
     */
    QList<QTcpSocket*> _sockets;

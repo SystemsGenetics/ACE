@@ -85,7 +85,7 @@ void LogServer::wait()
    while (true)
    {
       QCoreApplication::processEvents();
-      if ( !_clients.isEmpty() )
+      if ( _first )
       {
          break;
       }
@@ -193,7 +193,9 @@ void LogServer::flush()
  * start execution. 
  */
 void LogServer::clientSignalsStart()
-{}
+{
+   _first = true;
+}
 
 
 

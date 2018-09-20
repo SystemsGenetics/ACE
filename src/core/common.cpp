@@ -182,36 +182,52 @@ EDebug& operator<<(EDebug& debug, const EMetadata*const meta)
    switch (meta->_type)
    {
    case EMetadata::Null:
-      debug << EDebug::NoQuote << QStringLiteral("EMetadata(null)") << EDebug::Quote;
+      debug << EDebug::NoQuote << QStringLiteral("EMetadata(null");
       break;
    case EMetadata::Bool:
-      debug << EDebug::NoQuote
-            << QStringLiteral("EMetadata(bool,")
-            << ( *reinterpret_cast<bool*>(meta->_data) ? QStringLiteral("TRUE") : QStringLiteral("FALSE") )
-            << QStringLiteral(")")
-            << EDebug::Quote;
+      debug << EDebug::NoQuote << QStringLiteral("EMetadata(bool,");
       break;
    case EMetadata::Double:
-      debug << EDebug::NoQuote << QStringLiteral("EMetadata(double,")
-            << *reinterpret_cast<double*>(meta->_data)
-            << QStringLiteral(")")
-            << EDebug::Quote;
+      debug << EDebug::NoQuote << QStringLiteral("EMetadata(double,");
       break;
    case EMetadata::String:
-      debug << EDebug::NoQuote << QStringLiteral("EMetadata(string,\"")
-            << *reinterpret_cast<QString*>(meta->_data)
-            << QStringLiteral("\")")
-            << EDebug::Quote;
+      debug << EDebug::NoQuote << QStringLiteral("EMetadata(string,\"");
       break;
    case EMetadata::Bytes:
-      debug << EDebug::NoQuote << QStringLiteral("EMetadata(bytes)") << EDebug::Quote;
+      debug << EDebug::NoQuote << QStringLiteral("EMetadata(bytes");
       break;
    case EMetadata::Array:
-      debug << EDebug::NoQuote << QStringLiteral("EMetadata(array)") << EDebug::Quote;
+      debug << EDebug::NoQuote << QStringLiteral("EMetadata(array");
       break;
    case EMetadata::Object:
-      debug << EDebug::NoQuote << QStringLiteral("EMetadata(object)") << EDebug::Quote;
+      debug << EDebug::NoQuote << QStringLiteral("EMetadata(object");
       break;
    }
+   if ( meta->_data )
+   {
+      switch (meta->_type)
+      {
+      case EMetadata::Bool:
+         debug << ( *reinterpret_cast<bool*>(meta->_data) ? QStringLiteral("TRUE") : QStringLiteral("FALSE") )
+               << QStringLiteral(")");
+         break;
+      case EMetadata::Double:
+         debug << *reinterpret_cast<double*>(meta->_data)
+               << QStringLiteral(")");
+         break;
+      case EMetadata::String:
+         debug << *reinterpret_cast<QString*>(meta->_data)
+               << QStringLiteral("\")");
+         break;
+      default:
+         debug << QStringLiteral(")");
+         break;
+      }
+   }
+   else
+   {
+      debug << QStringLiteral(")");
+   }
+   debug << EDebug::Quote;
    return debug;
 }
