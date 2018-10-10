@@ -50,7 +50,7 @@ namespace Ace
    public slots:
       void dataOverwritten(const QString& canonicalPath, Ace::DataObject* object);
    private:
-      void openObject();
+      void openObject(bool overwrite);
       void readHeader();
       void writeHeader();
       void makeData(const QString& name, const QString& extension);

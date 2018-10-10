@@ -17,13 +17,13 @@
 QAtomicInteger<int> EDebug::_counter;
 /*!
  */
-int thread_local EDebug::_threadId {-1};
+thread_local int EDebug::_threadId {-1};
 /*!
  */
-int thread_local EDebug::_stackDepth {0};
+thread_local int EDebug::_stackDepth {0};
 /*!
  */
-bool thread_local EDebug::_active {false};
+thread_local bool EDebug::_active {false};
 
 
 
@@ -624,6 +624,9 @@ void EDebug::setupArguments(const char* argumentNames)
 
 
 
+
+/*!
+ */
 void EDebug::dumpArguments()
 {
    QByteArray message;

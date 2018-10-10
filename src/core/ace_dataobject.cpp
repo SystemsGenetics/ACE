@@ -35,7 +35,7 @@ DataObject::DataObject(const QString& path, QObject* parent):
    // interface of this object's abstract data object. 
    try
    {
-      openObject();
+      openObject(false);
       readHeader();
       _data->readData();
    }
@@ -85,7 +85,7 @@ DataObject::DataObject(const QString& path, quint16 type, const EMetadata& syste
    // abstract data object. 
    try
    {
-      openObject();
+      openObject(true);
       DataManager::instance().newDataOpened(_path,this);
       writeHeader();
       _data->writeNewData();
@@ -549,15 +549,17 @@ void DataObject::dataOverwritten(const QString& canonicalPath, Ace::DataObject* 
  * Opens this data object's file for read and write access and creates a new data 
  * stream associated with this data object. If there is an error opening the file 
  * then an exception is thrown. 
+ *
+ * @param overwrite  
  */
-void DataObject::openObject()
+void DataObject::openObject(bool overwrite)
 {
    EDEBUG_FUNC(this)
 
    // Open this data object's file. If opening the file failed then throw an 
    // exception, else go to the next step. 
    _file = new QFile(_rawPath,this);
-   if ( !_file->open(QIODevice::ReadWrite) )
+   if ( !_file->open(overwrite? QIODevice::ReadWrite : QIODevice::ReadOnly) )
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(tr("System Error"));

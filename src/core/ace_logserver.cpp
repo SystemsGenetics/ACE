@@ -103,6 +103,8 @@ void LogServer::wait()
  *
  * @param type The message type being broadcast to all clients. 
  *
+ * @param thread  
+ *
  * @param data Any optional data that is appended to the message. 
  *
  * @return Reference to this logger. 

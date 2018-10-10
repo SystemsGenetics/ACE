@@ -7,10 +7,19 @@
 //
 
 
+
+
+
+
+/*!
+ */
 Socket::Socket()
 {
    connect(this,&QIODevice::readyRead,this,&Socket::readyRead);
 }
+
+
+
 
 
 

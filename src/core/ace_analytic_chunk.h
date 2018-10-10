@@ -51,7 +51,7 @@ namespace Ace
          /*!
           * Pointer to the abstract run object used to process work blocks. 
           */
-         AbstractRun* _runner;
+         AbstractRun* _runner {nullptr};
          /*!
           * The file name of the temporary binary file this chunk manager stores all its 
           * result blocks. 
