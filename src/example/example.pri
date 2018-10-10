@@ -6,6 +6,7 @@ equals(MPICXX,"yes") { LIBS += -lmpi_cxx }
 
 INCLUDEPATH += $${PWD}/../ $${PWD}/core/
 DEPENDPATH += $${PWD}/../ $${PWD}/core/
+PRE_TARGETDEPS += ../../libs/libaceexcore.a
 
 TEMPLATE = app
 
