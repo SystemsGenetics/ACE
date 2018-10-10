@@ -141,6 +141,22 @@ void EAbstractAnalytic::initialize()
 
 
 /*!
+ * This interface initializes any outputs for this analytic. This is called only 
+ * once before any other interface is called for this analytic. This is only called 
+ * for analytic objects that will process output result blocks. The default 
+ * implementation does nothing. 
+ */
+void EAbstractAnalytic::initializeOutputs()
+{
+   EDEBUG_FUNC(this)
+}
+
+
+
+
+
+
+/*!
  * This interface is called to finish this analytic. This is called at the very end 
  * after every other interface call. The default implementation does nothing. 
  */

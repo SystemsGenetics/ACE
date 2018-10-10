@@ -172,11 +172,23 @@ EAbstractAnalytic::OpenCL* MathTransform::makeOpenCL()
 void MathTransform::initialize()
 {
    // 1
-   if ( !_in || !_out )
+   if ( !_in )
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(tr("Invalid Argument"));
-      e.setDetails(tr("The required input/output data object was not set."));
+      e.setDetails(tr("The required input data object was not set."));
+      throw e;
+   }
+}
+
+void MathTransform::initializeOutputs()
+{
+   // 1
+   if ( !_out )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Invalid Argument"));
+      e.setDetails(tr("The required output data object was not set."));
       throw e;
    }
 }

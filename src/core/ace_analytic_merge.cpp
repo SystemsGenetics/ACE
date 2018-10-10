@@ -107,7 +107,9 @@ void Merge::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
  */
 void Merge::start()
 {
-   EDEBUG_FUNC(this)
+   EDEBUG_FUNC(this);
+
+   analytic()->initializeOutputs();
 
    // Calculate the chunk size for this merge and schedule this object's process slot 
    // to be called. 

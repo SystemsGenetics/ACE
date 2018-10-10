@@ -104,7 +104,9 @@ void Single::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
  */
 void Single::start()
 {
-   EDEBUG_FUNC(this)
+   EDEBUG_FUNC(this);
+
+   analytic()->initializeOutputs();
 
    // Setup OpenCL, setup serial if OpenCL fails, and then connect this object's 
    // abstract runner class finished signal with this manager's finish slot. 

@@ -60,6 +60,7 @@ public:
    virtual EAbstractAnalytic::Serial* makeSerial();
    virtual EAbstractAnalytic::OpenCL* makeOpenCL();
    virtual void initialize();
+   virtual void initializeOutputs();
    virtual void finish();
 protected:
    static bool isMaster();

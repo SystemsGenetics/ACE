@@ -42,7 +42,7 @@ MPIMaster::MPIMaster(quint16 type):
    AbstractMPI(type),
    _mpi(QMPI::instance())
 {
-   EDEBUG_FUNC(this,type)
+   EDEBUG_FUNC(this,type);
 
    connect(&_mpi,&QMPI::dataReceived,this,&MPIMaster::dataReceived);
 }

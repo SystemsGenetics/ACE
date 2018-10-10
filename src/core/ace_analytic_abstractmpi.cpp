@@ -90,6 +90,7 @@ void AbstractMPI::start()
       int i {0};
       if ( _mpi.isMaster() )
       {
+         analytic()->initializeOutputs();
          ++i;
       }
 
