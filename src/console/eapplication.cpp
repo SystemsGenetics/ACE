@@ -51,8 +51,8 @@ EApplication::EApplication(const QString& organization, const QString& applicati
 {
    try
    {
-      // Initialize the ACE system through the global settings instance and set the data
-      // and analytic factories to the ones given.
+      // Initialize the ACE system through the global settings instance and set the data 
+      // and analytic factories to the ones given. 
       Ace::Settings::initialize(organization,application,majorVersion,minorVersion,revision);
       EAbstractDataFactory::setInstance(std::move(data));
       EAbstractAnalyticFactory::setInstance(std::move(analytic));

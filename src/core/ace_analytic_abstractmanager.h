@@ -38,6 +38,7 @@ namespace Ace
          int size() const;
          EAbstractAnalytic::Input::Type type(int index) const;
          QVariant data(int index, EAbstractAnalytic::Input::Role role) const;
+         QList<QString> commandLineArguments() const;
          void set(int index, const QVariant& value);
       signals:
          /*!

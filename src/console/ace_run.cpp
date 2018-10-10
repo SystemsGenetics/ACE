@@ -303,7 +303,21 @@ void Run::setupManager(quint16 type)
  */
 void Run::addArguments()
 {
-   EDEBUG_FUNC(this)
+   EDEBUG_FUNC(this);
+
+   // Iterate through all options passed to this run object. 
+   const QList<QString> arguments {_manager->commandLineArguments()};
+   for (int i = 0; i < _options.size() ;++i)
+   {
+      // Make sure the given option is valid for this run object's analytic. 
+      if ( !arguments.contains(_options.key(i)) )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setTitle(tr("Invalid Option"));
+         e.setDetails(tr("Unknown analytic option '%1'.").arg(_options.key(i)));
+         throw e;
+      }
+   }
 
    // Iterate through all arguments for this object's analytic manager for the 
    // following steps. 

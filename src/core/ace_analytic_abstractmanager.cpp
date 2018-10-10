@@ -158,7 +158,24 @@ QVariant AbstractManager::data(int index, EAbstractAnalytic::Input::Role role) c
 {
    EDEBUG_FUNC(this,role)
 
-   return _input->data(index,role);
+         return _input->data(index,role);
+}
+
+
+
+
+
+
+/*!
+ */
+QList<QString> AbstractManager::commandLineArguments() const
+{
+   QList<QString> ret;
+   for (int i = 0; i < _input->size() ;++i)
+   {
+      ret << _input->data(i,EAbstractAnalytic::Input::CommandLineName).toString();
+   }
+   return ret;
 }
 
 
