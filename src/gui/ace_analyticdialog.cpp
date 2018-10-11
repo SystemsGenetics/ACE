@@ -128,7 +128,7 @@ int AnalyticDialog::exec()
 void AnalyticDialog::closeEvent(QCloseEvent* event)
 {
    // Step 1
-   if ( _thread->isRunning() )
+   if ( _thread && _thread->isRunning() )
    {
       event->ignore();
    }
@@ -246,8 +246,10 @@ void AnalyticDialog::finished()
    // Step 1
    try
    {
-      _thread->deleteLater();
-      _thread->check();
+      AnalyticThread* thread {_thread};
+      _thread = nullptr;
+      thread->deleteLater();
+      thread->check();
    }
    catch (...)
    {
