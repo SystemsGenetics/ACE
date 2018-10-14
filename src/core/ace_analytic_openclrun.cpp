@@ -86,10 +86,11 @@ OpenCLRun::OpenCLRun(EAbstractAnalytic::OpenCL* opencl, OpenCL::Device* device, 
       _threads[i] = thread;
       _idle << thread;
       connect(thread
-              ,&Thread::finished
+              ,&Thread::blockFinished
               ,this
               ,[this,i]{ blockFinished(i); }
               ,Qt::QueuedConnection);
+      thread->start();
    }
 }
 
@@ -111,6 +112,7 @@ OpenCLRun::~OpenCLRun()
    // and then deleting it. 
    for (auto thread: _threads)
    {
+      thread->requestInterruption();
       while ( thread->isRunning() );
       delete thread;
    }

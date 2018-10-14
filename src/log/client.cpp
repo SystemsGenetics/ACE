@@ -21,7 +21,7 @@ Client::Client()
    {
       {{"s","silent"},tr("Do not signal the server to start.")}
       ,{{"d","debug"},tr("Run in debug mode.")}
-      ,{{"t","thread"},tr("The given thread number to listen to in debug mode.")}
+      ,{{"t","thread"},tr("The given thread number to listen to in debug mode."),"thread"}
    }
    );
    parse.process(*QCoreApplication::instance());

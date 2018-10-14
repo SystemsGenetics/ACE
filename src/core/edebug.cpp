@@ -534,7 +534,6 @@ EDebug::EDebug(const char* function, const char* argumentNames):
    if ( log )
    {
       log->broadcast(Ace::LogServer::Debug,_threadId,message);
-      log->flush();
    }
    if ( _active )
    {
@@ -571,7 +570,6 @@ EDebug::~EDebug()
    if ( log )
    {
       log->broadcast(Ace::LogServer::Debug,_threadId,message);
-      log->flush();
    }
 }
 
@@ -645,6 +643,5 @@ void EDebug::dumpArguments()
    if ( log )
    {
       log->broadcast(Ace::LogServer::Debug,_threadId,message);
-      log->flush();
    }
 }

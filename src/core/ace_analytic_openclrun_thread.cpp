@@ -65,7 +65,7 @@ void OpenCLRun::Thread::execute(std::unique_ptr<EAbstractAnalytic::Block>&& bloc
    delete _work;
    _work = block.release();
    _work->setParent(this);
-   start();
+   ++_switch;
 }
 
 
@@ -126,17 +126,34 @@ void OpenCLRun::Thread::run()
 {
    EDEBUG_FUNC(this)
 
-   // Process this object's saved work block, saving the result block and 
-   // transferring it to this object's main thread. If any ACE exception occurs then 
-   // catch it and save it. 
-   try
+   while (true)
    {
-      _result = _worker->execute(_work).release();
-      _result->moveToThread(thread());
-      _result->setParent(this);
-   }
-   catch (EException e)
-   {
-      _exception = new EException(e);
+      if ( _switch == 1 )
+      {
+         // Process this object's saved work block, saving the result block and 
+         // transferring it to this object's main thread. If any ACE exception occurs then 
+         // catch it and save it. 
+         try
+         {
+            _result = _worker->execute(_work).release();
+            _result->moveToThread(thread());
+            _result->setParent(this);
+         }
+         catch (EException e)
+         {
+            _exception = new EException(e);
+         }
+         --_switch;
+         emit blockFinished();
+      }
+      else if ( isInterruptionRequested() )
+      {
+         return;
+      }
+      usleep(10);
+      if ( _switch == 0 )
+      {
+         msleep(10);
+      }
    }
 }

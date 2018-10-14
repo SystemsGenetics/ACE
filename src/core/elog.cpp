@@ -1,5 +1,6 @@
 #include "elog.h"
 #include <QString>
+#include <QDebug>
 #include "ace_logserver.h"
 #include "ace_settings.h"
 
@@ -265,5 +266,4 @@ ELog::~ELog()
 
    // Write this log's message to the log server and flush its output. 
    log->broadcast(Ace::LogServer::Log,-1,_message);
-   log->flush();
 }

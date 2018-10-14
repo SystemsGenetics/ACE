@@ -1,6 +1,6 @@
 #include "ace_logserver.h"
-#include <QTcpSocket>
 #include <QHostInfo>
+#include "ace_logserver_thread.h"
 #include "eexception.h"
 #include "ace_qmpi.h"
 #include "ace_settings.h"
@@ -82,15 +82,7 @@ QString LogServer::host()
  */
 void LogServer::wait()
 {
-   while (true)
-   {
-      QCoreApplication::processEvents();
-      if ( _first )
-      {
-         break;
-      }
-      QThread::usleep(50);
-   }
+   _server->wait();
 }
 
 
@@ -122,37 +114,7 @@ LogServer& LogServer::broadcast(Type type, int thread, const QByteArray& data)
    stream << (qint8)type << (qint32)thread << (qint32)data.size();
    stream.writeRawData(data.data(),data.size());
 
-   // Iterate through all connected clients of this log server, locking its mutex for 
-   // thread safety. 
-   _mutex.lock();
-   for (auto i = _clients.begin(); i != _clients.end() ;)
-   {
-      // Get the TCP socket of the client. 
-      QTcpSocket* client {*i};
-
-      // Check to see if this TCP socket is no longer connected. 
-      if ( client->state() != QTcpSocket::ConnectedState )
-      {
-         // Remove the client from this log server and delete its TCP socket. 
-         i = _clients.erase(i);
-         client->deleteLater();
-      }
-
-      // Else the client is still connected so write out the given byte array to its TCP 
-      // socket. 
-      else
-      {
-         client->write(message);
-         client->waitForReadyRead(-1);
-         client->read(client->bytesAvailable());
-         ++i;
-      }
-   }
-
-   // Unlock this log server's mutex. 
-   _mutex.unlock();
-
-   // Return a reference to this log server. 
+   _server->broadcast(message);
    return *this;
 }
 
@@ -162,99 +124,11 @@ LogServer& LogServer::broadcast(Type type, int thread, const QByteArray& data)
 
 
 /*!
- * Flushes all buffered output of all connect client sockets of this log server. 
- */
-void LogServer::flush()
-{
-   // Iterate through all connected clients of this log server, locking its mutex for 
-   // thread safety. 
-   _mutex.lock();
-   for (auto i = _clients.begin(); i != _clients.end() ;)
-   {
-      // Get the TCP socket of the client. 
-      QTcpSocket* client {*i};
-
-      // Check to see if this TCP socket is no longer connected. 
-      if ( client->state() != QTcpSocket::ConnectedState )
-      {
-         // Remove the client from this log server and delete its TCP socket. 
-         i = _clients.erase(i);
-         client->deleteLater();
-      }
-
-      // Else the client is still connected so flush its TCP socket. 
-      else
-      {
-         client->flush();
-         ++i;
-      }
-   }
-
-   // Unlock this log server's mutex. 
-   _mutex.unlock();
-}
-
-
-
-
-
-
-/*!
- * Called when a connected client has sent data that signals the ACE program should 
- * start execution. 
- */
-void LogServer::clientSignalsStart()
-{
-   _first = true;
-}
-
-
-
-
-
-
-/*!
- * Called when there is a new connection established for this log server from a new 
- * client. 
- */
-void LogServer::newConnectionMade()
-{
-   // Continue while there are still pending connections, locking this log server's 
-   // mutex for thread safety. 
-   while ( hasPendingConnections() )
-   {
-      // Add the new client to this log server's list of clients and connect its signal 
-      // start signal, using its mutex for thread safety. 
-      _mutex.lock();
-      _clients << nextPendingConnection();
-      connect(_clients.back(),&QTcpSocket::readyRead,this,&LogServer::clientSignalsStart);
-      _mutex.unlock();
-   }
-}
-
-
-
-
-
-
-/*!
- * Constructs a new logging server listening on the given port. 
  *
- * @param port The port number this log server listens for new connections. 
+ * @param port  
  */
 LogServer::LogServer(int port)
 {
-   // Bind a socket to start listening on the given port with any address, making 
-   // sure it worked. 
-   if ( !listen(QHostAddress::Any,port) )
-   {
-      E_MAKE_EXCEPTION(e);
-      e.setDetails(tr("System Error: Failed binding socket to listen on port %1: %2")
-                   .arg(port)
-                   .arg(errorString()));
-      throw e;
-   }
-
-   // Connect the new connection signal. 
-   connect(this,&QTcpServer::newConnection,this,&LogServer::newConnectionMade);
+   _server = new Thread(port,this);
+   _server->start();
 }
