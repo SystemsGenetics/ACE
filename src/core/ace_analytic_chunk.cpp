@@ -282,40 +282,15 @@ bool Chunk::setupOpenCL()
 {
    EDEBUG_FUNC(this)
 
-   // If the singleton settings object does not contain a valid OpenCL device pointer 
-   // then do nothing and exit, else go to the next step. 
    bool ret {false};
-   int index {_index};
-   if ( Settings::instance().openCLDevicePointer() )
+   Settings& settings {Settings::instance()};
+   if ( settings.openCLDevicePointer() )
    {
-
-      // Attempt to find an OpenCL index that is the nth device based off this slave 
-      // node's process ranking minus one to account for the master node. All devices 
-      // from all platforms are considered. If there is not enough devices then no 
-      // device is found. 
-      OpenCL::Device* device {nullptr};
-      for (int p = 0; ( p < OpenCL::Platform::size() ) && !device ;++p)
+      EAbstractAnalytic::OpenCL* opencl {analytic()->makeOpenCL()};
+      if ( opencl )
       {
-         for (int d = 0; d < OpenCL::Platform::get(p)->deviceSize() ;++d)
-         {
-            if ( index-- == 0 )
-            {
-               device = OpenCL::Platform::get(p)->device(d);
-               break;
-            }
-         }
-      }
-
-      // If an OpenCL device was found and this manager's analytic creates a valid 
-      // abstract OpenCL object then create a new OpenCL run object and set it to this 
-      // object's run pointer. 
-      if ( device )
-      {
-         if ( EAbstractAnalytic::OpenCL* opencl = analytic()->makeOpenCL() )
-         {
-            _runner = new OpenCLRun(opencl,device,this,this);
-            ret = true;
-         }
+         _runner = new OpenCLRun(opencl,settings.openCLDevicePointer(),this,this);
+         ret = true;
       }
    }
    return ret;
