@@ -79,6 +79,8 @@ QString LogServer::host()
 
 
 /*!
+ * Blocks execution until it gets a signal from a connected logging client to start 
+ * analytic execution. 
  */
 void LogServer::wait()
 {
@@ -95,7 +97,8 @@ void LogServer::wait()
  *
  * @param type The message type being broadcast to all clients. 
  *
- * @param thread  
+ * @param thread The thread ID where this message is coming from. This is only used 
+ *               for debugging messages. 
  *
  * @param data Any optional data that is appended to the message. 
  *
@@ -103,6 +106,7 @@ void LogServer::wait()
  */
 LogServer& LogServer::broadcast(Type type, int thread, const QByteArray& data)
 {
+   // Make sure the given data to broadcast is not empty. 
    if ( data.isEmpty() )
    {
       return *this;
@@ -114,6 +118,9 @@ LogServer& LogServer::broadcast(Type type, int thread, const QByteArray& data)
    stream << (qint8)type << (qint32)thread << (qint32)data.size();
    stream.writeRawData(data.data(),data.size());
 
+   // Pass the broadcast message to this server's internal low level TCP server which 
+   // in turn broadcasts it to all connected clients, returning a reference to this 
+   // object. 
    _server->broadcast(message);
    return *this;
 }
@@ -124,11 +131,14 @@ LogServer& LogServer::broadcast(Type type, int thread, const QByteArray& data)
 
 
 /*!
+ * Creates a new log server instance with the given port number. 
  *
- * @param port  
+ * @param port The port number this TCP logging server will listen on for new 
+ *             client connections. 
  */
 LogServer::LogServer(int port)
 {
+   // Create a new internal low level TCP server in its own thread. 
    _server = new Thread(port,this);
    _server->start();
 }

@@ -546,11 +546,12 @@ void DataObject::dataOverwritten(const QString& canonicalPath, Ace::DataObject* 
 
 
 /*!
- * Opens this data object's file for read and write access and creates a new data 
- * stream associated with this data object. If there is an error opening the file 
- * then an exception is thrown. 
+ * Opens this data object's file for reading or writing access and creates a new 
+ * data stream associated with this data object. If there is an error opening the 
+ * file then an exception is thrown. 
  *
- * @param overwrite  
+ * @param overwrite True if this is a new object file and being opened for reading 
+ *                  and writing or false if it is being opened for reading. 
  */
 void DataObject::openObject(bool overwrite)
 {

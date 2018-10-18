@@ -277,22 +277,33 @@ void Chunk::setupIndexes()
 /*!
  * Attempts to initialize an OpenCL run object for block processing for this 
  * manager. If successful sets this manager's abstract run pointer. 
+ *
+ * @return True if OpenCL was successfully setup or false otherwise. 
  */
 bool Chunk::setupOpenCL()
 {
    EDEBUG_FUNC(this)
 
+   // Initialize the return value and get a reference to global settings. 
    bool ret {false};
    Settings& settings {Settings::instance()};
+
+   // Check to see if global settings has OpenCL enabled. 
    if ( settings.openCLDevicePointer() )
    {
+      // Attempt to create a new OpenCL object from this manager's analytic, checking to 
+      // see if it worked. 
       EAbstractAnalytic::OpenCL* opencl {analytic()->makeOpenCL()};
       if ( opencl )
       {
+         // Create a new OpenCL analytic run from the created OpenCL instance and set the 
+         // return to true. 
          _runner = new OpenCLRun(opencl,settings.openCLDevicePointer(),this,this);
          ret = true;
       }
    }
+
+   // Return the success of setting up OpenCL. 
    return ret;
 }
 

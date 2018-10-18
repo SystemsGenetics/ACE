@@ -8,12 +8,12 @@
 namespace Ace
 {
    /*!
-    * This is a TCP logging server used to output logging messages to all connected 
-    * clients. This is a very low level class and only outputs byte arrays. This class 
-    * is thread safe, using an internal mutex for all thread critical situations. This 
-    * class acts as a TCP server, relaying all byte arrays streamed to it. This also 
-    * provides static functions for initializing the log server and then accessing its 
-    * instance. 
+    * This is a global singleton TCP logging server used to output logging messages to 
+    * all connected logging clients. This is a very low level class and only outputs 
+    * byte arrays. This class is thread safe, using an internal thread and runs all 
+    * TCP operations exclusively inside its own thread. This class acts as a TCP 
+    * server, relaying all byte arrays streamed to it. This also provides static 
+    * functions for initializing the log server and then accessing its instance. 
     */
    class LogServer : public QObject
    {
@@ -50,6 +50,8 @@ namespace Ace
    private:
       LogServer(int port);
       /*!
+       * Pointer to the internal low level TCP server that runs on its own thread and 
+       * this class communicates with for broadcasting all messages. 
        */
       Thread* _server;
    };

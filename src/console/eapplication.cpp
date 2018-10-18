@@ -172,21 +172,22 @@ int EApplication::exec()
       case ChunkRun:
       case Merge:
          {
-            // .
+            // Check to see if logging is enabled. 
             if ( Ace::Settings::instance().loggingEnabled() )
             {
-               // .
+               // Get the logging port setting and initialize the log server. 
                QTextStream out(stdout);
                int port {Ace::Settings::instance().loggingPort() + Ace::QMPI::instance().localRank()};
                Ace::LogServer::initialize(port);
 
-               // .
+               // Inform the user that the application is waiting for an ACE log client to signal 
+               // starting. 
                out << tr("Log server listening on %1:%2, waiting for connection...\n").arg(Ace::LogServer::host()).arg(port);
                out.flush();
                Ace::LogServer::log()->wait();
             }
 
-            // .
+            // Start the analytic run. 
             Ace::Run* run {new Ace::Run(_command,_options)};
             connect(run,&Ace::Run::destroyed,this,&QCoreApplication::quit);
             return QCoreApplication::exec();
