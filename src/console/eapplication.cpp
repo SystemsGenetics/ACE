@@ -172,6 +172,10 @@ int EApplication::exec()
       case ChunkRun:
       case Merge:
          {
+            // Initialize the run object. 
+            Ace::Run* run {new Ace::Run(_command,_options)};
+            connect(run,&Ace::Run::destroyed,this,&QCoreApplication::quit);
+
             // Check to see if logging is enabled. 
             if ( Ace::Settings::instance().loggingEnabled() )
             {
@@ -188,8 +192,6 @@ int EApplication::exec()
             }
 
             // Start the analytic run. 
-            Ace::Run* run {new Ace::Run(_command,_options)};
-            connect(run,&Ace::Run::destroyed,this,&QCoreApplication::quit);
             return QCoreApplication::exec();
          }
       case Dump:
