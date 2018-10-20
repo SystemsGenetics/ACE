@@ -31,11 +31,38 @@ thread_local bool EDebug::_active {false};
 
 
 /*!
+ * Returns the unique integer thread ID of the caller of this function. 
  *
- * @param token  
+ * @return Unique integer thread ID. 
+ */
+int EDebug::threadId()
+{
+   // If this thread has not gotten a unique ID yet then get one from the counter. 
+   if ( _threadId == -1 )
+   {
+      _threadId = _counter++;
+   }
+
+   // Return this thread's ID. 
+   return _threadId;
+}
+
+
+
+
+
+
+/*!
+ * Modifies a property of this debug object's streaming properties. 
+ *
+ * @param token The token that is used to modify a property of this debug object's 
+ *              stream. 
+ *
+ * @return Reference to this debug object. 
  */
 EDebug& EDebug::operator<<(Token token)
 {
+   // Set the quote property depending on the given token. 
    switch(token)
    {
    case Quote:
@@ -45,6 +72,8 @@ EDebug& EDebug::operator<<(Token token)
       _quote = false;
       break;
    }
+
+   // Return a reference to this object. 
    return *this;
 }
 
@@ -54,12 +83,19 @@ EDebug& EDebug::operator<<(Token token)
 
 
 /*!
+ * Writes a boolean value to this debug thread's temporary stream object as a 
+ * string. 
  *
- * @param value  
+ * @param value The boolean value written as a string. 
+ *
+ * @return Reference to this debug object. 
  */
 EDebug& EDebug::operator<<(bool value)
 {
+   // Write the boolean value as a string to this object's holder byte array. 
    _holder += value ? QStringLiteral("TRUE") : QStringLiteral("FALSE");
+
+   // Return a reference to this object. 
    return *this;
 }
 
@@ -69,12 +105,19 @@ EDebug& EDebug::operator<<(bool value)
 
 
 /*!
+ * Writes an integer value to this debug thread's temporary stream object as a 
+ * string. 
  *
- * @param value  
+ * @param value The integer value written as a string. 
+ *
+ * @return Reference to this debug object. 
  */
 EDebug& EDebug::operator<<(qint8 value)
 {
+   // Write the integer value as a string to this object's holder byte array. 
    _holder += QString::number(value).toLocal8Bit();
+
+   // Return a reference to this object. 
    return *this;
 }
 
@@ -84,12 +127,19 @@ EDebug& EDebug::operator<<(qint8 value)
 
 
 /*!
+ * Writes an integer value to this debug thread's temporary stream object as a 
+ * string. 
  *
- * @param value  
+ * @param value The integer value written as a string. 
+ *
+ * @return Reference to this debug object. 
  */
 EDebug& EDebug::operator<<(qint16 value)
 {
+   // Write the integer value as a string to this object's holder byte array. 
    _holder += QString::number(value).toLocal8Bit();
+
+   // Return a reference to this object. 
    return *this;
 }
 
@@ -99,12 +149,19 @@ EDebug& EDebug::operator<<(qint16 value)
 
 
 /*!
+ * Writes an integer value to this debug thread's temporary stream object as a 
+ * string. 
  *
- * @param value  
+ * @param value The integer value written as a string. 
+ *
+ * @return Reference to this debug object. 
  */
 EDebug& EDebug::operator<<(qint32 value)
 {
+   // Write the integer value as a string to this object's holder byte array. 
    _holder += QString::number(value).toLocal8Bit();
+
+   // Return a reference to this object. 
    return *this;
 }
 
@@ -114,12 +171,19 @@ EDebug& EDebug::operator<<(qint32 value)
 
 
 /*!
+ * Writes an integer value to this debug thread's temporary stream object as a 
+ * string. 
  *
- * @param value  
+ * @param value The integer value written as a string. 
+ *
+ * @return Reference to this debug object. 
  */
 EDebug& EDebug::operator<<(qint64 value)
 {
+   // Write the integer value as a string to this object's holder byte array. 
    _holder += QString::number(value).toLocal8Bit();
+
+   // Return a reference to this object. 
    return *this;
 }
 
@@ -129,12 +193,19 @@ EDebug& EDebug::operator<<(qint64 value)
 
 
 /*!
+ * Writes an integer value to this debug thread's temporary stream object as a 
+ * string. 
  *
- * @param value  
+ * @param value The integer value written as a string. 
+ *
+ * @return Reference to this debug object. 
  */
 EDebug& EDebug::operator<<(quint8 value)
 {
+   // Write the integer value as a string to this object's holder byte array. 
    _holder += QString::number(value).toLocal8Bit();
+
+   // Return a reference to this object. 
    return *this;
 }
 
@@ -144,12 +215,19 @@ EDebug& EDebug::operator<<(quint8 value)
 
 
 /*!
+ * Writes an integer value to this debug thread's temporary stream object as a 
+ * string. 
  *
- * @param value  
+ * @param value The integer value written as a string. 
+ *
+ * @return Reference to this debug object. 
  */
 EDebug& EDebug::operator<<(quint16 value)
 {
+   // Write the integer value as a string to this object's holder byte array. 
    _holder += QString::number(value).toLocal8Bit();
+
+   // Return a reference to this object. 
    return *this;
 }
 
@@ -159,12 +237,19 @@ EDebug& EDebug::operator<<(quint16 value)
 
 
 /*!
+ * Writes an integer value to this debug thread's temporary stream object as a 
+ * string. 
  *
- * @param value  
+ * @param value The integer value written as a string. 
+ *
+ * @return Reference to this debug object. 
  */
 EDebug& EDebug::operator<<(quint32 value)
 {
+   // Write the integer value as a string to this object's holder byte array. 
    _holder += QString::number(value).toLocal8Bit();
+
+   // Return a reference to this object. 
    return *this;
 }
 
@@ -174,12 +259,19 @@ EDebug& EDebug::operator<<(quint32 value)
 
 
 /*!
+ * Writes an integer value to this debug thread's temporary stream object as a 
+ * string. 
  *
- * @param value  
+ * @param value The integer value written as a string. 
+ *
+ * @return Reference to this debug object. 
  */
 EDebug& EDebug::operator<<(quint64 value)
 {
+   // Write the integer value as a string to this object's holder byte array. 
    _holder += QString::number(value).toLocal8Bit();
+
+   // Return a reference to this object. 
    return *this;
 }
 
@@ -189,12 +281,19 @@ EDebug& EDebug::operator<<(quint64 value)
 
 
 /*!
+ * Writes a floating point value to this debug thread's temporary stream object as 
+ * a string. 
  *
- * @param value  
+ * @param value The value written as a string. 
+ *
+ * @return Reference to this debug object. 
  */
 EDebug& EDebug::operator<<(float value)
 {
+   // Write the floating point value as a string to this object's holder byte array. 
    _holder += QString::number(value).toLocal8Bit();
+
+   // Return a reference to this object. 
    return *this;
 }
 
@@ -204,12 +303,19 @@ EDebug& EDebug::operator<<(float value)
 
 
 /*!
+ * Writes a floating point value to this debug thread's temporary stream object as 
+ * a string. 
  *
- * @param value  
+ * @param value The value written as a string. 
+ *
+ * @return Reference to this debug object. 
  */
 EDebug& EDebug::operator<<(double value)
 {
+   // Write the floating point value as a string to this object's holder byte array. 
    _holder += QString::number(value).toLocal8Bit();
+
+   // Return a reference to this object. 
    return *this;
 }
 
@@ -219,20 +325,33 @@ EDebug& EDebug::operator<<(double value)
 
 
 /*!
+ * Writes a string to this debug thread's temporary stream object. Quotes are added 
+ * if that property is active. 
  *
- * @param value  
+ * @param value The value written as a string. 
+ *
+ * @return Reference to this debug object. 
  */
 EDebug& EDebug::operator<<(const char* value)
 {
+   // If quoting is active then add a beginning quote to this object's holder byte 
+   // array. 
    if ( _quote )
    {
       _holder += QStringLiteral("\"");
    }
+
+   // Append the given string to this object's holder byte array. 
    _holder += value;
+
+   // If quoting is active then append an ending quote to this object's holder byte 
+   // array. 
    if ( _quote )
    {
       _holder += QStringLiteral("\"");
    }
+
+   // Return a reference to this object. 
    return *this;
 }
 
@@ -242,12 +361,19 @@ EDebug& EDebug::operator<<(const char* value)
 
 
 /*!
+ * Writes a pointer value to this debug thread's temporary stream object as a 
+ * string. 
  *
- * @param value  
+ * @param value The value written as a string. 
+ *
+ * @return Reference to this debug object. 
  */
 EDebug& EDebug::operator<<(const void*const value)
 {
+   // Append the given pointer to this object's holder byte array as a string. 
    _holder += QStringLiteral("0x") + QString::number((quint64)value,16).toLocal8Bit();
+
+   // Return a reference to this object. 
    return *this;
 }
 
@@ -257,12 +383,19 @@ EDebug& EDebug::operator<<(const void*const value)
 
 
 /*!
+ * Writes a byte array value to this debug thread's temporary stream object as a 
+ * string. 
  *
- * @param value  
+ * @param value The value written as a string. 
+ *
+ * @return Reference to this debug object. 
  */
 EDebug& EDebug::operator<<(const QByteArray& value)
 {
+   // Append the given byte array to this object's holder byte array as a string. 
    _holder += QStringLiteral("\"") + value.data() + QStringLiteral("\"");
+
+   // Return a reference to this object. 
    return *this;
 }
 
@@ -272,20 +405,32 @@ EDebug& EDebug::operator<<(const QByteArray& value)
 
 
 /*!
+ * Writes a Qt string value to this debug thread's temporary stream object. 
  *
- * @param value  
+ * @param value The value written as a string. 
+ *
+ * @return Reference to this debug object. 
  */
 EDebug& EDebug::operator<<(const QString& value)
 {
+   // If quoting is active then add a beginning quote to this object's holder byte 
+   // array. 
    if ( _quote )
    {
       _holder += QStringLiteral("\"");
    }
+
+   // Append the given string to this object's holder byte array. 
    _holder += value.toLocal8Bit();
+
+   // If quoting is active then append an ending quote to this object's holder byte 
+   // array. 
    if ( _quote )
    {
       _holder += QStringLiteral("\"");
    }
+
+   // Return a reference to this object. 
    return *this;
 }
 
@@ -295,14 +440,20 @@ EDebug& EDebug::operator<<(const QString& value)
 
 
 /*!
+ * Writes a list of Qt strings to this debug thread's temporary stream object as a 
+ * single string. 
  *
- * @param value  
+ * @param value The value written as a string. 
+ *
+ * @return Reference to this debug object. 
  */
 EDebug& EDebug::operator<<(const QStringList& value)
 {
+   // Iterate through all strings in the given string list. 
    bool first {true};
    for (auto string: value)
    {
+      // Append a comma if this is the first string in the list. 
       if ( !first )
       {
          _holder += QStringLiteral(",");
@@ -311,8 +462,12 @@ EDebug& EDebug::operator<<(const QStringList& value)
       {
          first = false;
       }
+
+      // Append the next string in the list. 
       _holder += QStringLiteral("\"") + string.toLocal8Bit() + QStringLiteral("\"");
    }
+
+   // Return a reference to this object. 
    return *this;
 }
 
@@ -322,8 +477,12 @@ EDebug& EDebug::operator<<(const QStringList& value)
 
 
 /*!
+ * Writes a Qt object pointer to this debug thread's temporary stream object as a 
+ * string. 
  *
- * @param value  
+ * @param value The value written as a string. 
+ *
+ * @return Reference to this debug object. 
  */
 EDebug& EDebug::operator<<(const QObject*const value)
 {
@@ -345,8 +504,12 @@ EDebug& EDebug::operator<<(const QObject*const value)
 
 
 /*!
+ * Writes a qt variant value to this debug thread's temporary stream object as a 
+ * string. 
  *
- * @param value  
+ * @param value The value written as a string. 
+ *
+ * @return Reference to this debug object. 
  */
 EDebug& EDebug::operator<<(const QVariant& value)
 {
@@ -360,8 +523,12 @@ EDebug& EDebug::operator<<(const QVariant& value)
 
 
 /*!
+ * Writes an abstract analytic block pointer to this debug thread's temporary 
+ * stream object as a string. 
  *
- * @param value  
+ * @param value The value written as a string. 
+ *
+ * @return Reference to this debug object. 
  */
 EDebug& EDebug::operator<<(const EAbstractAnalytic::Block*const value)
 {
@@ -382,8 +549,12 @@ EDebug& EDebug::operator<<(const EAbstractAnalytic::Block*const value)
 
 
 /*!
+ * Writes an abstract analytic input type enumeration value to this debug thread's 
+ * temporary stream object as a string. 
  *
- * @param value  
+ * @param value The value written as a string. 
+ *
+ * @return Reference to this debug object. 
  */
 EDebug& EDebug::operator<<(EAbstractAnalytic::Input::Type value)
 {
@@ -426,8 +597,12 @@ EDebug& EDebug::operator<<(EAbstractAnalytic::Input::Type value)
 
 
 /*!
+ * Writes an abstract analytic input role enumeration value to this debug thread's 
+ * temporary stream object as a string. 
  *
- * @param value  
+ * @param value The value written as a string. 
+ *
+ * @return Reference to this debug object. 
  */
 EDebug& EDebug::operator<<(EAbstractAnalytic::Input::Role value)
 {
@@ -473,8 +648,12 @@ EDebug& EDebug::operator<<(EAbstractAnalytic::Input::Role value)
 
 
 /*!
+ * Writes an ace analytic abstract MPI type enumeration value to this debug 
+ * thread's temporary stream object as a string. 
  *
- * @param value  
+ * @param value The value written as a string. 
+ *
+ * @return Reference to this debug object. 
  */
 EDebug& EDebug::operator<<(Ace::Analytic::AbstractMPI::Type value)
 {
@@ -496,18 +675,6 @@ EDebug& EDebug::operator<<(Ace::Analytic::AbstractMPI::Type value)
 
 
 /*!
- */
-int EDebug::threadId()
-{
-   return _threadId;
-}
-
-
-
-
-
-
-/*!
  *
  * @param function  
  *
@@ -518,7 +685,7 @@ EDebug::EDebug(const char* function, const char* argumentNames):
 {
    if ( _threadId == -1 )
    {
-      _threadId = _counter.fetchAndAddAcquire(1);
+      _threadId = _counter++;
    }
    if ( _active )
    {
