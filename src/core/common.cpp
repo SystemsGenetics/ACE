@@ -4,6 +4,7 @@
 #include "emetaarray.h"
 #include "emetaobject.h"
 #include "edebug.h"
+#include "eabstractanalytic_block.h"
 
 
 
@@ -172,39 +173,50 @@ EDataStream& operator<<(EDataStream& stream, const EMetadata& meta)
 
 
 /*!
+ * Writes a metadata object to the debug stream for debugging output. 
  *
- * @param debug  
+ * @param debug The debug object which has the given metadata object value streamed 
+ *              to it. 
  *
- * @param meta  
+ * @param meta The metadata value that is streamed to the given debug object. 
+ *
+ * @return Reference to the debug object. 
  */
 EDebug& operator<<(EDebug& debug, const EMetadata*const meta)
 {
+   // Disable quoting of strings. 
+   debug << EDebug::NoQuote;
+
+   // Append the fact that this is metadata and its type. 
    switch (meta->_type)
    {
    case EMetadata::Null:
-      debug << EDebug::NoQuote << QStringLiteral("EMetadata(null");
+      debug << QStringLiteral("EMetadata(null");
       break;
    case EMetadata::Bool:
-      debug << EDebug::NoQuote << QStringLiteral("EMetadata(bool,");
+      debug << QStringLiteral("EMetadata(bool,");
       break;
    case EMetadata::Double:
-      debug << EDebug::NoQuote << QStringLiteral("EMetadata(double,");
+      debug << QStringLiteral("EMetadata(double,");
       break;
    case EMetadata::String:
-      debug << EDebug::NoQuote << QStringLiteral("EMetadata(string,\"");
+      debug << QStringLiteral("EMetadata(string,\"");
       break;
    case EMetadata::Bytes:
-      debug << EDebug::NoQuote << QStringLiteral("EMetadata(bytes");
+      debug << QStringLiteral("EMetadata(bytes");
       break;
    case EMetadata::Array:
-      debug << EDebug::NoQuote << QStringLiteral("EMetadata(array");
+      debug << QStringLiteral("EMetadata(array");
       break;
    case EMetadata::Object:
-      debug << EDebug::NoQuote << QStringLiteral("EMetadata(object");
+      debug << QStringLiteral("EMetadata(object");
       break;
    }
+
+   // Check to see if this metadata object has data. 
    if ( meta->_data )
    {
+      // Append the value of this metadata's data as a string. 
       switch (meta->_type)
       {
       case EMetadata::Bool:
@@ -224,10 +236,50 @@ EDebug& operator<<(EDebug& debug, const EMetadata*const meta)
          break;
       }
    }
+
+   // Else this must be a null type so just add a closing parenthesis. 
    else
    {
       debug << QStringLiteral(")");
    }
+
+   // Enable quoting of strings and return a reference to the debug object. 
    debug << EDebug::Quote;
+   return debug;
+}
+
+
+
+
+
+
+/*!
+ * Writes a abstract analytic block object to the debug stream for debugging 
+ * output. 
+ *
+ * @param debug The debug object which has the given abstract analytic block value 
+ *              streamed to it. 
+ *
+ * @param value The abstract analytic object that is streamed to the given debug 
+ *              object. 
+ *
+ * @return Reference to the debug object. 
+ */
+EDebug& operator<<(EDebug& debug, const EAbstractAnalytic::Block*const value)
+{
+   // Append the raw pointer value to the given debug stream. 
+   debug << (void*)value;
+
+   // If the given pointer is not null then append the fact it is a block and give 
+   // its index value. 
+   if ( value )
+   {
+      debug << EDebug::NoQuote << QStringLiteral("(EAbstractAnalytic::Block,index=")
+            << QString::number(value->_index)
+            << QStringLiteral(")")
+            << EDebug::Quote;
+   }
+
+   // Return a reference to the debug object. 
    return debug;
 }

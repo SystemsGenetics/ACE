@@ -13,15 +13,23 @@
 
 
 /*!
+ * Used to keep track of how many threads have been started and so each new thread 
+ * can then use this value as their ID, incrementing it at the same time 
+ * atomically. 
  */
 QAtomicInteger<int> EDebug::_counter;
 /*!
+ * The thread ID for this local thread. 
  */
 thread_local int EDebug::_threadId {-1};
 /*!
+ * The current stack depth for this thread, used to determine the number of spaces 
+ * to use when making output. 
  */
 thread_local int EDebug::_stackDepth {0};
 /*!
+ * True if the set arguments template functions are being called or false 
+ * otherwise. Used as a safety mechanism to prevent infinite recursion. 
  */
 thread_local bool EDebug::_active {false};
 
@@ -486,7 +494,11 @@ EDebug& EDebug::operator<<(const QStringList& value)
  */
 EDebug& EDebug::operator<<(const QObject*const value)
 {
+   // Write out the pointer to this object's holder byte array. 
    *this << (void*)value;
+
+   // If the given pointer is not null then write out the class name of the qt 
+   // object. 
    if ( value )
    {
       *this << NoQuote
@@ -495,6 +507,8 @@ EDebug& EDebug::operator<<(const QObject*const value)
             << QStringLiteral(")")
             << Quote;
    }
+
+   // Return a reference to this object. 
    return *this;
 }
 
@@ -513,33 +527,10 @@ EDebug& EDebug::operator<<(const QObject*const value)
  */
 EDebug& EDebug::operator<<(const QVariant& value)
 {
+   // Write out the given qt variant value as a string. 
    *this << value.toString();
-   return *this;
-}
 
-
-
-
-
-
-/*!
- * Writes an abstract analytic block pointer to this debug thread's temporary 
- * stream object as a string. 
- *
- * @param value The value written as a string. 
- *
- * @return Reference to this debug object. 
- */
-EDebug& EDebug::operator<<(const EAbstractAnalytic::Block*const value)
-{
-   *this << (void*)value;
-   if ( value )
-   {
-      *this << NoQuote << QStringLiteral("(EAbstractAnalytic::Block,index=")
-            << QString::number(value->index())
-            << QStringLiteral(")")
-            << Quote;
-   }
+   // Return a reference to this object. 
    return *this;
 }
 
@@ -558,6 +549,8 @@ EDebug& EDebug::operator<<(const EAbstractAnalytic::Block*const value)
  */
 EDebug& EDebug::operator<<(EAbstractAnalytic::Input::Type value)
 {
+   // Write out the given enumeration value as a string to this object's holder byte 
+   // array. 
    switch (value)
    {
    case EAbstractAnalytic::Input::Boolean:
@@ -588,6 +581,8 @@ EDebug& EDebug::operator<<(EAbstractAnalytic::Input::Type value)
       *this << NoQuote << QStringLiteral("DataOut") << Quote;
       break;
    }
+
+   // Return a reference to this object. 
    return *this;
 }
 
@@ -606,6 +601,8 @@ EDebug& EDebug::operator<<(EAbstractAnalytic::Input::Type value)
  */
 EDebug& EDebug::operator<<(EAbstractAnalytic::Input::Role value)
 {
+   // Write out the given enumeration value as a string to this object's holder byte 
+   // array. 
    switch (value)
    {
    case EAbstractAnalytic::Input::CommandLineName:
@@ -639,6 +636,8 @@ EDebug& EDebug::operator<<(EAbstractAnalytic::Input::Role value)
       *this << NoQuote << QStringLiteral("DataType") << Quote;
       break;
    }
+
+   // Return a reference to this object. 
    return *this;
 }
 
@@ -657,6 +656,8 @@ EDebug& EDebug::operator<<(EAbstractAnalytic::Input::Role value)
  */
 EDebug& EDebug::operator<<(Ace::Analytic::AbstractMPI::Type value)
 {
+   // Write out the given enumeration value as a string to this object's holder byte 
+   // array. 
    switch (value)
    {
    case Ace::Analytic::AbstractMPI::Serial:
@@ -666,6 +667,8 @@ EDebug& EDebug::operator<<(Ace::Analytic::AbstractMPI::Type value)
       *this << NoQuote << QStringLiteral("OpenCL") << Quote;
       break;
    }
+
+   // Return a reference to this object. 
    return *this;
 }
 
@@ -675,23 +678,38 @@ EDebug& EDebug::operator<<(Ace::Analytic::AbstractMPI::Type value)
 
 
 /*!
+ * Constructs a new debug object with the given function name and list of argument 
+ * names. The argument names are expected to be separated by commas. 
  *
- * @param function  
+ * @param function The name of the function that is being entered and this new 
+ *                 debug object is responsible for tracking. 
  *
- * @param argumentNames  
+ * @param argumentNames The list of argument names for this new debug object's 
+ *                      tracked function. The names must be separated by commas. 
  */
 EDebug::EDebug(const char* function, const char* argumentNames):
    _function(function)
 {
+   // If the thread ID has not been initialized then do so. 
    if ( _threadId == -1 )
    {
       _threadId = _counter++;
    }
+
+   // Make sure another debug object is not currently active setting up its arguments 
+   // to avoid an infinite loop. 
    if ( _active )
    {
-      return;
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(QObject::tr("Logic Error"));
+      e.setDetails(QObject::tr("Cannot DEBUG TRACE methods used inside a EDebug operator."));
+      throw e;
    }
+
+   // Setup the argument names for this debug object. 
    setupArguments(argumentNames);
+
+   // Output the opening function string to the logging server if it is enabled. 
    QByteArray message(_stackDepth*3,' ');
    message.append(function)
           .append("\n")
@@ -702,13 +720,8 @@ EDebug::EDebug(const char* function, const char* argumentNames):
    {
       log->broadcast(Ace::LogServer::Debug,_threadId,message);
    }
-   if ( _active )
-   {
-      E_MAKE_EXCEPTION(e);
-      e.setTitle(QObject::tr("Logic Error"));
-      e.setDetails(QObject::tr("Cannot DEBUG TRACE methods used inside a EDebug operator."));
-      throw e;
-   }
+
+   // Increment the stack depth for the new function. 
    ++_stackDepth;
 }
 
@@ -718,19 +731,22 @@ EDebug::EDebug(const char* function, const char* argumentNames):
 
 
 /*!
+ * Cleans up a debug object that has fallen out of scope of its tracking function 
+ * along with reporting the function has been left. 
  */
 EDebug::~EDebug()
 {
-   if ( _active )
-   {
-      return;
-   }
+   // Delete all argument name strings. 
    delete[] _argumentNames;
+
+   // Decrement the stack depth, clamping it to 0 if it goes below that value. 
    --_stackDepth;
    if ( _stackDepth < 0 )
    {
       _stackDepth = 0;
    }
+
+   // Output the closing function string to the logging server if it is enabled. 
    QByteArray message(_stackDepth*3,' ');
    message.append("}");
    Ace::LogServer* log {Ace::LogServer::log()};
@@ -746,8 +762,9 @@ EDebug::~EDebug()
 
 
 /*!
+ * This dummy function is for set argument calls that pass zero argument values. 
  *
- * @param depth  
+ * @param depth Unused depth value. 
  */
 void EDebug::setArgument(int depth)
 {
@@ -760,28 +777,40 @@ void EDebug::setArgument(int depth)
 
 
 /*!
+ * Creates the list of argument names for this debug object with the given raw 
+ * string containing all of them. 
  *
- * @param argumentNames  
+ * @param argumentNames String containing all argument names that is parsed. 
  */
 void EDebug::setupArguments(const char* argumentNames)
 {
+   // Get the size of the input string, including the null terminator. 
    size_t size {strlen(argumentNames) + 1};
+
+   // Create a new string of the same size for this object and copy over the given 
+   // argument string. This is done because the copied string is modified by 
+   // replacing each comma character with a null terminator. That along with a 
+   // pointer to each smaller string created within the larger one allows using a 
+   // single large string to contain all indexes argument names. 
    _argumentNames = new char[size];
    memcpy(_argumentNames,argumentNames,size);
+
+   // Iterate through each character of the copied argument list string. 
    int last {0};
    for (size_t i = 0; i < size ;++i)
    {
+      // Check to see if this character is a comma or the final null terminator string. 
       if ( argumentNames[i] == ',' || argumentNames[i] == '\0' )
       {
+         // Set the character to a null terminator, save the index of this argument name, 
+         // and then set the next index value. 
          _argumentNames[i] = '\0';
          _argumentIndexes << last;
          last = i + 1;
       }
-      else
-      {
-         _argumentNames[i] = argumentNames[i];
-      }
    }
+
+   // Resize the argument value list to the size of the argument names index list. 
    _argumentValues.resize(_argumentIndexes.size());
 }
 
@@ -791,21 +820,32 @@ void EDebug::setupArguments(const char* argumentNames)
 
 
 /*!
+ * Output all argument names and values of this debug object to the logging server 
+ * if it is enabled. 
  */
 void EDebug::dumpArguments()
 {
+   // Initialize the message byte array. 
    QByteArray message;
+
+   // Iterate through all argument indexes. 
    for (int i = 0; i < _argumentIndexes.size() ;++i)
    {
+      // Append the argument name and value to the message byte array. 
       message.append(QByteArray(_stackDepth*3,' '))
              .append(&_argumentNames[_argumentIndexes[i]])
              .append(" = ")
              .append(_argumentValues[i]);
+
+      // If this is not the last argument index append a new line to the message. 
       if ( i < (_argumentIndexes.size() - 1) )
       {
          message.append("\n");
       }
    }
+
+   // If logging is enabled output the argument names and values message to the 
+   // logging server. 
    Ace::LogServer* log {Ace::LogServer::log()};
    if ( log )
    {

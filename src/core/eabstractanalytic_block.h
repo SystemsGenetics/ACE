@@ -2,6 +2,7 @@
 #define EABSTRACTANALYTIC_BLOCK_H
 #include "eabstractanalytic.h"
 #include "eexception.h"
+#include "edebug.h"
 //
 
 
@@ -17,6 +18,7 @@ class EAbstractAnalytic::Block : public QObject
 {
    Q_OBJECT
 public:
+   friend EDebug& operator<<(EDebug&, const EAbstractAnalytic::Block*const);
    static int extractIndex(const QByteArray& data);
    /*!
     * Constructs an uninitialized block. This is used in MPI and chunk runs to load 
