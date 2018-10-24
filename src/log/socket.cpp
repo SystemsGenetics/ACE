@@ -12,9 +12,12 @@
 
 
 /*!
- * Constructs a new socket object. 
+ * Constructs a new socket object with an optional parent. 
+ *
+ * @param parent The optional parent of this new socket. 
  */
-Socket::Socket()
+Socket::Socket(QObject* parent):
+   QTcpSocket(parent)
 {
    connect(this,&QIODevice::readyRead,this,&Socket::readyRead);
 }

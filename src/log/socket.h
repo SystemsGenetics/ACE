@@ -16,7 +16,7 @@ class Socket : public QTcpSocket
 {
    Q_OBJECT
 public:
-   Socket();
+   Socket(QObject* parent = nullptr);
 signals:
    /*!
     * Signals that the client has received a message from its connected logging 
