@@ -2,6 +2,9 @@
 #include "importintegerarray_input.h"
 #include "integerarray.h"
 #include "datafactory.h"
+
+
+
 //
 
 
@@ -44,21 +47,16 @@ int ImportIntegerArray::size() const
  * no work blocks. 
  *
  * @param result Pointer to the block of results that is read in. 
- *
- *
- * Steps of Operation: 
- *
- * 1. While the position of the input text file is not greater then the current 
- *    chunk of the file that should be read in do the following steps. 
- *
- * 2. Read in the next integer value from the input text file using this object's 
- *    qt text stream attached to the input file, adding the read in integer to the 
- *    output integer array. 
  */
 void ImportIntegerArray::process(const EAbstractAnalytic::Block* result)
 {
+   // While the position of the input text file is not greater then the current chunk 
+   // of the file that should be read in do the following steps. 
    while ( _in->pos() < ((result->index() + 1)*_incrementSize) )
    {
+      // Read in the next integer value from the input text file using this object's qt 
+      // text stream attached to the input file, adding the read in integer to the 
+      // output integer array. 
       int value;
       *_stream >> value;
       if ( _stream->status() != QTextStream::Ok )
@@ -92,16 +90,12 @@ EAbstractAnalytic::Input* ImportIntegerArray::makeInput()
 /*!
  * Implements the interface that initializes this analytic. This implementation 
  * checks to make sure the input file and output data object has been set. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the input and/or output pointers have not been set then throw an 
- *    exception, else create a new qt text stream attached to the input text file 
- *    and setting this object's text stream pointer to it. 
  */
 void ImportIntegerArray::initialize()
 {
+   // If the input and/or output pointers have not been set then throw an exception, 
+   // else create a new qt text stream attached to the input text file and setting 
+   // this object's text stream pointer to it. 
    if ( !_in || !_out )
    {
       E_MAKE_EXCEPTION(e);

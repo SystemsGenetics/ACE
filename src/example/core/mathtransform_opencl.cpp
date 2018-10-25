@@ -49,16 +49,11 @@ std::unique_ptr<EAbstractAnalytic::OpenCL::Worker> MathTransform::OpenCL::makeWo
  *
  * @param context The OpenCL context to used to initialize all other OpenCL 
  *                resources. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Set this object's context pointer to the one given and then create this 
- *    object's OpenCL program. 
  */
 void MathTransform::OpenCL::initialize(::OpenCL::Context* context)
 {
-   // 1
+   // Set this object's context pointer to the one given and then create this 
+   // object's OpenCL program. 
    _context = context;
    _program = new ::OpenCL::Program(context,{":/opencl/mathtransform.cl"},this);
 }

@@ -1,4 +1,7 @@
 #include "mathtransform_opencl_kernel.h"
+
+
+
 //
 
 
@@ -39,30 +42,21 @@ MathTransform::OpenCL::Kernel::Kernel(::OpenCL::Program* program, QObject* paren
  * @param amount The amount that will be used for the mathematical transform. 
  *
  * @return OpenCL event associated with this kernel's execution. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Lock this kernel's underlying kernel class so arguments can be set. 
- *
- * 2. Set the arguments this OpenCL kernel requires. This includes the global 
- *    memory buffer where the integer is held, the local memory buffer, the 
- *    operation type, and the amount. 
- *
- * 3. Execute this object's OpenCL kernel with the given command queue, returning 
- *    its generated OpenCL event. 
  */
 ::OpenCL::Event MathTransform::OpenCL::Kernel::execute(::OpenCL::CommandQueue* queue, ::OpenCL::Buffer<cl_int>* buffer, Operation type, int amount)
 {
-   // 1
+   // Lock this kernel's underlying kernel class so arguments can be set. 
    Locker locker {lock()};
 
-   // 2
+   // Set the arguments this OpenCL kernel requires. This includes the global memory 
+   // buffer where the integer is held, the local memory buffer, the operation type, 
+   // and the amount. 
    setBuffer(GlobalNum,buffer);
    setLocalMemory<cl_int>(LocalNum,1);
    setArgument(Type,static_cast<int>(type));
    setArgument(Amount,amount);
 
-   // 3
+   // Execute this object's OpenCL kernel with the given command queue, returning its 
+   // generated OpenCL event. 
    return ::OpenCL::Kernel::execute(queue);
 }

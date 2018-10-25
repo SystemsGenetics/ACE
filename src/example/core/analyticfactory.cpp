@@ -36,15 +36,11 @@ quint16 AnalyticFactory::size() const
  * @param type The analytic type whose display name is returned. 
  *
  * @return Display name for the given analytic type. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Based off the analytic type given return its display name. If the analytic 
- *    type is not recognized then return an empty string. 
  */
 QString AnalyticFactory::name(quint16 type) const
 {
+   // Based off the analytic type given return its display name. If the analytic type 
+   // is not recognized then return an empty string. 
    switch (type)
    {
    case ImportIntegerArrayType: return "Import Integer Array";
@@ -66,15 +62,11 @@ QString AnalyticFactory::name(quint16 type) const
  * @param type The analytic type whose display name is returned. 
  *
  * @return Command line name for the given analytic type. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Based off the analytic type given return its command line name. If the 
- *    analytic type is not recognized then return an empty string. 
  */
 QString AnalyticFactory::commandName(quint16 type) const
 {
+   // Based off the analytic type given return its command line name. If the analytic 
+   // type is not recognized then return an empty string. 
    switch (type)
    {
    case ImportIntegerArrayType: return "import";
@@ -96,16 +88,11 @@ QString AnalyticFactory::commandName(quint16 type) const
  * @param type The data type of the abstract data object that is made and returned. 
  *
  * @return Pointer to the new abstract analytic object of the given type. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Based off the analytic type given create a new object of that type and return 
- *    its pointer. If the analytic type is not recognized then return a null 
- *    pointer. 
  */
 std::unique_ptr<EAbstractAnalytic> AnalyticFactory::make(quint16 type) const
 {
+   // Based off the analytic type given create a new object of that type and return 
+   // its pointer. If the analytic type is not recognized then return a null pointer. 
    switch (type)
    {
    case ImportIntegerArrayType: return unique_ptr<ImportIntegerArray>(new ImportIntegerArray);

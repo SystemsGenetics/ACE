@@ -6,6 +6,9 @@
 #include "../core/eexception.h"
 #include "ace_mainwindow.h"
 #include "ace_analyticthread.h"
+
+
+
 //
 
 
@@ -42,18 +45,18 @@ EApplication::EApplication(const QString& organization, const QString& applicati
 {
    try
    {
-      // Initialize the ACE core system.
+      // .
       Ace::Settings::initialize(organization,application,majorVersion,minorVersion,revision);
       EAbstractDataFactory::setInstance(std::move(data));
       EAbstractAnalyticFactory::setInstance(std::move(analytic));
 
-      // Initialize the main window, setting its title and showing it.
+      // .
       Ace::MainWindow& window {Ace::MainWindow::instance()};
       window.setWindowTitle(application);
       window.show();
    }
 
-   // Catch any exception, reporting it to the user and forcefully closing the program.
+   // .
    catch (EException e)
    {
       showException(e);
@@ -89,29 +92,27 @@ bool EApplication::notify(QObject* receiver, QEvent* event)
 {
    try
    {
-      // Call the parent interface.
+      // .
       return QApplication::notify(receiver,event);
    }
 
-   // Catch any ACE exception.
+   // .
    catch (EException e)
    {
-      // If this is the main GUI event loop then report the exception to the user and continue
-      // execution.
+      // .
       if ( QThread::currentThread() == instance()->thread() )
       {
          showException(e);
       }
 
-      // Else if this is an analytic thread event loop then set the caught exception to the
-      // corresponding analytic thread object.
+      // .
       else if ( Ace::AnalyticThread* valid = qobject_cast<Ace::AnalyticThread*>(QThread::currentThread()) )
       {
          valid->setException(e);
       }
    }
 
-   // If any other exception is caught then report it and continue execution.
+   // .
    catch (std::exception e)
    {
       qDebug() << tr("STD exception %1 caught!\n").arg(e.what());
@@ -137,24 +138,24 @@ bool EApplication::notify(QObject* receiver, QEvent* event)
  */
 void EApplication::showException(const EException& exception)
 {
-   // Create the user message rich text and add the exception title and details.
+   // .
    QString message = QString("<h3>%1</h3><p>%2</p>").arg(exception.title())
                                                     .arg(exception.details());
 
-   // Get the function from the exception, replacing spaces with no break spaces.
+   // .
    QString function = exception.functionName().replace(" ","&nbsp;");
 
-   // Add the file name, function, and line number to the user message.
+   // .
    message += QString("<ol><li><b>File:</b>&nbsp;%1</li>").arg(exception.fileName());
    message += QString("<li><b>Function:</b>&nbsp;%1</li>").arg(function);
    message += QString("<li><b>Line:</b>&nbsp;%1</li></ol>").arg(exception.line());
 
-   // Create the message dialog, setting its title, icon, and message.
+   // .
    QMessageBox critical;
    critical.setWindowTitle(QObject::tr("Critical Error"));
    critical.setIcon(QMessageBox::Critical);
    critical.setText(message);
 
-   // Begin modal execution of the message dialog.
+   // .
    critical.exec();
 }

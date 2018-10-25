@@ -91,12 +91,6 @@ std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeResult() const
  * and appends it to its output integer array. 
  *
  * @param result  
- *
- *
- * Steps of Operation: 
- *
- * 1. Cast the result block to this implementation's type and then append its 
- *    integer result to this object's output integer array. 
  */
 void MathTransform::process(const EAbstractAnalytic::Block* result)
 {
@@ -104,7 +98,8 @@ void MathTransform::process(const EAbstractAnalytic::Block* result)
    {
       ELog() << tr("Processing result %1 of %2.").arg(result->index()).arg(size());
    }
-   // 1
+   // Cast the result block to this implementation's type and then append its integer 
+   // result to this object's output integer array. 
    const Block* valid {result->cast<Block>()};
    _out->_numbers << valid->_number;
 }
@@ -162,16 +157,11 @@ EAbstractAnalytic::OpenCL* MathTransform::makeOpenCL()
 /*!
  * Implements the interface that initializes this analytic. This implementation 
  * checks to make sure it has a valid input data object. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If this object does not have a valid input integer array then throw an 
- *    exception. 
  */
 void MathTransform::initialize()
 {
-   // 1
+   // If this object does not have a valid input integer array then throw an 
+   // exception. 
    if ( !_in )
    {
       E_MAKE_EXCEPTION(e);
@@ -181,9 +171,18 @@ void MathTransform::initialize()
    }
 }
 
+
+
+
+
+
+/*!
+ * Implements _EAbstractAnalytic_ interface. 
+ */
 void MathTransform::initializeOutputs()
 {
-   // 1
+   // If this object does not have a valid output integer array then throw an 
+   // exception. 
    if ( !_out )
    {
       E_MAKE_EXCEPTION(e);

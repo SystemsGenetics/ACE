@@ -30,17 +30,11 @@ AnalyticThread::AnalyticThread(Analytic::AbstractManager* manager):
 /*!
  * Checks to see if this thread has caught an exception. If this thread does have 
  * an exception then it is thrown from this method. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If this object contains a caught exception then copy it to a new exception, 
- *    delete the exception this object contained, and throw the new copied 
- *    exception. 
  */
 void AnalyticThread::check()
 {
-   // Step 1
+   // If this object contains a caught exception then copy it to a new exception, 
+   // delete the exception this object contained, and throw the new copied exception. 
    if ( _exception )
    {
       EException e(*_exception);
@@ -62,17 +56,12 @@ void AnalyticThread::check()
  *
  * @param exception Exception that was caught and is copied to this analytic 
  *                  thread. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Delete any exception this thread may already contain, then create a new 
- *    exception that is a copy of the one given for this thread to contain, and 
- *    then call on the analytic manager to delete itself and halt execution. 
  */
 void AnalyticThread::setException(const EException& exception)
 {
-   // Step 1
+   // Delete any exception this thread may already contain, then create a new 
+   // exception that is a copy of the one given for this thread to contain, and then 
+   // call on the analytic manager to delete itself and halt execution. 
    delete _exception;
    _exception = new EException(exception);
    _manager->deleteLater();
@@ -86,16 +75,11 @@ void AnalyticThread::setException(const EException& exception)
 /*!
  * Implements the qt interface that is the entry point for this thread. This begins 
  * the event loop for this thread. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Connect the destroyed signal of this thread's analytic manager to end its 
- *    event loop and then start this thread's event loop. 
  */
 void AnalyticThread::run()
 {
-   // Step 1
+   // Connect the destroyed signal of this thread's analytic manager to end its event 
+   // loop and then start this thread's event loop. 
    connect(_manager,&QObject::destroyed,this,&QThread::quit);
    QThread::run();
 }
