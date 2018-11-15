@@ -528,7 +528,12 @@ QWidget* SetupAnalyticDialog::createDouble(quint16 index)
    ret->setText(QString::number(_manager->data(index,EAbstractAnalytic::Input::Default).toDouble()));
    double bottom {_manager->data(index,EAbstractAnalytic::Input::Minimum).toDouble()};
    double top {_manager->data(index,EAbstractAnalytic::Input::Maximum).toDouble()};
-   int decimals {_manager->data(index,EAbstractAnalytic::Input::Decimals).toInt()};
+   int decimals {1000};
+   QVariant value {_manager->data(index,EAbstractAnalytic::Input::Decimals)};
+   if ( !value.isNull() )
+   {
+      decimals = value.toInt();
+   }
    ret->setValidator(new QDoubleValidator(bottom,top,decimals,this));
 
    // Append _ret_ to this object's list of edit widgets and return it. 

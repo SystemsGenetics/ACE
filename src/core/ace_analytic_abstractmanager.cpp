@@ -156,9 +156,9 @@ EAbstractAnalytic::Input::Type AbstractManager::type(int index) const
  */
 QVariant AbstractManager::data(int index, EAbstractAnalytic::Input::Role role) const
 {
-   EDEBUG_FUNC(this,role)
+   EDEBUG_FUNC(this,role);
 
-         return _input->data(index,role);
+   return _input->data(index,role);
 }
 
 
