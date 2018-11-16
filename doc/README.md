@@ -330,6 +330,8 @@ void HelloAnalyticWorld::initializeOutputs()
 
 ## Input
 
+Now we will define the header of our hello world analytic input class.
+
 ```
 class HelloAnalyticWorld::Input : public EAbstractAnalytic::Input
 {
@@ -355,7 +357,15 @@ private:
 };
 ```
 
+The input class of an analytic is responsible for telling ACE the number of input arguments it expects along with information about each input argument. It is also responsible for actually setting the values the user chooses for each input argument, typically being done by setting variables within its base analytic class.
+
+In our example we have three input arguments. The input argument is the input data object, the output argument is the output data object, and the amount is the mount each integer is added to for the output data object.
+
+Each input argument has a list of data roles it can provide to ACE to detail the attributes of the input argument along with providing help information about it to the user.
+
 ### size()
+
+This interface simply returns the total number of input arguments of an analytic.
 
 ```
 int HelloAnalyticWorld::Input::size() const
@@ -365,6 +375,8 @@ int HelloAnalyticWorld::Input::size() const
 ```
 
 ### type()
+
+This interface returns the type of an input argument with the given index. You can see the full list of possible types by viewing the documentation for the EAbstractAnalytic::Input class. In our case we have a data input, data output, and integer argument types. We also provide a default to squash a compiler warning.
 
 ```
 EAbstractAnalytic::Input::Type HelloAnalyticWorld::Input::type(int index) const
@@ -380,6 +392,8 @@ EAbstractAnalytic::Input::Type HelloAnalyticWorld::Input::type(int index) const
 ```
 
 ### data()
+
+This interface returns a specific attribute role of an input argument with the given index. You can see the full list of possible roles by viewing the documentation for the EAbstractAnalytic::Input class. In our case we provide role attributes for our three possible input arguments. It is well advised that you divide each input argument into its own method for processing all possible data roles since there can be quite a few for each argument.
 
 ```
 QVariant HelloAnalyticWorld::Input::data(int index, Role role) const
@@ -444,6 +458,8 @@ QVariant HelloAnalyticWorld::Input::amountData(Role role) const
 
 ### set()
 
+This overloaded interface is responsible for setting the actually value of an input argument with the given index. The signature that passes a qt file pointer is for file in or file out argument types. The signature that passes a data object pointer is for data in or data out argument types. The signature that passes a qt variant is for all other argument types. Because our example analytic has no file in or out argument types that interface does nothing.
+
 ```
 void HelloAnalyticWorld::Input::set(int index, const QVariant& value)
 {
@@ -479,6 +495,8 @@ void HelloAnalyticWorld::Input::set(int index, EAbstractData* data)
 
 ## Blocks
 
+Now we will define the header of our hello world analytic block class.
+
 ```
 class HelloAnalyticWorld::Block : public EAbstractAnalytic::Block
 {
@@ -497,7 +515,13 @@ private:
 };
 ```
 
+The block system in ACE works to communicate two things. The first is a communicate a chunk of data to process or work on and is called a work block. The second is to communicate results from processed data that was worked on and is called a result block. In most real analytic classes there will be separate defintions for work and result blocks because they will hold different types of data. ACE facilitates this differentation in the base class for creating work or result blocks in different interface methods.
+
+In our simple hello world example, however, we can simply define one block class that can hold work or result data. In our example our block holds a single integer value.
+
 ### write/read
+
+These interface methods are responsible for reading or writing the data of a block instance to the given data stream. This is primarily used in MPI or chunk mode and facilitates communication of work and result blocks between nodes or chunk/merge runs. In our basic example we simply write or read the integer our block class holds.
 
 ```
 void HelloAnalyticWorld::Block::write(QDataStream& stream) const
@@ -515,7 +539,11 @@ void HelloAnalyticWorld::Block::read(QDataStream& stream)
 
 ## Engines
 
+The heart, or engine, of any analytic is its serial and/or OpenCL classes. These are the engine classes of the ACE system and are responsible for actually processing work blocks and producing result blocks. The serial engine class is very simple because it does all its processing on the traditional CPU. The OpenCL engine class is much more complicated, having sub classes of its own, because GPGPU programming is by nature far more complex than traditional CPU programming.
+
 ### Serial
+
+Now we will define the header of our hello world serial engine class.
 
 ```
 class HelloAnalyticWorld::Serial : public EAbstractAnalytic::Serial
@@ -529,7 +557,11 @@ private:
 };
 ```
 
+As stated the serial class is very simple and only had a single interface for processing blocks ACE provides it.
+
 #### execute()
+
+This interface is responsible for processing the given work block and producing a new result block from it. In our example we simply take the integer value of the work block and add a given amount to it from the base class argument, returning a new result block with the new integer value.
 
 ```
 std::unique_ptr<EAbstractAnalytic::Block> HelloAnalyticWorld::Serial::execute(const EAbstractAnalytic::Block* block)
@@ -539,6 +571,8 @@ std::unique_ptr<EAbstractAnalytic::Block> HelloAnalyticWorld::Serial::execute(co
 ```
 
 ### OpenCL
+
+Now we will define the header of our hello world OpenCL engine class.
 
 ```
 class HelloAnalyticWorld::OpenCL : public EAbstractAnalytic::OpenCL
@@ -557,7 +591,11 @@ private:
 };
 ```
 
+As stated above the OpenCL engine is much more complicated and the base engine class does not actuall do the processing of work blocks. Instead it provides a worker sub class that is responsible for doing the processing. This is done because behind the scenes ACE makes multiple threads that each process their own work blocks to make sure the GPGPU is fully utilized. The OpenCL system must also be initialized and this is done in this base engine class.
+
 #### initialize()
+
+This interface is responsible for initializing any global OpenCL resources this analytic requires using the given OpenCL context.
 
 ```
 void HelloAnalyticWorld::OpenCL::initialize(::OpenCL::Context* context)
@@ -569,6 +607,8 @@ void HelloAnalyticWorld::OpenCL::initialize(::OpenCL::Context* context)
 
 #### makeWorker()
 
+This interface is responsible for making a new OpenCL worker instance. The worker class is described in detail later on.
+
 ```
 std::unique_ptr<EAbstractAnalytic::OpenCL::Worker> HelloAnalyticWorld::OpenCL::makeWorker()
 {
@@ -577,6 +617,8 @@ std::unique_ptr<EAbstractAnalytic::OpenCL::Worker> HelloAnalyticWorld::OpenCL::m
 ```
 
 #### Worker
+
+Now we will define the header of our hellow world OpenCL engine worker class.
 
 ```
 class HelloAnalyticWorld::OpenCL::Worker : public EAbstractAnalytic::OpenCL::Worker
@@ -593,7 +635,11 @@ private:
 };
 ```
 
+This class very closely resembles the simple serial engine class because it basically does the same thing. It takes in work blocks and produces result blocks from them. The only difference is it does this on its own independent work thread and is expected to use OpenCL. Because worker instances are on their own threads any global OpenCL resources used must be used in a thread safe manner.
+
 ##### execute()
+
+This interface is responsible for processing the given work block and producing a new result block from it. Refer to the documentation of the helper classes provided in the OpenCL namespace of ACE for further details.
 
 ```
 std::unique_ptr<EAbstractAnalytic::Block> HelloAnalyticWorld::OpenCL::Worker::execute(const EAbstractAnalytic::Block* block)
@@ -609,3 +655,11 @@ std::unique_ptr<EAbstractAnalytic::Block> HelloAnalyticWorld::OpenCL::Worker::ex
    return unique_ptr<EAbstractAnalytic::Block>(new HelloAnalyticWorld::Block(block->index(),answer));
 }
 ```
+
+#### Kernel
+
+The kernel class is an implementation of the OpenCL::Kernel class. Refer to the documentation for that class for further details.
+
+# Conclusion
+
+This basic introduction of the ACE interface was designed to give a broad overview of how to use ACE to implement its data and analytic system. For more in depth documentation please look at the API documentation. This tutorial should have provided you with the basic knowledge of where to begin and was classes documentation to read further.
