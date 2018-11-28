@@ -123,6 +123,7 @@ void MainWindow::openTriggered(quint16 type)
 {
    // .
    QFileDialog dialog(this,tr("Select File"));
+   dialog.setDirectory(QDir::currentPath());
    dialog.setAcceptMode(QFileDialog::AcceptOpen);
 
    // .

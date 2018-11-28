@@ -72,6 +72,7 @@ void SetupAnalyticDialog::findFile(int index)
    // Create a new qt file dialog _dialog_, setting it to accepting an open or save 
    // depending on if the analytic argument is file in or out. 
    QFileDialog dialog(nullptr,tr("Select File"));
+   dialog.setDirectory(QDir::currentPath());
    switch (_manager->type(index))
    {
    case EAbstractAnalytic::Input::FileIn:
@@ -120,6 +121,7 @@ void SetupAnalyticDialog::findDataObject(int index)
    // Create a new qt file dialog _dialog_, setting it to accepting an open or save 
    // depending on if the analytic argument is data in or out. 
    QFileDialog dialog(nullptr,tr("Select Data Object File"));
+   dialog.setDirectory(QDir::currentPath());
    switch (_manager->type(index))
    {
    case EAbstractAnalytic::Input::DataIn:
