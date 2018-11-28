@@ -53,8 +53,8 @@ public:
    template<class T> const T* cast() const;
    template<class T> T* cast();
 protected:
-   EMetadata systemMeta() const;
-   EMetadata meta() const;
+   const EMetadata& systemMeta() const;
+   const EMetadata& meta() const;
    void setMeta(const EMetadata& newMeta);
    const EDataStream& stream() const;
    EDataStream& stream();

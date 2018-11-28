@@ -30,7 +30,7 @@ void EAbstractData::finish()
  *
  * @return Root metadata object for this data object's system metadata. 
  */
-EMetadata EAbstractData::systemMeta() const
+const EMetadata& EAbstractData::systemMeta() const
 {
    EDEBUG_FUNC(this)
 
@@ -47,7 +47,7 @@ EMetadata EAbstractData::systemMeta() const
  *
  * @return Root metadata object for this data object's user metadata. 
  */
-EMetadata EAbstractData::meta() const
+const EMetadata& EAbstractData::meta() const
 {
    EDEBUG_FUNC(this)
 

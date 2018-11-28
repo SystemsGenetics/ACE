@@ -38,6 +38,9 @@ DataObject::DataObject(const QString& path, QObject* parent):
       openObject(false);
       readHeader();
       _data->readData();
+      seek(_data->dataEnd());
+      stream() >> _userMeta;
+      seek(0);
    }
 
    // If any exception occurs within this function then delete any allocated 
@@ -200,7 +203,7 @@ qint64 DataObject::size() const
  *
  * @return Root of system metadata for this data object. 
  */
-EMetadata DataObject::systemMeta() const
+const EMetadata& DataObject::systemMeta() const
 {
    EDEBUG_FUNC(this)
 
@@ -218,23 +221,11 @@ EMetadata DataObject::systemMeta() const
  *
  * @return Root of user metadata for this data object. 
  */
-EMetadata DataObject::userMeta() const
+const EMetadata& DataObject::userMeta() const
 {
-   EDEBUG_FUNC(this)
+   EDEBUG_FUNC(this);
 
-   // If this data object's user metadata has not been written to file then return 
-   // its temporary user metadata stored in system memory. 
-   if ( !_userMetaWritten )
-   {
-      return _userMeta;
-   }
-
-   // Seek to the end of this object's abstract data and read in the user metadata, 
-   // returning the read in user metadata. 
-   EMetadata ret;
-   seek(_data->dataEnd());
-   stream() >> ret;
-   return ret;
+   return _userMeta;
 }
 
 
@@ -394,17 +385,8 @@ void DataObject::setUserMeta(const EMetadata& newRoot)
       throw e;
    }
 
-   // If this data object's user metadata is not ready to be written then set this 
-   // object's temporary user metadata value to the new one given, else seek to the 
-   // end of this data object's data and write the new user metadata to this data 
-   // object. 
-   if ( !_userMetaWritten )
-   {
-      _userMeta = newRoot;
-      return;
-   }
-   seek(_data->dataEnd());
-   stream() << newRoot;
+   // Set this object's user metadata value to the new one given. 
+   _userMeta = newRoot;
 }
 
 
@@ -419,15 +401,11 @@ void DataObject::setUserMeta(const EMetadata& newRoot)
  */
 void DataObject::finalize()
 {
-   EDEBUG_FUNC(this)
+   EDEBUG_FUNC(this);
 
-   // If this object's user metadata has not been written then write it with an empty 
-   // metadata object type. 
-   if ( !_userMetaWritten )
-   {
-      _userMetaWritten = true;
-      setUserMeta(_userMeta);
-   }
+   // Write the user metadata to the end of this new data object file. 
+   seek(_data->dataEnd());
+   stream() << _userMeta;
 }
 
 
@@ -675,7 +653,6 @@ void DataObject::writeHeader()
 
    // Set this data object's header as read and its user metadata as not written. 
    _headerRead = true;
-   _userMetaWritten = false;
 }
 
 

@@ -29,8 +29,8 @@ namespace Ace
       QString fileName() const;
       quint16 type() const;
       qint64 size() const;
-      EMetadata systemMeta() const;
-      EMetadata userMeta() const;
+      const EMetadata& systemMeta() const;
+      const EMetadata& userMeta() const;
       void seek(qint64 index) const;
       const EDataStream& stream() const;
       void allocate(int size);
@@ -105,16 +105,7 @@ namespace Ace
        */
       bool _headerRead {false};
       /*!
-       * Indicates if this data object's file has its user metadata section written to it 
-       * and can safely be read. This is only used if this is a new data object to make 
-       * sure the user metadata is written and not read until it is. For an existing data 
-       * object being opened this is always true. 
-       */
-      bool _userMetaWritten {true};
-      /*!
-       * Used for new data objects to temporarily store the user metadata for this data 
-       * object until the finalize method is called and write this to this object's file 
-       * at the end of an analytic run. 
+       * The user metadata for this data object. 
        */
       EMetadata _userMeta {EMetadata::Object};
    };
