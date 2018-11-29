@@ -28,9 +28,9 @@ private:
     */
    OpenCL::Kernel* _kernel;
    /*!
-    * Pointer to this worker's unique and private single integer buffer. 
+    * Pointer to this worker's unique and private row buffer. 
     */
-   ::OpenCL::Buffer<cl_int> _buffer;
+   ::OpenCL::Buffer<cl_float> _buffer;
 };
 
 

@@ -19,13 +19,13 @@ public:
    enum Type
    {
       /*!
-       * Defines the import integer array analytic type. 
+       * Defines the import dataframe analytic type. 
        */
-      ImportIntegerArrayType
+      ImportDataFrameType
       /*!
-       * Defines the export integer array analytic type. 
+       * Defines the export dataframe analytic type. 
        */
-      ,ExportIntegerArrayType
+      ,ExportDataFrameType
       /*!
        * Defines the math transform analytic type. 
        */

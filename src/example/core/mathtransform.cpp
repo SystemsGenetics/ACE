@@ -3,7 +3,7 @@
 #include "mathtransform_input.h"
 #include "mathtransform_serial.h"
 #include "mathtransform_opencl.h"
-#include "integerarray.h"
+#include "dataframe_iterator.h"
 #include "core/elog.h"
 
 
@@ -24,7 +24,7 @@ using namespace std;
  */
 int MathTransform::size() const
 {
-   return _in->_numbers.size();
+   return _in->rowSize();
 }
 
 
@@ -34,8 +34,8 @@ int MathTransform::size() const
 
 /*!
  * Implements the interface that creates and returns a work block for this analytic 
- * with the given index. This implementation take a single integer from its input 
- * integer array and makes a work block from it. 
+ * with the given index. This implementation makes a work block for each row in
+ * the input dataframe. 
  *
  * @param index Index used to make the block of work. 
  *
@@ -47,7 +47,12 @@ std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeWork(int index) con
    {
       ELog() << tr("Making work index %1 of %2.").arg(index).arg(size());
    }
-   return unique_ptr<EAbstractAnalytic::Block>(new Block(index,_in->_numbers.at(index)));
+
+   // read in row from the input dataframe
+   DataFrame::Iterator iterator(_in);
+   iterator.read(index);
+
+   return unique_ptr<EAbstractAnalytic::Block>(new Block(index, _in->columnSize(), &iterator[0]));
 }
 
 
@@ -87,8 +92,8 @@ std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeResult() const
 
 /*!
  * Implements the interface that reads in a block of results made from a block of 
- * work with the corresponding index. This implementation takes the integer result 
- * and appends it to its output integer array. 
+ * work with the corresponding index. This implementation takes the row result 
+ * and appends it to its output dataframe. 
  *
  * @param result  
  */
@@ -98,10 +103,19 @@ void MathTransform::process(const EAbstractAnalytic::Block* result)
    {
       ELog() << tr("Processing result %1 of %2.").arg(result->index()).arg(size());
    }
-   // Cast the result block to this implementation's type and then append its integer 
-   // result to this object's output integer array. 
+
+   // Cast the result block to this implementation's type and then append its 
+   // row result to this object's output dataframe. 
    const Block* valid {result->cast<Block>()};
-   _out->_numbers << valid->_number;
+
+   DataFrame::Iterator iterator(_out);
+
+   for ( int i = 0; i < valid->_data.size(); i++ )
+   {
+      iterator[i] = valid->_data[i];
+   }
+
+   iterator.write(result->index());
 }
 
 
@@ -160,7 +174,7 @@ EAbstractAnalytic::OpenCL* MathTransform::makeOpenCL()
  */
 void MathTransform::initialize()
 {
-   // If this object does not have a valid input integer array then throw an 
+   // If this object does not have a valid input dataframe then throw an 
    // exception. 
    if ( !_in )
    {
@@ -181,7 +195,7 @@ void MathTransform::initialize()
  */
 void MathTransform::initializeOutputs()
 {
-   // If this object does not have a valid output integer array then throw an 
+   // If this object does not have a valid output dataframe then throw an 
    // exception. 
    if ( !_out )
    {
@@ -190,4 +204,7 @@ void MathTransform::initializeOutputs()
       e.setDetails(tr("The required output data object was not set."));
       throw e;
    }
+
+   // initialize output dataframe
+   _out->initialize(_in->rowNames(), _in->columnNames());
 }

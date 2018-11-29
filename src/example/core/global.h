@@ -1,7 +1,7 @@
 
 class DataFactory;
 class AnalyticFactory;
-class IntegerArray;
-class ImportIntegerArray;
-class ExportIntegerArray;
+class DataFrame;
+class ImportDataFrame;
+class ExportDataFrame;
 class MathTransform;

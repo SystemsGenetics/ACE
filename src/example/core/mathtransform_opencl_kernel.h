@@ -7,7 +7,7 @@
 
 /*!
  * This is the primary and sole OpenCL kernel used for the math transform analytic 
- * type. This kernel takes one integer, transforms it, and returns the result. This 
+ * type. This kernel takes one row, transforms it, and returns the result. This 
  * is a superficial and very inefficient implementation of OpenCL kernels in 
  * general and should only be used as an example of how to use ACE. 
  */
@@ -21,13 +21,17 @@ public:
    enum Argument
    {
       /*!
-       * Defines the global number argument. 
+       * Defines the global buffer argument. 
        */
-      GlobalNum
+      GlobalBuffer
       /*!
-       * Defines the local number argument. 
+       * Defines the global size argument. 
        */
-      ,LocalNum
+      ,GlobalSize
+      /*!
+       * Defines the local value argument. 
+       */
+      ,LocalValue
       /*!
        * Defines the operation type argument. 
        */
@@ -38,7 +42,7 @@ public:
       ,Amount
    };
    explicit Kernel(::OpenCL::Program* program, QObject* parent = nullptr);
-   ::OpenCL::Event execute(::OpenCL::CommandQueue* queue, ::OpenCL::Buffer<cl_int>* buffer, Operation type, int amount);
+   ::OpenCL::Event execute(::OpenCL::CommandQueue* queue, ::OpenCL::Buffer<cl_float>* buffer, Operation type, int amount);
 };
 
 

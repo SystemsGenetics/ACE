@@ -1,5 +1,5 @@
 #include "datafactory.h"
-#include "integerarray.h"
+#include "dataframe.h"
 
 
 
@@ -40,7 +40,7 @@ QString DataFactory::name(quint16 type) const
    // recognized then return an empty string. 
    switch (type)
    {
-   case IntegerArrayType: return "Integer Array";
+   case DataFrameType: return "Dataframe";
    default: return QString();
    }
 }
@@ -64,7 +64,7 @@ QString DataFactory::fileExtension(quint16 type) const
    // not recognized then return an empty string. 
    switch (type)
    {
-   case IntegerArrayType: return "num";
+   case DataFrameType: return "tab";
    default: return QString();
    }
 }
@@ -88,7 +88,7 @@ std::unique_ptr<EAbstractData> DataFactory::make(quint16 type) const
    // type given is not recognized then return a null pointer. 
    switch (type)
    {
-   case IntegerArrayType: return unique_ptr<IntegerArray>(new IntegerArray());
+   case DataFrameType: return unique_ptr<DataFrame>(new DataFrame());
    default: return nullptr;
    }
 }
