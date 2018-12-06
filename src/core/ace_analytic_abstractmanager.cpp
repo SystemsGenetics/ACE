@@ -167,14 +167,22 @@ QVariant AbstractManager::data(int index, EAbstractAnalytic::Input::Role role) c
 
 
 /*!
+ * Returns a list of all command line arguments this manager's analytic provides as 
+ * input arguments. 
+ *
+ * @return List of all command line arguments for this manager's analytic. 
  */
 QList<QString> AbstractManager::commandLineArguments() const
 {
+   // Build the list of command line arguments from this manager's analytic input 
+   // instance. 
    QList<QString> ret;
    for (int i = 0; i < _input->size() ;++i)
    {
       ret << _input->data(i,EAbstractAnalytic::Input::CommandLineName).toString();
    }
+
+   // Return the command line argument list. 
    return ret;
 }
 

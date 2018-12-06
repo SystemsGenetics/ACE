@@ -5,6 +5,7 @@
 #include <QSpinBox>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QIcon>
 #include "../core/ace_settings.h"
 #include "../core/opencl_platform.h"
 #include "../core/opencl_device.h"
@@ -26,7 +27,10 @@ SettingsDialog::SettingsDialog()
 {
    // .
    QVBoxLayout* layout {new QVBoxLayout};
+   layout->addLayout(setupWarning());
+   layout->addSpacing(16);
    layout->addLayout(createForm());
+   layout->addSpacing(16);
    layout->addLayout(createButtons());
 
    // .
@@ -116,6 +120,26 @@ void SettingsDialog::currentPlatformChanged(int index)
    {
       _deviceCombo->addItem(OpenCL::Platform::get(index)->device(i)->name());
    }
+}
+
+
+
+
+
+
+/*!
+ */
+QLayout* SettingsDialog::setupWarning()
+{
+   QHBoxLayout* ret {new QHBoxLayout};
+   QLabel* label {new QLabel};
+   label->setPixmap(QIcon::fromTheme("dialog-warning").pixmap(64));
+   label->setAlignment(Qt::AlignRight|Qt::AlignTop);
+   ret->addWidget(label);
+   QLabel* warning {new QLabel(tr("<h3>WARNING</h3><p>All settings in this dialog are PERSISTENT and carry over to any other use of this application in both GUI or command line mode!"))};
+   warning->setWordWrap(true);
+   ret->addWidget(warning);
+   return ret;
 }
 
 

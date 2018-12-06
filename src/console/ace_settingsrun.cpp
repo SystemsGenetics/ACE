@@ -46,6 +46,7 @@ void SettingsRun::execute()
    {
       QTextStream stream(stdout);
       Ace::Settings& settings {Ace::Settings::instance()};
+      stream << "SETTINGS\n\n";
       stream << "          OpenCL Device: " << openCLDeviceString() << "\n";
       stream << "        ACU Thread Size: " << QString::number(settings.threadSize()) << "\n";
       stream << "        MPI Buffer Size: " << QString::number(settings.bufferSize()) << "\n";
