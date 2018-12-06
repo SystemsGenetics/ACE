@@ -1,7 +1,7 @@
 #include "mathtransform_input.h"
 #include <limits>
 #include "datafactory.h"
-#include "integerarray.h"
+#include "dataframe.h"
 
 
 
@@ -172,16 +172,16 @@ void MathTransform::Input::set(int index, QFile* file)
  */
 void MathTransform::Input::set(int index, EAbstractData* data)
 {
-   // Based off the argument index given set the input or output integer array for 
-   // this object's parent analytic object, casting the given data object to an 
-   // integer array. If the given index is out of range then do nothing. 
+   // Based off the argument index given set the input or output dataframe for
+   // this object's parent analytic object, casting the given data object to an
+   // dataframe. If the given index is out of range then do nothing.
    switch (index)
    {
    case InputData:
-      _base->_in = data->cast<IntegerArray>();
+      _base->_in = data->cast<DataFrame>();
       break;
    case OutputData:
-      _base->_out = data->cast<IntegerArray>();
+      _base->_out = data->cast<DataFrame>();
       break;
    }
 }
@@ -206,8 +206,8 @@ QVariant MathTransform::Input::inputDataData(Role role) const
    {
    case Role::CommandLineName: return QString("in");
    case Role::Title: return tr("Input:");
-   case Role::WhatsThis: return tr("Input data object of type Integer Array.");
-   case Role::DataType: return DataFactory::IntegerArrayType;
+   case Role::WhatsThis: return tr("Input data object of type Dataframe.");
+   case Role::DataType: return DataFactory::DataFrameType;
    default: return QVariant();
    }
 }
@@ -232,8 +232,8 @@ QVariant MathTransform::Input::outputDataData(Role role) const
    {
    case Role::CommandLineName: return QString("out");
    case Role::Title: return tr("Output:");
-   case Role::WhatsThis: return tr("Output data object of type Integer Array.");
-   case Role::DataType: return DataFactory::IntegerArrayType;
+   case Role::WhatsThis: return tr("Output data object of type Dataframe.");
+   case Role::DataType: return DataFactory::DataFrameType;
    default: return QVariant();
    }
 }

@@ -1,7 +1,7 @@
 #include "analyticfactory.h"
 #include "mathtransform.h"
-#include "importintegerarray.h"
-#include "exportintegerarray.h"
+#include "importdataframe.h"
+#include "exportdataframe.h"
 
 
 
@@ -43,9 +43,9 @@ QString AnalyticFactory::name(quint16 type) const
    // is not recognized then return an empty string. 
    switch (type)
    {
-   case ImportIntegerArrayType: return "Import Integer Array";
+   case ImportDataFrameType: return "Import Dataframe";
    case MathTransformType: return "Math Transform";
-   case ExportIntegerArrayType: return "Export Integer Array";
+   case ExportDataFrameType: return "Export Dataframe";
    default: return QString();
    }
 }
@@ -69,9 +69,9 @@ QString AnalyticFactory::commandName(quint16 type) const
    // type is not recognized then return an empty string. 
    switch (type)
    {
-   case ImportIntegerArrayType: return "import";
+   case ImportDataFrameType: return "import";
    case MathTransformType: return "transform";
-   case ExportIntegerArrayType: return "export";
+   case ExportDataFrameType: return "export";
    default: return QString();
    }
 }
@@ -95,9 +95,9 @@ std::unique_ptr<EAbstractAnalytic> AnalyticFactory::make(quint16 type) const
    // its pointer. If the analytic type is not recognized then return a null pointer. 
    switch (type)
    {
-   case ImportIntegerArrayType: return unique_ptr<ImportIntegerArray>(new ImportIntegerArray);
+   case ImportDataFrameType: return unique_ptr<ImportDataFrame>(new ImportDataFrame);
    case MathTransformType: return unique_ptr<MathTransform>(new MathTransform);
-   case ExportIntegerArrayType: return unique_ptr<ExportIntegerArray>(new ExportIntegerArray);
+   case ExportDataFrameType: return unique_ptr<ExportDataFrame>(new ExportDataFrame);
    default: return nullptr;
    }
 }

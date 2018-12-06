@@ -19,12 +19,12 @@ public:
     */
    explicit Block() = default;
    explicit Block(int index);
-   explicit Block(int index, qint32 number);
+   explicit Block(int index, int size, const float* data);
    /*!
-    * The integer for this block that can either be a work block which is used for 
+    * The data for this block that can either be a work block which is used for 
     * input or a result block which is used for output. 
     */
-   qint32 _number;
+   QVector<float> _data;
 protected:
    virtual void write(QDataStream& stream) const override final;
    virtual void read(QDataStream& stream) override final;

@@ -8,23 +8,30 @@
 
 
 
-__kernel void mathTransform(__global int* globalNum, __local int* localNum, int type, int amount)
+__kernel void mathTransform(__global float* globalBuffer, int globalSize, __local float* localValue, int type, int amount)
 {
-   *localNum = *globalNum;
+   int i = get_global_id(0);
+
+   if ( i >= globalSize )
+   {
+      return;
+   }
+
+   *localValue = globalBuffer[i];
    switch (type)
    {
    case ADDITION:
-      *localNum += amount;
+      *localValue += amount;
       break;
    case SUBTRACTION:
-      *localNum -= amount;
+      *localValue -= amount;
       break;
    case MULTIPLICATION:
-      *localNum *= amount;
+      *localValue *= amount;
       break;
    case DIVISION:
-      *localNum /= amount;
+      *localValue /= amount;
       break;
    }
-   *globalNum = *localNum;
+   globalBuffer[i] = *localValue;
 }

@@ -19,9 +19,9 @@ public:
    enum Type
    {
       /*!
-       * Defines the integer array data type. 
+       * Defines the dataframe data type. 
        */
-      IntegerArrayType
+      DataFrameType
       /*!
        * Defines the total number of data types that exist. 
        */

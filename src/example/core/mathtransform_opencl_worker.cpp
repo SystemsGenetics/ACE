@@ -30,7 +30,7 @@ MathTransform::OpenCL::Worker::Worker(MathTransform* base, ::OpenCL::Context* co
    _base(base),
    _queue(new ::OpenCL::CommandQueue(context,context->devices().first(),this)),
    _kernel(new OpenCL::Kernel(program,this)),
-   _buffer(context,1)
+   _buffer(context,base->_in->columnSize())
 {}
 
 
@@ -56,25 +56,33 @@ std::unique_ptr<EAbstractAnalytic::Block> MathTransform::OpenCL::Worker::execute
    // Cast the given generic work block to this analytic type work block _valid_. 
    const MathTransform::Block* valid {block->cast<const MathTransform::Block>()};
 
-   // Map the integer buffer to host memory for writing, write the single integer 
-   // from _valid_, then unmap the integer buffer. Wait for all mapping to finish 
+   // Map the row buffer to host memory for writing, write the row data 
+   // from _valid_, then unmap the row buffer. Wait for all mapping to finish 
    // before moving to the next step. 
    _buffer.mapWrite(_queue).wait();
-   _buffer[0] = valid->_number;
+   for ( int i = 0; i < valid->_data.size(); i++ )
+   {
+      _buffer[i] = valid->_data[i];
+   }
    _buffer.unmap(_queue).wait();
 
-   // Execute this object's kernel with its integer buffer, this base analytic 
+   // Execute this object's kernel with its row buffer, this base analytic 
    // object's operation type, and its amount. Wait for the kernel to finish. 
    _kernel->execute(_queue,&_buffer,_base->_type,_base->_amount).wait();
 
-   // Map the integer buffer to host memory for reading, read the transformed single 
+   // Map the row buffer to host memory for reading, read the transformed single 
    // integer to _answer_, then unmap the integer buffer. Wait for all mapping to 
    // finish before moving to the next step. 
+   QVector<float> row(valid->_data.size());
+
    _buffer.mapRead(_queue).wait();
-   qint32 answer {_buffer.at(0)};
+   for ( int i = 0; i < row.size(); i++ )
+   {
+      row[i] = _buffer.at(i);
+   }
    _buffer.unmap(_queue).wait();
 
-   // Create a new result block with the given work block's index and the integer 
-   // _answer_, returning its pointer. 
-   return unique_ptr<EAbstractAnalytic::Block>(new MathTransform::Block(block->index(),answer));
+   // Create a new result block with the given work block's index and 
+   // _row_, returning its pointer. 
+   return unique_ptr<EAbstractAnalytic::Block>(new MathTransform::Block(block->index(),row.size(),row.data()));
 }
