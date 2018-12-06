@@ -19,6 +19,9 @@ class EMetaObject : private QMap<QString,EMetadata>
 {
 public:
    EMetaObject& operator=(const EMetaObject& object);
+   EMetadata& operator[](const QString& key);
+   EMetadata operator[](const QString& key) const;
+public:
    bool isEmpty() const;
    int size() const;
    QMap<QString,EMetadata>::iterator begin();
@@ -30,8 +33,6 @@ public:
    EMetadata at(const QString& key) const;
    void insert(const QString& key, const EMetadata& value);
    void clear();
-   EMetadata& operator[](const QString& key);
-   EMetadata operator[](const QString& key) const;
 };
 
 

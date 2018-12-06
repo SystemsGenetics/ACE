@@ -38,6 +38,7 @@ namespace Ace
          int size() const;
          EAbstractAnalytic::Input::Type type(int index) const;
          QVariant data(int index, EAbstractAnalytic::Input::Role role) const;
+         QList<QString> commandLineArguments() const;
          void set(int index, const QVariant& value);
       signals:
          /*!
@@ -60,9 +61,10 @@ namespace Ace
          void terminationRequested();
          void finish();
       protected:
-         explicit AbstractManager(quint16 type);
          virtual QFile* addOutputFile(const QString& path);
          virtual Ace::DataObject* addOutputData(const QString& path, quint16 type, const EMetadata& system);
+      protected:
+         explicit AbstractManager(quint16 type);
          std::unique_ptr<EAbstractAnalytic::Block> makeWork(int index);
          void writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result, int expectedIndex);
          EAbstractAnalytic* analytic();

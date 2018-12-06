@@ -18,7 +18,7 @@ class EAbstractAnalytic::OpenCL : public QObject
    Q_OBJECT
 public:
    class Worker;
-   explicit OpenCL(EAbstractAnalytic* parent);
+public:
    /*!
     * This interface creates and returns a new OpenCL worker for the implementation's 
     * analytic type. 
@@ -33,6 +33,8 @@ public:
     * @param context  
     */
    virtual void initialize(::OpenCL::Context* context) = 0;
+public:
+   explicit OpenCL(EAbstractAnalytic* parent);
 };
 
 

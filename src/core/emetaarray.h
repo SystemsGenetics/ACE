@@ -17,6 +17,10 @@ class EMetaArray : private QList<EMetadata>
 {
 public:
    EMetaArray& operator=(const EMetaArray& object);
+   EMetadata& operator[](int index);
+   const EMetadata& operator[](int index) const;
+   EMetaArray& operator<<(const EMetadata& value);
+public:
    bool isEmpty() const;
    int size() const;
    QList<EMetadata>::iterator begin();
@@ -29,9 +33,6 @@ public:
    void insert(int index, const EMetadata& value);
    void append(const EMetadata& value);
    void clear();
-   EMetadata& operator[](int index);
-   const EMetadata& operator[](int index) const;
-   EMetaArray& operator<<(const EMetadata& value);
 };
 
 

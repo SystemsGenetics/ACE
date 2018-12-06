@@ -1,6 +1,8 @@
 #ifndef ACE_CORE
 #define ACE_CORE
 #include "eexception.h"
+#include "elog.h"
+#include "edebug.h"
 #include "eabstractanalyticfactory.h"
 #include "eabstractdatafactory.h"
 #include "eabstractanalytic_block.h"

@@ -41,6 +41,7 @@ public:
     * This interface is called to initialize the data object's data to a null state. 
     */
    virtual void writeNewData() = 0;
+   virtual void finish();
    /*!
     * This interface returns a qt table model that represents the data of this data 
     * object as a table. 
@@ -48,12 +49,12 @@ public:
     * @return Pointer to model that represents the data of this data object. 
     */
    virtual QAbstractTableModel* model() = 0;
-   virtual void finish();
+public:
    template<class T> const T* cast() const;
    template<class T> T* cast();
 protected:
-   EMetadata systemMeta() const;
-   EMetadata meta() const;
+   const EMetadata& systemMeta() const;
+   const EMetadata& meta() const;
    void setMeta(const EMetadata& newMeta);
    const EDataStream& stream() const;
    EDataStream& stream();
@@ -73,16 +74,12 @@ protected:
  *           block's implementation type. 
  *
  * @return Cast constant pointer to this object. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Use qt object cast to cast this object to the given template type as read 
- *    only. If the cast fails then throw an exception, else return the cast read 
- *    only pointer. 
  */
 template<class T> const T* EAbstractData::cast() const
 {
+   // Use qt object cast to cast this object to the given template type as read only. 
+   // If the cast fails then throw an exception, else return the cast read only 
+   // pointer. 
    const T* ret {qobject_cast<const T*>(this)};
    if ( !ret )
    {
@@ -106,15 +103,11 @@ template<class T> const T* EAbstractData::cast() const
  *           block's implementation type. 
  *
  * @return Cast pointer to this object. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Use qt object cast to cast this object to the given template type. If the 
- *    cast fails then throw an exception, else return the cast pointer. 
  */
 template<class T> T* EAbstractData::cast()
 {
+   // Use qt object cast to cast this object to the given template type. If the cast 
+   // fails then throw an exception, else return the cast pointer. 
    T* ret {qobject_cast<T*>(this)};
    if ( !ret )
    {

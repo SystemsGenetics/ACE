@@ -25,17 +25,11 @@ EAbstractAnalyticFactory* EAbstractAnalyticFactory::_instance {nullptr};
  * factory. If no instance has ever been set than an exception is thrown. 
  *
  * @return Reference to the global instance of this object's implementation. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the global instance pointer is null then throw an exception, else go to 
- *    the next step. 
- *
- * 2. Return reference to the global instance. 
  */
 EAbstractAnalyticFactory& EAbstractAnalyticFactory::instance()
 {
+   // If the global instance pointer is null then throw an exception, else go to the 
+   // next step. 
    if ( !_instance )
    {
       E_MAKE_EXCEPTION(e);
@@ -43,6 +37,8 @@ EAbstractAnalyticFactory& EAbstractAnalyticFactory::instance()
       e.setDetails(QObject::tr("Cannot get abstract analytic factory when none has been set."));
       throw e;
    }
+
+   // Return reference to the global instance. 
    return *_instance;
 }
 
@@ -59,16 +55,11 @@ EAbstractAnalyticFactory& EAbstractAnalyticFactory::instance()
  * found then an exception is thrown. 
  *
  * @param instance Pointer to the new global instance for this factory. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Check command line names for the given analytic factory, delete any existing 
- *    analytic factory, and set the global pointer to the new analytic factory 
- *    given. 
  */
 void EAbstractAnalyticFactory::setInstance(std::unique_ptr<EAbstractAnalyticFactory>&& instance)
 {
+   // Check command line names for the given analytic factory, delete any existing 
+   // analytic factory, and set the global pointer to the new analytic factory given. 
    checkCommandNames(instance.get());
    delete _instance;
    _instance = instance.release();
@@ -85,25 +76,16 @@ void EAbstractAnalyticFactory::setInstance(std::unique_ptr<EAbstractAnalyticFact
  * a collision is detected then an exception is thrown. 
  *
  * @param factory Pointer to the analytic factory whose analytic names are checked. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Iterate through all analytic objects the given factory that make for the 
- *    proceeding steps. 
- *
- * 2. If the command line name of the analytic already exists for another analytic 
- *    then throw an exception, else go to the next step. 
- *
- * 3. Insert the command line name of the analytic to the mapping of names and 
- *    check that the analytic argument command line names are all unique for the 
- *    analytic. 
  */
 void EAbstractAnalyticFactory::checkCommandNames(EAbstractAnalyticFactory* factory)
 {
+   // Iterate through all analytic objects the given factory that make for the 
+   // proceeding steps. 
    QMap<QString,bool> sanity;
    for (quint16 i = 0; i < factory->size() ;++i)
    {
+      // If the command line name of the analytic already exists for another analytic 
+      // then throw an exception, else go to the next step. 
       QString name = factory->commandName(i);
       if ( sanity.contains(name) )
       {
@@ -112,6 +94,9 @@ void EAbstractAnalyticFactory::checkCommandNames(EAbstractAnalyticFactory* facto
          e.setDetails(QObject::tr("Detected two different analytics that conflict with the same command line name."));
          throw e;
       }
+
+      // Insert the command line name of the analytic to the mapping of names and check 
+      // that the analytic argument command line names are all unique for the analytic. 
       sanity.insert(name,true);
       unique_ptr<EAbstractAnalytic> test(factory->make(i));
       checkCommandArguments(test.get());
@@ -128,24 +113,17 @@ void EAbstractAnalyticFactory::checkCommandNames(EAbstractAnalyticFactory* facto
  * collision is detected then an exception is thrown. 
  *
  * @param analytic Pointer to the abstract analytic whose arguments are checked. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Create an abstract analytic input from the given analytic and iterate through 
- *    all its arguments for the proceeding steps. 
- *
- * 2. If the command line name of the argument already exists for another argument 
- *    then throw an exception, else go the next step. 
- *
- * 3. Insert the command line name of the argument to the mapping of names. 
  */
 void EAbstractAnalyticFactory::checkCommandArguments(EAbstractAnalytic* analytic)
 {
+   // Create an abstract analytic input from the given analytic and iterate through 
+   // all its arguments for the proceeding steps. 
    EAbstractAnalytic::Input* input {analytic->makeInput()};
    QMap<QString,bool> sanity;
    for (int i = 0; i < input->size() ;++i)
    {
+      // If the command line name of the argument already exists for another argument 
+      // then throw an exception, else go the next step. 
       QString name = input->data(i,EAbstractAnalytic::Input::Role::CommandLineName).toString();
       if ( sanity.contains(name) )
       {
@@ -154,6 +132,8 @@ void EAbstractAnalyticFactory::checkCommandArguments(EAbstractAnalytic* analytic
          e.setDetails(QObject::tr("Detected two different arguments of an analytic that conflict with the same argument name."));
          throw e;
       }
+
+      // Insert the command line name of the argument to the mapping of names. 
       sanity.insert(name,true);
    }
 }

@@ -1,4 +1,5 @@
 #include "ace_datamanager.h"
+#include "edebug.h"
 
 
 
@@ -25,6 +26,8 @@ Ace::DataManager* DataManager::_instance {nullptr};
  */
 Ace::DataManager& DataManager::instance()
 {
+   EDEBUG_FUNC()
+
    if ( !_instance )
    {
       _instance = new DataManager;
@@ -48,5 +51,7 @@ Ace::DataManager& DataManager::instance()
  */
 void DataManager::newDataOpened(const QString& canonicalPath, Ace::DataObject* object)
 {
+   EDEBUG_FUNC(this,canonicalPath,object)
+
    emit dataOverwritten(canonicalPath,object);
 }

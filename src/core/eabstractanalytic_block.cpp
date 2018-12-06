@@ -1,5 +1,8 @@
 #include "eabstractanalytic_block.h"
 #include "eexception.h"
+
+
+
 //
 
 
@@ -14,15 +17,13 @@
  * @param data  
  *
  * @return Index or special code of block byte array. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Read the index from the byte array and return it. If reading fails then throw 
- *    an exception. 
  */
 int EAbstractAnalytic::Block::extractIndex(const QByteArray& data)
 {
+   EDEBUG_FUNC(data)
+
+   // Read the index from the byte array and return it. If reading fails then throw 
+   // an exception. 
    int ret;
    QDataStream stream(data);
    stream >> ret;
@@ -48,7 +49,9 @@ int EAbstractAnalytic::Block::extractIndex(const QByteArray& data)
  */
 EAbstractAnalytic::Block::Block(int index):
    _index(index)
-{}
+{
+   EDEBUG_FUNC(this,index)
+}
 
 
 
@@ -62,6 +65,8 @@ EAbstractAnalytic::Block::Block(int index):
  */
 int EAbstractAnalytic::Block::index() const
 {
+   EDEBUG_FUNC(this)
+
    return _index;
 }
 
@@ -75,17 +80,15 @@ int EAbstractAnalytic::Block::index() const
  * any implementation's data. 
  *
  * @return Byte array containing all data of this block. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Create a new byte array and a data stream for writing to it, writing this 
- *    blocks index and calling this block's write interface for its implementation 
- *    to save its data. If any write error occurs then throw an exception, else 
- *    return the created byte array. 
  */
 QByteArray EAbstractAnalytic::Block::toBytes() const
 {
+   EDEBUG_FUNC(this)
+
+   // Create a new byte array and a data stream for writing to it, writing this 
+   // blocks index and calling this block's write interface for its implementation to 
+   // save its data. If any write error occurs then throw an exception, else return 
+   // the created byte array. 
    QByteArray ret;
    QDataStream stream(&ret,QIODevice::WriteOnly);
    stream << _index;
@@ -110,16 +113,13 @@ QByteArray EAbstractAnalytic::Block::toBytes() const
  * previous data, including the data of this block's implementation. 
  *
  * @param data  
- *
- *
- * Steps of Operation: 
- *
- * 1. Read in this block's index and call this block's read interface for its 
- *    implementation to read its data. If any reading fails then throw an 
- *    exception. 
  */
 void EAbstractAnalytic::Block::fromBytes(const QByteArray& data)
 {
+   EDEBUG_FUNC(this,data)
+
+   // Read in this block's index and call this block's read interface for its 
+   // implementation to read its data. If any reading fails then throw an exception. 
    QDataStream stream(data);
    stream >> _index;
    read(stream);
@@ -146,6 +146,8 @@ void EAbstractAnalytic::Block::fromBytes(const QByteArray& data)
  */
 void EAbstractAnalytic::Block::write(QDataStream& stream) const
 {
+   EDEBUG_FUNC(this,&stream)
+
    Q_UNUSED(stream)
 }
 
@@ -163,5 +165,7 @@ void EAbstractAnalytic::Block::write(QDataStream& stream) const
  */
 void EAbstractAnalytic::Block::read(QDataStream& stream)
 {
+   EDEBUG_FUNC(this,&stream)
+
    Q_UNUSED(stream)
 }

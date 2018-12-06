@@ -19,8 +19,9 @@ namespace Ace
       {
          Q_OBJECT
       public:
-         explicit SimpleRun(AbstractInput* base, QObject* parent = nullptr);
          virtual void addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block) override final;
+      public:
+         explicit SimpleRun(AbstractInput* base, QObject* parent = nullptr);
       private:
          /*!
           * The abstract input object this object uses to save the results produced by it. 

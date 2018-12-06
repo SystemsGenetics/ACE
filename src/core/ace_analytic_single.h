@@ -23,8 +23,9 @@ namespace Ace
       {
          Q_OBJECT
       public:
-         explicit Single(quint16 type);
          virtual bool isFinished() const override final;
+      public:
+         explicit Single(quint16 type);
       protected:
          virtual int index() const override final;
          virtual void writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result) override final;

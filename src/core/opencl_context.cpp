@@ -3,6 +3,7 @@
 #include "opencl_device.h"
 #include "opencl_common.h"
 #include "eexception.h"
+#include "edebug.h"
 
 
 
@@ -23,21 +24,15 @@ using namespace OpenCL;
  *                devices must be part of the given platform. 
  *
  * @param parent Optional parent for this new context. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the given device list is empty then throw an exception, else go to the 
- *    next step. 
- *
- * 2. Create a new OpenCL context with the given platform and list of devices, 
- *    setting this object's OpenCL context ID to the one returned. If creating the 
- *    context fails then throw an exception. 
  */
 Context::Context(const QList<Device*>& devices, QObject* parent):
    QObject(parent),
    _devices(devices)
 {
+   EDEBUG_FUNC(this,&devices,parent)
+
+   // If the given device list is empty then throw an exception, else go to the next 
+   // step. 
    if ( devices.isEmpty() )
    {
       E_MAKE_EXCEPTION(e);
@@ -45,6 +40,10 @@ Context::Context(const QList<Device*>& devices, QObject* parent):
       e.setDetails(tr("Cannot create OpenCL context with empty list of devices."));
       throw e;
    }
+
+   // Create a new OpenCL context with the given platform and list of devices, 
+   // setting this object's OpenCL context ID to the one returned. If creating the 
+   // context fails then throw an exception. 
    cl_int code;
    cl_context_properties properties[] =
    {
@@ -76,6 +75,8 @@ Context::Context(const QList<Device*>& devices, QObject* parent):
  */
 Context::~Context()
 {
+   EDEBUG_FUNC(this)
+
    clReleaseContext(_id);
 }
 
@@ -91,6 +92,8 @@ Context::~Context()
  */
 cl_context Context::id() const
 {
+   EDEBUG_FUNC(this)
+
    return _id;
 }
 
@@ -107,5 +110,7 @@ cl_context Context::id() const
  */
 const QList<Device*>& Context::devices() const
 {
+   EDEBUG_FUNC(this)
+
    return _devices;
 }

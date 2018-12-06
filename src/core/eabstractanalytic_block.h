@@ -2,6 +2,7 @@
 #define EABSTRACTANALYTIC_BLOCK_H
 #include "eabstractanalytic.h"
 #include "eexception.h"
+#include "edebug.h"
 //
 
 
@@ -17,6 +18,7 @@ class EAbstractAnalytic::Block : public QObject
 {
    Q_OBJECT
 public:
+   friend EDebug& operator<<(EDebug&, const EAbstractAnalytic::Block*const);
    static int extractIndex(const QByteArray& data);
    /*!
     * Constructs an uninitialized block. This is used in MPI and chunk runs to load 
@@ -51,16 +53,12 @@ private:
  *           block's implementation type. 
  *
  * @return Cast constant pointer to this object. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Use qt object cast to cast this object to the given template type as read 
- *    only. If the cast fails then throw an exception, else return the cast read 
- *    only pointer. 
  */
 template<class T> const T* EAbstractAnalytic::Block::cast() const
 {
+   // Use qt object cast to cast this object to the given template type as read only. 
+   // If the cast fails then throw an exception, else return the cast read only 
+   // pointer. 
    const T* ret {qobject_cast<const T*>(this)};
    if ( !ret )
    {
@@ -84,15 +82,11 @@ template<class T> const T* EAbstractAnalytic::Block::cast() const
  *           block's implementation type. 
  *
  * @return Cast pointer to this object. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Use qt object cast to cast this object to the given template type. If the 
- *    cast fails then throw an exception, else return the cast pointer. 
  */
 template<class T> T* EAbstractAnalytic::Block::cast()
 {
+   // Use qt object cast to cast this object to the given template type. If the cast 
+   // fails then throw an exception, else return the cast pointer. 
    T* ret {qobject_cast<T*>(this)};
    if ( !ret )
    {

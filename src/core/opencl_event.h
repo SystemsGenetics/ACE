@@ -18,6 +18,9 @@ namespace OpenCL
    class Event
    {
    public:
+      void operator=(const Event& other);
+      void operator=(Event&& other);
+   public:
       /*!
        * Constructs a new event that is set to null (no OpenCL event). 
        */
@@ -26,8 +29,6 @@ namespace OpenCL
       Event(const Event& other);
       Event(Event&& other);
       ~Event();
-      void operator=(const Event& other);
-      void operator=(Event&& other);
       bool isNull() const;
       void wait() const;
       bool isDone() const;

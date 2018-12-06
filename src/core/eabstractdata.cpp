@@ -1,5 +1,9 @@
 #include "eabstractdata.h"
 #include "ace_dataobject.h"
+#include "edebug.h"
+
+
+
 //
 
 
@@ -12,7 +16,9 @@
  * it has finished giving it new data. The default implementation does nothing. 
  */
 void EAbstractData::finish()
-{}
+{
+   EDEBUG_FUNC(this)
+}
 
 
 
@@ -24,8 +30,10 @@ void EAbstractData::finish()
  *
  * @return Root metadata object for this data object's system metadata. 
  */
-EMetadata EAbstractData::systemMeta() const
+const EMetadata& EAbstractData::systemMeta() const
 {
+   EDEBUG_FUNC(this)
+
    return qobject_cast<Ace::DataObject*>(parent())->systemMeta();
 }
 
@@ -39,8 +47,10 @@ EMetadata EAbstractData::systemMeta() const
  *
  * @return Root metadata object for this data object's user metadata. 
  */
-EMetadata EAbstractData::meta() const
+const EMetadata& EAbstractData::meta() const
 {
+   EDEBUG_FUNC(this)
+
    return qobject_cast<Ace::DataObject*>(parent())->userMeta();
 }
 
@@ -57,6 +67,8 @@ EMetadata EAbstractData::meta() const
  */
 void EAbstractData::setMeta(const EMetadata& newMeta)
 {
+   EDEBUG_FUNC(this,&newMeta)
+
    qobject_cast<Ace::DataObject*>(parent())->setUserMeta(newMeta);
 }
 
@@ -72,6 +84,8 @@ void EAbstractData::setMeta(const EMetadata& newMeta)
  */
 const EDataStream& EAbstractData::stream() const
 {
+   EDEBUG_FUNC(this)
+
    return qobject_cast<Ace::DataObject*>(parent())->stream();
 }
 
@@ -87,6 +101,8 @@ const EDataStream& EAbstractData::stream() const
  */
 EDataStream& EAbstractData::stream()
 {
+   EDEBUG_FUNC(this)
+
    return qobject_cast<Ace::DataObject*>(parent())->stream();
 }
 
@@ -104,6 +120,8 @@ EDataStream& EAbstractData::stream()
  */
 void EAbstractData::seek(qint64 index) const
 {
+   EDEBUG_FUNC(this,index)
+
    qobject_cast<Ace::DataObject*>(parent())->seek(index);
 }
 
@@ -123,5 +141,7 @@ void EAbstractData::seek(qint64 index) const
  */
 void EAbstractData::allocate(qint64 size)
 {
+   EDEBUG_FUNC(this,size)
+
    qobject_cast<Ace::DataObject*>(parent())->allocate(size);
 }

@@ -1,4 +1,8 @@
 #include "eabstractanalytic_opencl.h"
+#include "edebug.h"
+
+
+
 //
 
 
@@ -13,4 +17,6 @@
  */
 EAbstractAnalytic::OpenCL::OpenCL(EAbstractAnalytic* parent):
    QObject(parent)
-{}
+{
+   EDEBUG_FUNC(this,parent)
+}

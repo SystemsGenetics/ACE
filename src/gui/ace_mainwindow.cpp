@@ -48,13 +48,13 @@ MainWindow* MainWindow::_instance {nullptr};
  */
 MainWindow& MainWindow::instance()
 {
-   // If the global instance has no been created yet then do so.
+   // If the global instance has not been made then make it. 
    if ( !_instance )
    {
       _instance = new MainWindow;
    }
 
-   // Return a reference to the global instance.
+   // Return reference to global instance. 
    return *_instance;
 }
 
@@ -73,13 +73,13 @@ MainWindow& MainWindow::instance()
  */
 void MainWindow::addCommand(const QString& command)
 {
-   // Create and initialize the line that will be added to this window.
+   // Create the command line string for the given command. 
    QString line
    {
       Ace::Settings::instance().application().append(" run ").append(command).append("\n")
    };
 
-   // Append the new line to this window's central text edit widget.
+   // Append the new command to this main window's text console. 
    _console->setPlainText(_console->toPlainText().append(line));
 }
 
@@ -96,12 +96,12 @@ void MainWindow::addCommand(const QString& command)
  */
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-   // Save the geometry and state of this main window using qt settings.
+   // Save the geometry and state of this main window. 
    QSettings settings(Settings::instance().organization(),Settings::instance().application());
    settings.setValue(_stateKey,saveState());
    settings.setValue(_geometryKey,saveGeometry());
 
-   // Accept this close event.
+   // Accept the given close event. 
    event->accept();
 }
 
@@ -121,31 +121,32 @@ void MainWindow::closeEvent(QCloseEvent* event)
  */
 void MainWindow::openTriggered(quint16 type)
 {
-   // Create a new file dialog and set it for accepting open.
+   // Create a new file dialog and set it to open a file. 
    QFileDialog dialog(this,tr("Select File"));
+   dialog.setDirectory(QDir::currentPath());
    dialog.setAcceptMode(QFileDialog::AcceptOpen);
 
-   // Set the name filter for the file dialog based off the given data object type.
+   // Get the name and extension of the data type to be opened. 
    EAbstractDataFactory& factory = EAbstractDataFactory::instance();
    dialog.setNameFilter(tr("%1 data object (*.%2)")
                         .arg(factory.name(type))
                         .arg(factory.fileExtension(type)));
 
-   // Execute the file dialog selection for the user. If the dialog is rejected then return.
+   // Execute the file dialog, making sure the user selected a file to open. 
    if ( !dialog.exec() )
    {
       return;
    }
 
-   // Get the first file selected from the file dialog and create a new data window using
-   // the selected file.
+   // Open the data object with the given path the user picked inside a new data 
+   // window. 
    QString file = dialog.selectedFiles().first();
    DataWindow* window
    {
       new DataWindow(unique_ptr<DataObject>(new DataObject(file)),this)
    };
 
-   // Set the title of this new data window and show it.
+   // Set the title and the new data window and show it. 
    QFileInfo fileInfo(file);
    window->setWindowTitle(QString("%1 (%2)").arg(fileInfo.fileName()).arg(factory.name(type)));
    window->show();
@@ -165,17 +166,15 @@ void MainWindow::openTriggered(quint16 type)
  */
 void MainWindow::runTriggered(quint16 type)
 {
-   // Create a new analytic manager with the given analytic type and index/size parameters so
-   // this is not chunk mode.
+   // Create a new analytic manager. 
    EAbstractAnalyticFactory& factory {EAbstractAnalyticFactory::instance()};
    unique_ptr<Analytic::AbstractManager> manager {Analytic::AbstractManager::makeManager(type,0,1)};
 
-   // Create and execute a setup analytic dialog with the analytic manager. If the dialog is
-   // rejected then return.
+   // Create and run a setup analytic dialog for initializing the analytic manager. 
    SetupAnalyticDialog dialog(manager.get());
    if ( !dialog.exec() ) return;
 
-   // Create a new analytic dialog, set its title, and execute the analytic manager with it.
+   // Create an analytic dialog and execute the analytic manager. 
    AnalyticDialog runDialog(std::move(manager));
    runDialog.setWindowTitle(tr("Executing %1").arg(factory.name(type)));
    runDialog.exec();
@@ -191,7 +190,7 @@ void MainWindow::runTriggered(quint16 type)
  */
 void MainWindow::settingsTriggered()
 {
-   // Create a settings dialog, setting its title and executing it.
+   // Create and execute a settings dialog. 
    SettingsDialog dialog;
    dialog.setWindowTitle(tr("Settings"));
    dialog.exec();
@@ -208,15 +207,15 @@ void MainWindow::settingsTriggered()
  */
 MainWindow::MainWindow()
 {
-   // Create this new window's actions and menus.
+   // Create the actions and menus of this new main window. 
    createActions();
    createMenus();
 
-   // Create this new window's text edit widget and set it as the central widget.
+   // Create the central console widget. 
    _console = new QTextEdit(this);
    setCentralWidget(_console);
 
-   // Restore this window's geometry and state.
+   // Restore the state of geometry of this new main window. 
    restoreSettings();
 }
 
@@ -230,8 +229,7 @@ MainWindow::MainWindow()
  */
 void MainWindow::createActions()
 {
-   // Create and initialize the list of open actions corresponding to all available data
-   // object types.
+   // Create a list of actions for all possible data object types that can be opened. 
    EAbstractDataFactory& dataFactory {EAbstractDataFactory::instance()};
    for (quint16 i = 0; i < dataFactory.size() ;++i)
    {
@@ -239,8 +237,7 @@ void MainWindow::createActions()
       connect(_openActions.back(),&QAction::triggered,[this,i]{ openTriggered(i); });
    }
 
-   // Create and initialize the list of run actions corresponding to all available analytic
-   // types.
+   // Create a list of actions for all possible analytic types that can be executed. 
    EAbstractAnalyticFactory& analyticFactory {EAbstractAnalyticFactory::instance()};
    for (quint16 i = 0; i < analyticFactory.size() ;++i)
    {
@@ -248,12 +245,12 @@ void MainWindow::createActions()
       connect(_runActions.back(),&QAction::triggered,[this,i]{ runTriggered(i); });
    }
 
-   // Create and initialize the settings action.
+   // Create and initialize the settings action. 
    _settingsAction = new QAction(tr("&Settings"),this);
    _settingsAction->setStatusTip(tr("Open the application settings dialog."));
    connect(_settingsAction,&QAction::triggered,this,&MainWindow::settingsTriggered);
 
-   // Create and initialize the exit action.
+   // Create and initialize the exit action. 
    _exitAction = new QAction(tr("&Exit"),this);
    _exitAction->setShortcut(QKeySequence::Quit);
    _exitAction->setStatusTip(tr("Exit the application."));
@@ -270,21 +267,21 @@ void MainWindow::createActions()
  */
 void MainWindow::createMenus()
 {
-   // Create the file menu.
+   // Create the file menu. 
    QMenu* file {menuBar()->addMenu(tr("&File"))};
 
-   // Add the settings and exit actions to the file menu.
+   // Add the settings and exit actions to the file menu. 
    file->addAction(_settingsAction);
    file->addAction(_exitAction);
 
-   // Create the open menu and add all open actions to it.
+   // Create the open menu, adding the list of open data type actions to it. 
    QMenu* data {menuBar()->addMenu(tr("&Open"))};
    for (auto action: _openActions)
    {
       data->addAction(action);
    }
 
-   // Create the execute menu and add all run actions to it.
+   // Create the execute menu, adding the list of analytic types to it. 
    QMenu* analytic {menuBar()->addMenu(tr("&Execute"))};
    for (auto action: _runActions)
    {
@@ -302,7 +299,7 @@ void MainWindow::createMenus()
  */
 void MainWindow::restoreSettings()
 {
-   // Using qt settings restore the geometry and state of this window.
+   // Restore the state and geometry of the main window. 
    QSettings settings(Settings::instance().organization(),Settings::instance().application());
    restoreState(settings.value(_stateKey).toByteArray());
    restoreGeometry(settings.value(_geometryKey).toByteArray());

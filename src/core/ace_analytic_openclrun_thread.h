@@ -25,9 +25,16 @@ namespace Ace
          explicit Thread(std::unique_ptr<EAbstractAnalytic::OpenCL::Worker>&& worker, QObject* parent = nullptr);
          void execute(std::unique_ptr<EAbstractAnalytic::Block>&& block);
          std::unique_ptr<EAbstractAnalytic::Block> result();
+      signals:
+         /*!
+          */
+         void blockFinished();
       protected:
          virtual void run() override final;
       private:
+         /*!
+          */
+         QAtomicInteger<int> _switch {0};
          /*!
           * Pointer to the abstract OpenCL worker object used to process work blocks into 
           * result blocks using OpenCL acceleration. 

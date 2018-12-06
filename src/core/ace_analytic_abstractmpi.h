@@ -22,6 +22,25 @@ namespace Ace
       class AbstractMPI : public AbstractManager
       {
          Q_OBJECT
+      public:
+         /*!
+          * Defines the resource types that slave nodes can be assigned to execute as. 
+          */
+         enum Type
+         {
+            /*!
+             * Defines the serial resource which causes a slave node to run in plain serial 
+             * mode with no OpenCL device. 
+             */
+            Serial
+            /*!
+             * Defines the OpenCL resource which causes the slave node to run in accelerated 
+             * OpenCL mode with a given platform and device index. 
+             */
+            ,OpenCL
+         };
+      protected:
+         virtual void mpiStart(Type type, int platform, int device);
       protected:
          /*!
           * Defines special codes passed between the master and slave nodes. 
@@ -44,24 +63,7 @@ namespace Ace
              */
             ,ReadyAsOpenCL = -3
          };
-         /*!
-          * Defines the resource types that slave nodes can be assigned to execute as. 
-          */
-         enum Type
-         {
-            /*!
-             * Defines the serial resource which causes a slave node to run in plain serial 
-             * mode with no OpenCL device. 
-             */
-            Serial
-            /*!
-             * Defines the OpenCL resource which causes the slave node to run in accelerated 
-             * OpenCL mode with a given platform and device index. 
-             */
-            ,OpenCL
-         };
          explicit AbstractMPI(quint16 type);
-         virtual void mpiStart(Type type, int platform, int device);
       protected slots:
          virtual void start() override final;
       private slots:

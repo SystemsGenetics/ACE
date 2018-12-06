@@ -17,12 +17,6 @@
 class EAbstractDataFactory
 {
 public:
-   static EAbstractDataFactory& instance();
-   static void setInstance(std::unique_ptr<EAbstractDataFactory>&& instance);
-   /*!
-    * This is so any implementation of this class will be deconstructed correctly. 
-    */
-   virtual ~EAbstractDataFactory() = default;
    /*!
     * This interface returns the total number of data types a program that uses ACE 
     * implements. All integers from 0 to one less than the size returned must be 
@@ -55,6 +49,13 @@ public:
     * @return Pointer to the new abstract data object of the given type. 
     */
    virtual std::unique_ptr<EAbstractData> make(quint16 type) const = 0;
+public:
+   static EAbstractDataFactory& instance();
+   static void setInstance(std::unique_ptr<EAbstractDataFactory>&& instance);
+   /*!
+    * This is so any implementation of this class will be deconstructed correctly. 
+    */
+   virtual ~EAbstractDataFactory() = default;
 private:
    /*!
     * Pointer to the global instance of this program's data factory. 

@@ -42,24 +42,18 @@ DataWindow::DataWindow(std::unique_ptr<DataObject>&& data, QWidget* parent):
    QMainWindow(parent),
    _data(data.get())
 {
-   // Set the given data object's parent to this new window and release it from its smart
-   // pointer.
+   // Transfer ownership of the given data object and connect its closed signal. 
    data.release()->setParent(this);
-
-   // Connect the overwritten signal so this window closes appropriately.
    connect(_data,&DataObject::overwritten,this,&QMainWindow::close);
 
-   // Create the actions and menu for this new window.
+   // Create the actions and menu of this new data window. 
    createActions();
    createMenu();
 
-   // Create this window's central table view widget and set its model to the given data
-   // object's model.
+   // Create the central GUI of this data window and restore its settings. 
    QTableView* _view = new QTableView;
    _view->setModel(_data->data()->model());
    setCentralWidget(_view);
-
-   // Restore this window's geometry and state.
    restoreSettings();
 }
 
@@ -76,12 +70,12 @@ DataWindow::DataWindow(std::unique_ptr<DataObject>&& data, QWidget* parent):
  */
 void DataWindow::closeEvent(QCloseEvent* event)
 {
-   // Save this window's geometry and state using qt settings.
+   // Save the state and geometry of the data window. 
    QSettings settings(Settings::instance().organization(),Settings::instance().application());
    settings.setValue(_stateKey,saveState());
    settings.setValue(_geometryKey,saveGeometry());
 
-   // Accept the close event.
+   // Accept the given close event. 
    event->accept();
 }
 
@@ -96,7 +90,7 @@ void DataWindow::closeEvent(QCloseEvent* event)
  */
 void DataWindow::systemMetaTriggered()
 {
-   // Create and execute a metadata dialog with this window's data object's system metadata.
+   // Create a new metadata dialog for this data window's data object and execute it. 
    MetadataDialog dialog(_data);
    dialog.setWindowTitle(tr("System Metadata"));
    dialog.exec();
@@ -113,7 +107,8 @@ void DataWindow::systemMetaTriggered()
  */
 void DataWindow::userMetaTriggered()
 {
-   // Create and execute a metadata dialog with this window's data object's user metadata.
+   // Create a new user metadata dialog for this data window's data object and 
+   // execute it. 
    MetadataDialog dialog(_data,false);
    dialog.setWindowTitle(tr("User Metadata"));
    dialog.exec();
@@ -129,17 +124,17 @@ void DataWindow::userMetaTriggered()
  */
 void DataWindow::createActions()
 {
-   // Create and initialize the system metadata action.
+   // Create and initialize the system metadata action. 
    _systemMetaAction = new QAction(tr("&System Metadata"),this);
    _systemMetaAction->setStatusTip(tr("Open the system metadata browser for this data object."));
    connect(_systemMetaAction,&QAction::triggered,this,&DataWindow::systemMetaTriggered);
 
-   // Create and initialize the user metadata action.
+   // Create and initialize the user metadata action. 
    _userMetaAction = new QAction(tr("&User Metadata"),this);
    _userMetaAction->setStatusTip(tr("Open the user metadata browser for this data object."));
    connect(_userMetaAction,&QAction::triggered,this,&DataWindow::userMetaTriggered);
 
-   // Create and initialize the close action.
+   // Create and initialize the close action. 
    _closeAction = new QAction(tr("&Close"),this);
    _closeAction->setStatusTip(tr("Close this data object's window."));
    connect(_closeAction,&QAction::triggered,this,&QMainWindow::close);
@@ -155,7 +150,7 @@ void DataWindow::createActions()
  */
 void DataWindow::createMenu()
 {
-   // Create this window's file menu, adding all relevant actions.
+   // Create and initialize the file menu for this new data window. 
    QMenu* file = menuBar()->addMenu(tr("&File"));
    file->addAction(_systemMetaAction);
    file->addAction(_userMetaAction);
@@ -172,7 +167,7 @@ void DataWindow::createMenu()
  */
 void DataWindow::restoreSettings()
 {
-   // Restore the geometry and state of this data window using qt settings.
+   // Restore the state and geometry of this data window. 
    QSettings settings(Settings::instance().organization(),Settings::instance().application());
    restoreState(settings.value(_stateKey).toByteArray());
    restoreGeometry(settings.value(_geometryKey).toByteArray());

@@ -1,5 +1,9 @@
 #include "eabstractanalytic_opencl_worker.h"
 #include "ace_settings.h"
+#include "edebug.h"
+
+
+
 //
 
 
@@ -14,5 +18,7 @@
  */
 int EAbstractAnalytic::OpenCL::Worker::threadSize()
 {
+   EDEBUG_FUNC()
+
    return Ace::Settings::instance().threadSize();
 }

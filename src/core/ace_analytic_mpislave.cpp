@@ -8,42 +8,14 @@
 #include "opencl_device.h"
 #include "eabstractanalytic_block.h"
 #include "eexception.h"
+#include "edebug.h"
+#include "emetadata.h"
 
 
 
 using namespace std;
 using namespace Ace::Analytic;
 //
-
-
-
-
-
-
-/*!
- * Constructs a new MPI slave manager with the given analytic type. 
- *
- * @param type The analytic type this manager will use. 
- */
-MPISlave::MPISlave(quint16 type):
-   AbstractMPI(type),
-   _mpi(QMPI::instance())
-{
-   connect(&_mpi,&QMPI::dataReceived,this,&MPISlave::dataReceived);
-}
-
-
-
-
-
-
-/*!
- * Properly shuts down the MPI system. 
- */
-MPISlave::~MPISlave()
-{
-   QMPI::shutdown();
-}
 
 
 
@@ -60,7 +32,43 @@ MPISlave::~MPISlave()
  */
 bool MPISlave::isFinished() const
 {
+   EDEBUG_FUNC(this)
+
    return _finished && _workSize == 0;
+}
+
+
+
+
+
+
+/*!
+ * Constructs a new MPI slave manager with the given analytic type. 
+ *
+ * @param type The analytic type this manager will use. 
+ */
+MPISlave::MPISlave(quint16 type):
+   AbstractMPI(type),
+   _mpi(QMPI::instance())
+{
+   EDEBUG_FUNC(this,type)
+
+   connect(&_mpi,&QMPI::dataReceived,this,&MPISlave::dataReceived);
+}
+
+
+
+
+
+
+/*!
+ * Properly shuts down the MPI system. 
+ */
+MPISlave::~MPISlave()
+{
+   EDEBUG_FUNC(this)
+
+   QMPI::shutdown();
 }
 
 
@@ -79,20 +87,14 @@ bool MPISlave::isFinished() const
  *
  * @param device The optional device index this slave node will use if its resource 
  *               type is OpenCL. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Initialize a serial or OpenCL abstract run object depending on whether the 
- *    given resource type is serial or OpenCL, respectively. If initializing OpenCL 
- *    fails then fall back to initializing a serial run object. 
- *
- * 2. Connect the runner object finished signal to this abstract manager's finish 
- *    slot and send a special code to the master node signaling this slave node is 
- *    ready to process work blocks with the resource type it was given. 
  */
 void MPISlave::mpiStart(Type type, int platform, int device)
 {
+   EDEBUG_FUNC(this,type,platform,device)
+
+   // Initialize a serial or OpenCL abstract run object depending on whether the 
+   // given resource type is serial or OpenCL, respectively. If initializing OpenCL 
+   // fails then fall back to initializing a serial run object. 
    int code {ReadyAsSerial};
    switch (type)
    {
@@ -109,7 +111,18 @@ void MPISlave::mpiStart(Type type, int platform, int device)
          setupSerial();
       }
       break;
+   default:
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setTitle(tr("Invalid MPI Starting type."));
+         e.setDetails(tr("The given type for starting this MPI slave is invalid."));
+         throw e;
+      }
    }
+
+   // Connect the runner object finished signal to this abstract manager's finish 
+   // slot and send a special code to the master node signaling this slave node is 
+   // ready to process work blocks with the resource type it was given. 
    connect(_runner,&AbstractRun::finished,this,&AbstractManager::finish);
    unique_ptr<EAbstractAnalytic::Block> block {new EAbstractAnalytic::Block(code)};
    _mpi.sendData(0,block->toBytes());
@@ -131,6 +144,8 @@ void MPISlave::mpiStart(Type type, int platform, int device)
  */
 QFile* MPISlave::addOutputFile(const QString& path)
 {
+   EDEBUG_FUNC(this,path)
+
    Q_UNUSED(path)
    return nullptr;
 }
@@ -156,6 +171,8 @@ QFile* MPISlave::addOutputFile(const QString& path)
  */
 Ace::DataObject* MPISlave::addOutputData(const QString& path, quint16 type, const EMetadata& system)
 {
+   EDEBUG_FUNC(this,path,type,&system)
+
    Q_UNUSED(path)
    Q_UNUSED(type)
    Q_UNUSED(system)
@@ -173,15 +190,13 @@ Ace::DataObject* MPISlave::addOutputData(const QString& path, quint16 type, cons
  * implementation simply sends the given result block back to the master node. 
  *
  * @param result The result block that is sent to the master node for saving. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Send the result block to the master node as byte data, deleting the result 
- *    block and decreasing this object's work size. 
  */
 void MPISlave::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 {
+   EDEBUG_FUNC(this,result.get())
+
+   // Send the result block to the master node as byte data, deleting the result 
+   // block and decreasing this object's work size. 
    _mpi.sendData(0,result->toBytes());
    result.reset();
    --_workSize;
@@ -200,18 +215,13 @@ void MPISlave::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
  *
  * @param fromRank The process rank of the node which sent the data. This should 
  *                 always be rank 0 from the master node. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the given rank is not from the master node then throw an exception, else 
- *    go to the next step. 
- *
- * 2. If the given data is a special code then process the code, else process the 
- *    data as a work block. 
  */
 void MPISlave::dataReceived(const QByteArray& data, int fromRank)
 {
+   EDEBUG_FUNC(this,data,fromRank)
+
+   // If the given rank is not from the master node then throw an exception, else go 
+   // to the next step. 
    if ( fromRank != 0 )
    {
       E_MAKE_EXCEPTION(e);
@@ -219,6 +229,9 @@ void MPISlave::dataReceived(const QByteArray& data, int fromRank)
       e.setDetails(tr("Slave node received data from other slave node."));
       throw e;
    }
+
+   // If the given data is a special code then process the code, else process the 
+   // data as a work block. 
    int code {EAbstractAnalytic::Block::extractIndex(data)};
    if ( code < 0 )
    {
@@ -241,20 +254,17 @@ void MPISlave::dataReceived(const QByteArray& data, int fromRank)
  * sent. 
  *
  * @param code The special code sent to this slave node by the master node. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the special code is to terminate then go to the next step, else throw an 
- *    exception. 
- *
- * 2. Set this object's finish condition to true. If this slave node is completely 
- *    finished then call this manager's finish slot. 
  */
 void MPISlave::processCode(int code)
 {
+   EDEBUG_FUNC(this,code)
+
+   // If the special code is to terminate then go to the next step, else throw an 
+   // exception. 
    if ( code == MPIMaster::Terminate )
    {
+      // Set this object's finish condition to true. If this slave node is completely 
+      // finished then call this manager's finish slot. 
       _finished = true;
       if ( isFinished() )
       {
@@ -282,19 +292,14 @@ void MPISlave::processCode(int code)
  *
  * @param data The data containing a work block sent to this slave node by the 
  *             master node. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Create a blank work block from this object's analytic reading in the given 
- *    data to it. If this object's analytic fails in creating a blank work block 
- *    then throw an exception. 
- *
- * 2. Increase this object's work size and add the work block to this object's 
- *    abstract run object. 
  */
 void MPISlave::process(const QByteArray& data)
 {
+   EDEBUG_FUNC(this,data)
+
+   // Create a blank work block from this object's analytic reading in the given data 
+   // to it. If this object's analytic fails in creating a blank work block then 
+   // throw an exception. 
    unique_ptr<EAbstractAnalytic::Block> work {analytic()->makeWork()};
    if ( !work )
    {
@@ -304,6 +309,9 @@ void MPISlave::process(const QByteArray& data)
       throw e;
    }
    work->fromBytes(data);
+
+   // Increase this object's work size and add the work block to this object's 
+   // abstract run object. 
    ++_workSize;
    _runner->addWork(std::move(work));
 }
@@ -325,20 +333,13 @@ void MPISlave::process(const QByteArray& data)
  *
  * @return True if a valid OpenCL run object was created at set to this object or 
  *         false otherwise. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the given platform and device indexes are invalid then throw an exception, 
- *    else go to the next step. 
- *
- * 2. Attempt to create an abstract analytic OpenCL object from this manager's 
- *    analytic. If a valid one is returned then create a new OpenCL run object, set 
- *    it to this object, and return true. Else if no valid one is returned then 
- *    return false. 
  */
 bool MPISlave::setupOpenCL(int platform, int device)
 {
+   EDEBUG_FUNC(this,platform,device)
+
+   // If the given platform and device indexes are invalid then throw an exception, 
+   // else go to the next step. 
    if ( platform < 0
         || device < 0
         || platform >= OpenCL::Platform::size()
@@ -349,6 +350,11 @@ bool MPISlave::setupOpenCL(int platform, int device)
       e.setDetails(tr("OpenCL device %1:%2 does not exist.").arg(platform).arg(device));
       throw e;
    }
+
+   // Attempt to create an abstract analytic OpenCL object from this manager's 
+   // analytic. If a valid one is returned then create a new OpenCL run object, set 
+   // it to this object, and return true. Else if no valid one is returned then 
+   // return false. 
    bool ret {false};
    if ( EAbstractAnalytic::OpenCL* opencl = analytic()->makeOpenCL() )
    {
@@ -367,20 +373,17 @@ bool MPISlave::setupOpenCL(int platform, int device)
  * Initializes a new serial run object for block processing of this slave node 
  * manager. If this manager's analytic fails creating a valid abstract serial 
  * object then an exception is thrown. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Create a new abstract serial object from this manager's analytic. If creating 
- *    a new abstract serial object fails then throw an exception, else go to the 
- *    next step. 
- *
- * 2. Create a new serial run object and set to as this object's runner. 
  */
 void MPISlave::setupSerial()
 {
+   EDEBUG_FUNC(this)
+
+   // Create a new abstract serial object from this manager's analytic. If creating a 
+   // new abstract serial object fails then throw an exception, else go to the next 
+   // step. 
    if ( EAbstractAnalytic::Serial* serial = analytic()->makeSerial() )
    {
+      // Create a new serial run object and set to as this object's runner. 
       _runner = new SerialRun(serial,this,this);
    }
    else

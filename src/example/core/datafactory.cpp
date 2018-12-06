@@ -1,5 +1,5 @@
 #include "datafactory.h"
-#include "integerarray.h"
+#include "dataframe.h"
 
 
 
@@ -33,18 +33,14 @@ quint16 DataFactory::size() const
  * @param type The data type whose display name is returned. 
  *
  * @return Display name for the given data type. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Based off the data type given return its name. If the data type is not 
- *    recognized then return an empty string. 
  */
 QString DataFactory::name(quint16 type) const
 {
+   // Based off the data type given return its name. If the data type is not 
+   // recognized then return an empty string. 
    switch (type)
    {
-   case IntegerArrayType: return "Integer Array";
+   case DataFrameType: return "Dataframe";
    default: return QString();
    }
 }
@@ -61,18 +57,14 @@ QString DataFactory::name(quint16 type) const
  * @param type The data type whose file extension is returned. 
  *
  * @return File extension for the given data type. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Based off the data type given return its file extension. If the data type is 
- *    not recognized then return an empty string. 
  */
 QString DataFactory::fileExtension(quint16 type) const
 {
+   // Based off the data type given return its file extension. If the data type is 
+   // not recognized then return an empty string. 
    switch (type)
    {
-   case IntegerArrayType: return "num";
+   case DataFrameType: return "tab";
    default: return QString();
    }
 }
@@ -89,18 +81,14 @@ QString DataFactory::fileExtension(quint16 type) const
  * @param type The data type of the abstract data object that is made and returned. 
  *
  * @return Pointer to the new abstract data object of the given type. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Create a new data object of the given type and return its pointer. If the 
- *    data type given is not recognized then return a null pointer. 
  */
 std::unique_ptr<EAbstractData> DataFactory::make(quint16 type) const
 {
+   // Create a new data object of the given type and return its pointer. If the data 
+   // type given is not recognized then return a null pointer. 
    switch (type)
    {
-   case IntegerArrayType: return unique_ptr<IntegerArray>(new IntegerArray());
+   case DataFrameType: return unique_ptr<DataFrame>(new DataFrame());
    default: return nullptr;
    }
 }

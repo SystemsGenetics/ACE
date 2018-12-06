@@ -30,6 +30,7 @@ namespace Ace
       void setChunkDir();
       void setChunkPre();
       void setChunkExt();
+      void setLogging();
       void list();
       void listOpenCL();
       /*!

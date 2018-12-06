@@ -7,26 +7,13 @@
 #include "eabstractanalytic_serial.h"
 #include "eabstractanalytic_opencl.h"
 #include "ace_settings.h"
+#include "edebug.h"
 
 
 
 using namespace std;
 using namespace Ace::Analytic;
 //
-
-
-
-
-
-
-/*!
- * Constructs a new single run manager with the given analytic type. 
- *
- * @param type Analytic type to use for this analytic run. 
- */
-Single::Single(quint16 type):
-   AbstractManager(type)
-{}
 
 
 
@@ -41,7 +28,25 @@ Single::Single(quint16 type):
  */
 bool Single::isFinished() const
 {
+   EDEBUG_FUNC(this)
+
    return _nextResult >= analytic()->size();
+}
+
+
+
+
+
+
+/*!
+ * Constructs a new single run manager with the given analytic type. 
+ *
+ * @param type Analytic type to use for this analytic run. 
+ */
+Single::Single(quint16 type):
+   AbstractManager(type)
+{
+   EDEBUG_FUNC(this,type)
 }
 
 
@@ -57,6 +62,8 @@ bool Single::isFinished() const
  */
 int Single::index() const
 {
+   EDEBUG_FUNC(this)
+
    return _nextResult;
 }
 
@@ -71,15 +78,13 @@ int Single::index() const
  * from least to greatest. 
  *
  * @param result The result block that is saved to the underlying analytic. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Write the given result block to the underlying analytic. If this manager is 
- *    finished then emit the done signal. 
  */
 void Single::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 {
+   EDEBUG_FUNC(this,result.get())
+
+   // Write the given result block to the underlying analytic. If this manager is 
+   // finished then emit the done signal. 
    AbstractManager::writeResult(std::move(result),_nextResult++);
    if ( isFinished() )
    {
@@ -96,23 +101,20 @@ void Single::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
  * Implements the interface that is called once to begin the analytic run for this 
  * manager after all argument input has been set. This implementation starts this 
  * object's process slot. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Setup OpenCL, setup serial if OpenCL fails, and then connect this object's 
- *    abstract runner class finished signal with this manager's finish slot. 
- *
- * 2. Initialize analytic processing by calling this object's process slot. 
  */
 void Single::start()
 {
-   // Step 1
+   EDEBUG_FUNC(this);
+
+   analytic()->initializeOutputs();
+
+   // Setup OpenCL, setup serial if OpenCL fails, and then connect this object's 
+   // abstract runner class finished signal with this manager's finish slot. 
    setupOpenCL();
    setupSerial();
    connect(_runner,&AbstractRun::finished,this,&AbstractManager::finish);
 
-   // Step 2
+   // Initialize analytic processing by calling this object's process slot. 
    QTimer::singleShot(0,this,&Single::process);
 }
 
@@ -124,22 +126,17 @@ void Single::start()
 /*!
  * Called to add all work, blocks or none if in simple mode, to this manager's 
  * abstract run object. 
- *
- *
- * Steps of Operation: 
- *
- * 1. While the next work index is less than the size of this object's analytic do 
- *    the following steps. 
- *
- * 2. If this object has a simple run object then add work with a null pointer, 
- *    else add work with the next work block generated from this object's analytic. 
- *
- * 3. Increment the next work index by one. 
  */
 void Single::process()
 {
+   EDEBUG_FUNC(this)
+
+   // While the next work index is less than the size of this object's analytic do 
+   // the following steps. 
    while ( _nextWork < analytic()->size() )
    {
+      // If this object has a simple run object then add work with a null pointer, else 
+      // add work with the next work block generated from this object's analytic. 
       if ( _simple )
       {
          _runner->addWork(nullptr);
@@ -148,6 +145,8 @@ void Single::process()
       {
          _runner->addWork(makeWork(_nextWork));
       }
+
+      // Increment the next work index by one. 
       ++_nextWork;
    }
 }
@@ -160,16 +159,14 @@ void Single::process()
 /*!
  * Attempts to initialize an OpenCL run object for block processing for this 
  * manager. If successful sets this manager's abstract run pointer. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the singleton settings object has a valid OpenCL device pointer and this 
- *    manager's analytic creates a valid abstract OpenCL object then create a new 
- *    OpenCL run object, setting this manager's run pointer to the new object. 
  */
 void Single::setupOpenCL()
 {
+   EDEBUG_FUNC(this)
+
+   // If the singleton settings object has a valid OpenCL device pointer and this 
+   // manager's analytic creates a valid abstract OpenCL object then create a new 
+   // OpenCL run object, setting this manager's run pointer to the new object. 
    Settings& settings {Settings::instance()};
    if ( settings.openCLDevicePointer() )
    {
@@ -190,22 +187,20 @@ void Single::setupOpenCL()
  * Initializes this object's abstract run object as a serial run or simple run if 
  * serial is not available. This does nothing if this object's abstract run object 
  * has already been created. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If this object's abstract run object has already been set then do nothing and 
- *    exit, else go to the next step. 
- *
- * 2. If this manager's analytic creates a valid abstract serial object then create 
- *    a new serial run object and set it to this manager's abstract run object, 
- *    else create a new simple run object and set it to this manager's abstract run 
- *    object. 
  */
 void Single::setupSerial()
 {
+   EDEBUG_FUNC(this)
+
+   // If this object's abstract run object has already been set then do nothing and 
+   // exit, else go to the next step. 
    if ( !_runner )
    {
+
+      // If this manager's analytic creates a valid abstract serial object then create a 
+      // new serial run object and set it to this manager's abstract run object, else 
+      // create a new simple run object and set it to this manager's abstract run 
+      // object. 
       if ( EAbstractAnalytic::Serial* serial = analytic()->makeSerial() )
       {
          _runner = new SerialRun(serial,this,this);

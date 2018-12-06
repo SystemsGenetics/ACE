@@ -26,13 +26,15 @@ namespace Ace
       {
          Q_OBJECT
       public:
+         virtual void addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block) override final;
+      public:
          explicit OpenCLRun(EAbstractAnalytic::OpenCL* opencl, OpenCL::Device* device, AbstractInput* base, QObject* parent = nullptr);
          virtual ~OpenCLRun() override final;
-         virtual void addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block) override final;
       private slots:
          void blockFinished(int index);
       private:
          class Thread;
+      private:
          /*!
           * Pointer to the OpenCL context used by this OpenCL run object. 
           */

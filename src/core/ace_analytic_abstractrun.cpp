@@ -1,4 +1,5 @@
 #include "ace_analytic_abstractrun.h"
+#include "edebug.h"
 
 
 
@@ -17,4 +18,6 @@ using namespace Ace::Analytic;
  */
 AbstractRun::AbstractRun(QObject* parent):
    QObject(parent)
-{}
+{
+   EDEBUG_FUNC(this,parent)
+}

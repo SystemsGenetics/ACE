@@ -1,16 +1,16 @@
 #ifndef MATHTRANSFORM_H
 #define MATHTRANSFORM_H
 #include <core/core.h>
-#include "global.h"
+#include "dataframe.h"
 //
 
 
 
 /*!
- * This implements a math transform analytic. This analytic takes in an integer 
- * array and outputs a second integer array. Each integer of the input is 
+ * This class implements a math transform analytic. This analytic takes in a
+ * dataframe and outputs a second dataframe. Each value in the dataframe is 
  * transformed with a given mathematical operation and amount and then written to 
- * the output integer array. The supported math operations are add, subtract, 
+ * the output dataframe. The supported math operations are add, subtract, 
  * multiply, and divide. This analytic fully supports both serial and OpenCL. 
  */
 class MathTransform : public EAbstractAnalytic
@@ -30,6 +30,7 @@ public:
    virtual EAbstractAnalytic::Serial* makeSerial() override final;
    virtual EAbstractAnalytic::OpenCL* makeOpenCL() override final;
    virtual void initialize() override final;
+   virtual void initializeOutputs() override final;
 private:
    /*!
     * Defines the mathematical operations this analytic supports. 
@@ -54,15 +55,15 @@ private:
       ,Division
    };
    /*!
-    * Pointer to the input integer array for this analytic. 
+    * Pointer to the input dataframe for this analytic. 
     */
-   IntegerArray* _in {nullptr};
+   DataFrame* _in {nullptr};
    /*!
-    * Pointer to the output integer array for this analytic. In some cases an analytic 
+    * Pointer to the output dataframe for this analytic. In some cases an analytic 
     * will be initialized without any of its output set. These analytic objects will 
     * never have their process interface called by ACE. 
     */
-   IntegerArray* _out {nullptr};
+   DataFrame* _out {nullptr};
    /*!
     * The mathematical operation this analytic does to all input integers. 
     */

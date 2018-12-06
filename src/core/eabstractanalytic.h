@@ -29,6 +29,7 @@ public:
    class Input;
    class Serial;
    class OpenCL;
+public:
    /*!
     * This interface returns the total number of blocks this analytic must process as 
     * steps or blocks of work. If this analytic produces no work blocks then this 
@@ -59,6 +60,7 @@ public:
    virtual EAbstractAnalytic::Serial* makeSerial();
    virtual EAbstractAnalytic::OpenCL* makeOpenCL();
    virtual void initialize();
+   virtual void initializeOutputs();
    virtual void finish();
 protected:
    static bool isMaster();

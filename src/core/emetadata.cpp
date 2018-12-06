@@ -5,7 +5,70 @@
 #include "eexception.h"
 #include "emetaarray.h"
 #include "emetaobject.h"
+#include "edebug.h"
+
+
+
 //
+
+
+
+
+
+
+/*!
+ * Set this object's data as a copy of the supplied metadata object. 
+ *
+ * @param object The metadata object that is copied. 
+ *
+ * @return Reference to this object. 
+ */
+EMetadata& EMetadata::operator=(const EMetadata& object)
+{
+   EDEBUG_FUNC(this,&object)
+
+   // Delete any data this object contains. 
+   clear();
+
+   // Copy the type and data of the supplied metadata object. 
+   _type = object._type;
+   create();
+   copy(object._data);
+
+   // Return reference to this object. 
+   return *this;
+}
+
+
+
+
+
+
+/*!
+ * Take the data of another metadata object and set this object's data with it. 
+ *
+ * @param object The metadata object whose data is taken. 
+ *
+ * @return Reference to this object. 
+ */
+EMetadata& EMetadata::operator=(EMetadata&& object)
+{
+   EDEBUG_FUNC(this,&object)
+
+   // Delete any data this object contains. 
+   clear();
+
+   // Copy the type and data pointer of the supplied metadata object. 
+   _type = object._type;
+   _data = object._data;
+
+   // Set the supplied metadata object to Null. 
+   object._type = Null;
+   object._data = nullptr;
+
+   // Return reference to this object. 
+   return *this;
+}
 
 
 
@@ -20,6 +83,8 @@
 EMetadata::EMetadata(Type type):
    _type(type)
 {
+   EDEBUG_FUNC(this,type)
+
    create();
 }
 
@@ -37,6 +102,8 @@ EMetadata::EMetadata(Type type):
 EMetadata::EMetadata(double value):
    EMetadata(Double)
 {
+   EDEBUG_FUNC(this,value)
+
    toDouble() = value;
 }
 
@@ -54,6 +121,8 @@ EMetadata::EMetadata(double value):
 EMetadata::EMetadata(const QString& value):
    EMetadata(String)
 {
+   EDEBUG_FUNC(this,value)
+
    toString() = value;
 }
 
@@ -71,6 +140,8 @@ EMetadata::EMetadata(const QString& value):
 EMetadata::EMetadata(const QByteArray& value):
    EMetadata(Bytes)
 {
+   EDEBUG_FUNC(this,value)
+
    toBytes() = value;
 }
 
@@ -88,6 +159,8 @@ EMetadata::EMetadata(const QByteArray& value):
 EMetadata::EMetadata(const EMetaArray& value):
    EMetadata(Array)
 {
+   EDEBUG_FUNC(this,&value)
+
    toArray() = value;
 }
 
@@ -105,6 +178,8 @@ EMetadata::EMetadata(const EMetaArray& value):
 EMetadata::EMetadata(const EMetaObject& value):
    EMetadata(Object)
 {
+   EDEBUG_FUNC(this,&value)
+
    toObject() = value;
 }
 
@@ -119,27 +194,14 @@ EMetadata::EMetadata(const EMetaObject& value):
  * structure of the given JSON. 
  *
  * @param value JSON value that is used to construct this new metadata object. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the given json value is a boolean, double, or string then initialize this 
- *    metadata object to that type, set its value to the json value, and exit, else 
- *    go to the next step. 
- *
- * 2. If the given json value is an array then initialize this metadata object to 
- *    that type, copy all children json values to this metadata object as children 
- *    metadata, and exit, else go to the next step. 
- *
- * 3. If the given json value is an object then initialize this metadata object to 
- *    that type, copy all children json values with their associated keys to this 
- *    metadata object as children metadata with the same keys, and exit, else go to 
- *    the next step. 
- *
- * 4. If this is reached then initialize this metadata object to the null type. 
  */
 EMetadata::EMetadata(const QJsonValue& value)
 {
+   EDEBUG_FUNC(this,&value)
+
+   // If the given json value is a boolean, double, or string then initialize this 
+   // metadata object to that type, set its value to the json value, and exit, else 
+   // go to the next step. 
    if ( value.isBool() )
    {
       *this = EMetadata(Bool);
@@ -155,6 +217,10 @@ EMetadata::EMetadata(const QJsonValue& value)
       *this = EMetadata(String);
       toString() = value.toString();
    }
+
+   // If the given json value is an array then initialize this metadata object to 
+   // that type, copy all children json values to this metadata object as children 
+   // metadata, and exit, else go to the next step. 
    else if ( value.isArray() )
    {
       *this = EMetadata(Array);
@@ -164,6 +230,11 @@ EMetadata::EMetadata(const QJsonValue& value)
          toArray().append(EMetadata(value));
       }
    }
+
+   // If the given json value is an object then initialize this metadata object to 
+   // that type, copy all children json values with their associated keys to this 
+   // metadata object as children metadata with the same keys, and exit, else go to 
+   // the next step. 
    else if ( value.isObject() )
    {
       *this = EMetadata(Object);
@@ -173,6 +244,8 @@ EMetadata::EMetadata(const QJsonValue& value)
          toObject().insert(i.key(),EMetadata(*i));
       }
    }
+
+   // If this is reached then initialize this metadata object to the null type. 
    else
    {
       *this = EMetadata(Null);
@@ -188,15 +261,13 @@ EMetadata::EMetadata(const QJsonValue& value)
  * This creates a new metadata object that is a direct copy of the one supplied. 
  *
  * @param object The metadata object that is copied. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Copy the type and data of the supplied metadata object. 
  */
 EMetadata::EMetadata(const EMetadata& object):
    _type(object._type)
 {
+   EDEBUG_FUNC(this,&object)
+
+   // Copy the type and data of the supplied metadata object. 
    create();
    copy(object._data);
 }
@@ -211,83 +282,16 @@ EMetadata::EMetadata(const EMetadata& object):
  * supplied as an argument. The argument's type is changed to Null. 
  *
  * @param object The metadata object whose data is taken. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Copy the type and data pointer of the supplied metadata object. 
- *
- * 2. Set the supplied metadata object to Null. 
  */
 EMetadata::EMetadata(EMetadata&& object):
    _type(object._type),
    _data(object._data)
 {
+   EDEBUG_FUNC(this,&object)
+
+   // Set the supplied metadata object to Null. 
    object._type = Null;
    object._data = nullptr;
-}
-
-
-
-
-
-
-/*!
- * Set this object's data as a copy of the supplied metadata object. 
- *
- * @param object The metadata object that is copied. 
- *
- * @return Reference to this object. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Delete any data this object contains. 
- *
- * 2. Copy the type and data of the supplied metadata object. 
- *
- * 3. Return reference to this object. 
- */
-EMetadata& EMetadata::operator=(const EMetadata& object)
-{
-   clear();
-   _type = object._type;
-   create();
-   copy(object._data);
-   return *this;
-}
-
-
-
-
-
-
-/*!
- * Take the data of another metadata object and set this object's data with it. 
- *
- * @param object The metadata object whose data is taken. 
- *
- * @return Reference to this object. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Delete any data this object contains. 
- *
- * 2. Copy the type and data pointer of the supplied metadata object. 
- *
- * 3. Set the supplied metadata object to Null. 
- *
- * 4. Return reference to this object. 
- */
-EMetadata& EMetadata::operator=(EMetadata&& object)
-{
-   clear();
-   _type = object._type;
-   _data = object._data;
-   object._type = Null;
-   object._data = nullptr;
-   return *this;
 }
 
 
@@ -300,6 +304,8 @@ EMetadata& EMetadata::operator=(EMetadata&& object)
  */
 EMetadata::~EMetadata()
 {
+   EDEBUG_FUNC(this)
+
    clear();
 }
 
@@ -315,34 +321,25 @@ EMetadata::~EMetadata()
  * JSON value. 
  *
  * @return JSON value of this metadata object. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If this metadata is a boolean, double, or string then return the JSON value 
- *    of this metadata object, else go to the next step. 
- *
- * 2. If this metadata is an array then return a JSON array of this metadata object 
- *    with all metadata children recursively added as JSON values themselves, else 
- *    go to the next step. 
- *
- * 3. If this metadata is an object then return a JSON object of this metadata 
- *    object with all metadata children recursively added as JSON values and 
- *    associated their keys, else go to the next step. 
- *
- * 4. If this is reached then metadata is a byte array or null so return an null 
- *    JSON value. 
  */
 QJsonValue EMetadata::toJson() const
 {
+   EDEBUG_FUNC(this)
+
    switch (_type)
    {
+   // If this metadata is a boolean, double, or string then return the JSON value of 
+   // this metadata object, else go to the next step. 
    case Bool:
       return QJsonValue(toBool());
    case Double:
       return QJsonValue(toDouble());
    case String:
       return QJsonValue(toString());
+
+   // If this metadata is an array then return a JSON array of this metadata object 
+   // with all metadata children recursively added as JSON values themselves, else go 
+   // to the next step. 
    case Array:
       {
          QJsonArray ret;
@@ -352,6 +349,10 @@ QJsonValue EMetadata::toJson() const
          }
          return ret;
       }
+
+   // If this metadata is an object then return a JSON object of this metadata object 
+   // with all metadata children recursively added as JSON values and associated 
+   // their keys, else go to the next step. 
    case Object:
       {
          QJsonObject ret;
@@ -361,6 +362,9 @@ QJsonValue EMetadata::toJson() const
          }
          return ret;
       }
+
+   // If this is reached then metadata is a byte array or null so return an null JSON 
+   // value. 
    default:
       return QJsonValue();
    }
@@ -378,6 +382,8 @@ QJsonValue EMetadata::toJson() const
  */
 EMetadata::Type EMetadata::type() const
 {
+   EDEBUG_FUNC(this)
+
    return _type;
 }
 
@@ -393,6 +399,8 @@ EMetadata::Type EMetadata::type() const
  */
 bool EMetadata::isNull() const
 {
+   EDEBUG_FUNC(this)
+
    return _type == Null;
 }
 
@@ -408,6 +416,8 @@ bool EMetadata::isNull() const
  */
 bool EMetadata::isBool() const
 {
+   EDEBUG_FUNC(this)
+
    return _type == Bool;
 }
 
@@ -423,6 +433,8 @@ bool EMetadata::isBool() const
  */
 bool EMetadata::isDouble() const
 {
+   EDEBUG_FUNC(this)
+
    return _type == Double;
 }
 
@@ -438,6 +450,8 @@ bool EMetadata::isDouble() const
  */
 bool EMetadata::isString() const
 {
+   EDEBUG_FUNC(this)
+
    return _type == String;
 }
 
@@ -453,6 +467,8 @@ bool EMetadata::isString() const
  */
 bool EMetadata::isBytes() const
 {
+   EDEBUG_FUNC(this)
+
    return _type == Bytes;
 }
 
@@ -468,6 +484,8 @@ bool EMetadata::isBytes() const
  */
 bool EMetadata::isArray() const
 {
+   EDEBUG_FUNC(this)
+
    return _type == Array;
 }
 
@@ -483,6 +501,8 @@ bool EMetadata::isArray() const
  */
 bool EMetadata::isObject() const
 {
+   EDEBUG_FUNC(this)
+
    return _type == Object;
 }
 
@@ -499,6 +519,8 @@ bool EMetadata::isObject() const
  */
 const bool& EMetadata::toBool() const
 {
+   EDEBUG_FUNC(this)
+
    checkType(Bool);
    return *static_cast<bool*>(_data);
 }
@@ -516,6 +538,8 @@ const bool& EMetadata::toBool() const
  */
 const double& EMetadata::toDouble() const
 {
+   EDEBUG_FUNC(this)
+
    checkType(Double);
    return *static_cast<double*>(_data);
 }
@@ -533,6 +557,8 @@ const double& EMetadata::toDouble() const
  */
 const QString& EMetadata::toString() const
 {
+   EDEBUG_FUNC(this)
+
    checkType(String);
    return *static_cast<QString*>(_data);
 }
@@ -550,6 +576,8 @@ const QString& EMetadata::toString() const
  */
 const QByteArray& EMetadata::toBytes() const
 {
+   EDEBUG_FUNC(this)
+
    checkType(Bytes);
    return *static_cast<QByteArray*>(_data);
 }
@@ -567,6 +595,8 @@ const QByteArray& EMetadata::toBytes() const
  */
 const EMetaArray& EMetadata::toArray() const
 {
+   EDEBUG_FUNC(this)
+
    checkType(Array);
    return *static_cast<EMetaArray*>(_data);
 }
@@ -584,6 +614,8 @@ const EMetaArray& EMetadata::toArray() const
  */
 const EMetaObject& EMetadata::toObject() const
 {
+   EDEBUG_FUNC(this)
+
    checkType(Object);
    return *static_cast<EMetaObject*>(_data);
 }
@@ -601,6 +633,8 @@ const EMetaObject& EMetadata::toObject() const
  */
 bool& EMetadata::toBool()
 {
+   EDEBUG_FUNC(this)
+
    checkType(Bool);
    return *static_cast<bool*>(_data);
 }
@@ -618,6 +652,8 @@ bool& EMetadata::toBool()
  */
 double& EMetadata::toDouble()
 {
+   EDEBUG_FUNC(this)
+
    checkType(Double);
    return *static_cast<double*>(_data);
 }
@@ -635,6 +671,8 @@ double& EMetadata::toDouble()
  */
 QString& EMetadata::toString()
 {
+   EDEBUG_FUNC(this)
+
    checkType(String);
    return *static_cast<QString*>(_data);
 }
@@ -652,6 +690,8 @@ QString& EMetadata::toString()
  */
 QByteArray& EMetadata::toBytes()
 {
+   EDEBUG_FUNC(this)
+
    checkType(Bytes);
    return *static_cast<QByteArray*>(_data);
 }
@@ -669,6 +709,8 @@ QByteArray& EMetadata::toBytes()
  */
 EMetaArray& EMetadata::toArray()
 {
+   EDEBUG_FUNC(this)
+
    checkType(Array);
    return *static_cast<EMetaArray*>(_data);
 }
@@ -686,6 +728,8 @@ EMetaArray& EMetadata::toArray()
  */
 EMetaObject& EMetadata::toObject()
 {
+   EDEBUG_FUNC(this)
+
    checkType(Object);
    return *static_cast<EMetaObject*>(_data);
 }
@@ -701,14 +745,12 @@ EMetaObject& EMetadata::toObject()
  * @param type Type to be given name of. 
  *
  * @return Name of the given type. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Return constant string of correct type name from given type. 
  */
 QString EMetadata::typeName(Type type)
 {
+   EDEBUG_FUNC()
+
+   // Return constant string of correct type name from given type. 
    switch (type)
    {
    case Null: return "null";
@@ -732,15 +774,13 @@ QString EMetadata::typeName(Type type)
  * match an exception is thrown saying so. 
  *
  * @param type Given type to verify it is this object's type. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the given type does not match with this object's type then throw an 
- *    exception, else return from operation. 
  */
 void EMetadata::checkType(Type type) const
 {
+   EDEBUG_FUNC(this,type)
+
+   // If the given type does not match with this object's type then throw an 
+   // exception, else return from operation. 
    if ( _type != type )
    {
       E_MAKE_EXCEPTION(e);
@@ -761,14 +801,12 @@ void EMetadata::checkType(Type type) const
 /*!
  * Deletes this object's data. Does not alter the type or data pointer of the 
  * object. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Delete the underlying data the data pointer points to, if any. 
  */
 void EMetadata::clear()
 {
+   EDEBUG_FUNC(this)
+
+   // Delete the underlying data the data pointer points to, if any. 
    switch (_type)
    {
    case Bool:
@@ -802,15 +840,13 @@ void EMetadata::clear()
 /*!
  * Creates new data for this object. Overwrites any previous data pointer and does 
  * not free anything it pointed to. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Create new data based off the type of this object, setting this object's data 
- *    pointer to the new data. 
  */
 void EMetadata::create()
 {
+   EDEBUG_FUNC(this)
+
+   // Create new data based off the type of this object, setting this object's data 
+   // pointer to the new data. 
    switch (_type)
    {
    case Bool:
@@ -847,17 +883,14 @@ void EMetadata::create()
  * to Null. 
  *
  * @param data The data pointer to use for possible copying. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Copy the data pointed to by this object's data pointer from a data pointed to 
- *    by the supplied data pointer based of this object's type. If the type is Null 
- *    then the data pointer is set to null and the supplied data pointer is 
- *    ignored. 
  */
 void EMetadata::copy(const void* data)
 {
+   EDEBUG_FUNC(this,data)
+
+   // Copy the data pointed to by this object's data pointer from a data pointed to 
+   // by the supplied data pointer based of this object's type. If the type is Null 
+   // then the data pointer is set to null and the supplied data pointer is ignored. 
    switch (_type)
    {
    case Null:

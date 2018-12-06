@@ -11,7 +11,7 @@ DEFINES += \
     MINOR_VERSION=$${MINOR_VERSION} \
     REVISION=$${REVISION}
 
-QT += core
+QT += core network
 
 QMAKE_CXX = mpic++
 DEFINES += QT_DEPRECATED_WARNINGS

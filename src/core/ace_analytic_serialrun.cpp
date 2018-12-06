@@ -4,12 +4,41 @@
 #include "ace_analytic_abstractinput.h"
 #include "eabstractanalytic_block.h"
 #include "eabstractanalytic_serial.h"
+#include "edebug.h"
 
 
 
 using namespace std;
 using namespace Ace::Analytic;
 //
+
+
+
+
+
+
+/*!
+ * Implements the interface that is called to add a work block to be processed by 
+ * this abstract run. This implementation simply processes the block and saves the 
+ * result immediately because it is serial. 
+ *
+ * @param block The work block that is processed. 
+ */
+void SerialRun::addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block)
+{
+   EDEBUG_FUNC(this,block.get())
+
+   // Process the given work block by calling this object's abstract serial execute 
+   // interface, saving the returned result block. If this object's abstract input is 
+   // finished then emit the finished signal. 
+   unique_ptr<EAbstractAnalytic::Block> result {_serial->execute(block.get())};
+   block.reset();
+   _base->saveResult(std::move(result));
+   if ( _base->isFinished() )
+   {
+      emit finished();
+   }
+}
 
 
 
@@ -31,34 +60,6 @@ SerialRun::SerialRun(EAbstractAnalytic::Serial* serial, AbstractInput* base, QOb
    AbstractRun(parent),
    _serial(serial),
    _base(base)
-{}
-
-
-
-
-
-
-/*!
- * Implements the interface that is called to add a work block to be processed by 
- * this abstract run. This implementation simply processes the block and saves the 
- * result immediately because it is serial. 
- *
- * @param block The work block that is processed. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Process the given work block by calling this object's abstract serial execute 
- *    interface, saving the returned result block. If this object's abstract input 
- *    is finished then emit the finished signal. 
- */
-void SerialRun::addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block)
 {
-   unique_ptr<EAbstractAnalytic::Block> result {_serial->execute(block.get())};
-   block.reset();
-   _base->saveResult(std::move(result));
-   if ( _base->isFinished() )
-   {
-      emit finished();
-   }
+   EDEBUG_FUNC(this,serial,base,parent)
 }

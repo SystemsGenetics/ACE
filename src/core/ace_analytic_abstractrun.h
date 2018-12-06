@@ -21,7 +21,6 @@ namespace Ace
       {
          Q_OBJECT
       public:
-         explicit AbstractRun(QObject* parent = nullptr);
          /*!
           * This interface is called to add a work block to be processed by this abstract 
           * run. 
@@ -29,6 +28,8 @@ namespace Ace
           * @param block Block of work that is added to this abstract run for processing. 
           */
          virtual void addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block) = 0;
+      public:
+         explicit AbstractRun(QObject* parent = nullptr);
       signals:
          /*!
           * Signals that this abstract run has finished processing all blocks. 

@@ -27,6 +27,9 @@ namespace OpenCL
    template<class T> class Buffer
    {
    public:
+      void operator=(Buffer<T>&& other);
+      T& operator[](int index);
+   public:
       /*!
        * Constructs a new buffer object that is set to null. 
        */
@@ -34,8 +37,6 @@ namespace OpenCL
       Buffer(Context* context, int size);
       Buffer(Buffer<T>&& other);
       ~Buffer();
-      void operator=(Buffer<T>&& other);
-      T& operator[](int index);
       const T& at(int index) const;
       bool isNull() const;
       cl_mem id() const;
@@ -81,6 +82,76 @@ namespace OpenCL
 
 
    /*!
+    * Takes the state of the given buffer object , null or set to an OpenCL buffer, 
+    * overwriting and clearing any OpenCL buffer this object may already contain. 
+    *
+    * @param other The other buffer object whose state, null or set to an OpenCL 
+    *              buffer, is taken by this buffer object. 
+    */
+   template<class T> void Buffer<T>::operator=(Buffer<T>&& other)
+   {
+      // Clear this object of any OpenCL resources, take the other object's state, and 
+      // set the other object to null. 
+      clear();
+      _id = other._id;
+      _data = other._data;
+      _size = other._size;
+      _last = other._last;
+      _mapping = other._mapping;
+      other.nullify();
+   }
+
+
+
+
+
+
+   /*!
+    * Returns a reference to the element with the given index in this buffer object's 
+    * mapped data for writing. If this buffer object is not mapped, the mapping is not 
+    * for writing, or the index is out of range then an exception is thrown. 
+    *
+    * @param index The index of the element whose reference is returned. 
+    *
+    * @return Reference to element of mapped buffer with the given index. 
+    */
+   template<class T> T& Buffer<T>::operator[](int index)
+   {
+      // If this object is not mapped, the mapping is not for writing, or the given 
+      // index is out of range then throw an exception, else return a reference to the 
+      // mapped element with the given index. 
+      if ( !_data )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setTitle(QObject::tr("Logic Error"));
+         e.setDetails(QObject::tr("Cannot access data from unmapped OpenCL buffer."));
+         throw e;
+      }
+      if ( _mapping != CL_MAP_WRITE )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setTitle(QObject::tr("Logic Error"));
+         e.setDetails(QObject::tr("Cannot write data to OpenCL buffer mapped for reading."));
+         throw e;
+      }
+      if ( index < 0 || index >= _size )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setTitle(QObject::tr("Out Of Range"));
+         e.setDetails(QObject::tr("The index %1 is out of range for this OpenCL buffer (%2 size).")
+                      .arg(index)
+                      .arg(_size));
+         throw e;
+      }
+      return _data[index];
+   }
+
+
+
+
+
+
+   /*!
     * Constructs a new buffer object set to a new OpenCL buffer with the given context 
     * and size. 
     *
@@ -88,17 +159,13 @@ namespace OpenCL
     *
     * @param size The size of the buffer created as the number of elements of the 
     *             template type defined. 
-    *
-    *
-    * Steps of Operation: 
-    *
-    * 1. Create a new OpenCL buffer and set this object's buffer ID to the new buffer. 
-    *    If creation fails then throw an exception. 
     */
    template<class T> Buffer<T>::Buffer(Context* context, int size):
       _id(new cl_mem),
       _size(size)
    {
+      // Create a new OpenCL buffer and set this object's buffer ID to the new buffer. 
+      // If creation fails then throw an exception. 
       cl_int code;
       *_id = clCreateBuffer(context->id(),CL_MEM_READ_WRITE,sizeof(T)*_size,nullptr,&code);
       if ( code != CL_SUCCESS )
@@ -150,84 +217,6 @@ namespace OpenCL
 
 
    /*!
-    * Takes the state of the given buffer object , null or set to an OpenCL buffer, 
-    * overwriting and clearing any OpenCL buffer this object may already contain. 
-    *
-    * @param other The other buffer object whose state, null or set to an OpenCL 
-    *              buffer, is taken by this buffer object. 
-    *
-    *
-    * Steps of Operation: 
-    *
-    * 1. Clear this object of any OpenCL resources, take the other object's state, and 
-    *    set the other object to null. 
-    */
-   template<class T> void Buffer<T>::operator=(Buffer<T>&& other)
-   {
-      clear();
-      _id = other._id;
-      _data = other._data;
-      _size = other._size;
-      _last = other._last;
-      _mapping = other._mapping;
-      other.nullify();
-   }
-
-
-
-
-
-
-   /*!
-    * Returns a reference to the element with the given index in this buffer object's 
-    * mapped data for writing. If this buffer object is not mapped, the mapping is not 
-    * for writing, or the index is out of range then an exception is thrown. 
-    *
-    * @param index The index of the element whose reference is returned. 
-    *
-    * @return Reference to element of mapped buffer with the given index. 
-    *
-    *
-    * Steps of Operation: 
-    *
-    * 1. If this object is not mapped, the mapping is not for writing, or the given 
-    *    index is out of range then throw an exception, else return a reference to the 
-    *    mapped element with the given index. 
-    */
-   template<class T> T& Buffer<T>::operator[](int index)
-   {
-      if ( !_data )
-      {
-         E_MAKE_EXCEPTION(e);
-         e.setTitle(QObject::tr("Logic Error"));
-         e.setDetails(QObject::tr("Cannot access data from unmapped OpenCL buffer."));
-         throw e;
-      }
-      if ( _mapping != CL_MAP_WRITE )
-      {
-         E_MAKE_EXCEPTION(e);
-         e.setTitle(QObject::tr("Logic Error"));
-         e.setDetails(QObject::tr("Cannot write data to OpenCL buffer mapped for reading."));
-         throw e;
-      }
-      if ( index < 0 || index >= _size )
-      {
-         E_MAKE_EXCEPTION(e);
-         e.setTitle(QObject::tr("Out Of Range"));
-         e.setDetails(QObject::tr("The index %1 is out of range for this OpenCL buffer (%2 size).")
-                      .arg(index)
-                      .arg(_size));
-         throw e;
-      }
-      return _data[index];
-   }
-
-
-
-
-
-
-   /*!
     * Returns a read only reference to the element with the given index in this buffer 
     * object's mapped data for reading. If this buffer object is not mapped, the 
     * mapping is not for reading, or the index is out of range then an exception is 
@@ -236,16 +225,12 @@ namespace OpenCL
     * @param index  
     *
     * @return Read only reference to element of mapped buffer with the given index. 
-    *
-    *
-    * Steps of Operation: 
-    *
-    * 1. If this object is not mapped, the mapping is not for reading, or the given 
-    *    index is out of range then throw an exception, else return a read only 
-    *    reference to the mapped element with the given index. 
     */
    template<class T> const T& Buffer<T>::at(int index) const
    {
+      // If this object is not mapped, the mapping is not for reading, or the given 
+      // index is out of range then throw an exception, else return a read only 
+      // reference to the mapped element with the given index. 
       if ( !_data )
       {
          E_MAKE_EXCEPTION(e);
@@ -297,15 +282,11 @@ namespace OpenCL
     * exception is thrown. 
     *
     * @return OpenCL buffer ID of this object. 
-    *
-    *
-    * Steps of Operation: 
-    *
-    * 1. If this object is null then throw an exception, else return this object's 
-    *    OpenCL buffer ID. 
     */
    template<class T> cl_mem Buffer<T>::id() const
    {
+      // If this object is null then throw an exception, else return this object's 
+      // OpenCL buffer ID. 
       if ( !_id )
       {
          E_MAKE_EXCEPTION(e);
@@ -392,22 +373,11 @@ namespace OpenCL
     *              unmapping the memory. 
     *
     * @return The event for the unmapping command sent to the given command queue. 
-    *
-    *
-    * Steps of Operation: 
-    *
-    * 1. If this object is null or is not mapped then throw an exception, else go to 
-    *    the next step. 
-    *
-    * 2. Add an unmap command to the given command queue for this object's OpenCL 
-    *    buffer. If adding the command fails then throw an exception. 
-    *
-    * 3. Release the OpenCL command queue used to map this object's buffer and return 
-    *    the event of the unmapping command added to the given command queue in the 
-    *    last step. If releasing the command queue fails then throw an exception. 
     */
    template<class T> Event Buffer<T>::unmap(CommandQueue* queue)
    {
+      // If this object is null or is not mapped then throw an exception, else go to the 
+      // next step. 
       if ( !_id )
       {
          E_MAKE_EXCEPTION(e);
@@ -422,8 +392,15 @@ namespace OpenCL
          e.setDetails(QObject::tr("Cannot unmap OpenCL buffer that is not mapped."));
          throw e;
       }
+   
+      // Add an unmap command to the given command queue for this object's OpenCL 
+      // buffer. If adding the command fails then throw an exception. 
       cl_event id;
       clEnqueueUnmapMemObject(queue->id(),*_id,_data,0,nullptr,&id);
+   
+      // Release the OpenCL command queue used to map this object's buffer and return 
+      // the event of the unmapping command added to the given command queue in the last 
+      // step. If releasing the command queue fails then throw an exception. 
       _data = nullptr;
       cl_int code = {clReleaseCommandQueue(_last)};
       if ( code != CL_SUCCESS )
@@ -447,15 +424,11 @@ namespace OpenCL
     * is. Reading from a write mapping or writing to a read mapping is undefined. 
     *
     * @return Pointer to host memory mapping of this object's OpenCL buffer. 
-    *
-    *
-    * Steps of Operation: 
-    *
-    * 1. If this object is not mapped then throw an exception, else return the host 
-    *    memory pointer of this object's mapped OpenCL buffer. 
     */
    template<class T> T* Buffer<T>::data()
    {
+      // If this object is not mapped then throw an exception, else return the host 
+      // memory pointer of this object's mapped OpenCL buffer. 
       if ( !_data )
       {
          E_MAKE_EXCEPTION(e);
@@ -481,22 +454,11 @@ namespace OpenCL
     * @param mapping The type of mapping used, either read or write. 
     *
     * @return The event for the mapping command added to the given command queue. 
-    *
-    *
-    * Steps of Operation: 
-    *
-    * 1. If this object is null or is already mapped then throw an exception, else go 
-    *    to the next step. 
-    *
-    * 2. Add a map command to the given command queue for this object's OpenCL buffer 
-    *    with the given mapping. If adding the command fails then throw an exception. 
-    *
-    * 3. Save the given command queue ID to this object, retain it, and return the 
-    *    event of the mapping command added to the given command queue in the last 
-    *    step. If retaining the command queue fails then throw an exception. 
     */
    template<class T> Event Buffer<T>::map(CommandQueue* queue, cl_map_flags mapping)
    {
+      // If this object is null or is already mapped then throw an exception, else go to 
+      // the next step. 
       if ( !_id )
       {
          E_MAKE_EXCEPTION(e);
@@ -511,6 +473,9 @@ namespace OpenCL
          e.setDetails(QObject::tr("Cannot map OpenCL buffer that is already mapped."));
          throw e;
       }
+   
+      // Add a map command to the given command queue for this object's OpenCL buffer 
+      // with the given mapping. If adding the command fails then throw an exception. 
       cl_int code;
       cl_event id;
       _data = static_cast<T*>(clEnqueueMapBuffer(queue->id()
@@ -529,6 +494,10 @@ namespace OpenCL
          fillException(&e,code);
          throw e;
       }
+   
+      // Save the given command queue ID to this object, retain it, and return the event 
+      // of the mapping command added to the given command queue in the last step. If 
+      // retaining the command queue fails then throw an exception. 
       _last = queue->id();
       code = clRetainCommandQueue(_last);
       if ( code != CL_SUCCESS )
@@ -550,26 +519,21 @@ namespace OpenCL
     * Clears any mapping of this object's OpenCL buffer if it has one, releases all 
     * OpenCL resources, and deletes the OpenCL memory ID variable. This does not set 
     * any of this object's pointers to null. 
-    *
-    *
-    * Steps of Operation: 
-    *
-    * 1. If this object is null then do nothing and exit, else go to the next step. 
-    *
-    * 2. If this object is mapped then call an unmap command with this object's saved 
-    *    command queue and then release it. 
-    *
-    * 3. Release this object's OpenCL buffer ID and then delete it. 
     */
    template<class T> void Buffer<T>::clear()
    {
+      // If this object is null then do nothing and exit, else go to the next step. 
       if ( _id )
       {
+         // If this object is mapped then call an unmap command with this object's saved 
+         // command queue and then release it. 
          if ( _data )
          {
             clEnqueueUnmapMemObject(_last,*_id,_data,0,nullptr,nullptr);
             clReleaseCommandQueue(_last);
          }
+   
+         // Release this object's OpenCL buffer ID and then delete it. 
          clReleaseMemObject(*_id);
          delete _id;
       }
@@ -583,14 +547,10 @@ namespace OpenCL
    /*!
     * Sets this object to a null state by changing all its pointers to null. This does 
     * not free any allocated memory those pointers may be pointing to. 
-    *
-    *
-    * Steps of Operation: 
-    *
-    * 1. Set all this object's pointers and size to the null state. 
     */
    template<class T> void Buffer<T>::nullify()
    {
+      // Set all this object's pointers and size to the null state. 
       _id = nullptr;
       _data = nullptr;
       _size = -1;

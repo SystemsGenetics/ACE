@@ -1,6 +1,9 @@
 #include "opencl_common.h"
 #include <QStringList>
 #include "eexception.h"
+
+
+
 //
 
 
@@ -17,15 +20,6 @@
  *
  * @param code The OpenCL error code whose description is added to the given 
  *             exception. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Modify the given error code to be used as an index into a list of predefined 
- *    error code descriptions for OpenCL. 
- *
- * 2. Set the title and details of the given exception using the index converted 
- *    from the error code to make a human readable error code. 
  */
 void OpenCL::fillException(EException* exception, cl_int code)
 {

@@ -1,6 +1,10 @@
 #include "eabstractanalytic.h"
 #include "eabstractanalytic_block.h"
 #include "ace_qmpi.h"
+#include "edebug.h"
+
+
+
 //
 
 
@@ -16,14 +20,12 @@
  * @param index Index used to make the block of work. 
  *
  * @return Pointer new work block with the given index. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Throw an exception. 
  */
 std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeWork(int index) const
 {
+   EDEBUG_FUNC(this,index)
+
+   // Throw an exception. 
    Q_UNUSED(index)
    E_MAKE_EXCEPTION(e);
    e.setTitle(tr("Logic Error"));
@@ -43,14 +45,12 @@ std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeWork(int index)
  * not implemented by an analytic. 
  *
  * @return Pointer uninitialized work block. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Throw an exception. 
  */
 std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeWork() const
 {
+   EDEBUG_FUNC(this)
+
+   // Throw an exception. 
    E_MAKE_EXCEPTION(e);
    e.setTitle(tr("Logic Error"));
    e.setDetails(tr("Attempting to make an abstract analytic block with a simple analytic."));
@@ -69,14 +69,12 @@ std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeWork() const
  * not implemented by an analytic. 
  *
  * @return Pointer uninitialized result block. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Throw an exception. 
  */
 std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeResult() const
 {
+   EDEBUG_FUNC(this)
+
+   // Throw an exception. 
    E_MAKE_EXCEPTION(e);
    e.setTitle(tr("Logic Error"));
    e.setDetails(tr("Attempting to make an abstract analytic block with a simple analytic."));
@@ -97,6 +95,8 @@ std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeResult() const
  */
 EAbstractAnalytic::Serial* EAbstractAnalytic::makeSerial()
 {
+   EDEBUG_FUNC(this)
+
    return nullptr;
 }
 
@@ -115,6 +115,8 @@ EAbstractAnalytic::Serial* EAbstractAnalytic::makeSerial()
  */
 EAbstractAnalytic::OpenCL* EAbstractAnalytic::makeOpenCL()
 {
+   EDEBUG_FUNC(this)
+
    return nullptr;
 }
 
@@ -129,7 +131,25 @@ EAbstractAnalytic::OpenCL* EAbstractAnalytic::makeOpenCL()
  * nothing. 
  */
 void EAbstractAnalytic::initialize()
-{}
+{
+   EDEBUG_FUNC(this)
+}
+
+
+
+
+
+
+/*!
+ * This interface initializes any outputs for this analytic. This is called only 
+ * once before any other interface is called for this analytic. This is only called 
+ * for analytic objects that will process output result blocks. The default 
+ * implementation does nothing. 
+ */
+void EAbstractAnalytic::initializeOutputs()
+{
+   EDEBUG_FUNC(this)
+}
 
 
 
@@ -141,7 +161,9 @@ void EAbstractAnalytic::initialize()
  * after every other interface call. The default implementation does nothing. 
  */
 void EAbstractAnalytic::finish()
-{}
+{
+   EDEBUG_FUNC(this)
+}
 
 
 
@@ -157,5 +179,7 @@ void EAbstractAnalytic::finish()
  */
 bool EAbstractAnalytic::isMaster()
 {
+   EDEBUG_FUNC()
+
    return Ace::QMPI::instance().isMaster();
 }

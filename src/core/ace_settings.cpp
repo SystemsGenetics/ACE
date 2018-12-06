@@ -43,6 +43,12 @@ const char* Settings::_chunkPrefixDefault {"chunk"};
  */
 const char* Settings::_chunkExtensionDefault {"abd"};
 /*!
+ */
+const bool Settings::_loggingEnabledDefault {true};
+/*!
+ */
+const int Settings::_loggingPortDefault {40000};
+/*!
  * The qt settings key used to persistently store the platform index value. 
  */
 const char* Settings::_openCLPlatformKey {"opencl.platform"};
@@ -71,6 +77,12 @@ const char* Settings::_chunkPrefixKey {"chunk.prefix"};
  * The qt settings key used to persistently store the chunk file extension value. 
  */
 const char* Settings::_chunkExtensionKey {"chunk.extension"};
+/*!
+ */
+const char* Settings::_loggingEnabledKey {"logging.enabled"};
+/*!
+ */
+const char* Settings::_loggingPortKey {"logging.port"};
 /*!
  * Points to the global singleton instance of this class. 
  */
@@ -207,18 +219,11 @@ int Settings::appRevision()
  * @param minorVersion Minor version of the application using ACE. 
  *
  * @param revision Revision of the application using ACE. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the given application name is equal to ace then throw an exception, else 
- *    go to the next step. 
- *
- * 2. Set the organization name, name, and version numbers from the given 
- *    application info. 
  */
 void Settings::initialize(QString organization, QString application, int majorVersion, int minorVersion, int revision)
 {
+   // If the given application name is equal to ace then throw an exception, else go 
+   // to the next step. 
    if ( application == QString("ace") )
    {
       E_MAKE_EXCEPTION(e);
@@ -226,6 +231,9 @@ void Settings::initialize(QString organization, QString application, int majorVe
       e.setDetails(QObject::tr("Cannot set application name to 'ace'."));
       throw e;
    }
+
+   // Set the organization name, name, and version numbers from the given application 
+   // info. 
    _organization = organization;
    _application = application;
    _appMajorVersion = majorVersion;
@@ -243,21 +251,17 @@ void Settings::initialize(QString organization, QString application, int majorVe
  * instance has not yet been created then it is before returning. 
  *
  * @return Reference to the singleton instance of this class. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the global pointer to the singleton instance of this class is null then 
- *    create a new instance and set it to the global pointer. 
- *
- * 2. Return a reference to the singleton instance at the global pointer. 
  */
 Settings& Settings::instance()
 {
+   // If the global pointer to the singleton instance of this class is null then 
+   // create a new instance and set it to the global pointer. 
    if ( !_instance )
    {
       _instance = new Settings;
    }
+
+   // Return a reference to the singleton instance at the global pointer. 
    return *_instance;
 }
 
@@ -301,20 +305,16 @@ int Settings::openCLDevice() const
  * none. 
  *
  * @return Pointer to preferred OpenCL device or null if none is preferred. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the platform index is out of range or the device index is out of range 
- *    then return a null pointer, else return a pointer to the device with the 
- *    platform and device indexes. 
  */
 OpenCL::Device* Settings::openCLDevicePointer() const
 {
+   // If the platform index is out of range or the device index is out of range then 
+   // return a null pointer, else return a pointer to the device with the platform 
+   // and device indexes. 
    if ( _openCLPlatform < 0
         || _openCLDevice < 0
         || _openCLPlatform >= OpenCL::Platform::size()
-        || _openCLDevice >= OpenCL::Platform::get(_openCLPlatform)->size() )
+        || _openCLDevice >= OpenCL::Platform::get(_openCLPlatform)->deviceSize() )
    {
       return nullptr;
    }
@@ -403,18 +403,44 @@ QString Settings::chunkExtension() const
 
 
 /*!
+ * Returns the logging enabled state. 
+ *
+ * @return Logging enabled state. 
+ */
+bool Settings::loggingEnabled() const
+{
+   return _loggingEnabled;
+}
+
+
+
+
+
+
+/*!
+ * Returns the logging port number. 
+ *
+ * @return Logging port number. 
+ */
+int Settings::loggingPort() const
+{
+   return _loggingPort;
+}
+
+
+
+
+
+
+/*!
  * Sets the platform index for the preferred OpenCL device. 
  *
  * @param index Index of the platform of the preferred OpenCL device. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the new given platform index is different from the current platform index 
- *    then set it to the new one and set the value in persistent storage. 
  */
 void Settings::setOpenCLPlatform(int index)
 {
+   // If the new given platform index is different from the current platform index 
+   // then set it to the new one and set the value in persistent storage. 
    if ( index != _openCLPlatform )
    {
       _openCLPlatform = index;
@@ -431,15 +457,11 @@ void Settings::setOpenCLPlatform(int index)
  * Sets the index of the preferred OpenCL device. 
  *
  * @param index Index of the preferred OpenCL device. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the new given device index is different from the current device index then 
- *    set it to the new one and set the value in persistent storage. 
  */
 void Settings::setOpenCLDevice(int index)
 {
+   // If the new given device index is different from the current device index then 
+   // set it to the new one and set the value in persistent storage. 
    if ( index != _openCLDevice )
    {
       _openCLDevice = index;
@@ -457,18 +479,11 @@ void Settings::setOpenCLDevice(int index)
  * exception is thrown. 
  *
  * @param size Thread size for accelerated runs. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the new given thread size is less than one then throw an exception, else 
- *    go to the next step. 
- *
- * 2. If the new given thread size is different from the current thread size then 
- *    set it to the new one and set the value in persistent storage. 
  */
 void Settings::setThreadSize(int size)
 {
+   // If the new given thread size is less than one then throw an exception, else go 
+   // to the next step. 
    if ( size < 1 )
    {
       E_MAKE_EXCEPTION(e);
@@ -476,6 +491,9 @@ void Settings::setThreadSize(int size)
       e.setDetails(QObject::tr("Cannot set thread size to %1 (1 is smallest allowed).").arg(size));
       throw e;
    }
+
+   // If the new given thread size is different from the current thread size then set 
+   // it to the new one and set the value in persistent storage. 
    if ( size != _threadSize )
    {
       _threadSize = size;
@@ -493,18 +511,11 @@ void Settings::setThreadSize(int size)
  * input to each slave node. 
  *
  * @param size new MPI buffer size. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the new given buffer size is less than one then throw an exception, else 
- *    go to the next step. 
- *
- * 2. If the new given buffer size is different from the current buffer size then 
- *    set it to the new one and set the value in persistent storage. 
  */
 void Settings::setBufferSize(int size)
 {
+   // If the new given buffer size is less than one then throw an exception, else go 
+   // to the next step. 
    if ( size < 1 )
    {
       E_MAKE_EXCEPTION(e);
@@ -512,6 +523,9 @@ void Settings::setBufferSize(int size)
       e.setDetails(QObject::tr("Cannot set buffer size to %1 (1 is smallest allowed).").arg(size));
       throw e;
    }
+
+   // If the new given buffer size is different from the current buffer size then set 
+   // it to the new one and set the value in persistent storage. 
    if ( size != _bufferSize )
    {
       _bufferSize = size;
@@ -528,16 +542,12 @@ void Settings::setBufferSize(int size)
  * Sets the working directory for chunk runs. 
  *
  * @param path Working directory path for chunk runs. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the new given working directory path is different from the current working 
- *    directory path then set it to the new one and set the value in persistent 
- *    storage. 
  */
 void Settings::setChunkDir(const QString& path)
 {
+   // If the new given working directory path is different from the current working 
+   // directory path then set it to the new one and set the value in persistent 
+   // storage. 
    if ( path != _chunkDir )
    {
       _chunkDir = path;
@@ -554,15 +564,11 @@ void Settings::setChunkDir(const QString& path)
  * Sets the chunk file name prefix. 
  *
  * @param prefix New chunk file name prefix. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the new given chunk file prefix is different from the current chunk file 
- *    prefix then set it to the new one and set the value in persistent storage. 
  */
 void Settings::setChunkPrefix(const QString& prefix)
 {
+   // If the new given chunk file prefix is different from the current chunk file 
+   // prefix then set it to the new one and set the value in persistent storage. 
    if ( prefix != _chunkPrefix )
    {
       _chunkPrefix = prefix;
@@ -579,16 +585,11 @@ void Settings::setChunkPrefix(const QString& prefix)
  * Sets the chunk file extension. 
  *
  * @param extension New chunk file extension. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the new given chunk file extension is different from the current chunk 
- *    file extension then set it to the new one and set the value in persistent 
- *    storage. 
  */
 void Settings::setChunkExtension(const QString& extension)
 {
+   // If the new given chunk file extension is different from the current chunk file 
+   // extension then set it to the new one and set the value in persistent storage. 
    if ( extension != _chunkExtension )
    {
       _chunkExtension = extension;
@@ -602,16 +603,54 @@ void Settings::setChunkExtension(const QString& extension)
 
 
 /*!
+ * Set the logging enabled state. 
+ *
+ * @param state New logging enabled state. 
+ */
+void Settings::setLoggingEnabled(int state)
+{
+   // If the new value is different from the current value then set it to the new one 
+   // and set the value in persistent storage. 
+   if ( state != _loggingEnabled )
+   {
+      _loggingEnabled = state;
+      setValue(_loggingEnabledKey,_loggingEnabled);
+   }
+}
+
+
+
+
+
+
+/*!
+ * Set the logging port. 
+ *
+ * @param port New logging port number. 
+ */
+void Settings::setLoggingPort(int port)
+{
+   // If the new value is different from the current value then set it to the new one 
+   // and set the value in persistent storage. 
+   if ( port != _loggingPort )
+   {
+      _loggingPort = port;
+      setValue(_loggingPortKey,_loggingPort);
+   }
+}
+
+
+
+
+
+
+/*!
  * Constructs a new settings object. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Initialize all settings this class stores, setting them to their default 
- *    values if their values do not exist in qt settings with their given key. 
  */
 Settings::Settings()
 {
+   // Initialize all settings this class stores, setting them to their default values 
+   // if their values do not exist in qt settings with their given key. 
    QSettings settings(_organization,_application);
    _openCLPlatform = settings.value(_openCLPlatformKey,_openCLPlatformDefault).toInt();
    _openCLDevice = settings.value(_openCLDeviceKey,_openCLDeviceDefault).toInt();
@@ -620,6 +659,8 @@ Settings::Settings()
    _chunkDir = settings.value(_chunkDirKey,_chunkDirDefault).toString();
    _chunkPrefix = settings.value(_chunkPrefixKey,_chunkPrefixDefault).toString();
    _chunkExtension = settings.value(_chunkExtensionKey,_chunkExtensionDefault).toString();
+   _loggingEnabled = settings.value(_loggingEnabledKey,_loggingEnabledDefault).toBool();
+   _loggingPort = settings.value(_loggingPortKey,_loggingPortDefault).toInt();
 }
 
 
@@ -633,14 +674,10 @@ Settings::Settings()
  * @param key The key used to save the given value. 
  *
  * @param value The given value that is saved. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Initialize qt settings and save the given value to the given key. 
  */
 void Settings::setValue(const QString& key, const QVariant& value)
 {
+   // Initialize qt settings and save the given value to the given key. 
    QSettings settings(_organization,_application);
    settings.setValue(key,value);
 }

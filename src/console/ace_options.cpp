@@ -1,4 +1,5 @@
 #include "ace_options.h"
+#include "../core/edebug.h"
 
 
 
@@ -17,22 +18,19 @@ using namespace Ace;
  * @param argc The command line argument size passed from the main function. 
  *
  * @param argv The command line arguments passed from the main function. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Iterate through all given command line values except for the first for the 
- *    following steps. 
- *
- * 2. If the argument begins with "--" and there is an argument after this one then 
- *    take both and insert them into this option's mapping with the first argument, 
- *    minus two beginning dashes, as the key and the second argument the value. 
- *    Skip the second argument moving to the next one. 
  */
 Options::Options(int argc, char** argv)
 {
+   EDEBUG_FUNC(this,argc,argv)
+
+   // Iterate through all given command line values except for the first for the 
+   // following steps. 
    for (int i = 1; i < argc ;++i)
    {
+      // If the argument begins with "--" and there is an argument after this one then 
+      // take both and insert them into this option's mapping with the first argument, 
+      // minus two beginning dashes, as the key and the second argument the value. Skip 
+      // the second argument moving to the next one. 
       if ( argv[i][0] == '-' && argv[i][1] == '-' )
       {
          ++i;
@@ -56,6 +54,8 @@ Options::Options(int argc, char** argv)
  */
 int Options::size() const
 {
+   EDEBUG_FUNC(this)
+
    return _map.size();
 }
 
@@ -74,6 +74,8 @@ int Options::size() const
  */
 bool Options::contains(const QString& key) const
 {
+   EDEBUG_FUNC(this,key)
+
    return _map.contains(key);
 }
 
@@ -92,6 +94,8 @@ bool Options::contains(const QString& key) const
  */
 QString Options::key(int index) const
 {
+   EDEBUG_FUNC(this,index)
+
    return _map.keys().at(index);
 }
 
@@ -110,6 +114,8 @@ QString Options::key(int index) const
  */
 QString Options::value(int index) const
 {
+   EDEBUG_FUNC(this,index)
+
    return _map.values().at(index);
 }
 
@@ -129,5 +135,7 @@ QString Options::value(int index) const
  */
 QString Options::find(const QString& key) const
 {
+   EDEBUG_FUNC(this,key)
+
    return _map.value(key);
 }

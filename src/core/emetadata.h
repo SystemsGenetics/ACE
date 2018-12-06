@@ -22,6 +22,11 @@ class QJsonValue;
 class EMetadata
 {
 public:
+   friend EDebug& operator<<(EDebug& debug, const EMetadata*const meta);
+public:
+   EMetadata& operator=(const EMetadata& object);
+   EMetadata& operator=(EMetadata&& object);
+public:
    /*!
     * Defines all possible types a metadata object can contain. 
     */
@@ -67,8 +72,6 @@ public:
    EMetadata(const QJsonValue& value);
    EMetadata(const EMetadata& object);
    EMetadata(EMetadata&& object);
-   EMetadata& operator=(const EMetadata& object);
-   EMetadata& operator=(EMetadata&& object);
    ~EMetadata();
    QJsonValue toJson() const;
    EMetadata::Type type() const;

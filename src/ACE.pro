@@ -10,7 +10,8 @@ SUBDIRS += \
     core \
     #tests \
     console \
-    example
+    example \
+    log
 
 #tests.depends = core
 console.depends = core

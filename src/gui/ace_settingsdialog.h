@@ -27,6 +27,7 @@ namespace Ace
       void applyClicked();
       void currentPlatformChanged(int index);
    private:
+      QLayout* setupWarning();
       QLayout* createForm();
       QLayout* createButtons();
       QLayout* createOpenCL();

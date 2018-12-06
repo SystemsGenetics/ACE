@@ -33,6 +33,25 @@ namespace Ace
       static int appRevision();
       static void initialize(QString organization, QString application, int majorVersion, int minorVersion, int revision);
       static Settings& instance();
+      int openCLPlatform() const;
+      int openCLDevice() const;
+      OpenCL::Device* openCLDevicePointer() const;
+      int threadSize() const;
+      int bufferSize() const;
+      QString chunkDir() const;
+      QString chunkPrefix() const;
+      QString chunkExtension() const;
+      bool loggingEnabled() const;
+      int loggingPort() const;
+      void setOpenCLPlatform(int index);
+      void setOpenCLDevice(int index);
+      void setThreadSize(int size);
+      void setBufferSize(int size);
+      void setChunkDir(const QString& path);
+      void setChunkPrefix(const QString& prefix);
+      void setChunkExtension(const QString& extension);
+      void setLoggingEnabled(int state);
+      void setLoggingPort(int port);
       /*!
        * The major version of the ACE library. 
        */
@@ -45,22 +64,9 @@ namespace Ace
        * The revision of the ACE library. 
        */
       constexpr static int _revision {REVISION};
-      int openCLPlatform() const;
-      int openCLDevice() const;
-      OpenCL::Device* openCLDevicePointer() const;
-      int threadSize() const;
-      int bufferSize() const;
-      QString chunkDir() const;
-      QString chunkPrefix() const;
-      QString chunkExtension() const;
-      void setOpenCLPlatform(int index);
-      void setOpenCLDevice(int index);
-      void setThreadSize(int size);
-      void setBufferSize(int size);
-      void setChunkDir(const QString& path);
-      void setChunkPrefix(const QString& prefix);
-      void setChunkExtension(const QString& extension);
    private:
+      Settings();
+      void setValue(const QString& key, const QVariant& value);
       /*!
        * Major version of the application using ACE. 
        */
@@ -110,6 +116,12 @@ namespace Ace
        */
       static const char* _chunkExtensionDefault;
       /*!
+       */
+      static const bool _loggingEnabledDefault;
+      /*!
+       */
+      static const int _loggingPortDefault;
+      /*!
        * The qt settings key used to persistently store the platform index value. 
        */
       static const char* _openCLPlatformKey;
@@ -139,11 +151,15 @@ namespace Ace
        */
       static const char* _chunkExtensionKey;
       /*!
+       */
+      static const char* _loggingEnabledKey;
+      /*!
+       */
+      static const char* _loggingPortKey;
+      /*!
        * Points to the global singleton instance of this class. 
        */
       static Settings* _instance;
-      Settings();
-      void setValue(const QString& key, const QVariant& value);
       /*!
        * The platform index for the preferred OpenCL device. 
        */
@@ -173,6 +189,12 @@ namespace Ace
        * The extension for temporary chunk files. 
        */
       QString _chunkExtension;
+      /*!
+       */
+      bool _loggingEnabled;
+      /*!
+       */
+      int _loggingPort;
    };
 }
 

@@ -1,5 +1,9 @@
 #include "emetaobject.h"
 #include "emetadata.h"
+#include "edebug.h"
+
+
+
 //
 
 
@@ -14,18 +18,57 @@
  * @param object Map that this object will be assigned to. 
  *
  * @return Reference to this object. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Assign this object to the given mapping. 
- *
- * 2. Return reference to this object. 
  */
 EMetaObject& EMetaObject::operator=(const EMetaObject& object)
 {
+   EDEBUG_FUNC(this,&object)
+
+   // Assign this object to the given mapping. 
    QMap<QString,EMetadata>::operator=(object);
+
+   // Return reference to this object. 
    return *this;
+}
+
+
+
+
+
+
+/*!
+ * Returns reference to metadata object with the given key. If no metadata object 
+ * is mapped to the given key a new null metadata object is created, mapped with 
+ * the given key, and returned as the reference. 
+ *
+ * @param key Key of requested metadata object within the mapping of objects. 
+ *
+ * @return Reference to metadata object. 
+ */
+EMetadata& EMetaObject::operator[](const QString& key)
+{
+   EDEBUG_FUNC(this,key)
+
+   return QMap<QString,EMetadata>::operator[](key);
+}
+
+
+
+
+
+
+/*!
+ * Returns copy of metadata object with the given key. If no metadata object is 
+ * mapped to the given key a new null metadata object is created and returned. 
+ *
+ * @param key Key of requested metadata object within the mapping of objects. 
+ *
+ * @return Copy of metadata object. 
+ */
+EMetadata EMetaObject::operator[](const QString& key) const
+{
+   EDEBUG_FUNC(this,key)
+
+   return QMap<QString,EMetadata>::operator[](key);
 }
 
 
@@ -40,6 +83,8 @@ EMetaObject& EMetaObject::operator=(const EMetaObject& object)
  */
 bool EMetaObject::isEmpty() const
 {
+   EDEBUG_FUNC(this)
+
    return QMap<QString,EMetadata>::isEmpty();
 }
 
@@ -55,6 +100,8 @@ bool EMetaObject::isEmpty() const
  */
 int EMetaObject::size() const
 {
+   EDEBUG_FUNC(this)
+
    return QMap<QString,EMetadata>::size();
 }
 
@@ -70,6 +117,8 @@ int EMetaObject::size() const
  */
 QMap<QString,EMetadata>::iterator EMetaObject::begin()
 {
+   EDEBUG_FUNC(this)
+
    return QMap<QString,EMetadata>::begin();
 }
 
@@ -85,6 +134,8 @@ QMap<QString,EMetadata>::iterator EMetaObject::begin()
  */
 QMap<QString,EMetadata>::const_iterator EMetaObject::begin() const
 {
+   EDEBUG_FUNC(this)
+
    return QMap<QString,EMetadata>::begin();
 }
 
@@ -100,6 +151,8 @@ QMap<QString,EMetadata>::const_iterator EMetaObject::begin() const
  */
 QMap<QString,EMetadata>::const_iterator EMetaObject::cbegin() const
 {
+   EDEBUG_FUNC(this)
+
    return QMap<QString,EMetadata>::cbegin();
 }
 
@@ -115,6 +168,8 @@ QMap<QString,EMetadata>::const_iterator EMetaObject::cbegin() const
  */
 QMap<QString,EMetadata>::iterator EMetaObject::end()
 {
+   EDEBUG_FUNC(this)
+
    return QMap<QString,EMetadata>::end();
 }
 
@@ -130,6 +185,8 @@ QMap<QString,EMetadata>::iterator EMetaObject::end()
  */
 QMap<QString,EMetadata>::const_iterator EMetaObject::end() const
 {
+   EDEBUG_FUNC(this)
+
    return QMap<QString,EMetadata>::end();
 }
 
@@ -145,6 +202,8 @@ QMap<QString,EMetadata>::const_iterator EMetaObject::end() const
  */
 QMap<QString,EMetadata>::const_iterator EMetaObject::cend() const
 {
+   EDEBUG_FUNC(this)
+
    return QMap<QString,EMetadata>::cend();
 }
 
@@ -164,6 +223,8 @@ QMap<QString,EMetadata>::const_iterator EMetaObject::cend() const
  */
 EMetadata EMetaObject::at(const QString& key) const
 {
+   EDEBUG_FUNC(this,key)
+
    return QMap<QString,EMetadata>::operator[](key);
 }
 
@@ -183,6 +244,8 @@ EMetadata EMetaObject::at(const QString& key) const
  */
 void EMetaObject::insert(const QString& key, const EMetadata& value)
 {
+   EDEBUG_FUNC(this,key,&value)
+
    QMap<QString,EMetadata>::operator[](key) = value;
 }
 
@@ -196,42 +259,7 @@ void EMetaObject::insert(const QString& key, const EMetadata& value)
  */
 void EMetaObject::clear()
 {
+   EDEBUG_FUNC(this)
+
    QMap<QString,EMetadata>::clear();
-}
-
-
-
-
-
-
-/*!
- * Returns reference to metadata object with the given key. If no metadata object 
- * is mapped to the given key a new null metadata object is created, mapped with 
- * the given key, and returned as the reference. 
- *
- * @param key Key of requested metadata object within the mapping of objects. 
- *
- * @return Reference to metadata object. 
- */
-EMetadata& EMetaObject::operator[](const QString& key)
-{
-   return QMap<QString,EMetadata>::operator[](key);
-}
-
-
-
-
-
-
-/*!
- * Returns copy of metadata object with the given key. If no metadata object is 
- * mapped to the given key a new null metadata object is created and returned. 
- *
- * @param key Key of requested metadata object within the mapping of objects. 
- *
- * @return Copy of metadata object. 
- */
-EMetadata EMetaObject::operator[](const QString& key) const
-{
-   return QMap<QString,EMetadata>::operator[](key);
 }

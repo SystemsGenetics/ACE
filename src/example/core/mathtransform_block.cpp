@@ -1,4 +1,7 @@
 #include "mathtransform_block.h"
+
+
+
 //
 
 
@@ -21,30 +24,23 @@ MathTransform::Block::Block(int index):
 
 
 /*!
- * Constructs a new block with the given index and integer. 
+ * Constructs a new block with the given index and data. 
  *
  * @param index The index for this new block. 
  *
- * @param number The integer for this new block. 
- */
-MathTransform::Block::Block(int index, qint32 number):
-   EAbstractAnalytic::Block(index),
-   _number(number)
-{}
-
-
-
-
-
-
-/*!
- * Writes this block's integer to the given data stream. 
+ * @param size The size for this new block. 
  *
- * @param stream The data stream that is used to write out data. 
+ * @param data Pointer to the data for this new block. 
  */
-void MathTransform::Block::write(QDataStream& stream) const
+MathTransform::Block::Block(int index, int size, const float* data):
+   EAbstractAnalytic::Block(index)
 {
-   stream << _number;
+   _data.resize(size);
+   
+   for ( int i = 0; i < size; i++ )
+   {
+      _data[i] = data[i];
+   }
 }
 
 
@@ -53,11 +49,26 @@ void MathTransform::Block::write(QDataStream& stream) const
 
 
 /*!
- * Reads in this block's integer from the given data stream. 
+ * Writes this block's data to the given data stream. 
+ *
+ * @param stream The data stream that is used to write out data. 
+ */
+void MathTransform::Block::write(QDataStream& stream) const
+{
+   stream << _data;
+}
+
+
+
+
+
+
+/*!
+ * Reads in this block's data from the given data stream. 
  *
  * @param stream The data stream that is used to read in data. 
  */
 void MathTransform::Block::read(QDataStream& stream)
 {
-   stream >> _number;
+   stream >> _data;
 }

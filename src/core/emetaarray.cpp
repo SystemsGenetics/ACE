@@ -1,5 +1,9 @@
 #include "emetaarray.h"
 #include "emetadata.h"
+#include "edebug.h"
+
+
+
 //
 
 
@@ -14,17 +18,78 @@
  * @param object Array that this object will be assigned to. 
  *
  * @return Reference to this object. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Assign this object to the given array. 
- *
- * 2. Return reference to this object. 
  */
 EMetaArray& EMetaArray::operator=(const EMetaArray& object)
 {
+   EDEBUG_FUNC(this,&object)
+
+   // Assign this object to the given array. 
    QList<EMetadata>::operator=(object);
+
+   // Return reference to this object. 
+   return *this;
+}
+
+
+
+
+
+
+/*!
+ * Returns reference to metadata object with the given index. If the index is out 
+ * of range of the array then Qt will force exit the program. 
+ *
+ * @param index Index of requested metadata object within the array. 
+ *
+ * @return Reference to metadata object. 
+ */
+EMetadata& EMetaArray::operator[](int index)
+{
+   EDEBUG_FUNC(this,index)
+
+   return QList<EMetadata>::operator[](index);
+}
+
+
+
+
+
+
+/*!
+ * Returns constant reference to metadata object with the given index. If the index 
+ * is out of range of the array then Qt will force exit the program. 
+ *
+ * @param index Index of requested metadata object within the array. 
+ *
+ * @return Constant reference to metadata object. 
+ */
+const EMetadata& EMetaArray::operator[](int index) const
+{
+   EDEBUG_FUNC(this,index)
+
+   return QList<EMetadata>::operator[](index);
+}
+
+
+
+
+
+
+/*!
+ * Appends a new metadata value to the end of the array. 
+ *
+ * @param value The new metadata value to be appended to the end of the array. 
+ *
+ * @return Reference to this object. 
+ */
+EMetaArray& EMetaArray::operator<<(const EMetadata& value)
+{
+   EDEBUG_FUNC(this,&value)
+
+   // Append new metadata value to array. 
+   QList<EMetadata>::operator<<(value);
+
+   // Return reference to this object. 
    return *this;
 }
 
@@ -40,6 +105,8 @@ EMetaArray& EMetaArray::operator=(const EMetaArray& object)
  */
 bool EMetaArray::isEmpty() const
 {
+   EDEBUG_FUNC(this)
+
    return QList<EMetadata>::isEmpty();
 }
 
@@ -55,6 +122,8 @@ bool EMetaArray::isEmpty() const
  */
 int EMetaArray::size() const
 {
+   EDEBUG_FUNC(this)
+
    return QList<EMetadata>::size();
 }
 
@@ -70,6 +139,8 @@ int EMetaArray::size() const
  */
 QList<EMetadata>::iterator EMetaArray::begin()
 {
+   EDEBUG_FUNC(this)
+
    return QList<EMetadata>::begin();
 }
 
@@ -85,6 +156,8 @@ QList<EMetadata>::iterator EMetaArray::begin()
  */
 QList<EMetadata>::const_iterator EMetaArray::begin() const
 {
+   EDEBUG_FUNC(this)
+
    return QList<EMetadata>::begin();
 }
 
@@ -100,6 +173,8 @@ QList<EMetadata>::const_iterator EMetaArray::begin() const
  */
 QList<EMetadata>::const_iterator EMetaArray::cbegin() const
 {
+   EDEBUG_FUNC(this)
+
    return QList<EMetadata>::cbegin();
 }
 
@@ -115,6 +190,8 @@ QList<EMetadata>::const_iterator EMetaArray::cbegin() const
  */
 QList<EMetadata>::iterator EMetaArray::end()
 {
+   EDEBUG_FUNC(this)
+
    return QList<EMetadata>::end();
 }
 
@@ -130,6 +207,8 @@ QList<EMetadata>::iterator EMetaArray::end()
  */
 QList<EMetadata>::const_iterator EMetaArray::end() const
 {
+   EDEBUG_FUNC(this)
+
    return QList<EMetadata>::end();
 }
 
@@ -145,6 +224,8 @@ QList<EMetadata>::const_iterator EMetaArray::end() const
  */
 QList<EMetadata>::const_iterator EMetaArray::cend() const
 {
+   EDEBUG_FUNC(this)
+
    return QList<EMetadata>::cend();
 }
 
@@ -164,6 +245,8 @@ QList<EMetadata>::const_iterator EMetaArray::cend() const
  */
 const EMetadata& EMetaArray::at(int index) const
 {
+   EDEBUG_FUNC(this,index)
+
    return QList<EMetadata>::at(index);
 }
 
@@ -183,6 +266,8 @@ const EMetadata& EMetaArray::at(int index) const
  */
 void EMetaArray::insert(int index, const EMetadata& value)
 {
+   EDEBUG_FUNC(this,index,&value)
+
    QList<EMetadata>::insert(index,value);
 }
 
@@ -198,6 +283,8 @@ void EMetaArray::insert(int index, const EMetadata& value)
  */
 void EMetaArray::append(const EMetadata& value)
 {
+   EDEBUG_FUNC(this,&value)
+
    QList<EMetadata>::append(value);
 }
 
@@ -211,66 +298,7 @@ void EMetaArray::append(const EMetadata& value)
  */
 void EMetaArray::clear()
 {
+   EDEBUG_FUNC(this)
+
    QList<EMetadata>::clear();
-}
-
-
-
-
-
-
-/*!
- * Returns reference to metadata object with the given index. If the index is out 
- * of range of the array then Qt will force exit the program. 
- *
- * @param index Index of requested metadata object within the array. 
- *
- * @return Reference to metadata object. 
- */
-EMetadata& EMetaArray::operator[](int index)
-{
-   return QList<EMetadata>::operator[](index);
-}
-
-
-
-
-
-
-/*!
- * Returns constant reference to metadata object with the given index. If the index 
- * is out of range of the array then Qt will force exit the program. 
- *
- * @param index Index of requested metadata object within the array. 
- *
- * @return Constant reference to metadata object. 
- */
-const EMetadata& EMetaArray::operator[](int index) const
-{
-   return QList<EMetadata>::operator[](index);
-}
-
-
-
-
-
-
-/*!
- * Appends a new metadata value to the end of the array. 
- *
- * @param value The new metadata value to be appended to the end of the array. 
- *
- * @return Reference to this object. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Append new metadata value to array. 
- *
- * 2. Return reference to this object. 
- */
-EMetaArray& EMetaArray::operator<<(const EMetadata& value)
-{
-   QList<EMetadata>::operator<<(value);
-   return *this;
 }

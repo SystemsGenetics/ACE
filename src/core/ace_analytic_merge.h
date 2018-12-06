@@ -20,8 +20,9 @@ namespace Ace
       {
          Q_OBJECT
       public:
-         explicit Merge(quint16 type, int size);
          virtual bool isFinished() const override final;
+      public:
+         explicit Merge(quint16 type, int size);
       protected:
          virtual int index() const override final;
          virtual void writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result) override final;

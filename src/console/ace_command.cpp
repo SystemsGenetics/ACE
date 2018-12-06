@@ -1,4 +1,5 @@
 #include "ace_command.h"
+#include "../core/edebug.h"
 
 
 
@@ -17,20 +18,17 @@ using namespace Ace;
  * @param argc The command line argument size passed from the main function. 
  *
  * @param argv The command line arguments passed from the main function. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Iterate through all given command line values except for the first for the 
- *    following steps. 
- *
- * 2. If the argument begins with "--" then skip this argument and the next 
- *    argument, else add this argument to this object's list of arguments. 
  */
 Command::Command(int argc, char** argv)
 {
+   EDEBUG_FUNC(this,argc,argv)
+
+   // Iterate through all given command line values except for the first for the 
+   // following steps. 
    for (int i = 1; i < argc ;++i)
    {
+      // If the argument begins with "--" then skip this argument and the next argument, 
+      // else add this argument to this object's list of arguments. 
       if ( argv[i][0] == '-' && argv[i][1] == '-' )
       {
          ++i;
@@ -54,6 +52,8 @@ Command::Command(int argc, char** argv)
  */
 int Command::size() const
 {
+   EDEBUG_FUNC(this)
+
    return _values.size();
 }
 
@@ -72,6 +72,8 @@ int Command::size() const
  */
 QString Command::at(int index) const
 {
+   EDEBUG_FUNC(this,index)
+
    return _values.at(index);
 }
 
@@ -88,6 +90,8 @@ QString Command::at(int index) const
  */
 QString Command::first() const
 {
+   EDEBUG_FUNC(this)
+
    return _values.first();
 }
 
@@ -102,6 +106,8 @@ QString Command::first() const
  */
 QString Command::pop()
 {
+   EDEBUG_FUNC(this)
+
    return _values.takeFirst();
 }
 
@@ -123,6 +129,8 @@ QString Command::pop()
  */
 int Command::pop(const QStringList& list)
 {
+   EDEBUG_FUNC(this,list)
+
    return list.indexOf(_values.takeFirst());
 }
 
@@ -144,5 +152,7 @@ int Command::pop(const QStringList& list)
  */
 int Command::peek(const QStringList& list)
 {
+   EDEBUG_FUNC(this,list)
+
    return list.indexOf(_values.first());
 }

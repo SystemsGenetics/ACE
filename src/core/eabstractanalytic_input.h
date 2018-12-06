@@ -122,7 +122,6 @@ public:
        */
       ,DataType
    };
-   explicit Input(EAbstractAnalytic* parent);
    /*!
     * This interface returns the total number of arguments this analytic type 
     * contains. 
@@ -176,6 +175,8 @@ public:
     *             index. 
     */
    virtual void set(int index, EAbstractData* data) = 0;
+public:
+   explicit Input(EAbstractAnalytic* parent);
 };
 
 

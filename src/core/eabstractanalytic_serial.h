@@ -16,7 +16,6 @@ class EAbstractAnalytic::Serial : public QObject
 {
    Q_OBJECT
 public:
-   explicit Serial(EAbstractAnalytic* parent);
    /*!
     * This interface reads in the given work block, executes the algorithms necessary 
     * to produce its results, and saves those results in a new results block whose 
@@ -28,6 +27,8 @@ public:
     * @return Pointer to results block produced from the given work block. 
     */
    virtual std::unique_ptr<EAbstractAnalytic::Block> execute(const EAbstractAnalytic::Block* block) = 0;
+public:
+   explicit Serial(EAbstractAnalytic* parent);
 };
 
 

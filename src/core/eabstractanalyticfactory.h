@@ -17,12 +17,6 @@
 class EAbstractAnalyticFactory
 {
 public:
-   static EAbstractAnalyticFactory& instance();
-   static void setInstance(std::unique_ptr<EAbstractAnalyticFactory>&& instance);
-   /*!
-    * This is so any implementation of this class will be deconstructed correctly. 
-    */
-   virtual ~EAbstractAnalyticFactory() = default;
    /*!
     * This interface returns the total number of analytic types a program implements 
     * for ACE. All integers from 0 to one less than the size returned must be defined 
@@ -57,6 +51,13 @@ public:
     * @return Pointer to the new abstract analytic object of the given type. 
     */
    virtual std::unique_ptr<EAbstractAnalytic> make(quint16 type) const = 0;
+public:
+   static EAbstractAnalyticFactory& instance();
+   static void setInstance(std::unique_ptr<EAbstractAnalyticFactory>&& instance);
+   /*!
+    * This is so any implementation of this class will be deconstructed correctly. 
+    */
+   virtual ~EAbstractAnalyticFactory() = default;
 private:
    static void checkCommandNames(EAbstractAnalyticFactory* factory);
    static void checkCommandArguments(EAbstractAnalytic* analytic);

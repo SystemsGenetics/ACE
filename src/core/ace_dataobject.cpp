@@ -5,6 +5,7 @@
 #include "eabstractdatafactory.h"
 #include "common.h"
 #include "eexception.h"
+#include "edebug.h"
 
 
 
@@ -23,26 +24,27 @@ using namespace Ace;
  * @param path Path of the data object file to open. 
  *
  * @param parent Parent for this data object. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Open the data object file, read in the header data, and call the read data 
- *    interface of this object's abstract data object. 
- *
- * 2. If any exception occurs within this function then delete any allocated 
- *    resources and throw the exception again. 
  */
 DataObject::DataObject(const QString& path, QObject* parent):
    QObject(parent),
    _rawPath(path)
 {
+   EDEBUG_FUNC(this,path,parent)
+
+   // Open the data object file, read in the header data, and call the read data 
+   // interface of this object's abstract data object. 
    try
    {
-      openObject();
+      openObject(false);
       readHeader();
       _data->readData();
+      seek(_data->dataEnd());
+      stream() >> _userMeta;
+      seek(0);
    }
+
+   // If any exception occurs within this function then delete any allocated 
+   // resources and throw the exception again. 
    catch (...)
    {
       delete _file;
@@ -72,16 +74,6 @@ DataObject::DataObject(const QString& path, QObject* parent):
  *               object type or an exception is thrown. 
  *
  * @param parent Parent for this data object. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Open the data object file, signal this new data object is overwriting the 
- *    file, write out the header data, and call the new data interface for this 
- *    object's abstract data object. 
- *
- * 2. If any exception occurs within this function then delete any allocated 
- *    resources and throw the exception again. 
  */
 DataObject::DataObject(const QString& path, quint16 type, const EMetadata& system, QObject* parent):
    QObject(parent),
@@ -89,13 +81,21 @@ DataObject::DataObject(const QString& path, quint16 type, const EMetadata& syste
    _type(type),
    _system(system)
 {
+   EDEBUG_FUNC(this,path,type,&system,parent)
+
+   // Open the data object file, signal this new data object is overwriting the file, 
+   // write out the header data, and call the new data interface for this object's 
+   // abstract data object. 
    try
    {
-      openObject();
+      openObject(true);
       DataManager::instance().newDataOpened(_path,this);
       writeHeader();
       _data->writeNewData();
    }
+
+   // If any exception occurs within this function then delete any allocated 
+   // resources and throw the exception again. 
    catch (...)
    {
       delete _file;
@@ -118,6 +118,8 @@ DataObject::DataObject(const QString& path, quint16 type, const EMetadata& syste
  */
 QString DataObject::rawPath() const
 {
+   EDEBUG_FUNC(this)
+
    return _rawPath;
 }
 
@@ -133,6 +135,8 @@ QString DataObject::rawPath() const
  */
 QString DataObject::path() const
 {
+   EDEBUG_FUNC(this)
+
    return _path;
 }
 
@@ -148,6 +152,8 @@ QString DataObject::path() const
  */
 QString DataObject::fileName() const
 {
+   EDEBUG_FUNC(this)
+
    return _fileName;
 }
 
@@ -163,6 +169,8 @@ QString DataObject::fileName() const
  */
 quint16 DataObject::type() const
 {
+   EDEBUG_FUNC(this)
+
    return _type;
 }
 
@@ -179,6 +187,8 @@ quint16 DataObject::type() const
  */
 qint64 DataObject::size() const
 {
+   EDEBUG_FUNC(this)
+
    return _file->size() - _headerOffset;
 }
 
@@ -193,8 +203,10 @@ qint64 DataObject::size() const
  *
  * @return Root of system metadata for this data object. 
  */
-EMetadata DataObject::systemMeta() const
+const EMetadata& DataObject::systemMeta() const
 {
+   EDEBUG_FUNC(this)
+
    return _system;
 }
 
@@ -208,29 +220,12 @@ EMetadata DataObject::systemMeta() const
  * always an object type. 
  *
  * @return Root of user metadata for this data object. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If this data object's user metadata has not been written to file then return 
- *    its temporary user metadata stored in system memory. 
- *
- * 2. Seek to the end of this object's abstract data and read in the user metadata, 
- *    returning the read in user metadata. 
  */
-EMetadata DataObject::userMeta() const
+const EMetadata& DataObject::userMeta() const
 {
-   // Step 1
-   if ( !_userMetaWritten )
-   {
-      return _userMeta;
-   }
+   EDEBUG_FUNC(this);
 
-   // Step 2
-   EMetadata ret;
-   seek(_data->dataEnd());
-   stream() >> ret;
-   return ret;
+   return _userMeta;
 }
 
 
@@ -245,19 +240,13 @@ EMetadata DataObject::userMeta() const
  * thrown. 
  *
  * @param index The index that the cursor position in this data object is set to. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the given index is less than 0 then throw an exception, else to go the 
- *    next step. 
- *
- * 2. Call the qt file device seek function using the given index in addition to 
- *    this data object's header offset. If the seek call fails then throw an 
- *    exception. 
  */
 void DataObject::seek(qint64 index) const
 {
+   EDEBUG_FUNC(this,index)
+
+   // If the given index is less than 0 then throw an exception, else to go the next 
+   // step. 
    if ( index < 0 )
    {
       E_MAKE_EXCEPTION(e);
@@ -265,6 +254,9 @@ void DataObject::seek(qint64 index) const
       e.setDetails(tr("Seeking index cannot be negative."));
       throw e;
    }
+
+   // Call the qt file device seek function using the given index in addition to this 
+   // data object's header offset. If the seek call fails then throw an exception. 
    if ( !_file->seek(index + _headerOffset) )
    {
       E_MAKE_EXCEPTION(e);
@@ -286,6 +278,8 @@ void DataObject::seek(qint64 index) const
  */
 const EDataStream& DataObject::stream() const
 {
+   EDEBUG_FUNC(this)
+
    return *_stream;
 }
 
@@ -305,18 +299,13 @@ const EDataStream& DataObject::stream() const
  *
  * @param size The number of bytes to allocate after this data object's current 
  *             cursor position. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the given size is less than 0 then throw an exception, else go to the next 
- *    step. 
- *
- * 2. Resize this data object's file to the given size in addition to its current 
- *    cursor position. If the resize call fails then throw an exception. 
  */
 void DataObject::allocate(int size)
 {
+   EDEBUG_FUNC(this,size)
+
+   // If the given size is less than 0 then throw an exception, else go to the next 
+   // step. 
    if ( size < 0 )
    {
       E_MAKE_EXCEPTION(e);
@@ -324,6 +313,9 @@ void DataObject::allocate(int size)
       e.setDetails(tr("Allocation size cannot be negative."));
       throw e;
    }
+
+   // Resize this data object's file to the given size in addition to its current 
+   // cursor position. If the resize call fails then throw an exception. 
    if ( !_file->resize(_file->pos() + size) )
    {
       E_MAKE_EXCEPTION(e);
@@ -345,6 +337,8 @@ void DataObject::allocate(int size)
  */
 EDataStream& DataObject::stream()
 {
+   EDEBUG_FUNC(this)
+
    return *_stream;
 }
 
@@ -360,6 +354,8 @@ EDataStream& DataObject::stream()
  */
 EAbstractData* DataObject::data()
 {
+   EDEBUG_FUNC(this)
+
    return _data;
 }
 
@@ -374,21 +370,13 @@ EAbstractData* DataObject::data()
  *
  * @param newRoot New root metadata value that this data object's user metadata is 
  *                set to. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the given metadata is not an object type then throw on an exception, else 
- *    go to the next step. 
- *
- * 2. If this data object's user metadata is not ready to be written then set this 
- *    object's temporary user metadata value to the new one given, else seek to the 
- *    end of this data object's data and write the new user metadata to this data 
- *    object. 
  */
 void DataObject::setUserMeta(const EMetadata& newRoot)
 {
-   // Step 1
+   EDEBUG_FUNC(this,&newRoot)
+
+   // If the given metadata is not an object type then throw on an exception, else go 
+   // to the next step. 
    if ( !newRoot.isObject() )
    {
       E_MAKE_EXCEPTION(e);
@@ -397,14 +385,8 @@ void DataObject::setUserMeta(const EMetadata& newRoot)
       throw e;
    }
 
-   // Step 2
-   if ( !_userMetaWritten )
-   {
-      _userMeta = newRoot;
-      return;
-   }
-   seek(_data->dataEnd());
-   stream() << newRoot;
+   // Set this object's user metadata value to the new one given. 
+   _userMeta = newRoot;
 }
 
 
@@ -416,21 +398,14 @@ void DataObject::setUserMeta(const EMetadata& newRoot)
  * Finalizes this new data object by writing out the user metadata to an empty 
  * object if it has not already been written. If it has already been written or 
  * this is not a new data object then this does nothing. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If this object's user metadata has not been written then write it with an 
- *    empty metadata object type. 
  */
 void DataObject::finalize()
 {
-   // Step 1
-   if ( !_userMetaWritten )
-   {
-      _userMetaWritten = true;
-      setUserMeta(_userMeta);
-   }
+   EDEBUG_FUNC(this);
+
+   // Write the user metadata to the end of this new data object file. 
+   seek(_data->dataEnd());
+   stream() << _userMeta;
 }
 
 
@@ -447,20 +422,14 @@ void DataObject::finalize()
  *             this data object. 
  *
  * @param size Number of bytes to read from this data object. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If this data object's file cursor position is less than the header offset and 
- *    this object's header has already been read then throw an exception, else go 
- *    the next step. 
- *
- * 2. Read the given number of bytes from this data object at the current cursor 
- *    position to the given character array. If reading failed then throw an 
- *    exception. 
  */
 void DataObject::read(char* data, qint64 size) const
 {
+   EDEBUG_FUNC(this,(void*)data,size)
+
+   // If this data object's file cursor position is less than the header offset and 
+   // this object's header has already been read then throw an exception, else go the 
+   // next step. 
    if ( _headerRead && _file->pos() < _headerOffset )
    {
       E_MAKE_EXCEPTION(e);
@@ -468,6 +437,10 @@ void DataObject::read(char* data, qint64 size) const
       e.setDetails(tr("Cannot read from header section of data object file."));
       throw e;
    }
+
+   // Read the given number of bytes from this data object at the current cursor 
+   // position to the given character array. If reading failed then throw an 
+   // exception. 
    if ( _file->read(data,size) != size )
    {
       E_MAKE_EXCEPTION(e);
@@ -492,20 +465,14 @@ void DataObject::read(char* data, qint64 size) const
  *
  * @param size The number of bytes to write to this data object from the given 
  *             character array. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If this data object's file cursor position is less than the header offset and 
- *    this object's header has already been read then throw an exception, else go 
- *    the next step. 
- *
- * 2. Write the given number of bytes to this data object at the current cursor 
- *    position from the given character array. If writing failed then throw an 
- *    exception. 
  */
 void DataObject::write(const char* data, qint64 size)
 {
+   EDEBUG_FUNC(this,(void*)data,size)
+
+   // If this data object's file cursor position is less than the header offset and 
+   // this object's header has already been read then throw an exception, else go the 
+   // next step. 
    if ( _headerRead && _file->pos() < _headerOffset )
    {
       E_MAKE_EXCEPTION(e);
@@ -513,6 +480,10 @@ void DataObject::write(const char* data, qint64 size)
       e.setDetails(tr("Cannot write to header section of data object file."));
       throw e;
    }
+
+   // Write the given number of bytes to this data object at the current cursor 
+   // position from the given character array. If writing failed then throw an 
+   // exception. 
    if ( _file->write(data,size) != size )
    {
       E_MAKE_EXCEPTION(e);
@@ -534,15 +505,13 @@ void DataObject::write(const char* data, qint64 size)
  *                      overwriting. 
  *
  * @param object Pointer to the new data object overwriting the given file path. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If the given path matches this object's path and the given object pointer 
- *    does not match this object's pointer then emit the overwritten signal. 
  */
 void DataObject::dataOverwritten(const QString& canonicalPath, Ace::DataObject* object)
 {
+   EDEBUG_FUNC(this,canonicalPath,object)
+
+   // If the given path matches this object's path and the given object pointer does 
+   // not match this object's pointer then emit the overwritten signal. 
    if ( canonicalPath == _path && object != this )
    {
       emit overwritten();
@@ -555,32 +524,33 @@ void DataObject::dataOverwritten(const QString& canonicalPath, Ace::DataObject* 
 
 
 /*!
- * Opens this data object's file for read and write access and creates a new data 
- * stream associated with this data object. If there is an error opening the file 
- * then an exception is thrown. 
+ * Opens this data object's file for reading or writing access and creates a new 
+ * data stream associated with this data object. If there is an error opening the 
+ * file then an exception is thrown. 
  *
- *
- * Steps of Operation: 
- *
- * 1. Open this data object's file. If opening the file failed then throw an 
- *    exception, else go to the next step. 
- *
- * 2. Create a data stream object and assign it to this data object. 
- *
- * 3. Connect data manager signals with this object and set this data object's file 
- *    name and canonical file path. 
+ * @param overwrite True if this is a new object file and being opened for reading 
+ *                  and writing or false if it is being opened for reading. 
  */
-void DataObject::openObject()
+void DataObject::openObject(bool overwrite)
 {
+   EDEBUG_FUNC(this)
+
+   // Open this data object's file. If opening the file failed then throw an 
+   // exception, else go to the next step. 
    _file = new QFile(_rawPath,this);
-   if ( !_file->open(QIODevice::ReadWrite) )
+   if ( !_file->open(overwrite? QIODevice::ReadWrite : QIODevice::ReadOnly) )
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(tr("System Error"));
       e.setDetails(tr("Cannot open file %1; %2").arg(_rawPath).arg(_file->errorString()));
       throw e;
    }
+
+   // Create a data stream object and assign it to this data object. 
    _stream = new EDataStream(this);
+
+   // Connect data manager signals with this object and set this data object's file 
+   // name and canonical file path. 
    connect(&DataManager::instance()
            ,&Ace::DataManager::dataOverwritten
            ,this
@@ -600,22 +570,14 @@ void DataObject::openObject()
  * data interface as well. This assumes the file already contains an existing ACE 
  * data object. If reading in the file as a data object fails then an exception is 
  * thrown. 
- *
- *
- * Steps of Operation: 
- *
- * 1. Read in this data object's special value, type, name, extension, and system 
- *    metadata of this data object's file. If the special value is incorrect then 
- *    throw an exception, else go to the next step. 
- *
- * 2. Create a new abstract data object for this data object and set this data 
- *    object's header offset to the current cursor position of this data object's 
- *    file. 
- *
- * 3. Set this data object's header as read. 
  */
 void DataObject::readHeader()
 {
+   EDEBUG_FUNC(this)
+
+   // Read in this data object's special value, type, name, extension, and system 
+   // metadata of this data object's file. If the special value is incorrect then 
+   // throw an exception, else go to the next step. 
    qint64 value;
    QString name;
    QString extension;
@@ -627,8 +589,14 @@ void DataObject::readHeader()
       e.setDetails(tr("Failed reading in file %1: it is not a data object file.").arg(_rawPath));
       throw e;
    }
+
+   // Create a new abstract data object for this data object and set this data 
+   // object's header offset to the current cursor position of this data object's 
+   // file. 
    makeData(name,extension);
    _headerOffset = _file->pos();
+
+   // Set this data object's header as read. 
    _headerRead = true;
 }
 
@@ -642,29 +610,13 @@ void DataObject::readHeader()
  * abstract data object as well. This will truncate the existing file and overwrite 
  * any existing data. If truncation fails or the system metadata is not an object 
  * type then an exception is thrown. 
- *
- *
- * Steps of Operation: 
- *
- * 1. If this new data object's system metadata is not an object type then throw an 
- *    exception, else go to the next step. 
- *
- * 2. Make a new abstract data object for this data object, providing the correct 
- *    name and extension for it. 
- *
- * 3. Truncate this data object's file to 0. If the truncation failed then throw an 
- *    exception, else go to the next step. 
- *
- * 4. Write out this data object's special value, type, name, extension, and system 
- *    metadata to this data object's file. 
- *
- * 5. Set this data object's header offset to the current cursor position of this 
- *    data object's file. 
- *
- * 6. Set this data object's header as read and its user metadata as not written. 
  */
 void DataObject::writeHeader()
 {
+   EDEBUG_FUNC(this)
+
+   // If this new data object's system metadata is not an object type then throw an 
+   // exception, else go to the next step. 
    if ( !_system.isObject() )
    {
       E_MAKE_EXCEPTION(e);
@@ -672,8 +624,14 @@ void DataObject::writeHeader()
       e.setDetails(tr("System metadata must be an object type."));
       throw e;
    }
+
+   // Make a new abstract data object for this data object, providing the correct 
+   // name and extension for it. 
    EAbstractDataFactory& factory {EAbstractDataFactory::instance()};
    makeData(factory.name(_type),factory.fileExtension(_type));
+
+   // Truncate this data object's file to 0. If the truncation failed then throw an 
+   // exception, else go to the next step. 
    if ( !_file->resize(0) )
    {
       E_MAKE_EXCEPTION(e);
@@ -681,13 +639,20 @@ void DataObject::writeHeader()
       e.setDetails(tr("Failed truncating file %1: %2").arg(_rawPath).arg(_file->errorString()));
       throw e;
    }
+
+   // Write out this data object's special value, type, name, extension, and system 
+   // metadata to this data object's file. 
    stream() << _specialValue
             << _type << factory.name(_type)
             << factory.fileExtension(_type)
             << _system;
+
+   // Set this data object's header offset to the current cursor position of this 
+   // data object's file. 
    _headerOffset = _file->pos();
+
+   // Set this data object's header as read and its user metadata as not written. 
    _headerRead = true;
-   _userMetaWritten = false;
 }
 
 
@@ -704,16 +669,14 @@ void DataObject::writeHeader()
  * @param name  
  *
  * @param extension  
- *
- *
- * Steps of Operation: 
- *
- * 1. If the given name or extension does not match would they should be for the 
- *    given data type then throw an exception, else create a new abstract data 
- *    object setting its parent to this data object. 
  */
 void DataObject::makeData(const QString& name, const QString& extension)
 {
+   EDEBUG_FUNC(this,name,extension)
+
+   // If the given name or extension does not match would they should be for the 
+   // given data type then throw an exception, else create a new abstract data object 
+   // setting its parent to this data object. 
    EAbstractDataFactory& factory {EAbstractDataFactory::instance()};
    if ( _type >= factory.size()
         || name != factory.name(_type)

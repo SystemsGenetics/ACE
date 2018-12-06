@@ -13,15 +13,17 @@ TEMPLATE = lib
 SOURCES += \
     analyticfactory.cpp \
     datafactory.cpp \
-    integerarray.cpp \
+    dataframe.cpp \
+    dataframe_iterator.cpp \
+    dataframe_model.cpp \
     mathtransform.cpp \
-    importintegerarray.cpp \
-    exportintegerarray.cpp \
+    importdataframe.cpp \
+    importdataframe_input.cpp \
+    exportdataframe.cpp \
+    exportdataframe_input.cpp \
     mathtransform_input.cpp \
     mathtransform_serial.cpp \
     mathtransform_block.cpp \
-    importintegerarray_input.cpp \
-    exportintegerarray_input.cpp \
     mathtransform_opencl.cpp \
     mathtransform_opencl_kernel.cpp \
     mathtransform_opencl_worker.cpp
@@ -29,16 +31,18 @@ SOURCES += \
 HEADERS += \
     analyticfactory.h \
     datafactory.h \
-    integerarray.h \
+    dataframe.h \
+    dataframe_iterator.h \
+    dataframe_model.h \
     mathtransform.h \
-    importintegerarray.h \
-    exportintegerarray.h \
+    importdataframe.h \
+    importdataframe_input.h \
+    exportdataframe.h \
+    exportdataframe_input.h \
     mathtransform_input.h \
     mathtransform_serial.h \
     global.h \
     mathtransform_block.h \
-    importintegerarray_input.h \
-    exportintegerarray_input.h \
     mathtransform_opencl.h \
     mathtransform_opencl_kernel.h \
     mathtransform_opencl_worker.h

@@ -1,4 +1,8 @@
 #include "eabstractanalytic_input.h"
+#include "edebug.h"
+
+
+
 //
 
 
@@ -13,4 +17,6 @@
  */
 EAbstractAnalytic::Input::Input(EAbstractAnalytic* parent):
    QObject(parent)
-{}
+{
+   EDEBUG_FUNC(this,parent)
+}
