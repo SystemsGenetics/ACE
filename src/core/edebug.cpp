@@ -666,6 +666,9 @@ EDebug& EDebug::operator<<(Ace::Analytic::AbstractMPI::Type value)
    case Ace::Analytic::AbstractMPI::OpenCL:
       *this << NoQuote << QStringLiteral("OpenCL") << Quote;
       break;
+   case Ace::Analytic::AbstractMPI::CUDA:
+      *this << NoQuote << QStringLiteral("CUDA") << Quote;
+      break;
    }
 
    // Return a reference to this object. 

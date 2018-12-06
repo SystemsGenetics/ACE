@@ -29,6 +29,7 @@ public:
    class Input;
    class Serial;
    class OpenCL;
+   class CUDA;
 public:
    /*!
     * This interface returns the total number of blocks this analytic must process as 
@@ -59,6 +60,7 @@ public:
    virtual std::unique_ptr<EAbstractAnalytic::Block> makeResult() const;
    virtual EAbstractAnalytic::Serial* makeSerial();
    virtual EAbstractAnalytic::OpenCL* makeOpenCL();
+   virtual EAbstractAnalytic::CUDA* makeCUDA();
    virtual void initialize();
    virtual void initializeOutputs();
    virtual void finish();

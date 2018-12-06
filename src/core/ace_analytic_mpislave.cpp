@@ -2,8 +2,10 @@
 #include "ace_analytic_mpimaster.h"
 #include "ace_analytic_serialrun.h"
 #include "ace_analytic_openclrun.h"
+#include "ace_analytic_cudarun.h"
 #include "ace_qmpi.h"
 #include "ace_settings.h"
+#include "cuda_device.h"
 #include "opencl_platform.h"
 #include "opencl_device.h"
 #include "eabstractanalytic_block.h"
@@ -86,7 +88,7 @@ MPISlave::~MPISlave()
  *                 resource type is OpenCL. 
  *
  * @param device The optional device index this slave node will use if its resource 
- *               type is OpenCL. 
+ *               type is OpenCL or CUDA. 
  */
 void MPISlave::mpiStart(Type type, int platform, int device)
 {
@@ -105,6 +107,16 @@ void MPISlave::mpiStart(Type type, int platform, int device)
       if ( setupOpenCL(platform,device) )
       {
          code = ReadyAsOpenCL;
+      }
+      else
+      {
+         setupSerial();
+      }
+      break;
+   case Type::CUDA:
+      if ( setupCUDA(device) )
+      {
+         code = ReadyAsCUDA;
       }
       else
       {
@@ -314,6 +326,41 @@ void MPISlave::process(const QByteArray& data)
    // abstract run object. 
    ++_workSize;
    _runner->addWork(std::move(work));
+}
+
+
+
+
+
+
+/*!
+ * Initializes a new CUDA run object for block processing of this slave node
+ * manager, returning true if this was successful or false otherwise. If the given
+ * device index is not a valid CUDA device then an exception is thrown.
+ *
+ * @param device
+ *
+ * @return True if a valid CUDA run object was created at set to this object or
+ *         false otherwise.
+ */
+bool MPISlave::setupCUDA(int device)
+{
+   EDEBUG_FUNC(this)
+
+   if ( device < 0 || device >= CUDA::Device::size() )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Invalid Argument"));
+      e.setDetails(tr("CUDA device %1 does not exist.").arg(device));
+      throw e;
+   }
+   bool ret {false};
+   if ( EAbstractAnalytic::CUDA* cuda = analytic()->makeCUDA() )
+   {
+      _runner = new CUDARun(cuda,CUDA::Device::get(device),this,this);
+      ret = true;
+   }
+   return ret;
 }
 
 

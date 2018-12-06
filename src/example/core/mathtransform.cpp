@@ -3,6 +3,7 @@
 #include "mathtransform_input.h"
 #include "mathtransform_serial.h"
 #include "mathtransform_opencl.h"
+#include "mathtransform_cuda.h"
 #include "dataframe_iterator.h"
 #include "core/elog.h"
 
@@ -161,6 +162,21 @@ EAbstractAnalytic::Serial* MathTransform::makeSerial()
 EAbstractAnalytic::OpenCL* MathTransform::makeOpenCL()
 {
    return new OpenCL(this);
+}
+
+
+
+
+
+
+/*!
+ * Implements the interface that makes a new CUDA object and returns its pointer. 
+ *
+ * @return Pointer to new CUDA object. 
+ */
+EAbstractAnalytic::CUDA* MathTransform::makeCUDA()
+{
+   return new CUDA(this);
 }
 
 

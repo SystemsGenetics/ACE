@@ -25,20 +25,25 @@ namespace Ace
    private slots:
       void okClicked();
       void applyClicked();
-      void currentPlatformChanged(int index);
+      void currentOpenCLPlatformChanged(int index);
    private:
       QLayout* setupWarning();
       QLayout* createForm();
       QLayout* createButtons();
+      QLayout* createCUDA();
       QLayout* createOpenCL();
+      /*!
+       * The combo box for this dialog used to select the CUDA device.
+       */
+      QComboBox* _cudaDeviceCombo;
       /*!
        * The combo box for this dialog used to select the OpenCL platform. 
        */
-      QComboBox* _platformCombo;
+      QComboBox* _openclPlatformCombo;
       /*!
        * The combo box for this dialog used to select the OpenCL device. 
        */
-      QComboBox* _deviceCombo;
+      QComboBox* _openclDeviceCombo;
       /*!
        * The spin box for this dialog used to edit the thread size setting. 
        */

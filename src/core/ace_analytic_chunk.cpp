@@ -2,7 +2,9 @@
 #include <QTimer>
 #include "ace_analytic_serialrun.h"
 #include "ace_analytic_openclrun.h"
+#include "ace_analytic_cudarun.h"
 #include "ace_settings.h"
+#include "cuda_device.h"
 #include "opencl_platform.h"
 #include "opencl_device.h"
 #include "eabstractanalytic_block.h"
@@ -170,12 +172,17 @@ void Chunk::start()
 {
    EDEBUG_FUNC(this)
 
-   // Setup OpenCL, setup serial if OpenCL fails, and connect this abstract run's 
-   // finished signal with this manager's finish slot. 
-   if ( !setupOpenCL() )
+   // Setup CUDA, setup OpenCL if CUDA fails, setup serial if OpenCL fails, and
+   // if no runner can be setup then throw an error.
+   if ( !setupCUDA() && !setupOpenCL() && !setupSerial() )
    {
-      setupSerial();
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Logic Error"));
+      e.setDetails(tr("Cannot run simple analytic in chunk mode."));
+      throw e;
    }
+
+   // Connect this abstract run's finished signal with this manager's finish slot. 
    connect(_runner,&AbstractRun::finished,this,&AbstractManager::finish);
 
    // Setup the chunk file, setup the chunk indexes, and schedule the process slot to 
@@ -275,6 +282,42 @@ void Chunk::setupIndexes()
 
 
 /*!
+ * Attempts to initialize a CUDA run object for block processing for this
+ * manager. If successful sets this manager's abstract run pointer.
+ */
+bool Chunk::setupCUDA()
+{
+   EDEBUG_FUNC(this)
+
+   // Initialize the return value and get a reference to global settings. 
+   bool ret {false};
+   Settings& settings {Settings::instance()};
+
+   // Check to see if global settings has CUDA enabled. 
+   if ( settings.cudaDevicePointer() )
+   {
+      // Attempt to create a new CUDA object from this manager's analytic, checking to 
+      // see if it worked. 
+      EAbstractAnalytic::CUDA* cuda {analytic()->makeCUDA()};
+      if ( cuda )
+      {
+         // Create a new CUDA analytic run from the created CUDA instance and set the 
+         // return to true. 
+         _runner = new CUDARun(cuda,settings.cudaDevicePointer(),this,this);
+         ret = true;
+      }
+   }
+
+   // Return the success of setting up CUDA. 
+   return ret;
+}
+
+
+
+
+
+
+/*!
  * Attempts to initialize an OpenCL run object for block processing for this 
  * manager. If successful sets this manager's abstract run pointer. 
  *
@@ -317,27 +360,21 @@ bool Chunk::setupOpenCL()
  * not already been set. If this manager's analytic fails creating a valid abstract 
  * serial object then an exception is thrown. 
  */
-void Chunk::setupSerial()
+bool Chunk::setupSerial()
 {
    EDEBUG_FUNC(this)
 
-   // If this object already has an abstract run object then do nothing and exit, 
-   // else go to the next step. 
-   if ( !_runner )
+   // Initialize the return value. 
+   bool ret {false};
+
+   // If this manager's analytic creates a valid abstract serial object then create a 
+   // new serial run object and set it to this object's run pointer.
+   if ( EAbstractAnalytic::Serial* serial = analytic()->makeSerial() )
    {
-      // If this manager's analytic creates a valid abstract serial object then create a 
-      // new serial run object and set it to this object's run pointer, else throw an 
-      // exception. 
-      if ( EAbstractAnalytic::Serial* serial = analytic()->makeSerial() )
-      {
-         _runner = new SerialRun(serial,this,this);
-      }
-      else
-      {
-         E_MAKE_EXCEPTION(e);
-         e.setTitle(tr("Logic Error"));
-         e.setDetails(tr("Cannot run simple analytic in chunk mode."));
-         throw e;
-      }
+      _runner = new SerialRun(serial,this,this);
+      ret = true;
    }
+
+   // Return the success of setting up serial. 
+   return ret;
 }

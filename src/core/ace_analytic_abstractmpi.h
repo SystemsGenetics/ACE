@@ -30,7 +30,7 @@ namespace Ace
          {
             /*!
              * Defines the serial resource which causes a slave node to run in plain serial 
-             * mode with no OpenCL device. 
+             * mode with no acceleration. 
              */
             Serial
             /*!
@@ -38,6 +38,11 @@ namespace Ace
              * OpenCL mode with a given platform and device index. 
              */
             ,OpenCL
+            /*!
+             * Defines the CUDA resource which causes the slave node to run in accelerated 
+             * CUDA mode with a given device index. 
+             */
+            ,CUDA
          };
       protected:
          virtual void mpiStart(Type type, int platform, int device);
@@ -62,6 +67,11 @@ namespace Ace
              * node to signal it is ready to execute work blocks using an OpenCL run object. 
              */
             ,ReadyAsOpenCL = -3
+            /*!
+             * Defines the ready as CUDA code which is sent to the master node by a slave
+             * node to signal it is ready to execute work blocks using a CUDA run object.
+             */
+            ,ReadyAsCUDA = -4
          };
          explicit AbstractMPI(quint16 type);
       protected slots:

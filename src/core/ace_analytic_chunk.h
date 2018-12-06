@@ -38,8 +38,9 @@ namespace Ace
       private:
          void setupFile();
          void setupIndexes();
+         bool setupCUDA();
          bool setupOpenCL();
-         void setupSerial();
+         bool setupSerial();
          /*!
           * The chunk index for this chunk manager. 
           */

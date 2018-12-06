@@ -1,5 +1,6 @@
 #include "ace_settings.h"
 #include <QSettings>
+#include "cuda_device.h"
 #include "opencl_platform.h"
 #include "eexception.h"
 
@@ -49,11 +50,15 @@ const bool Settings::_loggingEnabledDefault {true};
  */
 const int Settings::_loggingPortDefault {40000};
 /*!
+ * The qt settings key used to persistently store the CUDA device index value.
+ */
+const char* Settings::_cudaDeviceKey {"cuda.device"};
+/*!
  * The qt settings key used to persistently store the platform index value. 
  */
 const char* Settings::_openCLPlatformKey {"opencl.platform"};
 /*!
- * The qt settings key used to persistently store the device index value. 
+ * The qt settings key used to persistently store the OpenCL device index value.
  */
 const char* Settings::_openCLDeviceKey {"opencl.device"};
 /*!
@@ -271,6 +276,47 @@ Settings& Settings::instance()
 
 
 /*!
+ * Returns the index of the preferred CUDA device.
+ *
+ * @return Index of the preferred CUDA device.
+ */
+int Settings::cudaDevice() const
+{
+   return _cudaDevice;
+}
+
+
+
+
+
+
+/*!
+ * Returns a pointer to the preferred CUDA device or null if the preference is
+ * none.
+ *
+ * @return Pointer to preferred CUDA device or null if none is preferred.
+ *
+ *
+ * Steps of Operation:
+ *
+ * 1. If the device index is out of range then return a null pointer, else
+ *    return a pointer to the device with the device index.
+ */
+CUDA::Device* Settings::cudaDevicePointer() const
+{
+   if ( _cudaDevice < 0 || _cudaDevice >= CUDA::Device::get(_cudaDevice)->size() )
+   {
+      return nullptr;
+   }
+   return CUDA::Device::get(_cudaDevice);
+}
+
+
+
+
+
+
+/*!
  * Returns the platform index of the preferred OpenCL device. 
  *
  * @return Platform index of the preferred OpenCL device. 
@@ -425,6 +471,25 @@ bool Settings::loggingEnabled() const
 int Settings::loggingPort() const
 {
    return _loggingPort;
+}
+
+
+
+
+
+
+/*!
+ * Sets the index for the preferred CUDA device. 
+ *
+ * @param index Index of the preferred CUDA device. 
+ */
+void Settings::setCUDADevice(int index)
+{
+   if ( index != _cudaDevice )
+   {
+      _cudaDevice = index;
+      setValue(_cudaDeviceKey,_cudaDevice);
+   }
 }
 
 
@@ -652,6 +717,7 @@ Settings::Settings()
    // Initialize all settings this class stores, setting them to their default values 
    // if their values do not exist in qt settings with their given key. 
    QSettings settings(_organization,_application);
+   _cudaDevice = settings.value(_cudaDeviceKey,_cudaDeviceDefault).toInt();
    _openCLPlatform = settings.value(_openCLPlatformKey,_openCLPlatformDefault).toInt();
    _openCLDevice = settings.value(_openCLDeviceKey,_openCLDeviceDefault).toInt();
    _threadSize = settings.value(_threadSizeKey,_threadSizeDefault).toInt();

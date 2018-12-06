@@ -1,6 +1,7 @@
 #include "ace_settingsrun.h"
 #include <QTextStream>
 #include "../core/ace_settings.h"
+#include "../core/cuda_device.h"
 #include "../core/opencl_platform.h"
 #include "../core/opencl_device.h"
 #include "../core/eexception.h"
@@ -47,8 +48,9 @@ void SettingsRun::execute()
       QTextStream stream(stdout);
       Ace::Settings& settings {Ace::Settings::instance()};
       stream << "SETTINGS\n\n";
+      stream << "            CUDA Device: " << cudaDeviceString() << "\n";
       stream << "          OpenCL Device: " << openCLDeviceString() << "\n";
-      stream << "        ACU Thread Size: " << QString::number(settings.threadSize()) << "\n";
+      stream << "CUDA/OpenCL Thread Size: " << QString::number(settings.threadSize()) << "\n";
       stream << "        MPI Buffer Size: " << QString::number(settings.bufferSize()) << "\n";
       stream << "Chunk Working Directory: " << settings.chunkDir() << "\n";
       stream << "           Chunk Prefix: " << settings.chunkPrefix() << "\n";
@@ -103,6 +105,30 @@ void SettingsRun::settings()
 
 
 /*!
+ * Returns the CUDA device setting as a string.
+ *
+ * @return CUDA device setting.
+ */
+QString SettingsRun::cudaDeviceString()
+{
+   EDEBUG_FUNC(this)
+
+   QString ret {"none"};
+   Ace::Settings& settings {Ace::Settings::instance()};
+   int device {settings.cudaDevice()};
+   if ( device >= 0 )
+   {
+      ret = QString::number(device);
+   }
+   return ret;
+}
+
+
+
+
+
+
+/*!
  * Returns the OpenCL device setting as a string. 
  *
  * @return OpenCL device setting. 
@@ -141,7 +167,7 @@ void SettingsRun::set()
    // Determine which setting is to be set, calling the appropriate method and 
    // popping this object's first command argument. If the setting is unknown then 
    // throw an exception. 
-   enum {Unknown=-1,OpenCLCom,Threads,Buffer,ChunkDir,ChunkPre,ChunkExt,Logging};
+   enum {Unknown=-1,CUDACom,OpenCLCom,Threads,Buffer,ChunkDir,ChunkPre,ChunkExt,Logging};
    if ( _command.size() < 1 )
    {
       E_MAKE_EXCEPTION(e);
@@ -149,9 +175,13 @@ void SettingsRun::set()
       e.setDetails(QObject::tr("Settings set requires sub argument, exiting..."));
       throw e;
    }
-   QStringList list {"opencl","threads","buffer","chunkdir","chunkpre","chunkext","logging"};
+   QStringList list {"cuda","opencl","threads","buffer","chunkdir","chunkpre","chunkext","logging"};
    switch (_command.peek(list))
    {
+   case CUDACom:
+      _command.pop();
+      setCUDA();
+      break;
    case OpenCLCom:
       _command.pop();
       setOpenCL();
@@ -197,6 +227,52 @@ void SettingsRun::set()
 
 
 /*!
+ * Executes the settings set cuda command. This simply takes the device index
+ * and sets the CUDA device with that index. The special "none" string sets the
+ * CUDA device to none.
+ */
+void SettingsRun::setCUDA()
+{
+   EDEBUG_FUNC(this)
+
+   auto invalid = [this]()
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(QObject::tr("Invalid argument"));
+      e.setDetails(QObject::tr("Given CUDA device '%1' invalid, exiting...").arg(_command.first()));
+      throw e;
+   };
+   if ( _command.size() < 1 )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(QObject::tr("Invalid argument"));
+      e.setDetails(QObject::tr("Settings set cuda requires sub argument, exiting..."));
+      throw e;
+   }
+   int device {-1};
+   if ( _command.first() != QString("none") )
+   {
+      bool ok;
+      device = _command.first().toInt(&ok);
+      if ( !ok )
+      {
+         invalid();
+      }
+      if ( device < 0 || device >= CUDA::Device::size() )
+      {
+         invalid();
+      }
+   }
+   Ace::Settings& settings {Ace::Settings::instance()};
+   settings.setCUDADevice(device);
+}
+
+
+
+
+
+
+/*!
  * Executes the settings set opencl command. This simply takes the device argument, 
  * parsing it into its platform and device index, and then setting the OpenCL 
  * device with those indexes. The special "none" string sets the OpenCL device to 
@@ -212,14 +288,14 @@ void SettingsRun::setOpenCL()
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(QObject::tr("Invalid argument"));
-      e.setDetails(QObject::tr("Given ACU device '%1' invalid, exiting...").arg(_command.first()));
+      e.setDetails(QObject::tr("Given OpenCL device '%1' invalid, exiting...").arg(_command.first()));
       throw e;
    };
    if ( _command.size() < 1 )
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(QObject::tr("Invalid argument"));
-      e.setDetails(QObject::tr("Settings set ACU requires sub argument, exiting..."));
+      e.setDetails(QObject::tr("Settings set OpenCL requires sub argument, exiting..."));
       throw e;
    }
 
@@ -473,7 +549,7 @@ void SettingsRun::list()
 
    // If this object's command argument size is empty then throw an exception, else 
    // go to the next step. 
-   enum {Unknown=-1,OpenCLCom};
+   enum {Unknown=-1,CUDACom,OpenCLCom};
    if ( _command.size() < 1 )
    {
       E_MAKE_EXCEPTION(e);
@@ -485,9 +561,12 @@ void SettingsRun::list()
    // Parse the first argument to determine which list command is requested, calling 
    // the appropriate method for the command given. If the command is not recognized 
    // then throw an exception. 
-   QStringList list {"opencl"};
+   QStringList list {"cuda","opencl"};
    switch (_command.peek(list))
    {
+   case CUDACom:
+      listCUDA();
+      break;
    case OpenCLCom:
       listOpenCL();
       break;
@@ -499,6 +578,29 @@ void SettingsRun::list()
                       .arg(_command.first()));
          throw e;
       }
+   }
+}
+
+
+
+
+
+
+/*!
+ * Executes the settings list cuda command, listing all available CUDA devices
+ * by their device index and name to standard output.
+ */
+void SettingsRun::listCUDA()
+{
+   EDEBUG_FUNC(this)
+
+   QTextStream stream (stdout);
+   for(int d = 0; d < CUDA::Device::size() ;++d)
+   {
+      stream << QString::number(d)
+             << " "
+             << CUDA::Device::get(d)->name()
+             << "\n";
    }
 }
 
