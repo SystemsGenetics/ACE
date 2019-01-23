@@ -11,7 +11,8 @@ SOURCES += \
     ace_command.cpp \
     ace_run.cpp \
     eapplication.cpp \
-    ace_settingsrun.cpp
+    ace_settingsrun.cpp \
+    ace_helprun.cpp
 
 HEADERS += \
     ace_options.h \
@@ -19,11 +20,12 @@ HEADERS += \
     ace_run.h \
     ace.h \
     eapplication.h \
-    ace_settingsrun.h
+    ace_settingsrun.h \
+    ace_helprun.h
 
 isEmpty(PREFIX) { PREFIX = /usr/local }
 library.path = $${PREFIX}/lib
-library.extra = cp -fd ../libs/lib$${TARGET}.so* $${PREFIX}/lib/
+library.extra = cp -fd $${OUT_PWD}/../libs/lib$${TARGET}.so* $${PREFIX}/lib/
 includes.path = $${PREFIX}/include/ace/console
 includes.files = $${PWD}/*.h
 INSTALLS += library includes

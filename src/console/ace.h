@@ -7,6 +7,7 @@ namespace Ace
 {
    class Command;
    class Options;
+   class HelpRun;
    class SettingsRun;
    class Run;
 }

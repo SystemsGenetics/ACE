@@ -91,7 +91,7 @@ void SettingsRun::settings()
       {
          E_MAKE_EXCEPTION(e);
          e.setTitle(QObject::tr("Invalid argument"));
-         e.setDetails(QObject::tr("Settings requires sub argument, exiting...").arg(command));
+         e.setDetails(QObject::tr("Unknown sub argument '%1', exiting...").arg(command));
          throw e;
       }
    }
