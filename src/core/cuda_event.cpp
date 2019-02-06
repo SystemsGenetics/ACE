@@ -3,14 +3,20 @@
 
 
 using namespace CUDA;
+//
 
 
 
 
 
 
+/*!
+ * Constructs a new event.
+ */
 Event::Event()
 {
+   // Create a new event and assign it to this object's state. If creation fails
+   // then throw an exception.
    CUDA_SAFE_CALL(cuEventCreate(&_id, CU_EVENT_DEFAULT));
 }
 
@@ -19,6 +25,12 @@ Event::Event()
 
 
 
+/*!
+ * Constructs a new event taking the CUDA event or null state of the given event.
+ *
+ * @param other The other event object whose data is taken and set to this new 
+ *              event.
+ */
 Event::Event(Event&& other):
    _id(other._id)
 {
@@ -30,8 +42,13 @@ Event::Event(Event&& other):
 
 
 
+/*!
+ * Releases the underlying CUDA event.
+ */
 Event::~Event()
 {
+   // Destroy this event object's state. If this command fails then throw an
+   // exception.
    CUDA_SAFE_CALL(cuEventDestroy(_id));
 }
 
@@ -40,8 +57,17 @@ Event::~Event()
 
 
 
+/*!
+ * Takes the CUDA event or null state of the given event object releasing any
+ * CUDA event this event may currently contain.
+ *
+ * @param other The other event object whose CUDA event or null state is taken.
+ */
 Event& Event::operator=(Event&& other)
 {
+   // Take the state of the other event object and give it the state of this
+   // event object. The former state of this event object will be properly
+   // destroyed with the other object.
    std::swap(_id, other._id);
    return *this;
 }
@@ -52,12 +78,16 @@ Event& Event::operator=(Event&& other)
 
 
 /*!
- * Record the contents of a CUDA stream into a CUDA event.
+ * Records the contents of a CUDA stream into this event. After calling this
+ * method, this event will not be done until the commands currently enqueued in
+ * the given stream are completed.
  *
- * @param stream
+ * @param stream CUDA stream to record.
  */
 void Event::record(const Stream& stream)
 {
+   // Record the contents of the given stream to this event. If this command
+   // fails then throw an exception.
    CUDA_SAFE_CALL(cuEventRecord(_id, stream.id()));
 }
 
@@ -72,6 +102,8 @@ void Event::record(const Stream& stream)
  */
 void Event::wait() const
 {
+   // Wait for this object's event to complete. If waiting fails then throw an
+   // exception.
    CUDA_SAFE_CALL(cuEventSynchronize(_id));
 }
 
@@ -87,7 +119,8 @@ void Event::wait() const
  */
 bool Event::isDone() const
 {
-   // query event status
+   // Get the status of this object's event. If this command returns a valid
+   // status code then return true or false, otherwise throw an exception.
    CUresult result = cuEventQuery(_id);
    if ( result == CUDA_SUCCESS )
    {
@@ -111,11 +144,16 @@ bool Event::isDone() const
 /*!
  * Get the elapsed time (ms) between two CUDA events.
  *
- * @param start
- * @param end
+ * @param start First CUDA event.
+ *
+ * @param end Second CUDA event.
+ *
+ * @return The elapsed time (ms) between the two events.
  */
 float Event::getElapsedTime(Event& start, Event& end)
 {
+   // Get the elapsed time (ms) between the two given events. If this command
+   // fails then throw an exception.
    float ms;
    CUDA_SAFE_CALL(cuEventElapsedTime(&ms, start._id, end._id));
 
