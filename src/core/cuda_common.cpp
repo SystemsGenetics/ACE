@@ -2,13 +2,19 @@
 
 
 
+//
+
+
+
 
 
 
 /*!
- * Get CUDA error name, if any.
+ * Get the name of a CUDA error code.
  *
- * @param error
+ * @param error CUDA error code.
+ *
+ * @return The name of the given error code.
  */
 QString CUDA::getErrorName(CUresult error)
 {
@@ -24,9 +30,11 @@ QString CUDA::getErrorName(CUresult error)
 
 
 /*!
- * Get CUDA error description, if any.
+ * Get the description of a CUDA error code.
  *
- * @param error
+ * @param error CUDA error code.
+ *
+ * @return The description of the given error code.
  */
 QString CUDA::getErrorString(CUresult error)
 {
@@ -42,11 +50,13 @@ QString CUDA::getErrorString(CUresult error)
 
 
 /*!
- * Get NVRTC error description, if any.
+ * Get the description of a NVRTC error code.
  *
- * @param result
+ * @param error NVRTC error code.
+ *
+ * @return The description of the given error code.
  */
-QString CUDA::getErrorString(nvrtcResult result)
+QString CUDA::getErrorString(nvrtcResult error)
 {
-   return nvrtcGetErrorString(result);
+   return nvrtcGetErrorString(error);
 }
