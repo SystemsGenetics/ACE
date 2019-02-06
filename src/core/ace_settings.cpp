@@ -295,15 +295,11 @@ int Settings::cudaDevice() const
  * none.
  *
  * @return Pointer to preferred CUDA device or null if none is preferred.
- *
- *
- * Steps of Operation:
- *
- * 1. If the device index is out of range then return a null pointer, else
- *    return a pointer to the device with the device index.
  */
 CUDA::Device* Settings::cudaDevicePointer() const
 {
+   // If the device index is out of range then return a null pointer, else
+   // return a pointer to the device with the device index. 
    if ( _cudaDevice < 0 || _cudaDevice >= CUDA::Device::get(_cudaDevice)->size() )
    {
       return nullptr;
@@ -485,6 +481,8 @@ int Settings::loggingPort() const
  */
 void Settings::setCUDADevice(int index)
 {
+   // If the new given device index is different from the current device index 
+   // then set it to the new one and set the value in persistent storage. 
    if ( index != _cudaDevice )
    {
       _cudaDevice = index;

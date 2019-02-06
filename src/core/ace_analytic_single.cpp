@@ -167,6 +167,9 @@ void Single::setupCUDA()
 {
    EDEBUG_FUNC(this)
 
+   // If the singleton settings object has a valid CUDA device pointer and this 
+   // manager's analytic creates a valid abstract CUDA object then create a new 
+   // CUDA run object, setting this manager's run pointer to the new object. 
    Settings& settings {Settings::instance()};
    if ( settings.cudaDevicePointer() )
    {

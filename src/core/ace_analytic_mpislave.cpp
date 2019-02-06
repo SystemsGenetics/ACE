@@ -347,6 +347,8 @@ bool MPISlave::setupCUDA(int device)
 {
    EDEBUG_FUNC(this)
 
+   // If the given device index is invalid then throw an exception, 
+   // else go to the next step. 
    if ( device < 0 || device >= CUDA::Device::size() )
    {
       E_MAKE_EXCEPTION(e);
@@ -354,6 +356,11 @@ bool MPISlave::setupCUDA(int device)
       e.setDetails(tr("CUDA device %1 does not exist.").arg(device));
       throw e;
    }
+
+   // Attempt to create an abstract analytic CUDA object from this manager's 
+   // analytic. If a valid one is returned then create a new CUDA run object, set 
+   // it to this object, and return true. Else if no valid one is returned then 
+   // return false. 
    bool ret {false};
    if ( EAbstractAnalytic::CUDA* cuda = analytic()->makeCUDA() )
    {

@@ -113,6 +113,8 @@ QString SettingsRun::cudaDeviceString()
 {
    EDEBUG_FUNC(this)
 
+   // Return the CUDA device setting as a string formatted as the device index.
+   // If no device is set then return "none". 
    QString ret {"none"};
    Ace::Settings& settings {Ace::Settings::instance()};
    int device {settings.cudaDevice()};
@@ -235,6 +237,8 @@ void SettingsRun::setCUDA()
 {
    EDEBUG_FUNC(this)
 
+   // If this object's command argument size is empty then throw an exception, else 
+   // go the next step. 
    auto invalid = [this]()
    {
       E_MAKE_EXCEPTION(e);
@@ -249,6 +253,11 @@ void SettingsRun::setCUDA()
       e.setDetails(QObject::tr("Settings set cuda requires sub argument, exiting..."));
       throw e;
    }
+
+   // Attempt to parse the device index from this object's first command
+   // argument. If the first argument is the special string "none" then set 
+   // the device index to -1 denoting no device. If parsing the first command
+   // argument fails then throw an exception. 
    int device {-1};
    if ( _command.first() != QString("none") )
    {
@@ -263,6 +272,8 @@ void SettingsRun::setCUDA()
          invalid();
       }
    }
+
+   // Set the new device index to ACE global settings. 
    Ace::Settings& settings {Ace::Settings::instance()};
    settings.setCUDADevice(device);
 }
@@ -594,6 +605,7 @@ void SettingsRun::listCUDA()
 {
    EDEBUG_FUNC(this)
 
+   // List all available OpenCL devices to standard output by their index and name. 
    QTextStream stream (stdout);
    for(int d = 0; d < CUDA::Device::size() ;++d)
    {
