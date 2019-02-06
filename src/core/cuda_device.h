@@ -7,7 +7,11 @@
 namespace CUDA
 {
    /*!
-    * This provides information about a single CUDA device.
+    * This provides information about a single CUDA device along with static
+    * methods for iterating through all available CUDA devices. This class is not
+    * intended to be instantiated on its own but instead queried through the
+    * static methods. Any device pointer returned by the statics will exist for
+    * the lifetime of the ACE program.
     */
    class Device
    {
@@ -21,7 +25,13 @@ namespace CUDA
       size_t getGlobalMemorySize() const;
    private:
       static void populate();
+      /*!
+       * Global pointer list of CUDA devices that are available on this system.
+       */
       static QList<CUDA::Device*>* _devices;
+      /*!
+       * CUDA device ID for this device.
+       */
       CUdevice _id;
    };
 }

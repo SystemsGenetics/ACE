@@ -3,6 +3,7 @@
 
 
 using namespace CUDA;
+//
 
 
 
@@ -10,7 +11,7 @@ using namespace CUDA;
 
 
 /*!
- * Global list of CUDA devices that are available on this system.
+ * Global pointer list of CUDA devices that are available on this system.
  */
 QList<CUDA::Device*>* Device::_devices {nullptr};
 
@@ -21,9 +22,12 @@ QList<CUDA::Device*>* Device::_devices {nullptr};
 
 /*!
  * Returns the number of available CUDA devices.
+ *
+ * @return Number of available CUDA devices. 
  */
 int Device::size()
 {
+   // Populate device list and return its size. 
    populate();
    return _devices->size();
 }
@@ -34,13 +38,17 @@ int Device::size()
 
 
 /*!
- * Returns a reference to the CUDA device with the given index. If the index is
+ * Returns a pointer to the CUDA device with the given index. If the index is
  * out of range an exception is thrown.
  *
- * @param index
+ * @param index Index of CUDA device whose pointer is returned.
+ *
+ * @return Pointer to CUDA device with given index.
  */
 CUDA::Device* Device::get(int index)
 {
+   // Populate device list and make sure given index is within range. If the given 
+   // index is out of range then throw an exception, else go to the next step. 
    populate();
    if ( index < 0 || index >= _devices->size() )
    {
@@ -51,6 +59,8 @@ CUDA::Device* Device::get(int index)
                    .arg(_devices->size()));
       throw e;
    }
+
+   // Return pointer to device with the given index. 
    return _devices->at(index);
 }
 
@@ -59,8 +69,15 @@ CUDA::Device* Device::get(int index)
 
 
 
+/*!
+ * Constructs a new CUDA device object with the given device index.
+ *
+ * @param ordinal Device index used to construct this new device object. 
+ */
 Device::Device(int ordinal)
 {
+   // Get a device pointer for the given device index. If this command fails
+   // then throw an exception.
    CUDA_SAFE_CALL(cuDeviceGet(&_id, ordinal));
 }
 
@@ -70,10 +87,14 @@ Device::Device(int ordinal)
 
 
 /*!
- * Get the name of a CUDA device.
+ * Returns the name of this device. 
+ *
+ * @return Name of this device. 
  */
 QString Device::name() const
 {
+   // Read the name of this device into a character buffer and return it as a
+   // string. If this command fails then throw an exception.
    char name[256];
    CUDA_SAFE_CALL(cuDeviceGetName(name, sizeof(name), _id));
 
@@ -86,12 +107,16 @@ QString Device::name() const
 
 
 /*!
- * Get an attribute of a CUDA device.
+ * Returns an attribute of this device. 
  *
- * @param attribute
+ * @param attribute Enumerated value for a CUDA device attribute.
+ *
+ * @return Integer value of the given attribute.
  */
 int Device::getAttribute(CUdevice_attribute attribute) const
 {
+   // Get the value of the given device attribute. If this command fails then
+   // throw an exception.
    int value;
    CUDA_SAFE_CALL(cuDeviceGetAttribute(&value, attribute, _id));
 
@@ -104,10 +129,14 @@ int Device::getAttribute(CUdevice_attribute attribute) const
 
 
 /*!
- * Get the global memory size of a CUDA device in bytes.
+ * Returns the global memory size of this device in bytes.
+ *
+ * @return Global memory size of this device in bytes.
  */
 size_t Device::getGlobalMemorySize() const
 {
+   // Get the global memory size of this device. If this command fails then
+   // throw an exception.
    size_t bytes;
    CUDA_SAFE_CALL(cuDeviceTotalMem(&bytes, _id));
 
@@ -121,23 +150,30 @@ size_t Device::getGlobalMemorySize() const
 
 /*!
  * Populates the global list of CUDA devices if it has not already been
- * populated.
+ * populated. This function should be called before any other function that
+ * uses the CUDA Driver API, since this function initializes the CUDA Driver API.
  */
 void Device::populate()
 {
+   // If the global pointer to the devices list is null then go to the next step, 
+   // else do nothing and exit. 
    if ( !_devices )
    {
-      // initialize CUDA Driver API
+      // Initialize the CUDA Driver API. This function must be called before any
+      // other function in the CUDA Driver API. If initialization fails then
+      // throw an exception.
       CUDA_SAFE_CALL(cuInit(0));
 
-      // initialize device list
+      // Initialize the global device list.
       _devices = new QList<Device*>();
 
-      // get device count
+      // Query the number of CUDA devices. If the query fails then throw an
+      // exception.
       int count;
       CUDA_SAFE_CALL(cuDeviceGetCount(&count));
 
-      // populate device list
+      // For each device index, create a new device object and append it to the
+      // global device list.
       for ( int i = 0; i < count; ++i )
       {
          *_devices << new Device(i);
