@@ -57,7 +57,7 @@ namespace CUDA
    template<class T> Buffer<T>::Buffer(int size):
       _size(size)
    {
-      CUDA_SAFE_CALL(cuMemAllocHost((void**) &_host, size * sizeof(T)));
+      CUDA_SAFE_CALL(cuMemAllocHost(reinterpret_cast<void**>(&_host), size * sizeof(T)));
       CUDA_SAFE_CALL(cuMemAlloc(&_dev, size * sizeof(T)));
    }
 

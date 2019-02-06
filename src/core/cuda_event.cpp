@@ -88,18 +88,18 @@ void Event::wait() const
 bool Event::isDone() const
 {
    // query event status
-   CUresult error = cuEventQuery(_id);
-   if ( error == CUDA_SUCCESS )
+   CUresult result = cuEventQuery(_id);
+   if ( result == CUDA_SUCCESS )
    {
       return true;
    }
-   else if ( error == CUDA_ERROR_NOT_READY )
+   else if ( result == CUDA_ERROR_NOT_READY )
    {
       return false;
    }
    else
    {
-      CUDA_THROW_ERROR(error);
+      CUDA_THROW_ERROR(result);
    }
 }
 

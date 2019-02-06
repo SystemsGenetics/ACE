@@ -102,17 +102,17 @@ void Stream::waitEvent(const Event& event)
 bool Stream::isDone()
 {
    // query stream status
-   CUresult error = cuStreamQuery(_id);
-   if ( error == CUDA_SUCCESS )
+   CUresult result = cuStreamQuery(_id);
+   if ( result == CUDA_SUCCESS )
    {
       return true;
    }
-   else if ( error == CUDA_ERROR_NOT_READY )
+   else if ( result == CUDA_ERROR_NOT_READY )
    {
       return false;
    }
    else
    {
-      CUDA_THROW_ERROR(error);
+      CUDA_THROW_ERROR(result);
    }
 }
