@@ -4,13 +4,14 @@
 
 
 using namespace CUDA;
+//
 
 
 
 
 
 
-/**
+/*!
  * The CUDA pre- and post-strings provide some standard functionality which is
  * not provided by NVRTC. The text currently includes several math constants, as
  * well as an 'extern "C"' block for all device functions.
@@ -55,29 +56,34 @@ const char* CUDA_POST =
 
 /*!
  * Construct a new program with the given context, list of CUDA source file paths,
- * and parent.
+ * and optional parent. If any CUDA error occurs then an exception is thrown. 
  *
- * @param paths
- * @param parent
+ * @param paths List of file paths containing OpenCL kernel source code that this 
+ *              program builds for all devices of the given context. 
+ *
+ * @param parent Optional parent for this new program. 
  */
 Program::Program(const QStringList& paths, QObject* parent):
    QObject(parent)
 {
-   // append each source file to program source
+   // Create a string containing the contents of all source files from the
+   // given file paths.
    for ( auto& path : paths )
    {
       QString source {readSourceFile(path)};
       _source.append(source);
    }
 
-   // insert the CUDA pre- and post-strings
+   // Prepend the CUDA pre-string and append the CUDA post-string to the source
+   // string.
    _source.prepend(CUDA_PRE);
    _source.append(CUDA_POST);
 
-   // create new program with source
+   // Create a new NVRTC program from the source string. If creation fails then
+   // throw an exception.
    NVRTC_SAFE_CALL(nvrtcCreateProgram(&_program, _source.toLatin1().data(), nullptr, 0, nullptr, nullptr));
 
-   // build program on current context
+   // Build the program using the current CUDA context.
    build();
 }
 
@@ -86,15 +92,18 @@ Program::Program(const QStringList& paths, QObject* parent):
 
 
 
+/*!
+ * Releases the underlying CUDA program that this object represents. 
+ */
 Program::~Program()
 {
-   // if program exists release it
+   // If the NVRTC program exists then release it.
    if ( _program )
    {
       NVRTC_SAFE_CALL(nvrtcDestroyProgram(&_program));
    }
 
-   // if module exists unload it
+   // If the CUDA module exists then unload it.
    if ( _module )
    {
       CUDA_SAFE_CALL(cuModuleUnload(_module));
@@ -107,14 +116,17 @@ Program::~Program()
 
 
 /*!
- * Reads a CUDA kernel source file with the given path. If the source file
- * fails to open then an exception is thrown.
+ * Reads a CUDA kernel source file with the given path, returning a string of
+ * the source code. If the source file fails to open then an exception is thrown.
  *
- * @param path
+ * @param path Path to the CUDA source code that is read.
+ *
+ * @return String of CUDA source code.
  */
 QString Program::readSourceFile(const QString& path)
 {
-   // open file
+   // Open the source code file with the given path as read only. If opening fails
+   // then throw an exception.
    QFile file(path);
    if ( !file.open(QIODevice::ReadOnly) )
    {
@@ -126,7 +138,7 @@ QString Program::readSourceFile(const QString& path)
       throw e;
    }
 
-   // read entire file and return source
+   // Read the entire contents of the source file into a string and return the string.
    QTextStream stream(&file);
 
    return stream.readAll();
@@ -138,11 +150,12 @@ QString Program::readSourceFile(const QString& path)
 
 
 /*!
- * Build CUDA program.
+ * Builds this CUDA program using the given device. If building fails then an 
+ * exception is thrown. 
  */
 void Program::build()
 {
-   // compile program
+   // Define the build options for the NVRTC compiler.
    const char *options[] = {
       "--std=c++11",
 #ifdef QT_DEBUG
@@ -152,11 +165,12 @@ void Program::build()
    };
    int numOptions = sizeof(options) / sizeof(char *);
 
+   // Build the source code of this program for the given device. If a build error
+   // occurrs then throw an exception with the build log, else if a general error
+   // occurs then throw a general CUDA exception.
    nvrtcResult result = nvrtcCompileProgram(_program, numOptions, options);
-
    if ( result == NVRTC_ERROR_COMPILATION )
    {
-      // if a build error occured while compiling then report build log as error
       E_MAKE_EXCEPTION(e);
       e.setTitle(QObject::tr("CUDA Build Failure"));
       e.setDetails(getBuildLog());
@@ -164,18 +178,19 @@ void Program::build()
    }
    else if ( result != NVRTC_SUCCESS )
    {
-      // else another type of error occured and handle normally
       NVRTC_THROW_ERROR(result);
    }
 
-   // get PTX source from program
+   // Get the size of the PTX source, then get the PTX source data for the
+   // program. If either command fails then throw an exception.
    size_t ptxSize;
    NVRTC_SAFE_CALL(nvrtcGetPTXSize(_program, &ptxSize));
 
    char ptx[ptxSize];
    NVRTC_SAFE_CALL(nvrtcGetPTX(_program, ptx));
 
-   // load module from PTX source
+   // Load a CUDA module with the given PTX source. If this command fails then
+   // throw an exception.
    CUDA_SAFE_CALL(cuModuleLoadData(&_module, ptx));
 }
 
@@ -185,15 +200,21 @@ void Program::build()
 
 
 /*!
- * Get build log from CUDA program.
+ * Returns the build log that is generated when this program is compiled. If any
+ * CUDA error occurs then an exception is thrown.
+ *
+ * @return The build log.
  */
 QString Program::getBuildLog() const
 {
+   // Get the size of the build log, then get the build log for the program. If
+   // either command fails then throw an exception.
    size_t logSize;
    NVRTC_SAFE_CALL(nvrtcGetProgramLogSize(_program, &logSize));
 
    char log[logSize];
    NVRTC_SAFE_CALL(nvrtcGetProgramLog(_program, log));
 
+   // Return the build log as a string.
    return QString(log);
 }

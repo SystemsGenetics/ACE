@@ -23,8 +23,17 @@ namespace CUDA
       QString readSourceFile(const QString& path);
       void build();
       QString getBuildLog() const;
+      /*!
+       * The NVRTC program for this object. 
+       */
       nvrtcProgram _program {nullptr};
+      /*!
+       * The CUDA module for this object. 
+       */
       CUmodule _module {nullptr};
+      /*!
+       * The kernel source code.
+       */
       QString _source;
    };
 }
