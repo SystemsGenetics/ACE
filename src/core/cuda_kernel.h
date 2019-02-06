@@ -3,6 +3,7 @@
 #include "cuda_buffer.h"
 #include "cuda_common.h"
 #include "cuda_stream.h"
+//
 
 
 
@@ -30,10 +31,29 @@ namespace CUDA
       template<class T> void setBuffer(int index, Buffer<T>* buffer);
       void setSharedMemory(unsigned int size) { _sharedMemBytes = size; }
    private:
+      /*!
+       * The CUDA kernel of this object.
+       */
       CUfunction _kernel {nullptr};
+      /*!
+       * The global size for each dimension used by this kernel object for execution.
+       */
       dim3 _gridDim {1};
+      /*!
+       * The local size for each dimension used by this kernel object for execution.
+       */
       dim3 _blockDim {1};
+      /*!
+       * The list of arguments for this kernel object. Kernel arguments are
+       * provided to the CUDA Driver API as a list of memory locations as void
+       * pointers. Each memory location must contain either the literal value of
+       * the argument or a device pointer if the argument is a device buffer.
+       */
       QVector<void*> _args;
+      /*!
+       * The amount of shared memory (in bytes) to allocate dynamically when the
+       * kernel is launched.
+       */
       unsigned int _sharedMemBytes {0};
    };
 
@@ -43,26 +63,32 @@ namespace CUDA
 
 
    /*!
-    * Set kernel argument.
+    * Sets this kernel's argument at the given index to the given value. The first 
+    * argument of a kernel function is at index 0 and increments positively.
     *
-    * @param index
-    * @param value
+    * @tparam T The type of the value that is set.
+    *
+    * @param index The kernel argument index whose value is set.
+    *
+    * @param value The value that the given kernel argument is set to.
     */
    template<class T> void Kernel::setArgument(int index, T value)
    {
-      // expand list to hold argument
+      // Resize the argument list if necessary to contain the given index.
       if ( _args.size() < index + 1 )
       {
          _args.resize(index + 1);
       }
 
+      // If the given argument index has not yet been set then allocate memory
+      // for the argument value.
       if ( _args[index] == nullptr )
       {
          _args[index] = new T;
       }
 
-      // set kernel argument
-      *(T*) _args[index] = value;
+      // Set the kernel argument with the given index to the given value.
+      *reinterpret_cast<T*>(_args[index]) = value;
    }
 
 
@@ -71,13 +97,18 @@ namespace CUDA
 
 
    /*!
-    * Set kernel buffer argument.
+    * Sets this kernel's argument at the given index to the given CUDA buffer. The 
+    * first argument of a kernel function is at index 0 and increments positively.
     *
-    * @param index
-    * @param buffer
+    * @tparam T The buffer type that is set.
+    *
+    * @param index The kernel argument index whose value is set.
+    *
+    * @param buffer The buffer object that the given kernel argument is set to.
     */
    template<class T> void Kernel::setBuffer(int index, Buffer<T>* buffer)
    {
+      // Set the kernel argument with the given index to the given CUDA buffer.
       setArgument(index, buffer->deviceData());
    }
 }

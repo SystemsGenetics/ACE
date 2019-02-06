@@ -107,7 +107,8 @@ QString Device::name() const
 
 
 /*!
- * Returns an attribute of this device. 
+ * Returns an attribute of this device. Refer to the CUDA Toolkit Documentation
+ * for more information on the available kernel attributes.
  *
  * @param attribute Enumerated value for a CUDA device attribute.
  *
