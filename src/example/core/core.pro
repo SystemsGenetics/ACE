@@ -26,7 +26,10 @@ SOURCES += \
     mathtransform_block.cpp \
     mathtransform_opencl.cpp \
     mathtransform_opencl_kernel.cpp \
-    mathtransform_opencl_worker.cpp
+    mathtransform_opencl_worker.cpp \
+    mathtransform_cuda.cpp \
+    mathtransform_cuda_kernel.cpp \
+    mathtransform_cuda_worker.cpp
 
 HEADERS += \
     analyticfactory.h \
@@ -45,6 +48,9 @@ HEADERS += \
     mathtransform_block.h \
     mathtransform_opencl.h \
     mathtransform_opencl_kernel.h \
-    mathtransform_opencl_worker.h
+    mathtransform_opencl_worker.h \
+    mathtransform_cuda.h \
+    mathtransform_cuda_kernel.h \
+    mathtransform_cuda_worker.h
 
 QMAKE_CXXFLAGS += -Wno-ignored-attributes

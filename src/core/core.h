@@ -9,6 +9,7 @@
 #include "eabstractanalytic_input.h"
 #include "eabstractanalytic_serial.h"
 #include "eabstractanalytic_opencl_worker.h"
+#include "eabstractanalytic_cuda_worker.h"
 #include "eabstractdata.h"
 #include "edatastream.h"
 #include "emetadata.h"

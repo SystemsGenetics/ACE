@@ -163,6 +163,7 @@ void MPIMaster::processCode(int code, int fromRank)
    // serial or OpenCL type. 
    switch (code)
    {
+   case ReadyAsCUDA:
    case ReadyAsOpenCL:
       amount += settings.threadSize() + 1;
       break;

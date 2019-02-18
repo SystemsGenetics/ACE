@@ -15,6 +15,7 @@ namespace Ace
       class SerialRun;
       class Single;
       class OpenCLRun;
+      class CUDARun;
       class Chunk;
       class Merge;
       class AbstractMPI;

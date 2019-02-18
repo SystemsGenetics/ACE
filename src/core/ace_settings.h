@@ -1,6 +1,7 @@
 #ifndef ACE_SETTINGS_H
 #define ACE_SETTINGS_H
 #include <QString>
+#include "cuda_common.h"
 #include "opencl.h"
 
 
@@ -33,6 +34,8 @@ namespace Ace
       static int appRevision();
       static void initialize(QString organization, QString application, int majorVersion, int minorVersion, int revision);
       static Settings& instance();
+      int cudaDevice() const;
+      CUDA::Device* cudaDevicePointer() const;
       int openCLPlatform() const;
       int openCLDevice() const;
       OpenCL::Device* openCLDevicePointer() const;
@@ -43,6 +46,7 @@ namespace Ace
       QString chunkExtension() const;
       bool loggingEnabled() const;
       int loggingPort() const;
+      void setCUDADevice(int index);
       void setOpenCLPlatform(int index);
       void setOpenCLDevice(int index);
       void setThreadSize(int size);
@@ -88,6 +92,10 @@ namespace Ace
        */
       static QString _application;
       /*!
+       * The default CUDA device index value.
+       */
+      constexpr static int _cudaDeviceDefault {0};
+      /*!
        * The default OpenCL platform index value. 
        */
       constexpr static int _openCLPlatformDefault {0};
@@ -122,11 +130,15 @@ namespace Ace
        */
       static const int _loggingPortDefault;
       /*!
+       * The qt settings key used to persistently store the CUDA device index value.
+       */
+     static const char* _cudaDeviceKey;
+      /*!
        * The qt settings key used to persistently store the platform index value. 
        */
       static const char* _openCLPlatformKey;
       /*!
-       * The qt settings key used to persistently store the device index value. 
+       * The qt settings key used to persistently store the OpenCL device index value.
        */
       static const char* _openCLDeviceKey;
       /*!
@@ -160,6 +172,10 @@ namespace Ace
        * Points to the global singleton instance of this class. 
        */
       static Settings* _instance;
+      /*!
+       * The index for the preferred CUDA device.
+       */
+      int _cudaDevice;
       /*!
        * The platform index for the preferred OpenCL device. 
        */

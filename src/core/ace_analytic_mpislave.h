@@ -39,6 +39,7 @@ namespace Ace
       private:
          void processCode(int code);
          void process(const QByteArray& data);
+         bool setupCUDA(int device);
          bool setupOpenCL(int platform, int device);
          void setupSerial();
          /*!

@@ -3,9 +3,11 @@
 #include "ace_analytic_simplerun.h"
 #include "ace_analytic_serialrun.h"
 #include "ace_analytic_openclrun.h"
+#include "ace_analytic_cudarun.h"
 #include "eabstractanalytic_block.h"
 #include "eabstractanalytic_serial.h"
 #include "eabstractanalytic_opencl.h"
+#include "eabstractanalytic_cuda.h"
 #include "ace_settings.h"
 #include "edebug.h"
 
@@ -110,6 +112,7 @@ void Single::start()
 
    // Setup OpenCL, setup serial if OpenCL fails, and then connect this object's 
    // abstract runner class finished signal with this manager's finish slot. 
+   setupCUDA();
    setupOpenCL();
    setupSerial();
    connect(_runner,&AbstractRun::finished,this,&AbstractManager::finish);
@@ -157,12 +160,46 @@ void Single::process()
 
 
 /*!
+ * Attempts to initialize a CUDA run object for block processing for this
+ * manager. If successful sets this manager's abstract run pointer.
+ */
+void Single::setupCUDA()
+{
+   EDEBUG_FUNC(this)
+
+   // If the singleton settings object has a valid CUDA device pointer and this 
+   // manager's analytic creates a valid abstract CUDA object then create a new 
+   // CUDA run object, setting this manager's run pointer to the new object. 
+   Settings& settings {Settings::instance()};
+   if ( settings.cudaDevicePointer() )
+   {
+      EAbstractAnalytic::CUDA* cuda {analytic()->makeCUDA()};
+      if ( cuda )
+      {
+         _runner = new CUDARun(cuda,settings.cudaDevicePointer(),this,this);
+      }
+   }
+}
+
+
+
+
+
+
+/*!
  * Attempts to initialize an OpenCL run object for block processing for this 
  * manager. If successful sets this manager's abstract run pointer. 
  */
 void Single::setupOpenCL()
 {
    EDEBUG_FUNC(this)
+
+   // If this object's abstract run object has already been set then do nothing and 
+   // exit, else go to the next step. 
+   if ( _runner )
+   {
+      return;
+   }
 
    // If the singleton settings object has a valid OpenCL device pointer and this 
    // manager's analytic creates a valid abstract OpenCL object then create a new 
@@ -194,21 +231,22 @@ void Single::setupSerial()
 
    // If this object's abstract run object has already been set then do nothing and 
    // exit, else go to the next step. 
-   if ( !_runner )
+   if ( _runner )
    {
+      return;
+   }
 
-      // If this manager's analytic creates a valid abstract serial object then create a 
-      // new serial run object and set it to this manager's abstract run object, else 
-      // create a new simple run object and set it to this manager's abstract run 
-      // object. 
-      if ( EAbstractAnalytic::Serial* serial = analytic()->makeSerial() )
-      {
-         _runner = new SerialRun(serial,this,this);
-      }
-      else
-      {
-         _runner = new SimpleRun(this,this);
-         _simple = true;
-      }
+   // If this manager's analytic creates a valid abstract serial object then create a 
+   // new serial run object and set it to this manager's abstract run object, else 
+   // create a new simple run object and set it to this manager's abstract run 
+   // object. 
+   if ( EAbstractAnalytic::Serial* serial = analytic()->makeSerial() )
+   {
+      _runner = new SerialRun(serial,this,this);
+   }
+   else
+   {
+      _runner = new SimpleRun(this,this);
+      _simple = true;
    }
 }

@@ -33,6 +33,7 @@ namespace Ace
          virtual void start() override final;
          void process();
       private:
+         void setupCUDA();
          void setupOpenCL();
          void setupSerial();
          /*!

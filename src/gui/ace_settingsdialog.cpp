@@ -7,6 +7,7 @@
 #include <QPushButton>
 #include <QIcon>
 #include "../core/ace_settings.h"
+#include "../core/cuda_device.h"
 #include "../core/opencl_platform.h"
 #include "../core/opencl_device.h"
 
@@ -67,7 +68,21 @@ void SettingsDialog::applyClicked()
    Ace::Settings& settings {Ace::Settings::instance()};
 
    // .
-   if ( _platformCombo->currentIndex() == OpenCL::Platform::size() )
+   if ( _cudaDeviceCombo->currentIndex() == CUDA::Device::size() )
+   {
+      // .
+      settings.setCUDADevice(-1);
+   }
+
+   // .
+   else
+   {
+      // .
+      settings.setCUDADevice(_cudaDeviceCombo->currentIndex());
+   }
+
+   // .
+   if ( _openclPlatformCombo->currentIndex() == OpenCL::Platform::size() )
    {
       // .
       settings.setOpenCLPlatform(-1);
@@ -78,8 +93,8 @@ void SettingsDialog::applyClicked()
    else
    {
       // .
-      settings.setOpenCLPlatform(_platformCombo->currentIndex());
-      settings.setOpenCLDevice(_deviceCombo->currentIndex());
+      settings.setOpenCLPlatform(_openclPlatformCombo->currentIndex());
+      settings.setOpenCLDevice(_openclDeviceCombo->currentIndex());
    }
 
    // .
@@ -104,10 +119,10 @@ void SettingsDialog::applyClicked()
  * @param index The new index this object's OpenCL platform combo box has changed 
  *              to. 
  */
-void SettingsDialog::currentPlatformChanged(int index)
+void SettingsDialog::currentOpenCLPlatformChanged(int index)
 {
    // .
-   _deviceCombo->clear();
+   _openclDeviceCombo->clear();
 
    // .
    if ( index < 0 || index >= OpenCL::Platform::size() )
@@ -118,7 +133,7 @@ void SettingsDialog::currentPlatformChanged(int index)
    // .
    for (int i = 0; i < OpenCL::Platform::get(index)->deviceSize() ;++i)
    {
-      _deviceCombo->addItem(OpenCL::Platform::get(index)->device(i)->name());
+      _openclDeviceCombo->addItem(OpenCL::Platform::get(index)->device(i)->name());
    }
 }
 
@@ -180,6 +195,7 @@ QLayout* SettingsDialog::createForm()
 
    // .
    QFormLayout* ret {new QFormLayout};
+   ret->addRow(new QLabel(tr("CUDA Device:")),createCUDA());
    ret->addRow(new QLabel(tr("OpenCL Device:")),createOpenCL());
    ret->addRow(new QLabel(tr("Thread Size:")),_threadEdit);
    ret->addRow(new QLabel(tr("Buffer Size:")),_bufferEdit);
@@ -229,6 +245,51 @@ QLayout* SettingsDialog::createButtons()
 
 
 /*!
+ * Creates and initializes the CUDA combo box for this new settings dialog,
+ * returning the layout containing them. The layout consists of one combo box
+ * for the device.
+ *
+ * @return The layout containing the CUDA selection combo box.
+ */
+QLayout* SettingsDialog::createCUDA()
+{
+   // .
+   Ace::Settings& settings {Ace::Settings::instance()};
+
+   // .
+   _cudaDeviceCombo = new QComboBox;
+   for (int i = 0; i < CUDA::Device::size() ;++i)
+   {
+      _cudaDeviceCombo->addItem(CUDA::Device::get(i)->name());
+   }
+   _cudaDeviceCombo->addItem(tr("none"));
+
+   // .
+   if ( settings.cudaDevicePointer() )
+   {
+      // .
+      _cudaDeviceCombo->setCurrentIndex(settings.cudaDevice());
+   }
+
+   // .
+   else
+   {
+      // .
+      _cudaDeviceCombo->setCurrentIndex(CUDA::Device::size());
+   }
+
+   // .
+   QHBoxLayout* ret {new QHBoxLayout};
+   ret->addWidget(_cudaDeviceCombo);
+   return ret;
+}
+
+
+
+
+
+
+/*!
  * Creates and initializes the OpenCL combo boxes for this new settings dialog, 
  * returning the layout containing them. The layout consists of two combo boxes, 
  * one for the platform and the other for the device. 
@@ -241,40 +302,40 @@ QLayout* SettingsDialog::createOpenCL()
    Ace::Settings& settings {Ace::Settings::instance()};
 
    // .
-   _platformCombo = new QComboBox;
+   _openclPlatformCombo = new QComboBox;
    for (int i = 0; i < OpenCL::Platform::size() ;++i)
    {
-      _platformCombo->addItem(OpenCL::Platform::get(i)->name());
+      _openclPlatformCombo->addItem(OpenCL::Platform::get(i)->name());
    }
-   _platformCombo->addItem(tr("none"));
+   _openclPlatformCombo->addItem(tr("none"));
 
    // .
-   _deviceCombo = new QComboBox;
+   _openclDeviceCombo = new QComboBox;
 
    // .
    if ( settings.openCLDevicePointer() )
    {
       // .
-      _platformCombo->setCurrentIndex(settings.openCLPlatform());
-      currentPlatformChanged(settings.openCLPlatform());
-      _deviceCombo->setCurrentIndex(settings.openCLDevice());
+      _openclPlatformCombo->setCurrentIndex(settings.openCLPlatform());
+      currentOpenCLPlatformChanged(settings.openCLPlatform());
+      _openclDeviceCombo->setCurrentIndex(settings.openCLDevice());
    }
 
    // .
    else
    {
-      _platformCombo->setCurrentIndex(OpenCL::Platform::size());
+      _openclPlatformCombo->setCurrentIndex(OpenCL::Platform::size());
    }
 
    // .
-   connect(_platformCombo
+   connect(_openclPlatformCombo
            ,QOverload<int>::of(&QComboBox::currentIndexChanged)
            ,this
-           ,&SettingsDialog::currentPlatformChanged);
+           ,&SettingsDialog::currentOpenCLPlatformChanged);
 
    // .
    QHBoxLayout* ret {new QHBoxLayout};
-   ret->addWidget(_platformCombo);
-   ret->addWidget(_deviceCombo);
+   ret->addWidget(_openclPlatformCombo);
+   ret->addWidget(_openclDeviceCombo);
    return ret;
 }

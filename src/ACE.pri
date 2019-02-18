@@ -17,3 +17,13 @@ QMAKE_CXX = mpic++
 DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++11
+
+isEmpty($$(CUDADIR)) {
+   CUDADIR = /usr/local/cuda
+}
+else {
+   CUDADIR = $$(CUDADIR)
+}
+
+INCLUDEPATH += $${CUDADIR}/include
+DEPENDPATH += $${CUDADIR}/include

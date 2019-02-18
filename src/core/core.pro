@@ -33,12 +33,15 @@ SOURCES += \
     opencl_commandqueue.cpp \
     opencl_kernel.cpp \
     eabstractanalytic_opencl.cpp \
+    eabstractanalytic_cuda.cpp \
     eabstractanalytic_block.cpp \
     opencl_kernel_locker.cpp \
     ace_analytic_simplerun.cpp \
     ace_analytic_serialrun.cpp \
     ace_analytic_openclrun.cpp \
     ace_analytic_openclrun_thread.cpp \
+    ace_analytic_cudarun.cpp \
+    ace_analytic_cudarun_thread.cpp \
     ace_analytic_single.cpp \
     ace_settings.cpp \
     ace_analytic_mpimaster.cpp \
@@ -49,11 +52,19 @@ SOURCES += \
     ace_analytic_abstractinput.cpp \
     ace_analytic_abstractmanager.cpp \
     eabstractanalytic_opencl_worker.cpp \
+    eabstractanalytic_cuda_worker.cpp \
     ace_analytic_abstractmpi.cpp \
     ace_logserver.cpp \
     elog.cpp \
     edebug.cpp \
-    ace_logserver_thread.cpp
+    ace_logserver_thread.cpp \
+    cuda_common.cpp \
+    cuda_context.cpp \
+    cuda_device.cpp \
+    cuda_event.cpp \
+    cuda_kernel.cpp \
+    cuda_program.cpp \
+    cuda_stream.cpp
 
 HEADERS += \
     opencl.h \
@@ -91,13 +102,17 @@ HEADERS += \
     opencl_buffer.h \
     opencl_kernel.h \
     eabstractanalytic_opencl.h \
+    eabstractanalytic_cuda.h \
     opencl_kernel_locker.h \
     ace_analytic_simplerun.h \
     ace_analytic_serialrun.h \
     ace_analytic_openclrun.h \
     ace_analytic_openclrun_thread.h \
+    ace_analytic_cudarun.h \
+    ace_analytic_cudarun_thread.h \
     ace_analytic_single.h \
     eabstractanalytic_opencl_worker.h \
+    eabstractanalytic_cuda_worker.h \
     openclxx.h \
     ace_settings.h \
     ace_analytic_mpimaster.h \
@@ -111,7 +126,16 @@ HEADERS += \
     ace_logserver.h \
     elog.h \
     edebug.h \
-    ace_logserver_thread.h
+    ace_logserver_thread.h \
+    cuda_buffer.h \
+    cuda_common.h \
+    cuda_context.h \
+    cuda_device.h \
+    cuda_event.h \
+    cuda_kernel.h \
+    cuda_program.h \
+    cuda_stream.h \
+    cudaxx.h
 
 isEmpty(PREFIX) { PREFIX = /usr/local }
 library.path = $${PREFIX}/lib

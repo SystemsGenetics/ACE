@@ -22,8 +22,10 @@ namespace Ace
       void execute();
    private:
       void settings();
+      QString cudaDeviceString();
       QString openCLDeviceString();
       void set();
+      void setCUDA();
       void setOpenCL();
       void setThreads();
       void setBuffer();
@@ -32,6 +34,7 @@ namespace Ace
       void setChunkExt();
       void setLogging();
       void list();
+      void listCUDA();
       void listOpenCL();
       /*!
        * The command arguments parsed out of the command line arguments of the main 

@@ -2,6 +2,7 @@
 #include <QDataStream>
 #include "ace_qmpi.h"
 #include "ace_settings.h"
+#include "cuda_device.h"
 #include "opencl_platform.h"
 #include "opencl_device.h"
 #include "eexception.h"
@@ -29,7 +30,8 @@ using namespace Ace::Analytic;
  * @param platform The optional platform index for the resource type if it is 
  *                 OpenCL. 
  *
- * @param device The optional device index for the resource type if it is OpenCL. 
+ * @param device The optional device index for the resource type if it is OpenCL
+ *               or CUDA. 
  */
 void AbstractMPI::mpiStart(Type type, int platform, int device)
 {
@@ -92,6 +94,21 @@ void AbstractMPI::start()
       {
          analytic()->initializeOutputs();
          ++i;
+      }
+
+      // If the global settings returns a valid CUDA device pointer then iterate 
+      // through all available CUDA devices and assign one per local rank until there 
+      // are no more devices to assign or no more local ranks to assign them to. 
+      if ( Settings::instance().cudaDevicePointer() )
+      {
+         for (int device = 0; device < CUDA::Device::size() ;++device)
+         {
+            if ( i >= _mpi.localSize() )
+            {
+               return;
+            }
+            sendStart(i++,Type::CUDA,0,device);
+         }
       }
 
       // If the global settings returns a valid OpenCL device pointer then iterate 
