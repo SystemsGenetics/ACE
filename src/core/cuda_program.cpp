@@ -16,7 +16,7 @@ using namespace CUDA;
  * not provided by NVRTC. The text currently includes several math constants, as
  * well as an 'extern "C"' block for all device functions.
  */
-const char* CUDA_PRE =
+const char* Program::CUDA_PRE =
    "#ifdef NAN                                    \n"
    "   #undef NAN                                 \n"
    "#endif                                        \n"
@@ -46,7 +46,7 @@ const char* CUDA_PRE =
 
 
 
-const char* CUDA_POST =
+const char* Program::CUDA_POST =
    "}\n";
 
 
@@ -100,13 +100,13 @@ Program::~Program()
    // If the NVRTC program exists then release it.
    if ( _program )
    {
-      NVRTC_SAFE_CALL(nvrtcDestroyProgram(&_program));
+      nvrtcDestroyProgram(&_program);
    }
 
    // If the CUDA module exists then unload it.
    if ( _module )
    {
-      CUDA_SAFE_CALL(cuModuleUnload(_module));
+      cuModuleUnload(_module);
    }
 }
 

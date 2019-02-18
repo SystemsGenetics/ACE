@@ -18,12 +18,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 CONFIG += c++11
 
-isEmpty($$(CUDADIR)) {
-   CUDADIR = /usr/local/cuda
-}
-else {
-   CUDADIR = $$(CUDADIR)
-}
-
+isEmpty(CUDADIR) { CUDADIR = /usr/local/cuda }
 INCLUDEPATH += $${CUDADIR}/include
 DEPENDPATH += $${CUDADIR}/include

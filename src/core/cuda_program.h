@@ -20,6 +20,9 @@ namespace CUDA
       virtual ~Program() override final;
       CUmodule id() const { return _module; }
    private:
+      static const char* CUDA_PRE;
+      static const char* CUDA_POST;
+   private:
       QString readSourceFile(const QString& path);
       void build();
       QString getBuildLog() const;

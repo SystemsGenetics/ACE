@@ -49,7 +49,7 @@ Event::~Event()
 {
    // Destroy this event object's state. If this command fails then throw an
    // exception.
-   CUDA_SAFE_CALL(cuEventDestroy(_id));
+   cuEventDestroy(_id);
 }
 
 
