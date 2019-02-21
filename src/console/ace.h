@@ -12,7 +12,7 @@ namespace Ace
    class Command;
    class Options;
    class HelpRun;
-   class SettingsRun_;
+   class SettingsRun;
    class Run;
 }
 
