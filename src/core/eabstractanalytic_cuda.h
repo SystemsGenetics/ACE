@@ -29,10 +29,8 @@ public:
    /*!
     * This interface initializes all CUDA resources used by this object's
     * implementation.
-    *
-    * @param context
     */
-   virtual void initialize(::CUDA::Context* context) = 0;
+   virtual void initialize() = 0;
 public:
    explicit CUDA(EAbstractAnalytic* parent);
 };

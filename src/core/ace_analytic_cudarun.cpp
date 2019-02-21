@@ -71,9 +71,8 @@ CUDARun::CUDARun(EAbstractAnalytic::CUDA* cuda, CUDA::Device* device, AbstractIn
 {
    EDEBUG_FUNC(this,cuda,device,base,parent)
 
-   // Initialize the given abstract CUDA object, create a qt mapper and connect its 
-   // mapped signal. 
-   cuda->initialize(_context);
+   // Initialize the given abstract CUDA object. 
+   cuda->initialize();
 
    // Iterate through the number of CUDA threads this run object contains, 
    // initializing each one with a new worker created from the abstract CUDA 
@@ -82,7 +81,7 @@ CUDARun::CUDARun(EAbstractAnalytic::CUDA* cuda, CUDA::Device* device, AbstractIn
    // using the mapper to get the index. 
    for (int i = 0; i < _threads.size() ;++i)
    {
-      Thread* thread {new Thread(_cuda->makeWorker())};
+      Thread* thread {new Thread(_context, _cuda->makeWorker())};
       _threads[i] = thread;
       _idle << thread;
       connect(thread

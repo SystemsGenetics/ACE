@@ -22,7 +22,7 @@ namespace Ace
       {
          Q_OBJECT
       public:
-         explicit Thread(std::unique_ptr<EAbstractAnalytic::CUDA::Worker>&& worker, QObject* parent = nullptr);
+         explicit Thread(CUDA::Context* context, std::unique_ptr<EAbstractAnalytic::CUDA::Worker>&& worker, QObject* parent = nullptr);
          void execute(std::unique_ptr<EAbstractAnalytic::Block>&& block);
          std::unique_ptr<EAbstractAnalytic::Block> result();
       signals:
@@ -35,6 +35,10 @@ namespace Ace
          /*!
           */
          QAtomicInteger<int> _switch {0};
+         /*!
+          * Pointer to the CUDA context used by this CUDA run object.
+          */
+         CUDA::Context* _context;
          /*!
           * Pointer to the abstract CUDA worker object used to process work blocks into
           * result blocks using CUDA acceleration.
