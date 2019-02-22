@@ -26,7 +26,7 @@ SettingsRun::SettingsRun(const Command& command)
    :
    _command(command)
 {
-   EDEBUG_FUNC(this,&command)
+   EDEBUG_FUNC(this,&command);
 }
 
 
@@ -40,10 +40,11 @@ SettingsRun::SettingsRun(const Command& command)
  */
 void SettingsRun::execute()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
    // If the command argument size is empty then simply print all ACE settings and
-   // exit, else call the setting parser method to determine which command was given.
+   // exit.
    if ( _command.size() == 0 )
    {
       QTextStream stream(stdout);
@@ -58,6 +59,8 @@ void SettingsRun::execute()
       stream << "        Chunk Extension: " << settings.chunkExtension() << "\n";
       stream << "                Logging: " << ( settings.loggingEnabled() ? QStringLiteral("on") : QStringLiteral("off") ) << "\n";
    }
+
+   // Else call the setting parser method to determine which command was given.
    else
    {
       settings();
@@ -75,12 +78,15 @@ void SettingsRun::execute()
  */
 void SettingsRun::settings()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // Call set or list methods based off the first command argument being set or list
-   // respectively. If the first command argument is neither then throw an exception.
+   // Setup the string list of known arguments that is used to determine the command
+   // given.
    enum {Unknown=-1,Set,List};
    QStringList commandList {"set","list"};
+
+   // Figure out which command was given, popping the command from the command list.
    QString command {_command.first()};
    switch (_command.pop(commandList))
    {
@@ -92,6 +98,7 @@ void SettingsRun::settings()
       break;
    case Unknown:
       {
+         // The command was not recognized so throw an exception informing the user.
          E_MAKE_EXCEPTION(e);
          e.setTitle(QObject::tr("Invalid argument"));
          e.setDetails(QObject::tr("Unknown sub argument '%1', exiting...").arg(command));
@@ -112,17 +119,23 @@ void SettingsRun::settings()
  */
 QString SettingsRun::cudaDeviceString()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // Return the CUDA device setting as a string formatted as the device index. If no
-   // device is set then return "none".
+   // Create the return string, setting it to "none" as the default if no CUDA device
+   // is set.
    QString ret {"none"};
+
+   // If a CUDA device is set then overwrite the return string with its device
+   // number.
    Ace::Settings& settings {Ace::Settings::instance()};
    int device {settings.cudaDevice()};
    if ( device >= 0 )
    {
       ret = QString::number(device);
    }
+
+   // Return the string.
    return ret;
 }
 
@@ -138,11 +151,15 @@ QString SettingsRun::cudaDeviceString()
  */
 QString SettingsRun::openCLDeviceString()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // Return the OpenCL device setting as a string formatted as the platform and
-   // device index separated by a colon. If no device is set then return "none".
+   // Create the return string, setting it to "none" as the default if no OpenCL
+   // device is set.
    QString ret {"none"};
+
+   // If an OpenCL device is set then overwrite the return string with its platform
+   // and device numbers.
    Ace::Settings& settings {Ace::Settings::instance()};
    int platform {settings.openCLPlatform()};
    int device {settings.openCLDevice()};
@@ -150,6 +167,8 @@ QString SettingsRun::openCLDeviceString()
    {
       ret = QString::number(platform).append(":").append(QString::number(device));
    }
+
+   // Return the string.
    return ret;
 }
 
@@ -165,12 +184,10 @@ QString SettingsRun::openCLDeviceString()
  */
 void SettingsRun::set()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // Determine which setting is to be set, calling the appropriate method and
-   // popping this object's first command argument. If the setting is unknown then
-   // throw an exception.
-   enum {Unknown=-1,CUDACom,OpenCLCom,Threads,Buffer,ChunkDir,ChunkPre,ChunkExt,Logging};
+   // Make sure there is at least one command to process.
    if ( _command.size() < 1 )
    {
       E_MAKE_EXCEPTION(e);
@@ -178,43 +195,43 @@ void SettingsRun::set()
       e.setDetails(QObject::tr("Settings set requires sub argument, exiting..."));
       throw e;
    }
+
+   // Create an enumeration and string list used to determine the command given.
+   enum {Unknown=-1,CUDACom,OpenCLCom,Threads,Buffer,ChunkDir,ChunkPre,ChunkExt,Logging};
    QStringList list {"cuda","opencl","threads","buffer","chunkdir","chunkpre","chunkext","logging"};
-   switch (_command.peek(list))
+
+   // Determine which setting is to be set by the command given, calling the
+   // appropriate method and popping this object's first command argument.
+   QString command {_command.pop()};
+   switch (list.indexOf(command))
    {
    case CUDACom:
-      _command.pop();
       setCUDA();
       break;
    case OpenCLCom:
-      _command.pop();
       setOpenCL();
       break;
    case Threads:
-      _command.pop();
       setThreads();
       break;
    case Buffer:
-      _command.pop();
       setBuffer();
       break;
    case ChunkDir:
-      _command.pop();
       setChunkDir();
       break;
    case ChunkPre:
-      _command.pop();
       setChunkPre();
       break;
    case ChunkExt:
-      _command.pop();
       setChunkExt();
       break;
    case Logging:
-      _command.pop();
       setLogging();
       break;
    case Unknown:
       {
+         // The set command is not known so throw an exception informing the user.
          E_MAKE_EXCEPTION(e);
          e.setTitle(QObject::tr("Invalid argument"));
          e.setDetails(QObject::tr("Settings set sub argument '%1' unrecognized, exiting...")
@@ -236,17 +253,10 @@ void SettingsRun::set()
  */
 void SettingsRun::setCUDA()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // If this object's command argument size is empty then throw an exception, else
-   // go the next step.
-   auto invalid = [this]()
-   {
-      E_MAKE_EXCEPTION(e);
-      e.setTitle(QObject::tr("Invalid argument"));
-      e.setDetails(QObject::tr("Given CUDA device '%1' invalid, exiting...").arg(_command.first()));
-      throw e;
-   };
+   // Make sure there is a command argument to process.
    if ( _command.size() < 1 )
    {
       E_MAKE_EXCEPTION(e);
@@ -255,28 +265,28 @@ void SettingsRun::setCUDA()
       throw e;
    }
 
-   // Attempt to parse the device index from this object's first command argument. If
-   // the first argument is the special string "none" then set the device index to -1
-   // denoting no device. If parsing the first command argument fails then throw an
-   // exception.
+   // Create a new device index, initializing it to -1 which assumes it is being set
+   // to none.
    int device {-1};
+
+   // Check to see if the command is something besides the special none keyword.
    if ( _command.first() != QString("none") )
    {
+      // Get the integer device index from the command argument, making sure it worked
+      // and is a valid device number.
       bool ok;
       device = _command.first().toInt(&ok);
-      if ( !ok )
+      if ( !ok || device < 0 || device >= CUDA::Device::size() )
       {
-         invalid();
-      }
-      if ( device < 0 || device >= CUDA::Device::size() )
-      {
-         invalid();
+         E_MAKE_EXCEPTION(e);
+         e.setTitle(QObject::tr("Invalid argument"));
+         e.setDetails(QObject::tr("Given CUDA device '%1' invalid, exiting...").arg(_command.first()));
+         throw e;
       }
    }
 
-   // Set the new device index to ACE global settings.
-   Ace::Settings& settings {Ace::Settings::instance()};
-   settings.setCUDADevice(device);
+   // Set the new device index to the ACE global settings.
+   Ace::Settings::instance().setCUDADevice(device);
 }
 
 
@@ -292,10 +302,11 @@ void SettingsRun::setCUDA()
  */
 void SettingsRun::setOpenCL()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // If this object's command argument size is empty then throw an exception, else
-   // go the next step.
+   // Define a macro function that informs the user the given OpenCL device is not
+   // valid.
    auto invalid = [this]()
    {
       E_MAKE_EXCEPTION(e);
@@ -303,6 +314,8 @@ void SettingsRun::setOpenCL()
       e.setDetails(QObject::tr("Given OpenCL device '%1' invalid, exiting...").arg(_command.first()));
       throw e;
    };
+
+   // Make sure there is a command argument to process.
    if ( _command.size() < 1 )
    {
       E_MAKE_EXCEPTION(e);
@@ -311,19 +324,24 @@ void SettingsRun::setOpenCL()
       throw e;
    }
 
-   // Attempt to parse the platform and device indexes from this object's first
-   // command argument. If the first argument is the special string "none" then set
-   // the platform index to -1 and device index to 0 denoting no device. If parsing
-   // the first command argument fails then throw an exception.
+   // Create and initialize platform and device indexes, setting them to none as
+   // default.
    int platform {-1};
    int device {0};
+
+   // Check to see if the command argument is something besides the special none
+   // token.
    if ( _command.first() != QString("none") )
    {
+      // Split the command argument into the platform and device index, making sure it
+      // worked.
       QStringList list {_command.first().split(':')};
       if ( list.size() != 2 )
       {
          invalid();
       }
+
+      // Get the index numbers, making sure it worked.
       bool ok;
       platform = list.at(0).toInt(&ok);
       if ( !ok )
@@ -335,6 +353,8 @@ void SettingsRun::setOpenCL()
       {
          invalid();
       }
+
+      // Make sure the extracted values are valid platform and device indexes.
       if ( platform < 0 || platform >= OpenCL::Platform::size() )
       {
          invalid();
@@ -610,10 +630,7 @@ void SettingsRun::listCUDA()
    QTextStream stream (stdout);
    for(int d = 0; d < CUDA::Device::size() ;++d)
    {
-      stream << QString::number(d)
-             << " "
-             << CUDA::Device::get(d)->name()
-             << "\n";
+      stream << QString::number(d) << " " << CUDA::Device::get(d)->name() << "\n";
    }
 }
 

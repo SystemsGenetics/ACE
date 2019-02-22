@@ -21,18 +21,21 @@ namespace Ace
  */
 Command::Command(int argc, char** argv)
 {
-   EDEBUG_FUNC(this,argc,argv)
+   // Add debug header.
+   EDEBUG_FUNC(this,argc,argv);
 
-   // Iterate through all given command line values except for the first for the
-   // following steps.
+   // Iterate through all given command line values except for the first because that
+   // is just the name of the application.
    for (int i = 1; i < argc ;++i)
    {
-      // If the argument begins with "--" then skip this argument and the next argument,
-      // else add this argument to this object's list of arguments.
+      // If the argument begins with "--" then skip this argument because it is an
+      // option not a command.
       if ( argv[i][0] == '-' && argv[i][1] == '-' )
       {
          ++i;
       }
+
+      // Else this is a command so add this argument to this object's list of commands.
       else
       {
          _values << QString(argv[i]);
@@ -52,8 +55,7 @@ Command::Command(int argc, char** argv)
  */
 int Command::size() const
 {
-   EDEBUG_FUNC(this)
-
+   EDEBUG_FUNC(this);
    return _values.size();
 }
 
@@ -72,8 +74,7 @@ int Command::size() const
  */
 QString Command::at(int index) const
 {
-   EDEBUG_FUNC(this,index)
-
+   EDEBUG_FUNC(this,index);
    return _values.at(index);
 }
 
@@ -90,8 +91,7 @@ QString Command::at(int index) const
  */
 QString Command::first() const
 {
-   EDEBUG_FUNC(this)
-
+   EDEBUG_FUNC(this);
    return _values.first();
 }
 
@@ -106,8 +106,7 @@ QString Command::first() const
  */
 QString Command::pop()
 {
-   EDEBUG_FUNC(this)
-
+   EDEBUG_FUNC(this);
    return _values.takeFirst();
 }
 
@@ -128,8 +127,7 @@ QString Command::pop()
  */
 int Command::pop(const QStringList& list)
 {
-   EDEBUG_FUNC(this,list)
-
+   EDEBUG_FUNC(this,list);
    return list.indexOf(_values.takeFirst());
 }
 
@@ -150,8 +148,7 @@ int Command::pop(const QStringList& list)
  */
 int Command::peek(const QStringList& list)
 {
-   EDEBUG_FUNC(this,list)
-
+   EDEBUG_FUNC(this,list);
    return list.indexOf(_values.first());
 }
 
