@@ -383,17 +383,10 @@ void SettingsRun::setOpenCL()
  */
 void SettingsRun::setThreads()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // If this object's command argument size is empty then throw an exception, else
-   // go to the next step.
-   auto invalid = [this]()
-   {
-      E_MAKE_EXCEPTION(e);
-      e.setTitle(QObject::tr("Invalid argument"));
-      e.setDetails(QObject::tr("Given thread size '%1' invalid, exiting...").arg(_command.first()));
-      throw e;
-   };
+   // Make sure there is a command argument to process.
    if ( _command.size() < 1 )
    {
       E_MAKE_EXCEPTION(e);
@@ -402,19 +395,19 @@ void SettingsRun::setThreads()
       throw e;
    }
 
-   // Read in the new thread size as an integer and update the ACE global setting. If
-   // parsing the new thread size fails or it is less than one then throw an
-   // exception.
+   // Read in the new thread size as an integer, making sure it worked and the size
+   // is valid.
    bool ok;
    int size {_command.first().toInt(&ok)};
-   if ( !ok )
+   if ( !ok || size < 1 )
    {
-      invalid();
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(QObject::tr("Invalid argument"));
+      e.setDetails(QObject::tr("Given thread size '%1' invalid, exiting...").arg(_command.first()));
+      throw e;
    }
-   if ( size < 1 )
-   {
-      invalid();
-   }
+
+   // Set the new thread size to ACE global settings.
    Ace::Settings::instance().setThreadSize(size);
 }
 
@@ -430,17 +423,10 @@ void SettingsRun::setThreads()
  */
 void SettingsRun::setBuffer()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // If this object's command argument size is empty then throw an exception, else
-   // go to the next step.
-   auto invalid = [this]()
-   {
-      E_MAKE_EXCEPTION(e);
-      e.setTitle(QObject::tr("Invalid argument"));
-      e.setDetails(QObject::tr("Given buffer size '%1' invalid, exiting...").arg(_command.first()));
-      throw e;
-   };
+   // Make sure there is a command argument to process.
    if ( _command.size() < 1 )
    {
       E_MAKE_EXCEPTION(e);
@@ -449,19 +435,19 @@ void SettingsRun::setBuffer()
       throw e;
    }
 
-   // Read in the new buffer size as an integer and update the ACE global setting. If
-   // parsing the new buffer size fails or it is less than one then throw an
-   // exception.
+   // Read in the new buffer size as an integer, making sure it worked and the size
+   // is valid.
    bool ok;
    int size {_command.first().toInt(&ok)};
-   if ( !ok )
+   if ( !ok || size < 1 )
    {
-      invalid();
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(QObject::tr("Invalid argument"));
+      e.setDetails(QObject::tr("Given buffer size '%1' invalid, exiting...").arg(_command.first()));
+      throw e;
    }
-   if ( size < 1 )
-   {
-      invalid();
-   }
+
+   // Set the new buffer size to ACE global settings.
    Ace::Settings::instance().setBufferSize(size);
 }
 
@@ -476,10 +462,10 @@ void SettingsRun::setBuffer()
  */
 void SettingsRun::setChunkDir()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // If this object's command argument size is empty then throw an exception, else
-   // set the global chunk working directory for ACE to the first command argument.
+   // Make sure there is a command argument to process.
    if ( _command.size() < 1 )
    {
       E_MAKE_EXCEPTION(e);
@@ -487,6 +473,8 @@ void SettingsRun::setChunkDir()
       e.setDetails(QObject::tr("Settings set chunkdir requires sub argument, exiting..."));
       throw e;
    }
+
+   // Set the new chunk working directory to ACE global settings.
    Ace::Settings::instance().setChunkDir(_command.first());
 }
 
@@ -501,10 +489,10 @@ void SettingsRun::setChunkDir()
  */
 void SettingsRun::setChunkPre()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // If this object's command argument size is empty then throw an exception, else
-   // set the global chunk prefix for ACE to the first command argument.
+   // Make sure there is a command argument to process.
    if ( _command.size() < 1 )
    {
       E_MAKE_EXCEPTION(e);
@@ -512,6 +500,8 @@ void SettingsRun::setChunkPre()
       e.setDetails(QObject::tr("Settings set chunkpre requires sub argument, exiting..."));
       throw e;
    }
+
+   // Set the new chunk prefix to ACE global settings.
    Ace::Settings::instance().setChunkPrefix(_command.first());
 }
 
@@ -526,10 +516,10 @@ void SettingsRun::setChunkPre()
  */
 void SettingsRun::setChunkExt()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // If this object's command argument size is empty then throw an exception, else
-   // set the global chunk extension for ACE to the first command argument.
+   // Make sure there is a command argument to process.
    if ( _command.size() < 1 )
    {
       E_MAKE_EXCEPTION(e);
@@ -537,6 +527,8 @@ void SettingsRun::setChunkExt()
       e.setDetails(QObject::tr("Settings set chunkext requires sub argument, exiting..."));
       throw e;
    }
+
+   // Set the new chunk extension to ACE global settings.
    Ace::Settings::instance().setChunkExtension(_command.first());
 }
 
@@ -551,10 +543,10 @@ void SettingsRun::setChunkExt()
  */
 void SettingsRun::setLogging()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // If this object's command argument size is empty then throw an exception, else
-   // set the global logging state for ACE to the first command argument.
+   // Make sure there is a command argument to process.
    if ( _command.size() < 1 )
    {
       E_MAKE_EXCEPTION(e);
@@ -562,6 +554,9 @@ void SettingsRun::setLogging()
       e.setDetails(QObject::tr("Settings set logging requires sub argument, exiting..."));
       throw e;
    }
+
+   // Set the state of logging to ACE global settings, using the on keyword to enable
+   // it or disable it if the argument is any other string.
    Ace::Settings::instance().setLoggingEnabled(_command.first() == QStringLiteral("on"));
 }
 
@@ -577,11 +572,10 @@ void SettingsRun::setLogging()
  */
 void SettingsRun::list()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // If this object's command argument size is empty then throw an exception, else
-   // go to the next step.
-   enum {Unknown=-1,CUDACom,OpenCLCom};
+   // Make sure there is a command argument to process.
    if ( _command.size() < 1 )
    {
       E_MAKE_EXCEPTION(e);
@@ -590,10 +584,11 @@ void SettingsRun::list()
       throw e;
    }
 
-   // Parse the first argument to determine which list command is requested, calling
-   // the appropriate method for the command given. If the command is not recognized
-   // then throw an exception.
+   // Create the list and enumeration of possible list commands that are recognized.
+   enum {Unknown=-1,CUDACom,OpenCLCom};
    QStringList list {"cuda","opencl"};
+
+   // Determine which list command has been given by the user and execute it.
    switch (_command.peek(list))
    {
    case CUDACom:
@@ -604,6 +599,7 @@ void SettingsRun::list()
       break;
    case Unknown:
       {
+         // The list command was not recognized so throw an exception informing the user.
          E_MAKE_EXCEPTION(e);
          e.setTitle(QObject::tr("Invalid argument"));
          e.setDetails(QObject::tr("Settings list sub argument '%1' unrecognized, exiting...")
@@ -624,10 +620,14 @@ void SettingsRun::list()
  */
 void SettingsRun::listCUDA()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // List all available CUDA devices to standard output by their index and name.
+   // Create a text stream connected to standard output.
    QTextStream stream (stdout);
+
+   // Iterate through all available CUDA devices, printing each device index and name
+   // to standard input for the user.
    for(int d = 0; d < CUDA::Device::size() ;++d)
    {
       stream << QString::number(d) << " " << CUDA::Device::get(d)->name() << "\n";
@@ -640,21 +640,27 @@ void SettingsRun::listCUDA()
 
 
 /*!
- * Executes the settings list opencl command, listing all available OpenCL
+ * Executes the settings list OpenCL command, listing all available OpenCL
  * devices by their platform and device indexes and name to standard output. The
  * indexes are formatted the same way an OpenCL device is specified in the set
  * command.
  */
 void SettingsRun::listOpenCL()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // List all available OpenCL devices to standard output by their indexes and name.
+   // Create a text stream connected to standard output.
    QTextStream stream (stdout);
+
+   // Iterate through all available OpenCL platforms.
    for (int p = 0; p < OpenCL::Platform::size() ;++p)
    {
+      // Iterate through all available devices of the OpenCL platform.
       for(int d = 0; d < OpenCL::Platform::get(p)->deviceSize() ;++d)
       {
+         // Print the platform index, device index, and device name of the current device
+         // to standard output.
          stream << QString::number(p)
                 << ":"
                 << QString::number(d)

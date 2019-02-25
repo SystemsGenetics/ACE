@@ -32,7 +32,8 @@ Run::Run(const Command& command, const Options& options)
    _options(options),
    _command(command)
 {
-   EDEBUG_FUNC(this,&command,&options)
+   // Add the debug header.
+   EDEBUG_FUNC(this,&command,&options);
 
    // Setup the chunk run indexes and then setup this object's analytic manager.
    setupIndexes();
@@ -53,10 +54,11 @@ Run::Run(const Command& command, const Options& options)
  */
 void Run::progressed(int percentComplete)
 {
-   EDEBUG_FUNC(this,percentComplete)
+   // Add the debug header.
+   EDEBUG_FUNC(this,percentComplete);
 
-   // Output a new percent complete to standard output, overwriting the previous
-   // percent. Flush the stream to make sure it updates.
+   // Output a new percent complete to standard output, flushing the stream to make
+   // sure it updates.
    _stream << QString::number(percentComplete) << "%\n";
    _stream.flush();
 }
@@ -72,8 +74,7 @@ void Run::progressed(int percentComplete)
  */
 void Run::done()
 {
-   EDEBUG_FUNC(this)
-
+   EDEBUG_FUNC(this);
    _stream << "100%\n";
 }
 
@@ -88,8 +89,7 @@ void Run::done()
  */
 void Run::finished()
 {
-   EDEBUG_FUNC(this)
-
+   EDEBUG_FUNC(this);
    deleteLater();
 }
 
@@ -104,22 +104,27 @@ void Run::finished()
  */
 void Run::setupIndexes()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // Pop this object's first command argument. If it is a chunk run then setup the
-   // chunk run, else if it is a merge run then setup the merge run, else it must be
-   // a regular run so leave the default index and size.
+   // Pop this object's first command argument to test it for any chunk commands or
+   // simply removing it if it is a basic run command.
    QString command {_command.pop()};
+
+   // If the command is chunk run then setup the chunk run.
    if ( command == QString("chunkrun") )
    {
       setupChunk();
    }
+
+   // Else if the command is merge then setup the merge run.
    else if ( command == QString("merge") )
    {
       setupMerge();
    }
 
-   // If this object's command argument size is empty then throw an exception.
+   // Make sure there is an additional command argument naming the analytic to run
+   // regardless of the type of run.
    if ( _command.size() < 1 )
    {
       E_MAKE_EXCEPTION(e);
@@ -141,10 +146,10 @@ void Run::setupIndexes()
  */
 void Run::setupChunk()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // If this object's command argument size is less than two then throw an
-   // exception, else go to the next step.
+   // Make sure there are two command arguments to be processed.
    if ( _command.size() < 2 )
    {
       E_MAKE_EXCEPTION(e);
@@ -153,10 +158,7 @@ void Run::setupChunk()
       throw e;
    }
 
-   // Get the index value by popping the first command argument and the size value by
-   // popping the second command argument, setting this object's index and size to
-   // the given values. If the values fail being read as integers or they are invalid
-   // then throw an exception.
+   // Pop and read the chunk index argument and make sure it worked.
    bool ok;
    _index = _command.pop().toInt(&ok);
    if ( !ok )
@@ -166,6 +168,8 @@ void Run::setupChunk()
       e.setDetails(tr("Given index for chunkrun is invalid, exiting..."));
       throw e;
    }
+
+   // Pop and read the chunk size argument and make sure it worked.
    _size = _command.pop().toInt(&ok);
    if ( !ok )
    {
@@ -174,6 +178,8 @@ void Run::setupChunk()
       e.setDetails(tr("Given size for chunkrun is invalid, exiting..."));
       throw e;
    }
+
+   // Make sure the index and size arguments given are valid.
    if ( _index < 0 || _size < 0 || _index >= _size )
    {
       E_MAKE_EXCEPTION(e);
@@ -194,11 +200,13 @@ void Run::setupChunk()
  */
 void Run::setupMerge()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // Set this object's index to -1 denoting a merge run. If this object's command
-   // argument size is empty then throw an exception, else go to the next step.
+   // Set this object's index to -1 denoting a merge run.
    _index = -1;
+
+   // Make sure there is a command argument to be processed.
    if ( _command.size() < 1 )
    {
       E_MAKE_EXCEPTION(e);
@@ -207,8 +215,7 @@ void Run::setupMerge()
       throw e;
    }
 
-   // Get the size by popping the first command argument, setting it to this object's
-   // size. If reading the size as an integer fails then throw an exception.
+   // Pop and read in the size argument, making sure it worked.
    bool ok;
    _size = _command.pop().toInt(&ok);
    if ( !ok )
@@ -235,11 +242,15 @@ void Run::setupMerge()
  */
 quint16 Run::getType()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // Populate a string list of all analytic command names so that their indexes
-   // match their integer type.
+   // Create a string list used to hold all command line names of available
+   // analytics.
    QStringList commandNames;
+
+   // Populate a string list with all analytic command names so that their indexes
+   // match their integer type.
    EAbstractAnalyticFactory& factory {EAbstractAnalyticFactory::instance()};
    for (quint16 i = 0; i < factory.size() ;++i)
    {
@@ -247,17 +258,19 @@ quint16 Run::getType()
    }
 
    // Pop this object's first command argument and attempt to find it in the list of
-   // analytic command names. If the analytic is not found in the list then throw an
-   // exception, else return the analytic type found.
+   // analytic command names, making sure the found index is a valid unsigned 16 bit
+   // integer.
    QString name {_command.pop()};
    int type {commandNames.indexOf(name)};
-   if ( type < 0 )
+   if ( type < 0 || type > 0xffff )
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(tr("Invalid Argument"));
       e.setDetails(tr("Unknown analytic '%1'; no analytic exists by that name.").arg(name));
       throw e;
    }
+
+   // Return the found analytic type.
    return static_cast<quint16>(type);
 }
 
@@ -275,18 +288,21 @@ quint16 Run::getType()
  */
 void Run::setupManager(quint16 type)
 {
-   EDEBUG_FUNC(this,type)
+   // Add the debug header.
+   EDEBUG_FUNC(this,type);
 
    // Create a new analytic manager with the given analytic type and this object's
    // index and size, setting this as its parent.
    _manager = Analytic::AbstractManager::makeManager(type,_index,_size).release();
    _manager->setParent(this);
 
-   // Connect all signals to slots, add all arguments to the analytic manager, and
-   // then initialize the manager for execution.
+   // Connect all required signals to this run object.
    connect(_manager,&Analytic::AbstractManager::progressed,this,&Run::progressed);
    connect(_manager,&Analytic::AbstractManager::done,this,&Run::done);
    connect(_manager,&Analytic::AbstractManager::finished,this,&Run::finished);
+
+   // Set all input arguments to the analytic manager in turn setting the analytic
+   // input.
    addArguments();
 
    // Initialize the analytic manager immediately.
