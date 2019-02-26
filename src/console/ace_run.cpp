@@ -320,6 +320,7 @@ void Run::setupManager(quint16 type)
  */
 void Run::addArguments()
 {
+   // Add the debug header.
    EDEBUG_FUNC(this);
 
    // Iterate through all options passed to this run object.
@@ -398,11 +399,11 @@ void Run::addArguments()
  */
 void Run::addInteger(int index, const QString& key)
 {
-   EDEBUG_FUNC(this,index,key)
+   // Add the debug header.
+   EDEBUG_FUNC(this,index,key);
 
-   // Find an option with the given key, converting it to an integer value. If
-   // converting it to an integer fails then throw an exception, else go to the next
-   // step.
+   // Grab the option value with the given key and convert it to an integer, making
+   // sure it worked.
    bool ok;
    int value {_options.find(key).toInt(&ok)};
    if ( !ok )
@@ -413,9 +414,8 @@ void Run::addInteger(int index, const QString& key)
       throw e;
    }
 
-   // If the integer value is less than the minimum or greater than the maximum then
-   // throw an exception, else set the analytic argument with the given index to the
-   // integer value.
+   // Make sure the integer value is within the minimum and maximum bounds for the
+   // argument.
    int minimum {_manager->data(index,EAbstractAnalytic::Input::Role::Minimum).toInt()};
    int maximum {_manager->data(index,EAbstractAnalytic::Input::Role::Maximum).toInt()};
    if ( value < minimum || value > maximum )
@@ -429,6 +429,8 @@ void Run::addInteger(int index, const QString& key)
                    .arg(maximum));
       throw e;
    }
+
+   // Set the analytic argument with the given index to the valid integer value.
    _manager->set(index,value);
 }
 
@@ -449,11 +451,11 @@ void Run::addInteger(int index, const QString& key)
  */
 void Run::addDouble(int index, const QString& key)
 {
-   EDEBUG_FUNC(this,index,key)
+   // Add the debug header.
+   EDEBUG_FUNC(this,index,key);
 
-   // Find an option with the given key, converting it to a double value. If
-   // converting it to a double fails then throw an exception, else go to the next
-   // step.
+   // Grab the option value with the given key and convert it to a double floating
+   // point, making sure it worked.
    bool ok;
    double value {_options.find(key).toDouble(&ok)};
    if ( !ok )
@@ -464,9 +466,8 @@ void Run::addDouble(int index, const QString& key)
       throw e;
    }
 
-   // If the double value is less than the minimum or greater than the maximum then
-   // throw an exception, else set the analytic argument with the given index to the
-   // double value.
+   // Make sure the double floating point value is within the minimum and maximum
+   // bounds for the given argument.
    double minimum {_manager->data(index,EAbstractAnalytic::Input::Role::Minimum).toDouble()};
    double maximum {_manager->data(index,EAbstractAnalytic::Input::Role::Maximum).toDouble()};
    if ( value < minimum || value > maximum )
@@ -480,6 +481,9 @@ void Run::addDouble(int index, const QString& key)
                    .arg(maximum));
       throw e;
    }
+
+   // Set the analytic argument with the given index to the valid double floating
+   // point value.
    _manager->set(index,value);
 }
 
@@ -500,17 +504,13 @@ void Run::addDouble(int index, const QString& key)
  */
 void Run::addSelection(int index, const QString& key)
 {
-   EDEBUG_FUNC(this,index,key)
+   // Add the debug header.
+   EDEBUG_FUNC(this,index,key);
 
-   // Find an option with the given key, setting it to the analytic argument with the
-   // given index. If the value of the option found is not a valid selection option
-   // for the analytic argument with the given index then throw an exception.
+   // Grab the option value with the given key, making sure it is a valid selection
+   // value.
    QString value {_options.find(key)};
-   QStringList values
-   {
-      _manager->data(index,EAbstractAnalytic::Input::Role::SelectionValues).toStringList()
-   };
-   if ( !values.contains(value) )
+   if ( _manager->data(index,EAbstractAnalytic::Input::Role::SelectionValues).toStringList().contains(value) )
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(tr("Invalid Argument"));
@@ -519,6 +519,8 @@ void Run::addSelection(int index, const QString& key)
                    .arg(value));
       throw e;
    }
+
+   // Set the analytic argument with the given index to the valid selection value.
    _manager->set(index,value);
 }
 
