@@ -10,6 +10,7 @@
 #include "../core/ace_qmpi.h"
 #include "ace_run.h"
 #include "ace_settingsrun.h"
+#include "ace_helprun.h"
 
 
 
@@ -41,7 +42,7 @@ bool EApplication::notify(QObject* receiver, QEvent* event)
    {
       showException(e);
    }
-   catch (std::exception e)
+   catch (std::exception& e)
    {
       qDebug() << tr("STD exception %1 caught!\n").arg(e.what());
    }
@@ -85,7 +86,8 @@ EApplication::EApplication(const QString& organization, const QString& applicati
    :
    QCoreApplication(argc,argv),
    _options(argc,argv),
-   _command(argc,argv)
+   _command(argc,argv),
+   _runName(argv[0])
 {
    try
    {
@@ -104,7 +106,7 @@ EApplication::EApplication(const QString& organization, const QString& applicati
       showException(e);
       ::exit(-1);
    }
-   catch (std::exception e)
+   catch (std::exception& e)
    {
       qDebug() << tr("STD exception %1 caught!\n").arg(e.what());
       ::exit(-1);
@@ -134,18 +136,18 @@ int EApplication::exec()
    EDEBUG_FUNC(this);
    try
    {
-      // Make sure there is at least one command argument to process.
+      // Make sure there is at least one command argument to process, displaying the
+      // basic help text if there is none.
       if ( _command.size() < 1 )
       {
-         E_MAKE_EXCEPTION(e);
-         e.setTitle(tr("No Arguments"));
-         e.setDetails(tr("No arguments given, exiting..."));
-         throw e;
+         Ace::HelpRun help(_command,_runName);
+         help.execute();
+         return 0;
       }
 
       // Create an enumeration and string list used to identify the command argument.
-      enum {Unknown = -1,Settings,Run,ChunkRun,Merge,Dump,Inject};
-      QStringList commands {"settings","run","chunkrun","merge","dump","inject"};
+      enum {Unknown = -1,Settings,Run,ChunkRun,Merge,Dump,Inject,Help};
+      QStringList commands {"settings","run","chunkrun","merge","dump","inject","help"};
 
       // Determine and execute which primary command is given.
       switch (_command.peek(commands))
@@ -193,14 +195,15 @@ int EApplication::exec()
          _command.pop();
          inject();
          return 0;
+      case Help:
       case Unknown:
          {
-            // If the primary command is not recognized then throw an exception informing the
-            // user.
-            E_MAKE_EXCEPTION(e);
-            e.setTitle(tr("Invalid argument"));
-            e.setDetails(tr("Unknown command '%1'.").arg(commands.first()));
-            throw e;
+            // If the primary command is not recognized or it is the help command then print
+            // the basic help text to the user and exit.
+            _command.pop();
+            Ace::HelpRun help(_command,_runName);
+            help.execute();
+            return 0;
          }
       }
    }
@@ -210,7 +213,7 @@ int EApplication::exec()
    {
       showException(e);
    }
-   catch (std::exception e)
+   catch (std::exception& e)
    {
       qDebug() << tr("STD exception %1 caught!\n").arg(e.what());
    }

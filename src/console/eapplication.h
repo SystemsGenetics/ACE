@@ -45,6 +45,10 @@ private:
     * function.
     */
    Ace::Command _command;
+   /*!
+    * The command name used to execute this application.
+    */
+   QString _runName;
 };
 
 #endif

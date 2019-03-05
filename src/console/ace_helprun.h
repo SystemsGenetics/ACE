@@ -19,9 +19,10 @@ namespace Ace
    class HelpRun
    {
    public:
-      HelpRun(const Command& command);
+      HelpRun(const Command& command, const QString& runName);
       void execute();
    private:
+      void basic();
       void runHelp();
       void chunkrunHelp();
       void mergeHelp();
@@ -36,6 +37,10 @@ namespace Ace
        * function, excluding the very first argument used to get to this help class.
        */
       Command _command;
+      /*!
+       * The command name used to execute this application.
+       */
+      QString _runName;
    };
 }
 
