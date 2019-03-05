@@ -1,5 +1,6 @@
 #include "ace_helprun.h"
 #include <QTextStream>
+#include "../core/eabstractanalyticfactory.h"
 
 
 
@@ -37,10 +38,15 @@ HelpRun::HelpRun(const Command& command, const QString& runName)
  */
 void HelpRun::execute()
 {
+   // Check to see if there is at least one help command to process.
    if ( _command.size() > 0 )
    {
+      // Create and initialize a string list and enumeration used to figure out which
+      // command was given.
       enum {Run,Chunkrun,Merge,Dump,Inject,Settings};
       const QStringList commands {"run","chunkrun","merge","dump","inject","settings"};
+
+      // Determine which help command is given by the user.
       QString command {_command.pop()};
       switch (commands.indexOf(command))
       {
@@ -48,25 +54,28 @@ void HelpRun::execute()
          runHelp();
          break;
       case Chunkrun:
-         runHelp();
+         chunkrunHelp();
          break;
       case Merge:
-         runHelp();
+         mergeHelp();
          break;
       case Dump:
-         runHelp();
+         dumpHelp();
          break;
       case Inject:
-         runHelp();
+         injectHelp();
          break;
       case Settings:
-         runHelp();
+         settingsHelp();
          break;
       default:
+         // If the help command is not recognized then print out the basic help text.
          basic();
          break;
       }
    }
+
+   // Else no command has been given so print out the basic help text.
    else
    {
       basic();
@@ -84,23 +93,25 @@ void HelpRun::execute()
  */
 void HelpRun::basic()
 {
+   // .
    QTextStream stream(stdout);
-   stream << "Usage: " << _runName << " help <command>\n";
-   stream << "Get help about the specific command <command>.\n\n";
-   stream << "Valid commands:\n\n";
-   stream << "     run: Run an analytic in normal mode. MPI is automatically detected. If no\n";
-   stream << "          MPI is detected then the analytic will run in single mode.\n\n";
-   stream << "chunkrun: Run an analytic in chunk run mode. This mode will execute the analytic\n\n";
-   stream << "          on a subset of the data and save its results in a temporary file.\n\n";
-   stream << "   merge: Merge all temporary result files from chunkruns into the finished\n";
-   stream << "          output data objects of the analytic run.\n\n";
-   stream << "    dump: Dump the system or user metadata of a data object to standard output\n";
-   stream << "          as JSON formatted text.";
-   stream << "  inject: Inject new user metadata into a data object from a JSON formatted text\n";
-   stream << "          file, overwriting any user metadata the data object currently\n";
-   stream << "          contains.\n\n";
-   stream << "settings: Access the global persistent settings for this program to either view\n";
-   stream << "          those settings or change them.\n\n";
+   stream << "Usage: " << _runName << " help <command>\n\n"
+             "Get help about the specific command <command>.\n\n"
+             "Valid commands:\n\n"
+             "     run: Run an analytic in normal mode. MPI is automatically detected. If no\n"
+             "          MPI is detected then the analytic will run in single mode.\n\n"
+             "chunkrun: Run an analytic in chunk run mode. This mode will execute the\n"
+             "          analytic on a subset of the data and save its results in a temporary\n"
+             "          file.\n\n"
+             "   merge: Merge all temporary result files from chunkruns into the finished\n"
+             "          output data objects of the analytic run.\n\n"
+             "    dump: Dump the system or user metadata of a data object to standard output\n"
+             "          as JSON formatted text."
+             "  inject: Inject new user metadata into a data object from a JSON formatted text\n"
+             "          file, overwriting any user metadata the data object currently\n"
+             "          contains.\n\n"
+             "settings: Access the global persistent settings for this program to either view\n"
+             "          those settings or change them.\n\n";
 }
 
 
@@ -113,6 +124,24 @@ void HelpRun::basic()
  */
 void HelpRun::runHelp()
 {
+   // Create a text stream to standard output and print out the run help text header.
+   QTextStream stream(stdout);
+   stream << "Command: " << _runName << " run <analytic> <options...>\n"
+             "Runs the given analytic with the given options.\n\n"
+          << "Usage: " << _runName << " help run <analytic>\n"
+             "Get help about running a specific analytic <analytic>.\n\n"
+             "Valid analytics:\n";
+
+   // Iterate through all possible analytics, printing out their command line name
+   // and then full name.
+   EAbstractAnalyticFactory& factory {EAbstractAnalyticFactory::instance()};
+   for (quint16 i = 0; i < factory.size() ;++i)
+   {
+      stream << factory.commandName(i) << ": " << factory.name(i) << "\n";
+   }
+
+   // Print out the final closing empty new line of the run help text.
+   stream << "\n";
 }
 
 
@@ -125,6 +154,33 @@ void HelpRun::runHelp()
  */
 void HelpRun::chunkrunHelp()
 {
+   // Create a text stream to standard output and print out the chunk run help text
+   // header.
+   QTextStream stream(stdout);
+   stream << "Command: " << _runName << " chunkrun <index> <size> <analytic> <options...>\n"
+             "Does a chunk run of the given analytic and options, executing only a segment of\n"
+             "the total analytic and saving its temporary results to a chunk file. All these\n"
+             "chunk files are later merged with the merge command. WARNING: ALL analytic\n"
+             "options must be identical for all individual chunk run executions or they will\n"
+             "not properly merge together.\n\n"
+             "index: The specific chunk index of work that will be run on the given analytic\n"
+             "       and results saved.\n"
+             " size: The total number of chunks that the total analytic work is separated\n"
+             "       into.\n\n"
+          << "Usage: " << _runName << " help chunkrun <analytic>\n"
+             "Get help about chunk running a specific analytic <analytic>.\n\n"
+             "Valid analytics:\n";
+
+   // Iterate through all possible analytics, printing out their command line name
+   // and then full name.
+   EAbstractAnalyticFactory& factory {EAbstractAnalyticFactory::instance()};
+   for (quint16 i = 0; i < factory.size() ;++i)
+   {
+      stream << factory.commandName(i) << ": " << factory.name(i) << "\n";
+   }
+
+   // Print out the final closing empty new line of the chunk run help text.
+   stream << "\n";
 }
 
 
@@ -137,6 +193,31 @@ void HelpRun::chunkrunHelp()
  */
 void HelpRun::mergeHelp()
 {
+   // Create a text stream to standard output and print out the merge help text
+   // header.
+   QTextStream stream(stdout);
+   stream << "Command: " << _runName << " merge <size> <analytic> <options...>\n"
+             "Merges all chunkrun output files into the finalized output of the given analytic"
+             "and options run. WARNING: ALL analytic options must be identical for the merge\n"
+             "command and all individual chunk run executions or they will not properly merge\n"
+             "together. Also all chunk run executions must be complete before the merge\n"
+             "command can be executed.\n\n"
+             " size: The total number of chunks that the total analytic work is separated\n"
+             "       into.\n\n"
+          << "Usage: " << _runName << " help merge <analytic>\n"
+             "Get help about merge running a specific analytic <analytic>.\n\n"
+             "Valid analytics:\n";
+
+   // Iterate through all possible analytics, printing out their command line name
+   // and then full name.
+   EAbstractAnalyticFactory& factory {EAbstractAnalyticFactory::instance()};
+   for (quint16 i = 0; i < factory.size() ;++i)
+   {
+      stream << factory.commandName(i) << ": " << factory.name(i) << "\n";
+   }
+
+   // Print out the final closing empty new line of the merge help text.
+   stream << "\n";
 }
 
 
@@ -149,6 +230,11 @@ void HelpRun::mergeHelp()
  */
 void HelpRun::dumpHelp()
 {
+   // .
+   QTextStream stream(stdout);
+   stream << "Command: " << _runName << " dump <path> [system|user]\n"
+             "Dumps the system or user metadata of a data object to standard output as JSON.\n\n"
+             "path: The file path to the data object whose system or user metada is dumped.\n\n";
 }
 
 
