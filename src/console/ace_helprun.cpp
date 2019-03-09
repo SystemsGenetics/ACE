@@ -1,7 +1,7 @@
 #include "ace_helprun.h"
 #include <QTextStream>
+#include <QRegularExpression>
 #include "../core/eabstractanalyticfactory.h"
-#include "../core/eabstractanalytic.h"
 #include "../core/eabstractanalytic_input.h"
 
 
@@ -81,6 +81,112 @@ void HelpRun::execute()
    else
    {
       basic();
+   }
+}
+
+
+
+
+
+
+/*!
+ * Lists all properties of a given analytic input index to the given text
+ * stream.
+ *
+ * @param stream The text stream which is used to output the given input
+ *               properties.
+ *
+ * @param input The analytic input interface used to interrogate properties
+ *              about a given argument index.
+ *
+ * @param index The specific argument index of the analytic input to interrogate
+ *              properties from.
+ */
+void HelpRun::listAnalyticInputProperties(QTextStream& stream, const EAbstractAnalytic::Input& input, int index)
+{
+   // Use the type and role enumerations from the input interface.
+   using Type = EAbstractAnalytic::Input::Type;
+   using Role = EAbstractAnalytic::Input::Role;
+
+   // Determine which argument type the given input argument index is and print out
+   // its respective properties.
+   switch (input.type(index))
+   {
+   case Type::Boolean:
+      stream << "Boolean\n";
+      break;
+   case Type::Integer:
+      stream << "Integer\n";
+
+      // Because this is numeric print out its minimum and maximum accepted values.
+      stream << "Minimum Value: " << input.data(index,Role::Minimum).toInt() << "\n";
+      stream << "Maximum Value: " << input.data(index,Role::Maximum).toInt() << "\n";
+      break;
+   case Type::Double:
+      stream << "Floating Point\n";
+
+      // Because this is numeric print out its minimum and maximum accepted values.
+      stream << "Minimum Value: " << input.data(index,Role::Minimum).toDouble() << "\n";
+      stream << "Maximum Value: " << input.data(index,Role::Maximum).toDouble() << "\n";
+      break;
+   case Type::String:
+      stream << "String\n";
+      break;
+   case Type::Selection:
+      {
+         stream << "Selection\n";
+
+         // Print out the header title for legal values of this selection.
+         stream << "Legal Values:";
+
+         // Initialize a columns tracker and get all legal selection values.
+         int cols {13};
+         QStringList options {input.data(index,Role::SelectionValues).toStringList()};
+
+         // Iterate through all legal value strings.
+         for (auto option: options)
+         {
+            // If the next string causes the total columns to be greater than 80 then reset to
+            // the new line along with resetting the columns tracker.
+            if ( (cols + 1 + option.size()) >= 80 )
+            {
+               stream << "\n          ";
+               cols = 14 + option.size();
+            }
+
+            // Else the columns is not beyond 80 yet so add the next string size and space.
+            else
+            {
+               cols += 1 + option.size();
+            }
+
+            // Print out the next legal value.
+            stream << " " << option;
+         }
+
+         // Print out the final new line ending the legal values selection property.
+         stream << "\n";
+         break;
+      }
+   case Type::FileIn:
+      stream << "Input File\n";
+      break;
+   case Type::FileOut:
+      stream << "Output File\n";
+      break;
+   case Type::DataIn:
+      stream << "Input Data Object\n";
+      break;
+   case Type::DataOut:
+      stream << "Output Data Object\n";
+      break;
+   }
+
+   // If this input argument has a default value then print it to the text stream.
+   QString defValue {input.data(index,Role::Default).toString()};
+   if ( !defValue.isEmpty() )
+   {
+      stream << "Default Value: " << defValue << "\n";
    }
 }
 
@@ -324,69 +430,26 @@ void HelpRun::analyticHelp()
              << "modes all separate executions MUST have the same options provided to the\n"
              << "analytic.\n\n"
              << "OPTIONS\n\n";
-      using Type = EAbstractAnalytic::Input::Type;
       using Role = EAbstractAnalytic::Input::Role;
       for (int i = 0; i < input->size() ;++i)
       {
          stream << "--" << input->data(i,Role::CommandLineName).toString() << " <value>\n";
          stream << "Value Type: ";
-         switch (input->type(i))
+         listAnalyticInputProperties(stream,*input,i);
+         QStringList words
          {
-         case Type::Boolean:
-            stream << "Boolean\n";
-            break;
-         case Type::Integer:
-            stream << "Integer\n";
-            stream << "Minimum Value: " << input->data(i,Role::Minimum).toInt() << "\n";
-            stream << "Maximum Value: " << input->data(i,Role::Maximum).toInt() << "\n";
-            break;
-         case Type::Double:
-            stream << "Floating Point\n";
-            stream << "Minimum Value: " << input->data(i,Role::Minimum).toDouble() << "\n";
-            stream << "Maximum Value: " << input->data(i,Role::Maximum).toDouble() << "\n";
-            break;
-         case Type::String:
-            stream << "String\n";
-            break;
-         case Type::Selection:
+            input->data(i,Role::WhatsThis).toString().split(QRegularExpression("\\s+"))
+         };
+         while ( !words.isEmpty() )
+         {
+            int cols {words.first().size()};
+            stream << words.takeFirst();
+            while ( !words.isEmpty() && (cols + 1 + words.first().size()) <= 80 )
             {
-               stream << "Selection\n";
-               stream << "Legal Values:";
-               int cols {13};
-               QStringList options {input->data(i,Role::SelectionValues).toStringList()};
-               for (auto option: options)
-               {
-                  if ( (cols + 1 + option.size()) >= 80 )
-                  {
-                     stream << "\n          ";
-                     cols = 14 + option.size();
-                  }
-                  else
-                  {
-                     cols += 1 + option.size();
-                  }
-                  stream << " " << option;
-               }
-               stream << "\n";
-               break;
+               cols += 1 + words.first().size();
+               stream << " " << words.takeFirst();
             }
-         case Type::FileIn:
-            stream << "Input File\n";
-            break;
-         case Type::FileOut:
-            stream << "Output File\n";
-            break;
-         case Type::DataIn:
-            stream << "Input Data Object\n";
-            break;
-         case Type::DataOut:
-            stream << "Output Data Object\n";
-            break;
-         }
-         QString defValue {input->data(i,Role::Default).toString()};
-         if ( !defValue.isEmpty() )
-         {
-            stream << "Default Value: " << input->data(i,Role::Default).toString() << "\n";
+            stream << "\n";
          }
          stream << "\n";
       }
