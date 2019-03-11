@@ -25,6 +25,7 @@ namespace Ace
       void execute();
    private:
       static void listAnalyticInputProperties(QTextStream& stream, const EAbstractAnalytic::Input& input, int index);
+      static void printDescription(QTextStream& stream, const EAbstractAnalytic::Input& input, int index);
    private:
       void basic();
       void runHelp();

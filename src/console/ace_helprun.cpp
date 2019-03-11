@@ -196,6 +196,59 @@ void HelpRun::listAnalyticInputProperties(QTextStream& stream, const EAbstractAn
 
 
 /*!
+ * Outputs the what's this description of a given analytic input index to the
+ * given text stream.
+ *
+ * @param stream The text stream which is used to output the given input
+ *               description.
+ *
+ * @param input The analytic input interface used to interrogate the whats this
+ *              description of a given argument index.
+ *
+ * @param index The specific argument index of the analytic input to interrogate
+ *              from.
+ */
+void HelpRun::printDescription(QTextStream& stream, const EAbstractAnalytic::Input& input, int index)
+{
+   // Use the role enumeration of the analytic input class.
+   using Role = EAbstractAnalytic::Input::Role;
+
+   // Get the what's this description of the input argument with the given index,
+   // splitting it up into its component words.
+   QStringList words
+   {
+      input.data(index,Role::WhatsThis).toString().split(QRegularExpression("\\s+"))
+   };
+
+   // Continue until the list of words to print out is empty.
+   while ( !words.isEmpty() )
+   {
+      // Create and initialize the columns tracker to the first word in the list and
+      // then take that first word and output it to the given stream.
+      int cols {words.first().size()};
+      stream << words.takeFirst();
+
+      // Continue while the total columns used plus the next word to be printed is less
+      // than or equal to the common terminal width of 80.
+      while ( !words.isEmpty() && (cols + 1 + words.first().size()) <= 80 )
+      {
+         // Add the size of the next word to be printed along with a required space to the
+         // columns tracker and then take the word and print it.
+         cols += 1 + words.first().size();
+         stream << " " << words.takeFirst();
+      }
+
+      // Print the closing new line character for this line of output.
+      stream << "\n";
+   }
+}
+
+
+
+
+
+
+/*!
  * Prints out the basic root help text informing the user how to use the help
  * command system.
  */
@@ -408,49 +461,60 @@ void HelpRun::injectHelp()
  */
 void HelpRun::analyticHelp()
 {
+   // Create a text stream to the standard output.
    QTextStream stream(stdout);
+
+   // Create a command names string list and populate it with all analytic command
+   // names whose indexes match the analytic type integer.
    QStringList commandNames;
    EAbstractAnalyticFactory& factory {EAbstractAnalyticFactory::instance()};
    for (quint16 i = 0; i < factory.size() ;++i)
    {
       commandNames << factory.commandName(i);
    }
+
+   // Get the analytic command name from this run's command list.
    QString name {_command.pop()};
+
+   // Determine the analytic type from the command name using the command names list,
+   // making sure the name is a known analytic type.
    int type {commandNames.indexOf(name)};
    if ( type < 0 || type > 0xffff )
    {
       stream << "Unknown analytic '" << name << "'\n\n";
    }
+
+   // Else the analytic type was found and should now be processed.
    else
    {
+      // Create an analytic of the determined type and then create an input interface
+      // from it.
       std::unique_ptr<EAbstractAnalytic> analytic {factory.make(static_cast<quint16>(type))};
       EAbstractAnalytic::Input* input {analytic->makeInput()};
+
+      // Output the basic help header information about the created analytic to standard
+      // output.
       stream << "Command: " << _runName << " run|chunkrun|merge " << name << " <options...>\n"
              << "Run the given analytic in normal, chunk, or merge mode. For chunk and merge\n"
              << "modes all separate executions MUST have the same options provided to the\n"
              << "analytic.\n\n"
              << "OPTIONS\n\n";
+
+      // Use the role enumeration of the analytic input class.
       using Role = EAbstractAnalytic::Input::Role;
+
+      // Iterate through all arguments of the analytic input interface class.
       for (int i = 0; i < input->size() ;++i)
       {
+         // Output the help header of the input argument to standard output.
          stream << "--" << input->data(i,Role::CommandLineName).toString() << " <value>\n";
          stream << "Value Type: ";
+
+         // Output all properties of the input argument to standard output.
          listAnalyticInputProperties(stream,*input,i);
-         QStringList words
-         {
-            input->data(i,Role::WhatsThis).toString().split(QRegularExpression("\\s+"))
-         };
-         while ( !words.isEmpty() )
-         {
-            int cols {words.first().size()};
-            stream << words.takeFirst();
-            while ( !words.isEmpty() && (cols + 1 + words.first().size()) <= 80 )
-            {
-               cols += 1 + words.first().size();
-               stream << " " << words.takeFirst();
-            }
-            stream << "\n";
-         }
+
+         // Output the what's this description of the input argument to standard output.
+         printDescription(stream,*input,i);
          stream << "\n";
       }
    }
@@ -467,6 +531,34 @@ void HelpRun::analyticHelp()
  */
 void HelpRun::settingsHelp()
 {
+   if ( _command.size() > 0 )
+   {
+      enum {Set,List};
+      const QStringList commands {"set","list"};
+      QString command {_command.pop()};
+      switch (commands.indexOf(command))
+      {
+      case Set:
+         settingsSetHelp();
+         break;
+      case List:
+         settingsListHelp();
+         break;
+      }
+   }
+   else
+   {
+      QTextStream stream(stdout);
+      stream << "Command: " << _runName << " settings [set|list|] ...\n"
+             << "Executes the settings command that accesses the persistent settings of this\n"
+             << "application. These settings are persistent across all instances of this\n"
+             << "application in both the console and GUI version. The basic command with no sub\n"
+             << "arguments will simply print out the current value of all settings. The set sub\n"
+             << "command will set a specific setting to a new value. The list sub command will\n"
+             << "list valid values for certain settings.\n\n"
+             << "Help: " << _runName << " help settings [set|list]\n"
+             << "Get help about setting sub commands set or list.\n\n";
+   }
 }
 
 
