@@ -590,22 +590,26 @@ void HelpRun::settingsHelp()
 
 
 /*!
- * Displays the help text for the settings set command.
+ * Displays the help text for the settings set command. If an additional command
+ * argument is given and it is a valid setting to set its help text is displayed
+ * instead.
  */
 void HelpRun::settingsSetHelp()
 {
-   // .
+   // Initialize an enumeration and string list used to determine what setting set
+   // command was given to get help on, if any.
    enum {CUDA,OpenCL,Threads,Buffer,ChunkDir,ChunkPre,ChunkExt,Logging};
    QStringList list {"cuda","opencl","threads","buffer","chunkdir","chunkpre","chunkext","logging"};
 
-   // .
+   // Create an empty command string, setting it to this run's next command argument
+   // is any exists.
    QString command;
    if ( _command.size() > 0 )
    {
       command = _command.pop();
    }
 
-   // .
+   // Determine which setting set command was provided to get help text about.
    switch (list.indexOf(command))
    {
    case CUDA:
@@ -633,7 +637,20 @@ void HelpRun::settingsSetHelp()
       settingsSetLoggingHelp();
       break;
    default:
-      break;
+      {
+         // If the setting set command was not recognized or was empty then print the basic
+         // help text for the setting set command.
+         QTextStream stream(stdout);
+         stream << "Command: " << _runName << " settings set <key> <value>\n"
+                << "Updates a persistent setting with the given key to the new given value.\n\n"
+                << "  key: The key of the setting that will be updated to a new value. Valid keys\n"
+                << "       are cuda, opencl, threads, buffer, chunkdir, chunkpre, chunkext, and\n"
+                << "       logging.\n\n"
+                << "value: The new value of the given setting.\n\n"
+                << "Help: " << _runName << " help settings set <key>\n"
+                << "Get help about a specific setting to set with the given key.\n\n";
+         break;
+      }
    }
 }
 
@@ -643,9 +660,17 @@ void HelpRun::settingsSetHelp()
 
 
 /*!
+ * Displays the help text for the settings set cuda command.
  */
 void HelpRun::settingsSetCUDAHelp()
 {
+   // Create a text stream to standard output and print the settings set cuda command
+   // help text.
+   QTextStream stream(stdout);
+   stream << "Command: " << _runName << " settings set cuda <device>\n"
+          << "Updates the CUDA device setting.\n\n"
+          << "device: The integer indexed CUDA device that this application will use for\n"
+          << "        high performance computing.\n\n";
 }
 
 
@@ -654,9 +679,18 @@ void HelpRun::settingsSetCUDAHelp()
 
 
 /*!
+ * Displays the help text for the settings set opencl command.
  */
 void HelpRun::settingsSetOpenCLHelp()
 {
+   // Create a text stream to standard output and print the settings set opencl
+   // command help text.
+   QTextStream stream(stdout);
+   stream << "Command: " << _runName << " settings set opencl <device>\n"
+          << "Updates the OpenCL device setting.\n\n"
+          << "device: The integer indexed OpenCL platform and device that this application\n"
+             "        will use for high performance computing. The platform index integer\n"
+             "        must be first, separated by a colon, and then the device index integer.\n\n";
 }
 
 
@@ -665,9 +699,18 @@ void HelpRun::settingsSetOpenCLHelp()
 
 
 /*!
+ * Displays the help text for the settings set threads command.
  */
 void HelpRun::settingsSetThreadsHelp()
 {
+   // Create a text stream to standard output and print the settings set threads
+   // command help text.
+   QTextStream stream(stdout);
+   stream << "Command: " << _runName << " settings set threads <number>\n"
+          << "Updates the thread size setting. The thread size is the number of threads used\n"
+          << "for each CUDA or OpenCL device used in an analytic run. Multiple threads are\n"
+          << "used to make sure the high performance device is fully utilized.\n\n"
+          << "number: The number of threads used for each CUDA or OpenCL device.\n\n";
 }
 
 
@@ -676,9 +719,22 @@ void HelpRun::settingsSetThreadsHelp()
 
 
 /*!
+ * Displays the help text for the settings set buffer command.
  */
 void HelpRun::settingsSetBufferHelp()
 {
+   // Create a text stream to standard output and print the settings set buffer
+   // command help text.
+   QTextStream stream(stdout);
+   stream << "Command: " << _runName << " settings set buffer <size>\n"
+          << "Updates the buffer size setting. The buffer size is the number of extra work\n"
+          << "blocks each slave node in an mpi run is given in addition to the work block it\n"
+          << "is currently working on. This is used to prevent a slave node from wasting time\n"
+          << "waiting for another work block instead of working on one. If the buffer size is\n"
+          << "too high the MPI run could take longer if the speed of work block execution\n"
+          << "differs between slave nodes.\n\n"
+          << "size: The new buffer size or number of additional works blocks for each\n"
+          << "      slave node in an MPI run.\n\n";
 }
 
 
