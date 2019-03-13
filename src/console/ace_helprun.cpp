@@ -531,10 +531,36 @@ void HelpRun::analyticHelp()
  */
 void HelpRun::settingsHelp()
 {
+   // Define a function to print out the basic help text of the settings command.
+   auto f
+   {
+      [this]()
+      {
+         // Create a text stream to standard output and then print the basic help text for
+         // the settings command.
+         QTextStream stream(stdout);
+         stream << "Command: " << _runName << " settings [set|list|] ...\n"
+                << "Executes the settings command that accesses the persistent settings of this\n"
+                << "application. These settings are persistent across all instances of this\n"
+                << "application in both the console and GUI version. The basic command with no sub\n"
+                << "arguments will simply print out the current value of all settings. The set sub\n"
+                << "command will set a specific setting to a new value. The list sub command will\n"
+                << "list valid values for certain settings.\n\n"
+                << "Help: " << _runName << " help settings [set|list]\n"
+                << "Get help about setting sub commands set or list.\n\n";
+      }
+   };
+
+   // Check to see if there is a command to be processed.
    if ( _command.size() > 0 )
    {
+      // Initialize an enumeration and string list used for determining the setting help
+      // command given.
       enum {Set,List};
       const QStringList commands {"set","list"};
+
+      // Determine the settings help command given and call the appropriate method,
+      // printing the basic settings help text if the command is not recognized.
       QString command {_command.pop()};
       switch (commands.indexOf(command))
       {
@@ -544,20 +570,17 @@ void HelpRun::settingsHelp()
       case List:
          settingsListHelp();
          break;
+      default:
+         f();
+         break;
       }
    }
+
+   // Else there is no command to process to print out the basic settings help text
+   // information.
    else
    {
-      QTextStream stream(stdout);
-      stream << "Command: " << _runName << " settings [set|list|] ...\n"
-             << "Executes the settings command that accesses the persistent settings of this\n"
-             << "application. These settings are persistent across all instances of this\n"
-             << "application in both the console and GUI version. The basic command with no sub\n"
-             << "arguments will simply print out the current value of all settings. The set sub\n"
-             << "command will set a specific setting to a new value. The list sub command will\n"
-             << "list valid values for certain settings.\n\n"
-             << "Help: " << _runName << " help settings [set|list]\n"
-             << "Get help about setting sub commands set or list.\n\n";
+      f();
    }
 }
 
@@ -570,6 +593,135 @@ void HelpRun::settingsHelp()
  * Displays the help text for the settings set command.
  */
 void HelpRun::settingsSetHelp()
+{
+   // .
+   enum {CUDA,OpenCL,Threads,Buffer,ChunkDir,ChunkPre,ChunkExt,Logging};
+   QStringList list {"cuda","opencl","threads","buffer","chunkdir","chunkpre","chunkext","logging"};
+
+   // .
+   QString command;
+   if ( _command.size() > 0 )
+   {
+      command = _command.pop();
+   }
+
+   // .
+   switch (list.indexOf(command))
+   {
+   case CUDA:
+      settingsSetCUDAHelp();
+      break;
+   case OpenCL:
+      settingsSetOpenCLHelp();
+      break;
+   case Threads:
+      settingsSetThreadsHelp();
+      break;
+   case Buffer:
+      settingsSetBufferHelp();
+      break;
+   case ChunkDir:
+      settingsSetChunkDirHelp();
+      break;
+   case ChunkPre:
+      settingsSetChunkPreHelp();
+      break;
+   case ChunkExt:
+      settingsSetChunkExtHelp();
+      break;
+   case Logging:
+      settingsSetLoggingHelp();
+      break;
+   default:
+      break;
+   }
+}
+
+
+
+
+
+
+/*!
+ */
+void HelpRun::settingsSetCUDAHelp()
+{
+}
+
+
+
+
+
+
+/*!
+ */
+void HelpRun::settingsSetOpenCLHelp()
+{
+}
+
+
+
+
+
+
+/*!
+ */
+void HelpRun::settingsSetThreadsHelp()
+{
+}
+
+
+
+
+
+
+/*!
+ */
+void HelpRun::settingsSetBufferHelp()
+{
+}
+
+
+
+
+
+
+/*!
+ */
+void HelpRun::settingsSetChunkDirHelp()
+{
+}
+
+
+
+
+
+
+/*!
+ */
+void HelpRun::settingsSetChunkPreHelp()
+{
+}
+
+
+
+
+
+
+/*!
+ */
+void HelpRun::settingsSetChunkExtHelp()
+{
+}
+
+
+
+
+
+
+/*!
+ */
+void HelpRun::settingsSetLoggingHelp()
 {
 }
 

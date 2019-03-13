@@ -36,6 +36,14 @@ namespace Ace
       void analyticHelp();
       void settingsHelp();
       void settingsSetHelp();
+      void settingsSetCUDAHelp();
+      void settingsSetOpenCLHelp();
+      void settingsSetThreadsHelp();
+      void settingsSetBufferHelp();
+      void settingsSetChunkDirHelp();
+      void settingsSetChunkPreHelp();
+      void settingsSetChunkExtHelp();
+      void settingsSetLoggingHelp();
       void settingsListHelp();
       /*!
        * The command arguments parsed out of the command line arguments of the main
