@@ -3,7 +3,7 @@
 #include "eabstractdata.h"
 #include "edatastream.h"
 #include "eabstractdatafactory.h"
-#include "common.h"
+#include "global.h"
 #include "eexception.h"
 #include "edebug.h"
 
@@ -425,7 +425,7 @@ void DataObject::finalize()
  */
 void DataObject::read(char* data, qint64 size) const
 {
-   EDEBUG_FUNC(this,(void*)data,size)
+   EDEBUG_FUNC(this,static_cast<void*>(data),size)
 
    // If this data object's file cursor position is less than the header offset and 
    // this object's header has already been read then throw an exception, else go the 
@@ -468,7 +468,7 @@ void DataObject::read(char* data, qint64 size) const
  */
 void DataObject::write(const char* data, qint64 size)
 {
-   EDEBUG_FUNC(this,(void*)data,size)
+   EDEBUG_FUNC(this,static_cast<const void*>(data),size)
 
    // If this data object's file cursor position is less than the header offset and 
    // this object's header has already been read then throw an exception, else go the 

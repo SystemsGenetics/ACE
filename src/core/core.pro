@@ -7,9 +7,9 @@ TARGET = acecore
 TEMPLATE = lib
 
 SOURCES += \
+    global.cpp \
     emetadata.cpp \
     ace_qmpi.cpp \
-    common.cpp \
     emetaarray.cpp \
     emetaobject.cpp \
     ace_metadatamodel.cpp \
@@ -70,7 +70,6 @@ HEADERS += \
     opencl.h \
     emetadata.h \
     ace_qmpi.h \
-    common.h \
     emetaarray.h \
     emetaobject.h \
     ace_metadatamodel.h \

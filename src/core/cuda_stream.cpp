@@ -51,7 +51,7 @@ Stream::~Stream()
 {
    if ( _id != nullptr )
    {
-      CUDA_SAFE_CALL(cuStreamDestroy(_id));
+      cuStreamDestroy(_id);
    }
 }
 
