@@ -743,9 +743,20 @@ void HelpRun::settingsSetBufferHelp()
 
 
 /*!
+ * Displays the help text for the settings set chunkdir command.
  */
 void HelpRun::settingsSetChunkDirHelp()
 {
+   // Create a text stream to standard output and print the settings set chunkdir
+   // command help text.
+   QTextStream stream(stdout);
+   stream << "Command: " << _runName << " settings set chunkdir <directory>\n"
+          << "Updates the directory where all temporary chunk files are stored when running\n"
+          << "an analytic in chunk mode and used to find the created chunk files when merging\n"
+          << "them together into the analytic's output.\n\n"
+          << "directory: The absolute path to an existing directory used to store and\n"
+          << "           retrieve temporary chunk files. The user running the chunk run and\n"
+          << "           merge commands must have write access to the directory.\n\n";
 }
 
 
@@ -754,9 +765,17 @@ void HelpRun::settingsSetChunkDirHelp()
 
 
 /*!
+ * Displays the help text for the settings set chunkpre command.
  */
 void HelpRun::settingsSetChunkPreHelp()
 {
+   // Create a text stream to standard output and print the settings set chunkpre
+   // command help text.
+   QTextStream stream(stdout);
+   stream << "Command: " << _runName << " settings set chunkpre <name>\n"
+          << "Updates the name prepended and used for each temporary chunk file. The is\n"
+          << "prepended before the number for each temporary chunk file.\n\n"
+          << "name: String prepended before the number of each temporary chunk file.\n\n";
 }
 
 
@@ -765,9 +784,16 @@ void HelpRun::settingsSetChunkPreHelp()
 
 
 /*!
+ * Displays the help text for the settings set chunkext command.
  */
 void HelpRun::settingsSetChunkExtHelp()
 {
+   // Create a text stream to standard output and print the settings set chunkext
+   // command help text.
+   QTextStream stream(stdout);
+   stream << "Command: " << _runName << " settings set chunkext <ext>\n"
+          << "Updates the extension used for each temporary chunk file.\n\n"
+          << "ext: The extension used for each temporary chunk file.\n\n";
 }
 
 
@@ -776,9 +802,18 @@ void HelpRun::settingsSetChunkExtHelp()
 
 
 /*!
+ * Displays the help text for the settings set logging command.
  */
 void HelpRun::settingsSetLoggingHelp()
 {
+   // Create a text stream to standard output and print the settings set logging
+   // command help text.
+   QTextStream stream(stdout);
+   stream << "Command: " << _runName << " settings set logging <on/off>\n"
+          << "Acticates or disables the built in ACE logging system for this application. The\n"
+          << "logging system can be accessed using the utility command acelog. If logging is\n"
+          << "on then running an analytic will not start until a logging client has connected\n"
+          << "to the application.\n\n";
 }
 
 
@@ -791,6 +826,11 @@ void HelpRun::settingsSetLoggingHelp()
  */
 void HelpRun::settingsListHelp()
 {
+   // Create a text stream to standard output and print the settings list command
+   // help text.
+   QTextStream stream(stdout);
+   stream << "Command: " << _runName << " settings list <cuda/opencl>\n"
+          << "Lists all available OpenCL or CUDA devices on the current platform.\n\n";
 }
 
 }

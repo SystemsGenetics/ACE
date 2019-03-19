@@ -510,7 +510,7 @@ void Run::addSelection(int index, const QString& key)
    // Grab the option value with the given key, making sure it is a valid selection
    // value.
    QString value {_options.find(key)};
-   if ( _manager->data(index,EAbstractAnalytic::Input::Role::SelectionValues).toStringList().contains(value) )
+   if ( !_manager->data(index,EAbstractAnalytic::Input::Role::SelectionValues).toStringList().contains(value) )
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(tr("Invalid Argument"));
