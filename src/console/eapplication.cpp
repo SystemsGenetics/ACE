@@ -159,7 +159,7 @@ int EApplication::exec()
             _command.pop();
             Ace::SettingsRun settings(_command);
             settings.execute();
-            break;
+            return 0;
          }
       case Run:
       case ChunkRun:

@@ -1,4 +1,5 @@
 #include "ace_run.h"
+#include <limits>
 #include "../core/ace_analytic_abstractmanager.h"
 #include "../core/eabstractanalyticfactory.h"
 #include "../core/eexception.h"
@@ -38,6 +39,9 @@ Run::Run(const Command& command, const Options& options)
    // Setup the chunk run indexes and then setup this object's analytic manager.
    setupIndexes();
    setupManager(getType());
+
+   // .
+   _start = std::chrono::system_clock::now();
 }
 
 
@@ -57,9 +61,27 @@ void Run::progressed(int percentComplete)
    // Add the debug header.
    EDEBUG_FUNC(this,percentComplete);
 
-   // Output a new percent complete to standard output, flushing the stream to make
-   // sure it updates.
-   _stream << QString::number(percentComplete) << "%\n";
+   // Get the current time and determine the time elapsed since the start of this
+   // analytic run.
+   auto current {std::chrono::system_clock::now()};
+   long elapsed {std::chrono::duration_cast<std::chrono::seconds>(current - _start).count()};
+
+   // Estimate the time left in seconds for this analytic run based off the elapsed
+   // time and percent complete.
+   long left {(elapsed*100/percentComplete) - elapsed};
+
+   // Make sure the elapsed and left integers will not overflow.
+   Q_ASSERT(elapsed <= std::numeric_limits<int>::max());
+   Q_ASSERT(left <= std::numeric_limits<int>::max());
+
+   // Output a new percent complete, time elapsed, and predicted time left to
+   // standard output.
+   _stream << QString::number(percentComplete)
+           << "\t" << secondsToString(static_cast<int>(elapsed))
+           << "\t" << secondsToString(static_cast<int>(left))
+           << "%\n";
+
+   // Flush the stream to make sure it updates
    _stream.flush();
 }
 
@@ -91,6 +113,57 @@ void Run::finished()
 {
    EDEBUG_FUNC(this);
    deleteLater();
+}
+
+
+
+
+
+
+/*!
+ * Convert and return the given number of seconds into a string in the format of
+ * days, hours, minutes, and seconds.
+ *
+ *
+ * @return The given number of seconds as a string in the format of days, hours,
+ *         minutes, and seconds.
+ */
+QString Run::secondsToString(int seconds)
+{
+   // Determine the number of days, hours, minutes and seconds from the given total
+   // number of seconds.
+   int days {seconds};
+   seconds = days%60;
+   days /= 60;
+   int minutes {days%60};
+   days /= 60;
+   int hours {days%24};
+   days /= 24;
+
+   // Create an empty return string.
+   QString ret;
+
+   // Add the days, hours, minutes, and seconds to the string, leaving out any of
+   // them that are zero.
+   if ( days > 0 )
+   {
+      ret += QString::number(days) + QStringLiteral("d");
+   }
+   if ( hours > 0 )
+   {
+      ret += QString::number(hours) + QStringLiteral("h");
+   }
+   if ( minutes > 0 )
+   {
+      ret += QString::number(minutes) + QStringLiteral("m");
+   }
+   if ( seconds > 0 )
+   {
+      ret += QString::number(seconds) + QStringLiteral("s");
+   }
+
+   // Return the formatted time string.
+   return ret;
 }
 
 

@@ -18,7 +18,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-   EApplication application(""
+   EApplication application("SystemGenetics"
                             ,"aceex"
                             ,MAJOR_VERSION
                             ,MINOR_VERSION

@@ -24,25 +24,27 @@
  */
 const EDataStream& operator>>(const EDataStream& stream, EMetadata& meta)
 {
-   EDEBUG_FUNC(&stream,&meta)
+   // Add the debug header.
+   EDEBUG_FUNC(&stream,&meta);
 
-   // Read in the metadata type and overwrite the given metadata with a new object of
-   // that type.
+   // Read in the metadata type.
    quint8 type;
    stream >> type;
+
+   // Overwrite the given metadata with a new object of the read in type.
    meta = EMetadata(static_cast<EMetadata::Type>(type));
 
-   // If the type is an array go to step 4, else if the type is an object go to step
-   // 5, else go to step 3.
+   // Determine which metadata type is being read in and then read in the appropriate
+   // data.
    switch (meta.type())
    {
-
-   // Read in the value of the metadata to the given object. Return a reference to
-   // the data stream.
    case EMetadata::Bool:
    {
+      // Read in the boolean value of the metadata as a 8 bit unsigned integer.
       quint8 val;
       stream >> val;
+
+      // Overwrite the boolean value of the given metadata to the read in integer value.
       meta.toBool() = val;
       break;
    }
@@ -55,42 +57,50 @@ const EDataStream& operator>>(const EDataStream& stream, EMetadata& meta)
    case EMetadata::Bytes:
       stream >> meta.toBytes();
       break;
-
-   // Read in the size of metadata objects the array contains in the data stream.
-   // Read in all metadata objects the array contains, inserting each one into the
-   // given metadata array object. Return a reference to the data stream.
    case EMetadata::Array:
       {
+         // Read in the size of metadata objects the array contains in the data stream.
          quint32 size;
          stream >> size;
+
+         // Iterate through all metadata children to be read into the metadata array.
          for (quint32 i = 0; i < size ;++i)
          {
+            // Read in the child metadata.
             EMetadata child;
             stream >> child;
+
+            // Append it to the parent metadata array.
             meta.toArray().append(child);
          }
          break;
       }
-
-   // Read in the size of key and metadata value pairs the object contains in the
-   // data stream. Read in all keys and metadata objects the object contains,
-   // inserting each key and metadata value pair into the object. Return a reference
-   // to the data stream.
    case EMetadata::Object:
       {
+         // Read in the size of key and metadata value pairs the object contains in the
+         // data stream.
          quint32 size;
          stream >> size;
+
+         // Iterate through all child metadata objects to be read into the metadata object.
          for (quint32 i = 0; i < size ;++i)
          {
+            // Create an empty key string and metadata object used to read in the next child.
             QString key;
             EMetadata child;
+
+            // Read in the next key and child metadata.
             stream >> key >> child;
+
+            // Insert the read in key and child metadata to the parent metadata object.
             meta.toObject().insert(key,child);
          }
          break;
       }
    default: break;
    }
+
+   // Return the given data stream.
    return stream;
 }
 

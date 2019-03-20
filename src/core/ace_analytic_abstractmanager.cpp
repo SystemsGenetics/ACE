@@ -467,7 +467,7 @@ void AbstractManager::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& re
    // Determine the progress made from processing this result block. If the percent 
    // complete has changed since last time this was called then emit the progressed 
    // signal. 
-   int percentComplete {expectedIndex*100/analytic()->size()};
+   int percentComplete {static_cast<int>(static_cast<qint64>(expectedIndex)*100/analytic()->size())};
    if ( percentComplete != _percentComplete )
    {
       _percentComplete = percentComplete;
