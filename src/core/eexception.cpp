@@ -2,17 +2,13 @@
 
 
 
-//
-
-
-
 
 
 
 /*!
- * Returns the function name where this exception was thrown. 
+ * Returns the function name where this exception was thrown.
  *
- * @return Function name where this function was thrown. 
+ * @return Function name where this function was thrown.
  */
 QString EException::functionName() const noexcept
 {
@@ -25,9 +21,9 @@ QString EException::functionName() const noexcept
 
 
 /*!
- * Returns the file name where this exception was thrown. 
+ * Returns the file name where this exception was thrown.
  *
- * @return File name where this exception was thrown. 
+ * @return File name where this exception was thrown.
  */
 QString EException::fileName() const noexcept
 {
@@ -40,9 +36,9 @@ QString EException::fileName() const noexcept
 
 
 /*!
- * Returns the line number where this exception was thrown. 
+ * Returns the line number where this exception was thrown.
  *
- * @return Line number where this exception was thrown. 
+ * @return Line number where this exception was thrown.
  */
 int EException::line() const noexcept
 {
@@ -55,9 +51,9 @@ int EException::line() const noexcept
 
 
 /*!
- * Returns the title describing the error that caused this exception. 
+ * Returns the title describing the error that caused this exception.
  *
- * @return Title describing the error that caused this exception. 
+ * @return Title describing the error that caused this exception.
  */
 QString EException::title() const noexcept
 {
@@ -70,9 +66,9 @@ QString EException::title() const noexcept
 
 
 /*!
- * Returns the detailed description of what caused this exception. 
+ * Returns the detailed description of what caused this exception.
  *
- * @return Detailed description of what caused this exception. 
+ * @return Detailed description of what caused this exception.
  */
 QString EException::details() const noexcept
 {
@@ -85,11 +81,11 @@ QString EException::details() const noexcept
 
 
 /*!
- * Sets the function name where this exception is thrown. This should only be set 
- * where the exception is created and thrown, unless it is caught elsewhere, 
- * modified, and thrown again. 
+ * Sets the function name where this exception is thrown. This should only be
+ * set where the exception is created and thrown, unless it is caught elsewhere,
+ * modified, and thrown again.
  *
- * @param functionName Function name where this exception is thrown. 
+ * @param functionName Function name where this exception is thrown.
  */
 void EException::setFunctionName(const QString& functionName) noexcept
 {
@@ -102,11 +98,11 @@ void EException::setFunctionName(const QString& functionName) noexcept
 
 
 /*!
- * Sets the file name where this exception is thrown. This should only be set where 
- * the exception is created and thrown, unless it is caught elsewhere, modified, 
- * and thrown again. 
+ * Sets the file name where this exception is thrown. This should only be set
+ * where the exception is created and thrown, unless it is caught elsewhere,
+ * modified, and thrown again.
  *
- * @param fileName File name where this exception is thrown. 
+ * @param fileName File name where this exception is thrown.
  */
 void EException::setFileName(const QString& fileName) noexcept
 {
@@ -119,11 +115,11 @@ void EException::setFileName(const QString& fileName) noexcept
 
 
 /*!
- * Sets the line number where this exception is thrown. This should only be set 
- * where the exception is created and thrown, unless it is caught elsewhere, 
- * modified, and thrown again. 
+ * Sets the line number where this exception is thrown. This should only be set
+ * where the exception is created and thrown, unless it is caught elsewhere,
+ * modified, and thrown again.
  *
- * @param line Line number where this exception is thrown. 
+ * @param line Line number where this exception is thrown.
  */
 void EException::setLine(int line) noexcept
 {
@@ -136,9 +132,9 @@ void EException::setLine(int line) noexcept
 
 
 /*!
- * This sets the title describing the error that caused this exception. 
+ * This sets the title describing the error that caused this exception.
  *
- * @param title Title describing what caused this exception. 
+ * @param title Title describing what caused this exception.
  */
 void EException::setTitle(const QString& title) noexcept
 {
@@ -151,11 +147,12 @@ void EException::setTitle(const QString& title) noexcept
 
 
 /*!
- * This sets the detailed description of what caused this exception. 
+ * This sets the detailed description of what caused this exception.
  *
- * @param details Detailed description of what caused this exception. 
+ * @param details Detailed description of what caused this exception.
  */
 void EException::setDetails(const QString& details) noexcept
 {
    _details = details;
 }
+

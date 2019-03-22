@@ -268,7 +268,7 @@ void HelpRun::basic()
           << "   merge: Merge all temporary result files from chunkruns into the finished\n"
           << "          output data objects of the analytic run.\n\n"
           << "    dump: Dump the system or user metadata of a data object to standard output\n"
-          << "          as JSON formatted text."
+          << "          as JSON formatted text.\n\n"
           << "  inject: Inject new user metadata into a data object from a JSON formatted text\n"
           << "          file, overwriting any user metadata the data object currently\n"
           << "          contains.\n\n"

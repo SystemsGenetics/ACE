@@ -123,18 +123,17 @@ const EDataStream& operator>>(const EDataStream& stream, EMetadata& meta)
  */
 EDataStream& operator<<(EDataStream& stream, const EMetadata& meta)
 {
-   EDEBUG_FUNC(&stream,&meta)
+   // Add the debug header.
+   EDEBUG_FUNC(&stream,&meta);
 
-   // Write out the metadata type from the given object to the data stream.
+   // Write out the metadata type from the given object to the given data stream.
    quint8 type {static_cast<quint8>(meta.type())};
    stream << type;
 
-   // If the type is an array go to step 4, else if the type is an object go to step
-   // 5, else go to step 3.
+   // Determine which type the given metadata is and write out its data to the given
+   // data stream cast to the appropriate type determined.
    switch (meta.type())
    {
-
-   // Write out the value of the given metadata object to the data stream.
    case EMetadata::Bool:
       stream << meta.toBool();
       break;
@@ -147,23 +146,25 @@ EDataStream& operator<<(EDataStream& stream, const EMetadata& meta)
    case EMetadata::Bytes:
       stream << meta.toBytes();
       break;
-
-   // Write out the number of metadata objects the array contains. Write out all
-   // metadata values the array contains to the data stream. Return a reference to
-   // the data stream.
    case EMetadata::Array:
+
+      // Write out the number of metadata objects the array contains.
       stream << static_cast<quint32>(meta.toArray().size());
+
+      // Iterate through all metadata values the array contains and write them to the
+      // data stream.
       for (auto child : meta.toArray())
       {
          stream << child;
       }
       break;
-
-   // Write out the number of key and metadata value pairs the object contains. Write
-   // out all key and metadata value pairs the object contains to the data stream.
-   // Return a reference to the data stream.
    case EMetadata::Object:
+
+      // Write out the number of key and metadata value pairs the object contains.
       stream << static_cast<quint32>(meta.toObject().size());
+
+      // Iterate through all key and metadata value pairs the object contains and write
+      // the pairs to the data stream.
       for (auto i = meta.toObject().begin(); i != meta.toObject().end() ;++i)
       {
          stream << i.key() << *i;
@@ -171,6 +172,8 @@ EDataStream& operator<<(EDataStream& stream, const EMetadata& meta)
       break;
    default: break;
    }
+
+   // Return a reference to the given data stream.
    return stream;
 }
 
