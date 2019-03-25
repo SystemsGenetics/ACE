@@ -11,47 +11,48 @@
 #else
 #define EDEBUG_FUNC(...)
 #endif
-//
 
 
 
 /*!
- * This is the debug class which is used at the beginning of each function to track 
- * every function call for debugging. This class should NEVER be used directly, 
- * instead using the macro provided in its header file that declares an instance of 
- * this class with the given function variables to report. This class is aware of 
- * threads, correctly reporting what thread each debug message is on so the correct 
- * stack debug flow of function calls is presented for each separate thread. A 
- * unique ID is given to each new thread. 
- * 
- * This class also acts as a stream operator for any variable type that is passed 
- * to it from the list of arguments for a function call. Only literal types should 
- * be copied. Any other abstract or object type MUST be passed by pointer. The 
- * stream's properties can be modified by streaming special tokens to it. 
- * 
- * The stream operators are not used in a classical sense of a streaming object, 
- * since this debug object is not a basic IO stream. Instead the stream operators 
- * construct the values of any passed function arguments that it then uses for 
- * debug output. Because of the temporary nature each variable is streamed into the 
- * same string, overwritten each time a new variable is streamed into it. 
+ * This is the debug class which is used at the beginning of each function to
+ * track every function call for debugging. This class should NEVER be used
+ * directly, instead using the macro provided in its header file that declares
+ * an instance of this class with the given function variables to report. This
+ * class is aware of threads, correctly reporting what thread each debug message
+ * is on so the correct stack debug flow of function calls is presented for each
+ * separate thread. A unique ID is given to each new thread.
+ *
+ * This class also acts as a stream operator for any variable type that is
+ * passed to it from the list of arguments for a function call. Only literal
+ * types should be copied. Any other abstract or object type MUST be passed by
+ * pointer. The stream's properties can be modified by streaming special tokens
+ * to it.
+ *
+ * The stream operators are not used in a classical sense of a streaming object,
+ * since this debug object is not a basic IO stream. Instead the stream
+ * operators construct the values of any passed function arguments that it then
+ * uses for debug output. Because of the temporary nature each variable is
+ * streamed into the same string, overwritten each time a new variable is
+ * streamed into it.
  */
 class EDebug
 {
 public:
    /*!
-    * Defines special tokens for setting different properties of this debug object's 
-    * stream. 
+    * Defines special tokens for setting different properties of this debug
+    * object's stream.
     */
    enum Token
    {
       /*!
-       * Sets the quote property active which will add quotes to any input lines 
-       * following this token. This is the default behavior. 
+       * Sets the quote property active which will add quotes to any input lines
+       * following this token. This is the default behavior.
        */
       Quote
       /*!
-       * Sets the quote property inactive appending any input strings as is following 
-       * this token. 
+       * Sets the quote property inactive appending any input strings as is following
+       * this token.
        */
       ,NoQuote
    };
@@ -86,26 +87,26 @@ public:
    template<class... Args> void setArguments(Args... arguments);
 protected:
    template<class T> void setArgument(int depth, T last);
-   template<class T,class... Args> void setArgument(int depth, T next, Args... arguments);
+   template<class T, class... Args> void setArgument(int depth, T next, Args... arguments);
 private:
    /*!
-    * Used to keep track of how many threads have been started and so each new thread 
-    * can then use this value as their ID, incrementing it at the same time 
-    * atomically. 
+    * Used to keep track of how many threads have been started and so each new
+    * thread can then use this value as their ID, incrementing it at the same time
+    * atomically.
     */
    static QAtomicInteger<int> _counter;
    /*!
-    * The thread ID for this local thread. 
+    * The thread ID for this local thread.
     */
    static thread_local int _threadId;
    /*!
-    * The current stack depth for this thread, used to determine the number of spaces 
-    * to use when making output. 
+    * The current stack depth for this thread, used to determine the number of
+    * spaces to use when making output.
     */
    static thread_local int _stackDepth;
    /*!
-    * True if the set arguments template functions are being called or false 
-    * otherwise. Used as a safety mechanism to prevent infinite recursion. 
+    * True if the set arguments template functions are being called or false
+    * otherwise. Used as a safety mechanism to prevent infinite recursion.
     */
    static thread_local bool _active;
 private:
@@ -113,33 +114,33 @@ private:
    void setupArguments(const char* argumentNames);
    void dumpArguments();
    /*!
-    * The function name this debug object is tracking. 
+    * The function name this debug object is tracking.
     */
    const char* _function;
    /*!
-    * The list of argument names of the function this debug object is tracking. The 
-    * list is separated by null terminators within the string. 
+    * The list of argument names of the function this debug object is tracking. The
+    * list is separated by null terminators within the string.
     */
    char* _argumentNames {nullptr};
    /*!
-    * The list of argument name indexes pointing to the position of each argument name 
-    * within the argument names list for this debug object. 
+    * The list of argument name indexes pointing to the position of each argument
+    * name within the argument names list for this debug object.
     */
    QVector<int> _argumentIndexes;
    /*!
-    * List of argument values of the function this debug object is tracking. 
+    * List of argument values of the function this debug object is tracking.
     */
    QVector<QByteArray> _argumentValues;
    /*!
-    * Temporary holder byte array used to build the argument values of each argument 
-    * of the function this debug object is tracking. All streaming operators of this 
-    * class writes their given values to this temporary object that is cleared for 
-    * each new argument value. 
+    * Temporary holder byte array used to build the argument values of each
+    * argument of the function this debug object is tracking. All streaming
+    * operators of this class writes their given values to this temporary object
+    * that is cleared for each new argument value.
     */
    QByteArray _holder;
    /*!
-    * The quote property used for streaming operators. True causes quotes to be added 
-    * to strings or false to add nothing. 
+    * The quote property used for streaming operators. True causes quotes to be
+    * added to strings or false to add nothing.
     */
    bool _quote {true};
 };
@@ -150,18 +151,18 @@ private:
 
 
 /*!
- * Sets the value of the arguments of the function this debug object is tracking. 
- * The number of arguments MUST match with the number of argument names given in 
- * this object's constructor. 
+ * Sets the value of the arguments of the function this debug object is
+ * tracking. The number of arguments MUST match with the number of argument
+ * names given in this object's constructor.
  *
- * @tparam Args The variadic list of argument values. 
+ * @tparam Args The variadic list of argument values.
  *
- * @param arguments The variadic list of argument values. 
+ * @param arguments The variadic list of argument values.
  */
 template<class... Args> void EDebug::setArguments(Args... arguments)
 {
-   // Signal this debug object is active, call the initial variadic template 
-   // function, and then disable the active flag. 
+   // Signal this debug object is active, call the initial variadic template
+   // function, and then disable the active flag.
    _active = true;
    setArgument(0,arguments...);
    _active = false;
@@ -173,28 +174,28 @@ template<class... Args> void EDebug::setArguments(Args... arguments)
 
 
 /*!
- * Sets the final argument value for the variadic function chain. 
+ * Sets the final argument value for the variadic function chain.
  *
- * @tparam T The type of the last argument value. 
+ * @tparam T The type of the last argument value.
  *
- * @param depth The depth of the last argument which is the nth argument value. 
+ * @param depth The depth of the last argument which is the nth argument value.
  *
- * @param last The last argument. 
+ * @param last The last argument.
  */
 template<class T> void EDebug::setArgument(int depth, T last)
 {
-   // Reset this object's holder byte array for streaming. 
+   // Reset this object's holder byte array for streaming.
    _quote = true;
    _holder.clear();
 
-   // Stream the given argument's value using this object's stream operators. 
+   // Stream the given argument's value using this object's stream operators.
    *this << last;
 
-   // Get the holder byte array string and set it as this object's tracked argument 
-   // value for the given depth. 
+   // Get the holder byte array string and set it as this object's tracked argument
+   // value for the given depth.
    _argumentValues[depth] = _holder;
 
-   // Dump all argument names and values to the logging server. 
+   // Dump all argument names and values to the logging server.
    dumpArguments();
 }
 
@@ -204,36 +205,34 @@ template<class T> void EDebug::setArgument(int depth, T last)
 
 
 /*!
- * Sets the next argument value for the variadic function chain. 
+ * Sets the next argument value for the variadic function chain.
  *
- * @tparam T The type of the next argument value. 
+ * @tparam T The type of the next argument value.
  *
- * @tparam Args The variadic list of remaining argument values. 
+ * @tparam Args The variadic list of remaining argument values.
  *
- * @param depth The depth of the next argument which is the nth argument value. 
+ * @param depth The depth of the next argument which is the nth argument value.
  *
- * @param next The next argument value. 
+ * @param next The next argument value.
  *
- * @param arguments The variadic list of remaining argument values. 
+ * @param arguments The variadic list of remaining argument values.
  */
-template<class T,class... Args> void EDebug::setArgument(int depth, T next, Args... arguments)
+template<class T, class... Args> void EDebug::setArgument(int depth, T next, Args... arguments)
 {
-   // Reset this object's holder byte array for streaming. 
+   // Reset this object's holder byte array for streaming.
    _quote = true;
    _holder.clear();
 
-   // Stream the given next argument's value using this object's stream operators. 
+   // Stream the given next argument's value using this object's stream operators.
    *this << next;
 
-   // Get the holder byte array string and set it as this object's tracked argument 
-   // value for the given depth. 
+   // Get the holder byte array string and set it as this object's tracked argument
+   // value for the given depth.
    _argumentValues[depth] = _holder;
 
-   // Call the next variadic function in this chain with one less argument in the 
-   // list. 
+   // Call the next variadic function in this chain with one less argument in the
+   // list.
    setArgument(depth + 1,arguments...);
 }
-
-
 
 #endif
