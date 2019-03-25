@@ -77,9 +77,9 @@ void Run::progressed(int percentComplete)
    // Output a new percent complete, time elapsed, and predicted time left to
    // standard output.
    _stream << QString::number(percentComplete)
-           << "\t" << secondsToString(static_cast<int>(elapsed))
+           << "%\t" << secondsToString(static_cast<int>(elapsed))
            << "\t" << secondsToString(static_cast<int>(left))
-           << "%\n";
+           << "\n";
 
    // Flush the stream to make sure it updates
    _stream.flush();

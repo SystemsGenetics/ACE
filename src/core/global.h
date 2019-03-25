@@ -6,15 +6,15 @@
 
 class EException;
 class ELog;
-class EDebug_;
-class EAbstractAnalyticFactory_;
-class EAbstractDataFactory_;
-class EAbstractData_;
-class EAbstractAnalytic_;
-class EDataStream_;
-class EMetaArray_;
-class EMetaObject_;
-class EMetadata_;
+class EDebug;
+class EAbstractAnalyticFactory;
+class EAbstractDataFactory;
+class EAbstractData;
+class EAbstractAnalytic;
+class EDataStream;
+class EMetaArray;
+class EMetaObject;
+class EMetadata;
 const EDataStream& operator>>(const EDataStream& stream, EMetadata& meta);
 EDataStream& operator<<(EDataStream& stream, const EMetadata& meta);
 EDebug& operator<<(EDebug& debug, const EMetadata*const meta);
