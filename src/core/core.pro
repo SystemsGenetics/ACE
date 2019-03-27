@@ -21,8 +21,6 @@ SOURCES += \
     ace_datamanager.cpp \
     eexception.cpp \
     eabstractanalytic.cpp \
-    eabstractanalytic_input.cpp \
-    eabstractanalytic_serial.cpp \
     eabstractanalyticfactory.cpp \
     opencl_platform.cpp \
     opencl_device.cpp \
@@ -32,9 +30,6 @@ SOURCES += \
     opencl_event.cpp \
     opencl_commandqueue.cpp \
     opencl_kernel.cpp \
-    eabstractanalytic_opencl.cpp \
-    eabstractanalytic_cuda.cpp \
-    eabstractanalytic_block.cpp \
     opencl_kernel_locker.cpp \
     ace_analytic_simplerun.cpp \
     ace_analytic_serialrun.cpp \
@@ -51,8 +46,6 @@ SOURCES += \
     ace_analytic_abstractrun.cpp \
     ace_analytic_abstractinput.cpp \
     ace_analytic_abstractmanager.cpp \
-    eabstractanalytic_opencl_worker.cpp \
-    eabstractanalytic_cuda_worker.cpp \
     ace_analytic_abstractmpi.cpp \
     ace_logserver.cpp \
     elog.cpp \
@@ -84,12 +77,9 @@ HEADERS += \
     ace_datamanager.h \
     eexception.h \
     eabstractanalytic.h \
-    eabstractanalytic_input.h \
-    eabstractanalytic_serial.h \
     eabstractanalyticfactory.h \
     ace_analytic.h \
     core.h \
-    eabstractanalytic_block.h \
     opencl_platform.h \
     opencl.h \
     opencl_device.h \
@@ -100,8 +90,6 @@ HEADERS += \
     opencl_commandqueue.h \
     opencl_buffer.h \
     opencl_kernel.h \
-    eabstractanalytic_opencl.h \
-    eabstractanalytic_cuda.h \
     opencl_kernel_locker.h \
     ace_analytic_simplerun.h \
     ace_analytic_serialrun.h \
@@ -110,8 +98,6 @@ HEADERS += \
     ace_analytic_cudarun.h \
     ace_analytic_cudarun_thread.h \
     ace_analytic_single.h \
-    eabstractanalytic_opencl_worker.h \
-    eabstractanalytic_cuda_worker.h \
     openclxx.h \
     ace_settings.h \
     ace_analytic_mpimaster.h \

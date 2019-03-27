@@ -300,7 +300,7 @@ const EDataStream& DataObject::stream() const
  * @param size The number of bytes to allocate after this data object's current 
  *             cursor position. 
  */
-void DataObject::allocate(int size)
+void DataObject::allocate(qint64 size)
 {
    EDEBUG_FUNC(this,size)
 

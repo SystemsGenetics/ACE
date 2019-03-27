@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QVector>
 #include <QVariant>
-#include "eabstractanalytic_input.h"
+#include "eabstractanalytic.h"
 #include "ace.h"
 
 

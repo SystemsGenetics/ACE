@@ -4,7 +4,6 @@
 #include <QAtomicInteger>
 #include <QVector>
 #include "eabstractanalytic.h"
-#include "eabstractanalytic_input.h"
 #include "ace_analytic_abstractmpi.h"
 #ifdef QT_DEBUG
 #define EDEBUG_FUNC(...) EDebug debug(__PRETTY_FUNCTION__,#__VA_ARGS__); debug.setArguments(__VA_ARGS__);

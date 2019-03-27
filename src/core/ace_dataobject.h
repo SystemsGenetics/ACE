@@ -33,7 +33,7 @@ namespace Ace
       const EMetadata& userMeta() const;
       void seek(qint64 index) const;
       const EDataStream& stream() const;
-      void allocate(int size);
+      void allocate(qint64 size);
       EDataStream& stream();
       EAbstractData* data();
       void setUserMeta(const EMetadata& newRoot);
