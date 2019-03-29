@@ -49,10 +49,10 @@ public:
       explicit Block() = default;
       explicit Block(int index);
       int index() const;
-      QByteArray toBytes() const;
       template<class T> const T* cast() const;
-      void fromBytes(const QByteArray& data);
       template<class T> T* cast();
+      QByteArray toBytes() const;
+      void fromBytes(const QByteArray& data);
    protected:
       virtual void write(QDataStream& stream) const;
       virtual void read(QDataStream& stream);
@@ -412,9 +412,8 @@ protected:
  */
 template<class T> const T* EAbstractAnalytic::Block::cast() const
 {
-   // Use qt object cast to cast this object to the given template type as read only.
-   // If the cast fails then throw an exception, else return the cast read only
-   // pointer.
+   // Use qt object cast to cast this object to the given template type as read only,
+   // making sure it worked.
    const T* ret {qobject_cast<const T*>(this)};
    if ( !ret )
    {
@@ -423,6 +422,8 @@ template<class T> const T* EAbstractAnalytic::Block::cast() const
       e.setDetails(tr("Cannot convert abstract analytic block to given type."));
       throw e;
    }
+
+   // Return the cast pointer.
    return ret;
 }
 
@@ -441,8 +442,8 @@ template<class T> const T* EAbstractAnalytic::Block::cast() const
  */
 template<class T> T* EAbstractAnalytic::Block::cast()
 {
-   // Use qt object cast to cast this object to the given template type. If the cast
-   // fails then throw an exception, else return the cast pointer.
+   // Use qt object cast to cast this object to the given template type, making sure
+   // it worked.
    T* ret {qobject_cast<T*>(this)};
    if ( !ret )
    {
@@ -451,6 +452,8 @@ template<class T> T* EAbstractAnalytic::Block::cast()
       e.setDetails(tr("Cannot convert abstract analytic block to given type."));
       throw e;
    }
+
+   // Return the cast pointer.
    return ret;
 }
 

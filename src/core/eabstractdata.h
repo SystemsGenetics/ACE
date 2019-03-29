@@ -78,9 +78,8 @@ protected:
  */
 template<class T> const T* EAbstractData::cast() const
 {
-   // Use qt object cast to cast this object to the given template type as read only.
-   // If the cast fails then throw an exception, else return the cast read only
-   // pointer.
+   // Use qt object cast to cast this object to the given template type as read only,
+   // making sure it worked.
    const T* ret {qobject_cast<const T*>(this)};
    if ( !ret )
    {
@@ -89,6 +88,8 @@ template<class T> const T* EAbstractData::cast() const
       e.setDetails(tr("Cannot convert abstract data object to given type."));
       throw e;
    }
+
+   // Return the cast pointer.
    return ret;
 }
 
@@ -107,8 +108,8 @@ template<class T> const T* EAbstractData::cast() const
  */
 template<class T> T* EAbstractData::cast()
 {
-   // Use qt object cast to cast this object to the given template type. If the cast
-   // fails then throw an exception, else return the cast pointer.
+   // Use qt object cast to cast this object to the given template type, making sure
+   // it worked.
    T* ret {qobject_cast<T*>(this)};
    if ( !ret )
    {
@@ -117,6 +118,8 @@ template<class T> T* EAbstractData::cast()
       e.setDetails(tr("Cannot convert abstract data object to given type."));
       throw e;
    }
+
+   // Return the cast pointer.
    return ret;
 }
 

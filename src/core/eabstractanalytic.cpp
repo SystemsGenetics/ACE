@@ -17,10 +17,10 @@
  */
 int EAbstractAnalytic::Block::extractIndex(const QByteArray& data)
 {
-   EDEBUG_FUNC(data)
+   // Add the debug header.
+   EDEBUG_FUNC(data);
 
-   // Read the index from the byte array and return it. If reading fails then throw
-   // an exception.
+   // Read the index from the byte array, making sure it worked.
    int ret;
    QDataStream stream(data);
    stream >> ret;
@@ -31,6 +31,8 @@ int EAbstractAnalytic::Block::extractIndex(const QByteArray& data)
       e.setDetails(tr("Failed reading index from byte array."));
       throw e;
    }
+
+   // Return the extracted index.
    return ret;
 }
 
@@ -48,7 +50,7 @@ EAbstractAnalytic::Block::Block(int index)
    :
    _index(index)
 {
-   EDEBUG_FUNC(this,index)
+   EDEBUG_FUNC(this,index);
 }
 
 
@@ -63,7 +65,7 @@ EAbstractAnalytic::Block::Block(int index)
  */
 int EAbstractAnalytic::Block::index() const
 {
-   EDEBUG_FUNC(this)
+   EDEBUG_FUNC(this);
    return _index;
 }
 
@@ -80,16 +82,19 @@ int EAbstractAnalytic::Block::index() const
  */
 QByteArray EAbstractAnalytic::Block::toBytes() const
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // Create a new byte array and a data stream for writing to it, writing this
-   // blocks index and calling this block's write interface for its implementation to
-   // save its data. If any write error occurs then throw an exception, else return
-   // the created byte array.
+   // Create a new byte array and a data stream for writing to it.
    QByteArray ret;
    QDataStream stream(&ret,QIODevice::WriteOnly);
+
+   // Write this block's index and and then this block's data by calling the write
+   // interface.
    stream << _index;
    write(stream);
+
+   // Make sure all writing to the byte array was successful.
    if ( stream.status() != QDataStream::Ok )
    {
       E_MAKE_EXCEPTION(e);
@@ -97,6 +102,8 @@ QByteArray EAbstractAnalytic::Block::toBytes() const
       e.setDetails(tr("Failed reading index from byte array."));
       throw e;
    }
+
+   // Return the byte array containing this block's index and data.
    return ret;
 }
 
@@ -109,14 +116,19 @@ QByteArray EAbstractAnalytic::Block::toBytes() const
  * Read in new data from the given byte array for this block, overwriting any
  * previous data, including the data of this block's implementation.
  *
+ * @param data The byte array that is read in and should contain data for an
+ *             index and data of a block.
  */
 void EAbstractAnalytic::Block::fromBytes(const QByteArray& data)
 {
-   EDEBUG_FUNC(this,data)
+   // Add the debug header.
+   EDEBUG_FUNC(this,data);
 
-   // Read in this block's index and call this block's read interface for its
-   // implementation to read its data. If any reading fails then throw an exception.
+   // Create a data stream for reading the given byte array.
    QDataStream stream(data);
+
+   // Read in this block's index and then its data by calling the read interface,
+   // making sure all reading was successful.
    stream >> _index;
    read(stream);
    if ( stream.status() != QDataStream::Ok )
@@ -142,7 +154,7 @@ void EAbstractAnalytic::Block::fromBytes(const QByteArray& data)
  */
 void EAbstractAnalytic::Block::write(QDataStream& stream) const
 {
-   EDEBUG_FUNC(this,&stream)
+   EDEBUG_FUNC(this,&stream);
    Q_UNUSED(stream)
 }
 
@@ -160,7 +172,7 @@ void EAbstractAnalytic::Block::write(QDataStream& stream) const
  */
 void EAbstractAnalytic::Block::read(QDataStream& stream)
 {
-   EDEBUG_FUNC(this,&stream)
+   EDEBUG_FUNC(this,&stream);
    Q_UNUSED(stream)
 }
 
@@ -178,7 +190,7 @@ EAbstractAnalytic::Input::Input(EAbstractAnalytic* parent)
    :
    QObject(parent)
 {
-   EDEBUG_FUNC(this,parent)
+   EDEBUG_FUNC(this,parent);
 }
 
 
@@ -195,7 +207,7 @@ EAbstractAnalytic::Serial::Serial(EAbstractAnalytic* parent)
    :
    QObject(parent)
 {
-   EDEBUG_FUNC(this,parent)
+   EDEBUG_FUNC(this,parent);
 }
 
 
@@ -211,7 +223,7 @@ EAbstractAnalytic::Serial::Serial(EAbstractAnalytic* parent)
  */
 int EAbstractAnalytic::OpenCL::Worker::threadSize()
 {
-   EDEBUG_FUNC()
+   EDEBUG_FUNC();
    return Ace::Settings::instance().threadSize();
 }
 
@@ -229,7 +241,7 @@ EAbstractAnalytic::OpenCL::OpenCL(EAbstractAnalytic* parent)
    :
    QObject(parent)
 {
-   EDEBUG_FUNC(this,parent)
+   EDEBUG_FUNC(this,parent);
 }
 
 
@@ -244,7 +256,7 @@ EAbstractAnalytic::OpenCL::OpenCL(EAbstractAnalytic* parent)
  */
 int EAbstractAnalytic::CUDA::Worker::threadSize()
 {
-   EDEBUG_FUNC()
+   EDEBUG_FUNC();
    return Ace::Settings::instance().threadSize();
 }
 
@@ -262,7 +274,7 @@ EAbstractAnalytic::CUDA::CUDA(EAbstractAnalytic* parent)
    :
    QObject(parent)
 {
-   EDEBUG_FUNC(this,parent)
+   EDEBUG_FUNC(this,parent);
 }
 
 
@@ -281,7 +293,8 @@ EAbstractAnalytic::CUDA::CUDA(EAbstractAnalytic* parent)
  */
 std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeWork(int index) const
 {
-   EDEBUG_FUNC(this,index)
+   // Add the debug header.
+   EDEBUG_FUNC(this,index);
 
    // Throw an exception.
    Q_UNUSED(index)
@@ -306,7 +319,8 @@ std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeWork(int index)
  */
 std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeWork() const
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
    // Throw an exception.
    E_MAKE_EXCEPTION(e);
@@ -330,7 +344,8 @@ std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeWork() const
  */
 std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeResult() const
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
    // Throw an exception.
    E_MAKE_EXCEPTION(e);
@@ -353,8 +368,7 @@ std::unique_ptr<EAbstractAnalytic::Block> EAbstractAnalytic::makeResult() const
  */
 EAbstractAnalytic::Serial* EAbstractAnalytic::makeSerial()
 {
-   EDEBUG_FUNC(this)
-
+   EDEBUG_FUNC(this);
    return nullptr;
 }
 
@@ -373,8 +387,7 @@ EAbstractAnalytic::Serial* EAbstractAnalytic::makeSerial()
  */
 EAbstractAnalytic::OpenCL* EAbstractAnalytic::makeOpenCL()
 {
-   EDEBUG_FUNC(this)
-
+   EDEBUG_FUNC(this);
    return nullptr;
 }
 
@@ -390,7 +403,7 @@ EAbstractAnalytic::OpenCL* EAbstractAnalytic::makeOpenCL()
  */
 void EAbstractAnalytic::initialize()
 {
-   EDEBUG_FUNC(this)
+   EDEBUG_FUNC(this);
 }
 
 
@@ -406,7 +419,7 @@ void EAbstractAnalytic::initialize()
  */
 void EAbstractAnalytic::initializeOutputs()
 {
-   EDEBUG_FUNC(this)
+   EDEBUG_FUNC(this);
 }
 
 
@@ -421,7 +434,7 @@ void EAbstractAnalytic::initializeOutputs()
  */
 void EAbstractAnalytic::finish()
 {
-   EDEBUG_FUNC(this)
+   EDEBUG_FUNC(this);
 }
 
 
@@ -438,8 +451,7 @@ void EAbstractAnalytic::finish()
  */
 bool EAbstractAnalytic::isMaster()
 {
-   EDEBUG_FUNC()
-
+   EDEBUG_FUNC();
    return Ace::QMPI::instance().isMaster();
 }
 
