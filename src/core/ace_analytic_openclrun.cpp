@@ -2,8 +2,6 @@
 #include "ace_analytic_openclrun_thread.h"
 #include "ace_analytic_abstractinput.h"
 #include "ace_settings.h"
-#include "eabstractanalytic_opencl_worker.h"
-#include "eabstractanalytic_block.h"
 #include "opencl_device.h"
 #include "opencl_context.h"
 #include "eexception.h"

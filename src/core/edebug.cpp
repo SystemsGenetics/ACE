@@ -1,7 +1,6 @@
 #include "edebug.h"
 #include <string.h>
 #include <QTextStream>
-#include "eabstractanalytic_block.h"
 #include "emetadata.h"
 #include "eexception.h"
 #include "ace_logserver.h"

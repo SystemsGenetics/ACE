@@ -6,6 +6,11 @@
 #include "opencl.h"
 class QFile;
 class EAbstractData;
+class EDebug;
+namespace CUDA
+{
+class Context;
+}
 
 
 
@@ -39,6 +44,8 @@ public:
    class Block : public QObject
    {
       Q_OBJECT
+   private:
+      friend EDebug& operator<<(EDebug&, const EAbstractAnalytic::Block*const);
    public:
       static int extractIndex(const QByteArray& data);
    public:
@@ -350,13 +357,13 @@ public:
        *
        * @return Pointer to a new CUDA worker object.
        */
-      virtual std::unique_ptr<EAbstractAnalytic::OpenCL::Worker> makeWorker() = 0;
+      virtual std::unique_ptr<EAbstractAnalytic::CUDA::Worker> makeWorker() = 0;
       /*!
        * This interface initializes all CUDA resources used by this object's
        * implementation.
        *
        */
-      virtual void initialize(::OpenCL::Context* context) = 0;
+      virtual void initialize(::CUDA::Context* context) = 0;
    public:
       explicit CUDA(EAbstractAnalytic* parent);
    };
@@ -390,6 +397,7 @@ public:
    virtual std::unique_ptr<EAbstractAnalytic::Block> makeResult() const;
    virtual EAbstractAnalytic::Serial* makeSerial();
    virtual EAbstractAnalytic::OpenCL* makeOpenCL();
+   virtual EAbstractAnalytic::CUDA* makeCUDA();
    virtual void initialize();
    virtual void initializeOutputs();
    virtual void finish();

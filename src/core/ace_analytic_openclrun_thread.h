@@ -2,7 +2,6 @@
 #define ACE_ANALYTIC_OPENCLRUN_THREAD_H
 #include <QThread>
 #include "ace_analytic_openclrun.h"
-#include "eabstractanalytic_opencl.h"
 #include "global.h"
 //
 

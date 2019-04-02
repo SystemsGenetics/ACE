@@ -1,6 +1,4 @@
 #include "ace_analytic_cudarun_thread.h"
-#include "eabstractanalytic_cuda_worker.h"
-#include "eabstractanalytic_block.h"
 #include "eexception.h"
 #include "edebug.h"
 

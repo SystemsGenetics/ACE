@@ -2,7 +2,6 @@
 #define ACE_ANALYTIC_CUDARUN_THREAD_H
 #include <QThread>
 #include "ace_analytic_cudarun.h"
-#include "eabstractanalytic_cuda.h"
 #include "global.h"
 //
 

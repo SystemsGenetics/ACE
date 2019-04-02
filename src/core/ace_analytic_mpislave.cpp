@@ -8,7 +8,6 @@
 #include "cuda_device.h"
 #include "opencl_platform.h"
 #include "opencl_device.h"
-#include "eabstractanalytic_block.h"
 #include "eexception.h"
 #include "edebug.h"
 #include "emetadata.h"

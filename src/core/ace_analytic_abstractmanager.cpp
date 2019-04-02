@@ -8,7 +8,6 @@
 #include "ace_qmpi.h"
 #include "ace_settings.h"
 #include "eabstractanalyticfactory.h"
-#include "eabstractanalytic_block.h"
 #include "eabstractdata.h"
 #include "emetaobject.h"
 #include "eexception.h"

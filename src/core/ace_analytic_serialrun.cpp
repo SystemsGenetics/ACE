@@ -2,8 +2,6 @@
 #include <memory>
 #include <QTimer>
 #include "ace_analytic_abstractinput.h"
-#include "eabstractanalytic_block.h"
-#include "eabstractanalytic_serial.h"
 #include "edebug.h"
 
 

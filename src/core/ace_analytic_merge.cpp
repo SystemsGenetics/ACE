@@ -2,7 +2,6 @@
 #include <QFile>
 #include <QDataStream>
 #include "ace_settings.h"
-#include "eabstractanalytic_block.h"
 #include "edebug.h"
 
 

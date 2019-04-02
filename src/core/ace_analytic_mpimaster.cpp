@@ -1,7 +1,6 @@
 #include "ace_analytic_mpimaster.h"
 #include "ace_qmpi.h"
 #include "ace_settings.h"
-#include "eabstractanalytic_block.h"
 #include "edebug.h"
 
 

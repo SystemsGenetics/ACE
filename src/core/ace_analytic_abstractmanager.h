@@ -5,6 +5,7 @@
 #include <QVector>
 #include <QVariant>
 #include "eabstractanalytic.h"
+#include "emetadata.h"
 #include "ace.h"
 
 

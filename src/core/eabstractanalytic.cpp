@@ -397,6 +397,25 @@ EAbstractAnalytic::OpenCL* EAbstractAnalytic::makeOpenCL()
 
 
 /*!
+ * This interface makes a new CUDA object and returns its pointer. If this
+ * analytic type does not support CUDA then a null pointer is returned. The
+ * default implementation returns a null pointer.
+ *
+ * @return Pointer to new CUDA object or null if this analytic does not support
+ *         CUDA.
+ */
+EAbstractAnalytic::CUDA* EAbstractAnalytic::makeCUDA()
+{
+   EDEBUG_FUNC(this);
+   return nullptr;
+}
+
+
+
+
+
+
+/*!
  * This interface initializes this analytic. This is called only once before any
  * other interface is called for this analytic. The default implementation does
  * nothing.

@@ -1,6 +1,5 @@
 #include "eabstractanalyticfactory.h"
 #include "eabstractanalytic.h"
-#include "eabstractanalytic_input.h"
 #include "eexception.h"
 using namespace std;
 

@@ -2,8 +2,6 @@
 #include "ace_analytic_cudarun_thread.h"
 #include "ace_analytic_abstractinput.h"
 #include "ace_settings.h"
-#include "eabstractanalytic_cuda_worker.h"
-#include "eabstractanalytic_block.h"
 #include "cuda_device.h"
 #include "cuda_context.h"
 #include "eexception.h"

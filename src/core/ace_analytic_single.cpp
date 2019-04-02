@@ -4,10 +4,6 @@
 #include "ace_analytic_serialrun.h"
 #include "ace_analytic_openclrun.h"
 #include "ace_analytic_cudarun.h"
-#include "eabstractanalytic_block.h"
-#include "eabstractanalytic_serial.h"
-#include "eabstractanalytic_opencl.h"
-#include "eabstractanalytic_cuda.h"
 #include "ace_settings.h"
 #include "edebug.h"
 

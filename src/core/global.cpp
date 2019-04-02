@@ -4,7 +4,6 @@
 #include "emetaarray.h"
 #include "emetaobject.h"
 #include "edebug.h"
-#include "eabstractanalytic_block.h"
 
 
 

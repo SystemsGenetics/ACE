@@ -1,6 +1,4 @@
 #include "ace_analytic_openclrun_thread.h"
-#include "eabstractanalytic_opencl_worker.h"
-#include "eabstractanalytic_block.h"
 #include "eexception.h"
 #include "edebug.h"
 
