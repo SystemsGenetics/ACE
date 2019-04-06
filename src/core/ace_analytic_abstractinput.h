@@ -31,23 +31,23 @@ namespace Ace
           * @return True if this abstract input is finished or false otherwise. 
           */
          virtual bool isFinished() const = 0;
-         virtual void saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result);
+         virtual void saveResult(std::unique_ptr<EAbstractAnalyticBlock>&& result);
       public:
          /*!
           * Constructs a new abstract input with an default empty hopper. 
           */
          AbstractInput() = default;
-         ~AbstractInput();
+         virtual ~AbstractInput();
       protected:
          virtual int index() const;
-         virtual void writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result);
+         virtual void writeResult(std::unique_ptr<EAbstractAnalyticBlock>&& result);
       private:
          /*!
           * This contains pointers to all result blocks that cannot yet be added to the 
           * underlying analytic by calling write result because the next index has not yet 
           * been given by save result. 
           */
-         QMap<int,EAbstractAnalytic::Block*> _hopper;
+         QMap<int,EAbstractAnalyticBlock*> _hopper;
       };
    }
 }

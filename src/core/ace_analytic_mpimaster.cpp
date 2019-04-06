@@ -2,6 +2,7 @@
 #include "ace_qmpi.h"
 #include "ace_settings.h"
 #include "edebug.h"
+#include "eabstractanalyticblock.h"
 
 
 
@@ -91,7 +92,7 @@ int MPIMaster::index() const
  *
  * @param result The result block that is processed by this manager's analytic. 
  */
-void MPIMaster::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
+void MPIMaster::writeResult(std::unique_ptr<EAbstractAnalyticBlock>&& result)
 {
    EDEBUG_FUNC(this,result.get())
 
@@ -125,7 +126,7 @@ void MPIMaster::dataReceived(const QByteArray& data, int fromRank)
 
    // Extract the index from the given data. If the index is less than 0 and a code 
    // then process it as a code, else process it as a result block. 
-   int index {EAbstractAnalytic::Block::extractIndex(data)};
+   int index {EAbstractAnalyticBlock::extractIndex(data)};
    if ( index < 0 )
    {
       processCode(index,fromRank);
@@ -192,7 +193,7 @@ void MPIMaster::processCode(int code, int fromRank)
       // send. 
       while ( amount-- && _nextWork < analytic()->size() )
       {
-         unique_ptr<EAbstractAnalytic::Block> work {makeWork(_nextWork++)};
+         unique_ptr<EAbstractAnalyticBlock> work {makeWork(_nextWork++)};
          _mpi.sendData(fromRank,work->toBytes());
       }
    }
@@ -219,7 +220,7 @@ void MPIMaster::process(const QByteArray& data, int fromRank)
    // Make a blank result block from this manager's analytic and load the given data 
    // into it. If the analytic fails making a blank result block then throw an 
    // exception, else go to the next step. 
-   unique_ptr<EAbstractAnalytic::Block> result {analytic()->makeResult()};
+   unique_ptr<EAbstractAnalyticBlock> result {analytic()->makeResult()};
    if ( !result )
    {
       E_MAKE_EXCEPTION(e);
@@ -237,7 +238,7 @@ void MPIMaster::process(const QByteArray& data, int fromRank)
    // work block to process, else send the terminate code to the slave node. 
    if ( _nextWork < analytic()->size() )
    {
-      unique_ptr<EAbstractAnalytic::Block> work {makeWork(_nextWork++)};
+      unique_ptr<EAbstractAnalyticBlock> work {makeWork(_nextWork++)};
       _mpi.sendData(fromRank,work->toBytes());
    }
    else
@@ -262,6 +263,6 @@ void MPIMaster::terminate(int rank)
 
    // Create a special data block with the terminate signal and send it to the slave 
    // node with the given rank. 
-   unique_ptr<EAbstractAnalytic::Block> code {new EAbstractAnalytic::Block(Terminate)};
+   unique_ptr<EAbstractAnalyticBlock> code {new EAbstractAnalyticBlock(Terminate)};
    _mpi.sendData(rank,code->toBytes());
 }

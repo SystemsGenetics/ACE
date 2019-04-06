@@ -1,6 +1,8 @@
 #include "ace_analytic_openclrun_thread.h"
 #include "eexception.h"
 #include "edebug.h"
+#include "eabstractanalyticblock.h"
+#include "eabstractanalyticopenclworker.h"
 
 
 
@@ -22,7 +24,7 @@ using namespace Ace::Analytic;
  *
  * @param parent Optional parent of this new thread object. 
  */
-OpenCLRun::Thread::Thread(std::unique_ptr<EAbstractAnalytic::OpenCL::Worker>&& worker, QObject* parent):
+OpenCLRun::Thread::Thread(std::unique_ptr<EAbstractAnalyticOpenCLWorker>&& worker, QObject* parent):
    QThread(parent),
    _worker(worker.release())
 {
@@ -44,7 +46,7 @@ OpenCLRun::Thread::Thread(std::unique_ptr<EAbstractAnalytic::OpenCL::Worker>&& w
  *
  * @param block The work block that is processed on a separate thread. 
  */
-void OpenCLRun::Thread::execute(std::unique_ptr<EAbstractAnalytic::Block>&& block)
+void OpenCLRun::Thread::execute(std::unique_ptr<EAbstractAnalyticBlock>&& block)
 {
    EDEBUG_FUNC(this,block.get())
 
@@ -79,7 +81,7 @@ void OpenCLRun::Thread::execute(std::unique_ptr<EAbstractAnalytic::Block>&& bloc
  *
  * @return Result block produced by this object's separate thread execution. 
  */
-std::unique_ptr<EAbstractAnalytic::Block> OpenCLRun::Thread::result()
+std::unique_ptr<EAbstractAnalyticBlock> OpenCLRun::Thread::result()
 {
    EDEBUG_FUNC(this)
 
@@ -105,7 +107,7 @@ std::unique_ptr<EAbstractAnalytic::Block> OpenCLRun::Thread::result()
 
    // Release this object's saved result block from its ownership and return it. 
    _result->setParent(nullptr);
-   unique_ptr<EAbstractAnalytic::Block> ret {_result};
+   unique_ptr<EAbstractAnalyticBlock> ret {_result};
    _result = nullptr;
    return ret;
 }

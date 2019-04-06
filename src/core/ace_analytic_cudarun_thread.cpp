@@ -1,6 +1,8 @@
 #include "ace_analytic_cudarun_thread.h"
 #include "eexception.h"
 #include "edebug.h"
+#include "eabstractanalyticblock.h"
+#include "eabstractanalyticcudaworker.h"
 
 
 
@@ -22,7 +24,7 @@ using namespace Ace::Analytic;
  *
  * @param parent Optional parent of this new thread object.
  */
-CUDARun::Thread::Thread(std::unique_ptr<EAbstractAnalytic::CUDA::Worker>&& worker, QObject* parent):
+CUDARun::Thread::Thread(std::unique_ptr<EAbstractAnalyticCUDAWorker>&& worker, QObject* parent):
    QThread(parent),
    _worker(worker.release())
 {
@@ -44,7 +46,7 @@ CUDARun::Thread::Thread(std::unique_ptr<EAbstractAnalytic::CUDA::Worker>&& worke
  *
  * @param block The work block that is processed on a separate thread.
  */
-void CUDARun::Thread::execute(std::unique_ptr<EAbstractAnalytic::Block>&& block)
+void CUDARun::Thread::execute(std::unique_ptr<EAbstractAnalyticBlock>&& block)
 {
    EDEBUG_FUNC(this,block.get())
 
@@ -79,7 +81,7 @@ void CUDARun::Thread::execute(std::unique_ptr<EAbstractAnalytic::Block>&& block)
  *
  * @return Result block produced by this object's separate thread execution.
  */
-std::unique_ptr<EAbstractAnalytic::Block> CUDARun::Thread::result()
+std::unique_ptr<EAbstractAnalyticBlock> CUDARun::Thread::result()
 {
    EDEBUG_FUNC(this)
 
@@ -105,7 +107,7 @@ std::unique_ptr<EAbstractAnalytic::Block> CUDARun::Thread::result()
 
    // Release this object's saved result block from its ownership and return it. 
    _result->setParent(nullptr);
-   unique_ptr<EAbstractAnalytic::Block> ret {_result};
+   unique_ptr<EAbstractAnalyticBlock> ret {_result};
    _result = nullptr;
    return ret;
 }

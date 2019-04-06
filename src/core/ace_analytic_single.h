@@ -28,7 +28,7 @@ namespace Ace
          explicit Single(quint16 type);
       protected:
          virtual int index() const override final;
-         virtual void writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result) override final;
+         virtual void writeResult(std::unique_ptr<EAbstractAnalyticBlock>&& result) override final;
       protected slots:
          virtual void start() override final;
          void process();

@@ -3,6 +3,8 @@
 #include <QTimer>
 #include "ace_analytic_abstractinput.h"
 #include "edebug.h"
+#include "eabstractanalyticblock.h"
+#include "eabstractanalyticserial.h"
 
 
 
@@ -22,14 +24,14 @@ using namespace Ace::Analytic;
  *
  * @param block The work block that is processed. 
  */
-void SerialRun::addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block)
+void SerialRun::addWork(std::unique_ptr<EAbstractAnalyticBlock>&& block)
 {
    EDEBUG_FUNC(this,block.get())
 
    // Process the given work block by calling this object's abstract serial execute 
    // interface, saving the returned result block. If this object's abstract input is 
    // finished then emit the finished signal. 
-   unique_ptr<EAbstractAnalytic::Block> result {_serial->execute(block.get())};
+   unique_ptr<EAbstractAnalyticBlock> result {_serial->execute(block.get())};
    block.reset();
    _base->saveResult(std::move(result));
    if ( _base->isFinished() )
@@ -54,7 +56,7 @@ void SerialRun::addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block)
  *
  * @param parent Optional parent for this new serial run. 
  */
-SerialRun::SerialRun(EAbstractAnalytic::Serial* serial, AbstractInput* base, QObject* parent):
+SerialRun::SerialRun(EAbstractAnalyticSerial* serial, AbstractInput* base, QObject* parent):
    AbstractRun(parent),
    _serial(serial),
    _base(base)

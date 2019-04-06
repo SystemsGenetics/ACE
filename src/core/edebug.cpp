@@ -542,37 +542,37 @@ EDebug& EDebug::operator<<(const QVariant& value)
  *
  * @return Reference to this debug object.
  */
-EDebug& EDebug::operator<<(EAbstractAnalytic::Input::Type value)
+EDebug& EDebug::operator<<(EAbstractAnalyticInput::Type value)
 {
    // Write out the given enumeration value as a string to this object's holder byte
    // array.
    switch (value)
    {
-   case EAbstractAnalytic::Input::Boolean:
+   case EAbstractAnalyticInput::Boolean:
       *this << NoQuote << QStringLiteral("Boolean") << Quote;
       break;
-   case EAbstractAnalytic::Input::Integer:
+   case EAbstractAnalyticInput::Integer:
       *this << NoQuote << QStringLiteral("Integer") << Quote;
       break;
-   case EAbstractAnalytic::Input::Double:
+   case EAbstractAnalyticInput::Double:
       *this << NoQuote << QStringLiteral("Double") << Quote;
       break;
-   case EAbstractAnalytic::Input::String:
+   case EAbstractAnalyticInput::String:
       *this << NoQuote << QStringLiteral("String") << Quote;
       break;
-   case EAbstractAnalytic::Input::Selection:
+   case EAbstractAnalyticInput::Selection:
       *this << NoQuote << QStringLiteral("Selection") << Quote;
       break;
-   case EAbstractAnalytic::Input::FileIn:
+   case EAbstractAnalyticInput::FileIn:
       *this << NoQuote << QStringLiteral("FileIn") << Quote;
       break;
-   case EAbstractAnalytic::Input::FileOut:
+   case EAbstractAnalyticInput::FileOut:
       *this << NoQuote << QStringLiteral("FileOut") << Quote;
       break;
-   case EAbstractAnalytic::Input::DataIn:
+   case EAbstractAnalyticInput::DataIn:
       *this << NoQuote << QStringLiteral("DataIn") << Quote;
       break;
-   case EAbstractAnalytic::Input::DataOut:
+   case EAbstractAnalyticInput::DataOut:
       *this << NoQuote << QStringLiteral("DataOut") << Quote;
       break;
    }
@@ -594,40 +594,40 @@ EDebug& EDebug::operator<<(EAbstractAnalytic::Input::Type value)
  *
  * @return Reference to this debug object.
  */
-EDebug& EDebug::operator<<(EAbstractAnalytic::Input::Role value)
+EDebug& EDebug::operator<<(EAbstractAnalyticInput::Role value)
 {
    // Write out the given enumeration value as a string to this object's holder byte
    // array.
    switch (value)
    {
-   case EAbstractAnalytic::Input::CommandLineName:
+   case EAbstractAnalyticInput::CommandLineName:
       *this << NoQuote << QStringLiteral("CommandLineName") << Quote;
       break;
-   case EAbstractAnalytic::Input::Title:
+   case EAbstractAnalyticInput::Title:
       *this << NoQuote << QStringLiteral("Title") << Quote;
       break;
-   case EAbstractAnalytic::Input::WhatsThis:
+   case EAbstractAnalyticInput::WhatsThis:
       *this << NoQuote << QStringLiteral("WhatsThis") << Quote;
       break;
-   case EAbstractAnalytic::Input::Default:
+   case EAbstractAnalyticInput::Default:
       *this << NoQuote << QStringLiteral("Default") << Quote;
       break;
-   case EAbstractAnalytic::Input::Minimum:
+   case EAbstractAnalyticInput::Minimum:
       *this << NoQuote << QStringLiteral("Minimum") << Quote;
       break;
-   case EAbstractAnalytic::Input::Maximum:
+   case EAbstractAnalyticInput::Maximum:
       *this << NoQuote << QStringLiteral("Maximum") << Quote;
       break;
-   case EAbstractAnalytic::Input::Decimals:
+   case EAbstractAnalyticInput::Decimals:
       *this << NoQuote << QStringLiteral("Decimals") << Quote;
       break;
-   case EAbstractAnalytic::Input::SelectionValues:
+   case EAbstractAnalyticInput::SelectionValues:
       *this << NoQuote << QStringLiteral("SelectionValues") << Quote;
       break;
-   case EAbstractAnalytic::Input::FileFilters:
+   case EAbstractAnalyticInput::FileFilters:
       *this << NoQuote << QStringLiteral("FileFilters") << Quote;
       break;
-   case EAbstractAnalytic::Input::DataType:
+   case EAbstractAnalyticInput::DataType:
       *this << NoQuote << QStringLiteral("DataType") << Quote;
       break;
    }

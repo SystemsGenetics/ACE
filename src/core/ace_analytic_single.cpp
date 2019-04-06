@@ -6,6 +6,7 @@
 #include "ace_analytic_cudarun.h"
 #include "ace_settings.h"
 #include "edebug.h"
+#include "eabstractanalyticblock.h"
 
 
 
@@ -77,7 +78,7 @@ int Single::index() const
  *
  * @param result The result block that is saved to the underlying analytic. 
  */
-void Single::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
+void Single::writeResult(std::unique_ptr<EAbstractAnalyticBlock>&& result)
 {
    EDEBUG_FUNC(this,result.get())
 
@@ -169,7 +170,7 @@ void Single::setupCUDA()
    Settings& settings {Settings::instance()};
    if ( settings.cudaDevicePointer() )
    {
-      EAbstractAnalytic::CUDA* cuda {analytic()->makeCUDA()};
+      EAbstractAnalyticCUDA* cuda {analytic()->makeCUDA()};
       if ( cuda )
       {
          _runner = new CUDARun(cuda,settings.cudaDevicePointer(),this,this);
@@ -203,7 +204,7 @@ void Single::setupOpenCL()
    Settings& settings {Settings::instance()};
    if ( settings.openCLDevicePointer() )
    {
-      EAbstractAnalytic::OpenCL* opencl {analytic()->makeOpenCL()};
+      EAbstractAnalyticOpenCL* opencl {analytic()->makeOpenCL()};
       if ( opencl )
       {
          _runner = new OpenCLRun(opencl,settings.openCLDevicePointer(),this,this);
@@ -236,7 +237,7 @@ void Single::setupSerial()
    // new serial run object and set it to this manager's abstract run object, else 
    // create a new simple run object and set it to this manager's abstract run 
    // object. 
-   if ( EAbstractAnalytic::Serial* serial = analytic()->makeSerial() )
+   if ( EAbstractAnalyticSerial* serial = analytic()->makeSerial() )
    {
       _runner = new SerialRun(serial,this,this);
    }

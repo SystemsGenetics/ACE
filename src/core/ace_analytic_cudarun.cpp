@@ -4,8 +4,11 @@
 #include "ace_settings.h"
 #include "cuda_device.h"
 #include "cuda_context.h"
+#include "eabstractanalyticcuda.h"
 #include "eexception.h"
 #include "edebug.h"
+#include "eabstractanalyticblock.h"
+#include "eabstractanalyticcudaworker.h"
 
 
 
@@ -26,7 +29,7 @@ using namespace Ace::Analytic;
  *
  * @param block The work block that is processed.
  */
-void CUDARun::addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block)
+void CUDARun::addWork(std::unique_ptr<EAbstractAnalyticBlock>&& block)
 {
    EDEBUG_FUNC(this,block.get())
 
@@ -60,7 +63,7 @@ void CUDARun::addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block)
  *
  * @param parent Optional parent for this new CUDA run.
  */
-CUDARun::CUDARun(EAbstractAnalytic::CUDA* cuda, CUDA::Device* device, AbstractInput* base, QObject* parent):
+CUDARun::CUDARun(EAbstractAnalyticCUDA* cuda, CUDA::Device* device, AbstractInput* base, QObject* parent):
    AbstractRun(parent),
    _context(new CUDA::Context(device,this)),
    _cuda(cuda),

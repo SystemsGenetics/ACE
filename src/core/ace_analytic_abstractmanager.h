@@ -4,9 +4,10 @@
 #include <QObject>
 #include <QVector>
 #include <QVariant>
-#include "eabstractanalytic.h"
-#include "emetadata.h"
+#include "global.h"
 #include "ace.h"
+#include "eabstractanalyticinput.h"
+#include "emetadata.h"
 
 
 
@@ -37,8 +38,8 @@ namespace Ace
          static std::unique_ptr<Ace::Analytic::AbstractManager> makeManager(quint16 type, int index, int size);
          quint16 analyticType() const;
          int size() const;
-         EAbstractAnalytic::Input::Type type(int index) const;
-         QVariant data(int index, EAbstractAnalytic::Input::Role role) const;
+         EAbstractAnalyticInput::Type type(int index) const;
+         QVariant data(int index, EAbstractAnalyticInput::Role role) const;
          QList<QString> commandLineArguments() const;
          void set(int index, const QVariant& value);
       signals:
@@ -66,8 +67,8 @@ namespace Ace
          virtual Ace::DataObject* addOutputData(const QString& path, quint16 type, const EMetadata& system);
       protected:
          explicit AbstractManager(quint16 type);
-         std::unique_ptr<EAbstractAnalytic::Block> makeWork(int index);
-         void writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result, int expectedIndex);
+         std::unique_ptr<EAbstractAnalyticBlock> makeWork(int index);
+         void writeResult(std::unique_ptr<EAbstractAnalyticBlock>&& result, int expectedIndex);
          EAbstractAnalytic* analytic();
          const EAbstractAnalytic* analytic() const;
       protected slots:
@@ -99,7 +100,7 @@ namespace Ace
           * analytic. Once the finish method is called the input object is deleted and this 
           * is set to null. 
           */
-         EAbstractAnalytic::Input* _input;
+         EAbstractAnalyticInput* _input;
          /*!
           * Temporary list of input values for this manager's analytic that is used to hold 
           * those values until setting them is finished and then added to the analytic. 

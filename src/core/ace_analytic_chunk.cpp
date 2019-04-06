@@ -9,6 +9,7 @@
 #include "opencl_device.h"
 #include "edebug.h"
 #include "emetadata.h"
+#include "eabstractanalyticblock.h"
 
 
 
@@ -134,7 +135,7 @@ Ace::DataObject* Chunk::addOutputData(const QString& path, quint16 type, const E
  *
  * @param result The result block that is saved to a temporary binary file. 
  */
-void Chunk::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
+void Chunk::saveResult(std::unique_ptr<EAbstractAnalyticBlock>&& result)
 {
    EDEBUG_FUNC(this,result.get())
 
@@ -297,7 +298,7 @@ bool Chunk::setupCUDA()
    {
       // Attempt to create a new CUDA object from this manager's analytic, checking to 
       // see if it worked. 
-      EAbstractAnalytic::CUDA* cuda {analytic()->makeCUDA()};
+      EAbstractAnalyticCUDA* cuda {analytic()->makeCUDA()};
       if ( cuda )
       {
          // Create a new CUDA analytic run from the created CUDA instance and set the 
@@ -335,7 +336,7 @@ bool Chunk::setupOpenCL()
    {
       // Attempt to create a new OpenCL object from this manager's analytic, checking to 
       // see if it worked. 
-      EAbstractAnalytic::OpenCL* opencl {analytic()->makeOpenCL()};
+      EAbstractAnalyticOpenCL* opencl {analytic()->makeOpenCL()};
       if ( opencl )
       {
          // Create a new OpenCL analytic run from the created OpenCL instance and set the 
@@ -368,7 +369,7 @@ bool Chunk::setupSerial()
 
    // If this manager's analytic creates a valid abstract serial object then create a 
    // new serial run object and set it to this object's run pointer.
-   if ( EAbstractAnalytic::Serial* serial = analytic()->makeSerial() )
+   if ( EAbstractAnalyticSerial* serial = analytic()->makeSerial() )
    {
       _runner = new SerialRun(serial,this,this);
       ret = true;

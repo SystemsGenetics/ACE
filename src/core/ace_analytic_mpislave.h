@@ -33,7 +33,7 @@ namespace Ace
          virtual void mpiStart(Type type, int platform, int device) override final;
          virtual QFile* addOutputFile(const QString& path) override final;
          virtual Ace::DataObject* addOutputData(const QString& path, quint16 type, const EMetadata& system) override final;
-         virtual void saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result) override final;
+         virtual void saveResult(std::unique_ptr<EAbstractAnalyticBlock>&& result) override final;
       private slots:
          void dataReceived(const QByteArray& data, int fromRank);
       private:

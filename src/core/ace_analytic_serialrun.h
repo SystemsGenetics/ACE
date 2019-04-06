@@ -20,15 +20,15 @@ namespace Ace
       {
          Q_OBJECT
       public:
-         virtual void addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block) override final;
+         virtual void addWork(std::unique_ptr<EAbstractAnalyticBlock>&& block) override final;
       public:
-         explicit SerialRun(EAbstractAnalytic::Serial* serial, AbstractInput* base, QObject* parent = nullptr);
+         explicit SerialRun(EAbstractAnalyticSerial* serial, AbstractInput* base, QObject* parent = nullptr);
       private:
          /*!
           * Pointer to the abstract analytic serial object used for processing work blocks 
           * into result blocks. 
           */
-         EAbstractAnalytic::Serial* _serial;
+         EAbstractAnalyticSerial* _serial;
          /*!
           * Pointer to the abstract input object used to save result blocks. 
           */

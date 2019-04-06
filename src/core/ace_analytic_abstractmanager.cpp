@@ -11,6 +11,7 @@
 #include "eabstractdata.h"
 #include "emetaobject.h"
 #include "eexception.h"
+#include "eabstractanalyticblock.h"
 #include "edebug.h"
 
 
@@ -132,7 +133,7 @@ int AbstractManager::size() const
  *
  * @return Argument type for the given index. 
  */
-EAbstractAnalytic::Input::Type AbstractManager::type(int index) const
+EAbstractAnalyticInput::Type AbstractManager::type(int index) const
 {
    EDEBUG_FUNC(this,index)
 
@@ -153,7 +154,7 @@ EAbstractAnalytic::Input::Type AbstractManager::type(int index) const
  *
  * @return Data with the given role and index. 
  */
-QVariant AbstractManager::data(int index, EAbstractAnalytic::Input::Role role) const
+QVariant AbstractManager::data(int index, EAbstractAnalyticInput::Role role) const
 {
    EDEBUG_FUNC(this,role);
 
@@ -178,7 +179,7 @@ QList<QString> AbstractManager::commandLineArguments() const
    QList<QString> ret;
    for (int i = 0; i < _input->size() ;++i)
    {
-      ret << _input->data(i,EAbstractAnalytic::Input::CommandLineName).toString();
+      ret << _input->data(i,EAbstractAnalyticInput::CommandLineName).toString();
    }
 
    // Return the command line argument list. 
@@ -402,14 +403,14 @@ AbstractManager::AbstractManager(quint16 type):
  *
  * @return Pointer to a new work block with the given index. 
  */
-std::unique_ptr<EAbstractAnalytic::Block> AbstractManager::makeWork(int index)
+std::unique_ptr<EAbstractAnalyticBlock> AbstractManager::makeWork(int index)
 {
    EDEBUG_FUNC(this,index)
 
    // Call this manager's analytic interface to make a new work block with the given 
    // index. If the analytic returned a null pointer or the work block has an 
    // incorrect index then throw an exception, else return the new work block. 
-   unique_ptr<EAbstractAnalytic::Block> ret {analytic()->makeWork(index)};
+   unique_ptr<EAbstractAnalyticBlock> ret {analytic()->makeWork(index)};
    if ( !ret )
    {
       E_MAKE_EXCEPTION(e);
@@ -443,7 +444,7 @@ std::unique_ptr<EAbstractAnalytic::Block> AbstractManager::makeWork(int index)
  * @param expectedIndex The expected index that should be equal to the given result 
  *                      block's index. 
  */
-void AbstractManager::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result, int expectedIndex)
+void AbstractManager::writeResult(std::unique_ptr<EAbstractAnalyticBlock>&& result, int expectedIndex)
 {
    EDEBUG_FUNC(this,result.get(),expectedIndex)
 
@@ -541,7 +542,7 @@ void AbstractManager::setupInput()
    _inputs.resize(_input->size());
    for (int i = 0; i < _input->size() ;++i)
    {
-      _inputs[i] = _input->data(i,EAbstractAnalytic::Input::Default);
+      _inputs[i] = _input->data(i,EAbstractAnalyticInput::Default);
    }
 }
 
@@ -566,10 +567,10 @@ void AbstractManager::inputBasic()
       // the set interface of this manager's abstract analytic input object. 
       switch(_input->type(i))
       {
-      case EAbstractAnalytic::Input::Type::FileIn:
-      case EAbstractAnalytic::Input::Type::FileOut:
-      case EAbstractAnalytic::Input::Type::DataIn:
-      case EAbstractAnalytic::Input::Type::DataOut:
+      case EAbstractAnalyticInput::Type::FileIn:
+      case EAbstractAnalyticInput::Type::FileOut:
+      case EAbstractAnalyticInput::Type::DataIn:
+      case EAbstractAnalyticInput::Type::DataOut:
          break;
       default:
          _input->set(i,_inputs.at(i));
@@ -601,7 +602,7 @@ void AbstractManager::inputFiles()
       // If the argument type is an input file then call the add input file method, 
       // setting the abstract analytic input if it returns a qt file device, else go to 
       // the next step. 
-      case EAbstractAnalytic::Input::Type::FileIn:
+      case EAbstractAnalyticInput::Type::FileIn:
          if ( QFile* file = addInputFile(_inputs.at(i).toString()) )
          {
             _input->set(i,file);
@@ -610,7 +611,7 @@ void AbstractManager::inputFiles()
 
       // If the argument type is an output file then call the add output file method, 
       // setting the abstract analytic input if it returns a qt file device. 
-      case EAbstractAnalytic::Input::Type::FileOut:
+      case EAbstractAnalyticInput::Type::FileOut:
          if ( QFile* file = addOutputFile(_inputs.at(i).toString()) )
          {
             _input->set(i,file);
@@ -704,7 +705,7 @@ EMetadata AbstractManager::inputDataIn()
    {
       // If the argument type is an input data object then go to the next step, else 
       // iterate to next argument. 
-      if ( _input->type(i) == EAbstractAnalytic::Input::Type::DataIn )
+      if ( _input->type(i) == EAbstractAnalyticInput::Type::DataIn )
       {
          // Call the add input data method and if it returns a valid data object pointer 
          // then set the abstract analytic input and add the data object pointer to a list 
@@ -873,7 +874,7 @@ EMetadata AbstractManager::buildMetaCommand()
    EMetadata options(EMetadata::Object);
    for (int i = 0; i < _inputs.size() ;++i)
    {
-      options.toObject().insert(_input->data(i,EAbstractAnalytic::Input::CommandLineName).toString()
+      options.toObject().insert(_input->data(i,EAbstractAnalyticInput::CommandLineName).toString()
                                 ,_inputs.at(i).toString());
    }
 
@@ -908,11 +909,13 @@ void AbstractManager::inputDataOut(const EMetadata& system)
    {
       // If the argument type is an output data object then go to the next step, else 
       // iterate to the next argument. 
-      if (_input->type(i) == EAbstractAnalytic::Input::Type::DataOut )
+      if (_input->type(i) == EAbstractAnalyticInput::Type::DataOut )
       {
          // Call the add output data method with the given system metadata and if it 
          // returns a valid pointer then set the abstract analytic input argument. 
-         if ( Ace::DataObject* object = addOutputData(_inputs.at(i).toString(),_input->data(i,EAbstractAnalytic::Input::Role::DataType).toUInt(),system) )
+         unsigned int tmp {_input->data(i,EAbstractAnalyticInput::Role::DataType).toUInt()};
+         Q_ASSERT(tmp < std::numeric_limits<quint16>::max());
+         if ( Ace::DataObject* object = addOutputData(_inputs.at(i).toString(),static_cast<quint16>(tmp),system) )
          {
             _input->set(i,object->data());
             _outputData << object;

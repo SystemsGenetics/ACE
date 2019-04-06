@@ -31,7 +31,7 @@ namespace Ace
       protected:
          virtual QFile* addOutputFile(const QString& path) override final;
          virtual Ace::DataObject* addOutputData(const QString& path, quint16 type, const EMetadata& system) override final;
-         virtual void saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result) override final;
+         virtual void saveResult(std::unique_ptr<EAbstractAnalyticBlock>&& result) override final;
       protected slots:
          virtual void start() override final;
          void process();

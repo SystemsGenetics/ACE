@@ -11,6 +11,7 @@
 #include "eexception.h"
 #include "edebug.h"
 #include "emetadata.h"
+#include "eabstractanalyticblock.h"
 
 
 
@@ -122,20 +123,13 @@ void MPISlave::mpiStart(Type type, int platform, int device)
          setupSerial();
       }
       break;
-   default:
-      {
-         E_MAKE_EXCEPTION(e);
-         e.setTitle(tr("Invalid MPI Starting type."));
-         e.setDetails(tr("The given type for starting this MPI slave is invalid."));
-         throw e;
-      }
    }
 
    // Connect the runner object finished signal to this abstract manager's finish 
    // slot and send a special code to the master node signaling this slave node is 
    // ready to process work blocks with the resource type it was given. 
    connect(_runner,&AbstractRun::finished,this,&AbstractManager::finish);
-   unique_ptr<EAbstractAnalytic::Block> block {new EAbstractAnalytic::Block(code)};
+   unique_ptr<EAbstractAnalyticBlock> block {new EAbstractAnalyticBlock(code)};
    _mpi.sendData(0,block->toBytes());
 }
 
@@ -202,7 +196,7 @@ Ace::DataObject* MPISlave::addOutputData(const QString& path, quint16 type, cons
  *
  * @param result The result block that is sent to the master node for saving. 
  */
-void MPISlave::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
+void MPISlave::saveResult(std::unique_ptr<EAbstractAnalyticBlock>&& result)
 {
    EDEBUG_FUNC(this,result.get())
 
@@ -243,7 +237,7 @@ void MPISlave::dataReceived(const QByteArray& data, int fromRank)
 
    // If the given data is a special code then process the code, else process the 
    // data as a work block. 
-   int code {EAbstractAnalytic::Block::extractIndex(data)};
+   int code {EAbstractAnalyticBlock::extractIndex(data)};
    if ( code < 0 )
    {
       processCode(code);
@@ -311,7 +305,7 @@ void MPISlave::process(const QByteArray& data)
    // Create a blank work block from this object's analytic reading in the given data 
    // to it. If this object's analytic fails in creating a blank work block then 
    // throw an exception. 
-   unique_ptr<EAbstractAnalytic::Block> work {analytic()->makeWork()};
+   unique_ptr<EAbstractAnalyticBlock> work {analytic()->makeWork()};
    if ( !work )
    {
       E_MAKE_EXCEPTION(e);
@@ -361,7 +355,7 @@ bool MPISlave::setupCUDA(int device)
    // it to this object, and return true. Else if no valid one is returned then 
    // return false. 
    bool ret {false};
-   if ( EAbstractAnalytic::CUDA* cuda = analytic()->makeCUDA() )
+   if ( EAbstractAnalyticCUDA* cuda = analytic()->makeCUDA() )
    {
       _runner = new CUDARun(cuda,CUDA::Device::get(device),this,this);
       ret = true;
@@ -409,7 +403,7 @@ bool MPISlave::setupOpenCL(int platform, int device)
    // it to this object, and return true. Else if no valid one is returned then 
    // return false. 
    bool ret {false};
-   if ( EAbstractAnalytic::OpenCL* opencl = analytic()->makeOpenCL() )
+   if ( EAbstractAnalyticOpenCL* opencl = analytic()->makeOpenCL() )
    {
       _runner = new OpenCLRun(opencl,OpenCL::Platform::get(platform)->device(device),this,this);
       ret = true;
@@ -434,7 +428,7 @@ void MPISlave::setupSerial()
    // Create a new abstract serial object from this manager's analytic. If creating a 
    // new abstract serial object fails then throw an exception, else go to the next 
    // step. 
-   if ( EAbstractAnalytic::Serial* serial = analytic()->makeSerial() )
+   if ( EAbstractAnalyticSerial* serial = analytic()->makeSerial() )
    {
       // Create a new serial run object and set to as this object's runner. 
       _runner = new SerialRun(serial,this,this);

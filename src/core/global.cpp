@@ -3,6 +3,7 @@
 #include "emetadata.h"
 #include "emetaarray.h"
 #include "emetaobject.h"
+#include "eabstractanalyticblock.h"
 #include "edebug.h"
 
 
@@ -134,7 +135,7 @@ EDataStream& operator<<(EDataStream& stream, const EMetadata& meta)
    switch (meta.type())
    {
    case EMetadata::Bool:
-      stream << meta.toBool();
+      stream << static_cast<quint8>(meta.toBool());
       break;
    case EMetadata::Double:
       stream << meta.toDouble();
@@ -274,7 +275,7 @@ EDebug& operator<<(EDebug& debug, const EMetadata*const meta)
  *
  * @return Reference to the debug object.
  */
-EDebug& operator<<(EDebug& debug, const EAbstractAnalytic::Block*const value)
+EDebug& operator<<(EDebug& debug, const EAbstractAnalyticBlock*const value)
 {
    // Append the raw pointer value to the given debug stream.
    debug << static_cast<const void*>(value);

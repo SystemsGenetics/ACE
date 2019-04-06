@@ -1,5 +1,6 @@
 #include "ace_analytic_simplerun.h"
 #include "ace_analytic_abstractinput.h"
+#include "eabstractanalyticblock.h"
 #include "edebug.h"
 
 
@@ -19,7 +20,7 @@ using namespace Ace::Analytic;
  *
  * @param block Unused work block that is ignored. 
  */
-void SimpleRun::addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block)
+void SimpleRun::addWork(std::unique_ptr<EAbstractAnalyticBlock>&& block)
 {
    EDEBUG_FUNC(this,block.get())
 

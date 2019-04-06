@@ -2,6 +2,7 @@
 #include <QFile>
 #include <QDataStream>
 #include "ace_settings.h"
+#include "eabstractanalyticblock.h"
 #include "edebug.h"
 
 
@@ -80,7 +81,7 @@ int Merge::index() const
  * @param result The result block that is processed by this manager's abstract 
  *               analytic. 
  */
-void Merge::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
+void Merge::writeResult(std::unique_ptr<EAbstractAnalyticBlock>&& result)
 {
    EDEBUG_FUNC(this,result.get())
 
@@ -223,7 +224,7 @@ void Merge::readBlock(QDataStream& stream)
 
    // Create a blank result block from this manager's analytic. If creation of the 
    // result block fails then throw an exception, else go to the next step. 
-   unique_ptr<EAbstractAnalytic::Block> result {analytic()->makeResult()};
+   unique_ptr<EAbstractAnalyticBlock> result {analytic()->makeResult()};
    if ( !result )
    {
       E_MAKE_EXCEPTION(e);

@@ -19,7 +19,7 @@ namespace Ace
       {
          Q_OBJECT
       public:
-         virtual void addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block) override final;
+         virtual void addWork(std::unique_ptr<EAbstractAnalyticBlock>&& block) override final;
       public:
          explicit SimpleRun(AbstractInput* base, QObject* parent = nullptr);
       private:

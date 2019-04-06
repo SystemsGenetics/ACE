@@ -77,8 +77,8 @@ public:
    EDebug& operator<<(const QStringList& value);
    EDebug& operator<<(const QObject*const value);
    EDebug& operator<<(const QVariant& value);
-   EDebug& operator<<(EAbstractAnalytic::Input::Type value);
-   EDebug& operator<<(EAbstractAnalytic::Input::Role value);
+   EDebug& operator<<(EAbstractAnalyticInput::Type value);
+   EDebug& operator<<(EAbstractAnalyticInput::Role value);
    EDebug& operator<<(Ace::Analytic::AbstractMPI::Type value);
 public:
    EDebug(const char* function, const char* argumentNames);

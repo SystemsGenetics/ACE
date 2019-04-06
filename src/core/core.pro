@@ -21,6 +21,13 @@ SOURCES += \
     ace_datamanager.cpp \
     eexception.cpp \
     eabstractanalytic.cpp \
+    eabstractanalyticinput.cpp \
+    eabstractanalyticblock.cpp \
+    eabstractanalyticserial.cpp \
+    eabstractanalyticopencl.cpp \
+    eabstractanalyticopenclworker.cpp \
+    eabstractanalyticcuda.cpp \
+    eabstractanalyticcudaworker.cpp \
     eabstractanalyticfactory.cpp \
     opencl_platform.cpp \
     opencl_device.cpp \
@@ -77,6 +84,13 @@ HEADERS += \
     ace_datamanager.h \
     eexception.h \
     eabstractanalytic.h \
+    eabstractanalyticinput.h \
+    eabstractanalyticblock.h \
+    eabstractanalyticserial.h \
+    eabstractanalyticopencl.h \
+    eabstractanalyticopenclworker.h \
+    eabstractanalyticcuda.h \
+    eabstractanalyticcudaworker.h \
     eabstractanalyticfactory.h \
     ace_analytic.h \
     core.h \

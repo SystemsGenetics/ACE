@@ -6,6 +6,9 @@
 #include "opencl_context.h"
 #include "eexception.h"
 #include "edebug.h"
+#include "eabstractanalyticblock.h"
+#include "eabstractanalyticopencl.h"
+#include "eabstractanalyticopenclworker.h"
 
 
 
@@ -26,7 +29,7 @@ using namespace Ace::Analytic;
  *
  * @param block The work block that is processed. 
  */
-void OpenCLRun::addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block)
+void OpenCLRun::addWork(std::unique_ptr<EAbstractAnalyticBlock>&& block)
 {
    EDEBUG_FUNC(this,block.get())
 
@@ -60,7 +63,7 @@ void OpenCLRun::addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block)
  *
  * @param parent Optional parent for this new OpenCL run. 
  */
-OpenCLRun::OpenCLRun(EAbstractAnalytic::OpenCL* opencl, OpenCL::Device* device, AbstractInput* base, QObject* parent):
+OpenCLRun::OpenCLRun(EAbstractAnalyticOpenCL* opencl, OpenCL::Device* device, AbstractInput* base, QObject* parent):
    AbstractRun(parent),
    _context(new OpenCL::Context({device},this)),
    _opencl(opencl),

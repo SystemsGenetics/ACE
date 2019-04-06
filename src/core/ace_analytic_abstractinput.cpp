@@ -1,5 +1,6 @@
 #include "ace_analytic_abstractinput.h"
 #include "eexception.h"
+#include "eabstractanalyticblock.h"
 #include "edebug.h"
 
 
@@ -22,7 +23,7 @@ using namespace Ace::Analytic;
  *
  * @param result The result block that is saved to the underlying analytic. 
  */
-void AbstractInput::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
+void AbstractInput::saveResult(std::unique_ptr<EAbstractAnalyticBlock>&& result)
 {
    EDEBUG_FUNC(this,result.get())
 
@@ -31,7 +32,7 @@ void AbstractInput::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& resul
    // pointer to this new block. 
    if ( !result )
    {
-      result.reset(new EAbstractAnalytic::Block(index()));
+      result.reset(new EAbstractAnalyticBlock(index()));
    }
 
    // If the given result block's index is the next index expected for the underlying 
@@ -45,12 +46,12 @@ void AbstractInput::saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& resul
       writeResult(std::move(result));
       while ( _hopper.contains(index()) )
       {
-         writeResult(unique_ptr<EAbstractAnalytic::Block>(_hopper.take(index())));
+         writeResult(unique_ptr<EAbstractAnalyticBlock>(_hopper.take(index())));
       }
    }
    else
    {
-      EAbstractAnalytic::Block* block {result.release()};
+      EAbstractAnalyticBlock* block {result.release()};
       _hopper.insert(block->index(),block);
    }
 }
@@ -111,7 +112,7 @@ int AbstractInput::index() const
  *
  * @param result The result block that is saved to the underlying analytic. 
  */
-void AbstractInput::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
+void AbstractInput::writeResult(std::unique_ptr<EAbstractAnalyticBlock>&& result)
 {
    EDEBUG_FUNC(this,result.get())
 

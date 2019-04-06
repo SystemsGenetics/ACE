@@ -1,5 +1,6 @@
 #include "eabstractanalyticfactory.h"
 #include "eabstractanalytic.h"
+#include "eabstractanalyticinput.h"
 #include "eexception.h"
 using namespace std;
 
@@ -114,13 +115,13 @@ void EAbstractAnalyticFactory::checkCommandArguments(EAbstractAnalytic* analytic
 {
    // Create an abstract analytic input from the given analytic and iterate through
    // all its arguments for the proceeding steps.
-   EAbstractAnalytic::Input* input {analytic->makeInput()};
+   EAbstractAnalyticInput* input {analytic->makeInput()};
    QMap<QString,bool> sanity;
    for (int i = 0; i < input->size() ;++i)
    {
       // If the command line name of the argument already exists for another argument
       // then throw an exception, else go the next step.
-      QString name = input->data(i,EAbstractAnalytic::Input::Role::CommandLineName).toString();
+      QString name = input->data(i,EAbstractAnalyticInput::Role::CommandLineName).toString();
       if ( sanity.contains(name) )
       {
          E_MAKE_EXCEPTION(e);

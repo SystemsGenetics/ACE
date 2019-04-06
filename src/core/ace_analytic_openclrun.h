@@ -26,9 +26,9 @@ namespace Ace
       {
          Q_OBJECT
       public:
-         virtual void addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block) override final;
+         virtual void addWork(std::unique_ptr<EAbstractAnalyticBlock>&& block) override final;
       public:
-         explicit OpenCLRun(EAbstractAnalytic::OpenCL* opencl, OpenCL::Device* device, AbstractInput* base, QObject* parent = nullptr);
+         explicit OpenCLRun(EAbstractAnalyticOpenCL* opencl, OpenCL::Device* device, AbstractInput* base, QObject* parent = nullptr);
          virtual ~OpenCLRun() override final;
       private slots:
          void blockFinished(int index);
@@ -43,7 +43,7 @@ namespace Ace
           * Pointer to the abstract OpenCL object used by this object to create abstract 
           * workers for all its threads. 
           */
-         EAbstractAnalytic::OpenCL* _opencl;
+         EAbstractAnalyticOpenCL* _opencl;
          /*!
           * Pointer to the abstract input object used to save results. 
           */

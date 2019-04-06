@@ -21,9 +21,9 @@ namespace Ace
       {
          Q_OBJECT
       public:
-         explicit Thread(std::unique_ptr<EAbstractAnalytic::OpenCL::Worker>&& worker, QObject* parent = nullptr);
-         void execute(std::unique_ptr<EAbstractAnalytic::Block>&& block);
-         std::unique_ptr<EAbstractAnalytic::Block> result();
+         explicit Thread(std::unique_ptr<EAbstractAnalyticOpenCLWorker>&& worker, QObject* parent = nullptr);
+         void execute(std::unique_ptr<EAbstractAnalyticBlock>&& block);
+         std::unique_ptr<EAbstractAnalyticBlock> result();
       signals:
          /*!
           */
@@ -38,16 +38,16 @@ namespace Ace
           * Pointer to the abstract OpenCL worker object used to process work blocks into 
           * result blocks using OpenCL acceleration. 
           */
-         EAbstractAnalytic::OpenCL::Worker* _worker;
+         EAbstractAnalyticOpenCLWorker* _worker;
          /*!
           * Pointer to saved work block, if any, passed along to the separate thread for 
           * processing. 
           */
-         EAbstractAnalytic::Block* _work {nullptr};
+         EAbstractAnalyticBlock* _work {nullptr};
          /*!
           * Pointer to result block, if any, saved by this object's separate thread. 
           */
-         EAbstractAnalytic::Block* _result {nullptr};
+         EAbstractAnalyticBlock* _result {nullptr};
          /*!
           * Pointer to any exception that occurs on this object's separate thread while 
           * processing a work block. 

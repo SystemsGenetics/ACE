@@ -30,7 +30,7 @@ namespace Ace
          virtual ~MPIMaster() override final;
       protected:
          virtual int index() const override final;
-         virtual void writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result) override final;
+         virtual void writeResult(std::unique_ptr<EAbstractAnalyticBlock>&& result) override final;
       private slots:
          void dataReceived(const QByteArray& data, int fromRank);
       private:

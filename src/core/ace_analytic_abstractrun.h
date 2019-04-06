@@ -2,7 +2,7 @@
 #define ACE_ANALYTIC_ABSTRACTRUN_H
 #include <memory>
 #include <QObject>
-#include "eabstractanalytic.h"
+#include "global.h"
 //
 
 
@@ -27,7 +27,7 @@ namespace Ace
           *
           * @param block Block of work that is added to this abstract run for processing. 
           */
-         virtual void addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block) = 0;
+         virtual void addWork(std::unique_ptr<EAbstractAnalyticBlock>&& block) = 0;
       public:
          explicit AbstractRun(QObject* parent = nullptr);
       signals:
