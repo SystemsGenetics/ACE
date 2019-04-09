@@ -1,19 +1,15 @@
 #ifndef EMETAOBJECT_H
 #define EMETAOBJECT_H
 #include <QMap>
-
-
-
 class EMetadata;
-//
 
 
 
 /*!
- * This holds a mapping of metadata objects. It inherits from Qt so it is copy on 
- * write. The mapping is done using strings. Each unique key can only hold a single 
- * metadata value. Refer to EMetadata for more information about the metadata 
- * system. 
+ * This holds a mapping of metadata objects. It inherits from Qt so it is copy
+ * on write. The mapping is done using strings. Each unique key can only hold a
+ * single metadata value. Refer to EMetadata for more information about the
+ * metadata system.
  */
 class EMetaObject : private QMap<QString,EMetadata>
 {
@@ -34,7 +30,5 @@ public:
    void insert(const QString& key, const EMetadata& value);
    void clear();
 };
-
-
 
 #endif
