@@ -31,7 +31,7 @@ SOURCES += \
     eabstractanalyticfactory.cpp \
     opencl_platform.cpp \
     opencl_device.cpp \
-    opencl_common.cpp \
+    opencl.cpp \
     opencl_context.cpp \
     opencl_program.cpp \
     opencl_event.cpp \
@@ -97,7 +97,6 @@ HEADERS += \
     opencl_platform.h \
     opencl.h \
     opencl_device.h \
-    opencl_common.h \
     opencl_context.h \
     opencl_program.h \
     opencl_event.h \

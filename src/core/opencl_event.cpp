@@ -1,5 +1,5 @@
 #include "opencl_event.h"
-#include "opencl_common.h"
+#include "opencl.h"
 #include "eexception.h"
 #include "edebug.h"
 

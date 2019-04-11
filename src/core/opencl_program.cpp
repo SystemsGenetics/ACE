@@ -1,7 +1,7 @@
 #include "opencl_program.h"
 #include "opencl_context.h"
 #include "opencl_device.h"
-#include "opencl_common.h"
+#include "opencl.h"
 #include "eexception.h"
 #include "edebug.h"
 

@@ -4,7 +4,7 @@
 #include "opencl_context.h"
 #include "opencl_commandqueue.h"
 #include "opencl_event.h"
-#include "opencl_common.h"
+#include "opencl.h"
 #include "eexception.h"
 //
 
