@@ -2,7 +2,8 @@
 #include <QTextStream>
 #include <QRegularExpression>
 #include "../core/eabstractanalyticfactory.h"
-#include "../core/eabstractanalytic_input.h"
+#include "../core/eabstractanalytic.h"
+#include "../core/eabstractanalyticinput.h"
 
 
 
@@ -102,11 +103,11 @@ void HelpRun::execute()
  * @param index The specific argument index of the analytic input to interrogate
  *              properties from.
  */
-void HelpRun::listAnalyticInputProperties(QTextStream& stream, const EAbstractAnalytic::Input& input, int index)
+void HelpRun::listAnalyticInputProperties(QTextStream& stream, const EAbstractAnalyticInput& input, int index)
 {
    // Use the type and role enumerations from the input interface.
-   using Type = EAbstractAnalytic::Input::Type;
-   using Role = EAbstractAnalytic::Input::Role;
+   using Type = EAbstractAnalyticInput::Type;
+   using Role = EAbstractAnalyticInput::Role;
 
    // Determine which argument type the given input argument index is and print out
    // its respective properties.
@@ -208,10 +209,10 @@ void HelpRun::listAnalyticInputProperties(QTextStream& stream, const EAbstractAn
  * @param index The specific argument index of the analytic input to interrogate
  *              from.
  */
-void HelpRun::printDescription(QTextStream& stream, const EAbstractAnalytic::Input& input, int index)
+void HelpRun::printDescription(QTextStream& stream, const EAbstractAnalyticInput& input, int index)
 {
    // Use the role enumeration of the analytic input class.
-   using Role = EAbstractAnalytic::Input::Role;
+   using Role = EAbstractAnalyticInput::Role;
 
    // Get the what's this description of the input argument with the given index,
    // splitting it up into its component words.
@@ -490,7 +491,7 @@ void HelpRun::analyticHelp()
       // Create an analytic of the determined type and then create an input interface
       // from it.
       std::unique_ptr<EAbstractAnalytic> analytic {factory.make(static_cast<quint16>(type))};
-      EAbstractAnalytic::Input* input {analytic->makeInput()};
+      EAbstractAnalyticInput* input {analytic->makeInput()};
 
       // Output the basic help header information about the created analytic to standard
       // output.
@@ -501,7 +502,7 @@ void HelpRun::analyticHelp()
              << "OPTIONS\n\n";
 
       // Use the role enumeration of the analytic input class.
-      using Role = EAbstractAnalytic::Input::Role;
+      using Role = EAbstractAnalyticInput::Role;
 
       // Iterate through all arguments of the analytic input interface class.
       for (int i = 0; i < input->size() ;++i)

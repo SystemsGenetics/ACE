@@ -44,7 +44,7 @@ MathTransform::CUDA::Worker::Worker(MathTransform* base, MathTransform::CUDA* ba
  *
  * @return Pointer to results block produced from the given work block.
  */
-std::unique_ptr<EAbstractAnalytic::Block> MathTransform::CUDA::Worker::execute(const EAbstractAnalytic::Block* block)
+std::unique_ptr<EAbstractAnalyticBlock> MathTransform::CUDA::Worker::execute(const EAbstractAnalyticBlock* block)
 {
    if ( ELog::isActive() )
    {
@@ -72,5 +72,5 @@ std::unique_ptr<EAbstractAnalytic::Block> MathTransform::CUDA::Worker::execute(c
 
    // Create a new result block with the given work block's index and 
    // row data, returning its pointer. 
-   return unique_ptr<EAbstractAnalytic::Block>(new MathTransform::Block(block->index(),_buffer.size(),_buffer.hostData()));
+   return unique_ptr<EAbstractAnalyticBlock>(new MathTransform::Block(block->index(),_buffer.size(),_buffer.hostData()));
 }

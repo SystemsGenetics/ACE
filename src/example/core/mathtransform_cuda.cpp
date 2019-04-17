@@ -18,7 +18,7 @@ using namespace std;
  *               object. 
  */
 MathTransform::CUDA::CUDA(MathTransform* parent):
-   EAbstractAnalytic::CUDA(parent),
+   EAbstractAnalyticCUDA(parent),
    _base(parent)
 {}
 
@@ -33,9 +33,9 @@ MathTransform::CUDA::CUDA(MathTransform* parent):
  *
  * @return Pointer to a new CUDA worker object. 
  */
-std::unique_ptr<EAbstractAnalytic::CUDA::Worker> MathTransform::CUDA::makeWorker()
+std::unique_ptr<EAbstractAnalyticCUDAWorker> MathTransform::CUDA::makeWorker()
 {
-   return unique_ptr<EAbstractAnalytic::CUDA::Worker>(new Worker(_base,this,_program));
+   return unique_ptr<EAbstractAnalyticCUDAWorker>(new Worker(_base,this,_program));
 }
 
 

@@ -417,7 +417,7 @@ void Run::addArguments()
       // Get the command line name for the analytic argument.
       QString argumentName
       {
-         _manager->data(i,EAbstractAnalytic::Input::Role::CommandLineName).toString()
+         _manager->data(i,EAbstractAnalyticInput::Role::CommandLineName).toString()
       };
 
       // If the command line name does not exist in this object's options then skip to
@@ -434,21 +434,21 @@ void Run::addArguments()
       // to the default value if not found.
       switch (_manager->type(i))
       {
-      case EAbstractAnalytic::Input::Type::Boolean:
-      case EAbstractAnalytic::Input::Type::String:
-      case EAbstractAnalytic::Input::Type::FileIn:
-      case EAbstractAnalytic::Input::Type::FileOut:
-      case EAbstractAnalytic::Input::Type::DataIn:
-      case EAbstractAnalytic::Input::Type::DataOut:
+      case EAbstractAnalyticInput::Type::Boolean:
+      case EAbstractAnalyticInput::Type::String:
+      case EAbstractAnalyticInput::Type::FileIn:
+      case EAbstractAnalyticInput::Type::FileOut:
+      case EAbstractAnalyticInput::Type::DataIn:
+      case EAbstractAnalyticInput::Type::DataOut:
          _manager->set(i,_options.find(argumentName));
          break;
-      case EAbstractAnalytic::Input::Type::Integer:
+      case EAbstractAnalyticInput::Type::Integer:
          addInteger(i,argumentName);
          break;
-      case EAbstractAnalytic::Input::Type::Double:
+      case EAbstractAnalyticInput::Type::Double:
          addDouble(i,argumentName);
          break;
-      case EAbstractAnalytic::Input::Type::Selection:
+      case EAbstractAnalyticInput::Type::Selection:
          addSelection(i,argumentName);
          break;
       }
@@ -489,8 +489,8 @@ void Run::addInteger(int index, const QString& key)
 
    // Make sure the integer value is within the minimum and maximum bounds for the
    // argument.
-   int minimum {_manager->data(index,EAbstractAnalytic::Input::Role::Minimum).toInt()};
-   int maximum {_manager->data(index,EAbstractAnalytic::Input::Role::Maximum).toInt()};
+   int minimum {_manager->data(index,EAbstractAnalyticInput::Role::Minimum).toInt()};
+   int maximum {_manager->data(index,EAbstractAnalyticInput::Role::Maximum).toInt()};
    if ( value < minimum || value > maximum )
    {
       E_MAKE_EXCEPTION(e);
@@ -541,8 +541,8 @@ void Run::addDouble(int index, const QString& key)
 
    // Make sure the double floating point value is within the minimum and maximum
    // bounds for the given argument.
-   double minimum {_manager->data(index,EAbstractAnalytic::Input::Role::Minimum).toDouble()};
-   double maximum {_manager->data(index,EAbstractAnalytic::Input::Role::Maximum).toDouble()};
+   double minimum {_manager->data(index,EAbstractAnalyticInput::Role::Minimum).toDouble()};
+   double maximum {_manager->data(index,EAbstractAnalyticInput::Role::Maximum).toDouble()};
    if ( value < minimum || value > maximum )
    {
       E_MAKE_EXCEPTION(e);
@@ -583,7 +583,7 @@ void Run::addSelection(int index, const QString& key)
    // Grab the option value with the given key, making sure it is a valid selection
    // value.
    QString value {_options.find(key)};
-   if ( !_manager->data(index,EAbstractAnalytic::Input::Role::SelectionValues).toStringList().contains(value) )
+   if ( !_manager->data(index,EAbstractAnalyticInput::Role::SelectionValues).toStringList().contains(value) )
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(tr("Invalid Argument"));

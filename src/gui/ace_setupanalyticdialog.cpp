@@ -75,10 +75,10 @@ void SetupAnalyticDialog::findFile(int index)
    dialog.setDirectory(QDir::currentPath());
    switch (_manager->type(index))
    {
-   case EAbstractAnalytic::Input::FileIn:
+   case EAbstractAnalyticInput::FileIn:
       dialog.setAcceptMode(QFileDialog::AcceptOpen);
       break;
-   case EAbstractAnalytic::Input::FileOut:
+   case EAbstractAnalyticInput::FileOut:
       dialog.setAcceptMode(QFileDialog::AcceptSave);
       break;
    default:
@@ -88,7 +88,7 @@ void SetupAnalyticDialog::findFile(int index)
    // Set the name filters for _dialog_ to the file filters for the given analytic 
    // argument and then execute _dialog_ in modal. If execution returns failure then 
    // return. 
-   dialog.setNameFilters(_manager->data(index,EAbstractAnalytic::Input::FileFilters).toStringList());
+   dialog.setNameFilters(_manager->data(index,EAbstractAnalyticInput::FileFilters).toStringList());
    if ( !dialog.exec() )
    {
       return;
@@ -124,10 +124,10 @@ void SetupAnalyticDialog::findDataObject(int index)
    dialog.setDirectory(QDir::currentPath());
    switch (_manager->type(index))
    {
-   case EAbstractAnalytic::Input::DataIn:
+   case EAbstractAnalyticInput::DataIn:
       dialog.setAcceptMode(QFileDialog::AcceptOpen);
       break;
-   case EAbstractAnalytic::Input::DataOut:
+   case EAbstractAnalyticInput::DataOut:
       dialog.setAcceptMode(QFileDialog::AcceptSave);
       break;
    default:
@@ -136,7 +136,7 @@ void SetupAnalyticDialog::findDataObject(int index)
 
    // Get the data object type for this analytic argument. If the type returned if 
    // out of range then throw an exception. 
-   quint16 type = _manager->data(index,EAbstractAnalytic::Input::DataType).toUInt();
+   quint16 type = _manager->data(index,EAbstractAnalyticInput::DataType).toUInt();
    EAbstractDataFactory& factory = EAbstractDataFactory::instance();
    if ( type >= factory.size() )
    {
@@ -188,27 +188,27 @@ void SetupAnalyticDialog::executeClicked()
    for (int i = 0; i < _manager->size() ;++i)
    {
       QString bit(" --");
-      bit.append(_manager->data(i,EAbstractAnalytic::Input::CommandLineName).toString())
+      bit.append(_manager->data(i,EAbstractAnalyticInput::CommandLineName).toString())
          .append(" ");
       switch (_manager->type(i))
       {
-      case EAbstractAnalytic::Input::Type::Boolean:
+      case EAbstractAnalyticInput::Type::Boolean:
          bit.append(processBool(i));
          break;
-      case EAbstractAnalytic::Input::Type::Integer:
+      case EAbstractAnalyticInput::Type::Integer:
          bit.append(processInteger(i));
          break;
-      case EAbstractAnalytic::Input::Type::Double:
+      case EAbstractAnalyticInput::Type::Double:
          bit.append(processDouble(i));
          break;
-      case EAbstractAnalytic::Input::Type::Selection:
+      case EAbstractAnalyticInput::Type::Selection:
          bit.append(processSelection(i));
          break;
-      case EAbstractAnalytic::Input::Type::String:
-      case EAbstractAnalytic::Input::Type::FileIn:
-      case EAbstractAnalytic::Input::Type::FileOut:
-      case EAbstractAnalytic::Input::Type::DataIn:
-      case EAbstractAnalytic::Input::Type::DataOut:
+      case EAbstractAnalyticInput::Type::String:
+      case EAbstractAnalyticInput::Type::FileIn:
+      case EAbstractAnalyticInput::Type::FileOut:
+      case EAbstractAnalyticInput::Type::DataIn:
+      case EAbstractAnalyticInput::Type::DataOut:
          bit.append(processString(i));
          break;
       }
@@ -384,30 +384,30 @@ QLayout* SetupAnalyticDialog::createForm()
    // _ret_ and setting its default value. 
    for (int i = 0; i < _manager->size() ;++i)
    {
-      QLabel* label = new QLabel(_manager->data(i,EAbstractAnalytic::Input::Title).toString());
-      label->setWhatsThis(_manager->data(i,EAbstractAnalytic::Input::WhatsThis).toString());
+      QLabel* label = new QLabel(_manager->data(i,EAbstractAnalyticInput::Title).toString());
+      label->setWhatsThis(_manager->data(i,EAbstractAnalyticInput::WhatsThis).toString());
       QWidget* field {nullptr};
       switch (_manager->type(i))
       {
-      case EAbstractAnalytic::Input::Type::Boolean:
+      case EAbstractAnalyticInput::Type::Boolean:
          field = createBool(i);
          break;
-      case EAbstractAnalytic::Input::Type::Integer:
+      case EAbstractAnalyticInput::Type::Integer:
          field = createInteger(i);
          break;
-      case EAbstractAnalytic::Input::Type::Double:
+      case EAbstractAnalyticInput::Type::Double:
          field = createDouble(i);
          break;
-      case EAbstractAnalytic::Input::Type::String:
+      case EAbstractAnalyticInput::Type::String:
          field = createString(i);
          break;
-      case EAbstractAnalytic::Input::Type::Selection:
+      case EAbstractAnalyticInput::Type::Selection:
          field = createSelection(i);
          break;
-      case EAbstractAnalytic::Input::Type::FileIn:
-      case EAbstractAnalytic::Input::Type::FileOut:
-      case EAbstractAnalytic::Input::Type::DataIn:
-      case EAbstractAnalytic::Input::Type::DataOut:
+      case EAbstractAnalyticInput::Type::FileIn:
+      case EAbstractAnalyticInput::Type::FileOut:
+      case EAbstractAnalyticInput::Type::DataIn:
+      case EAbstractAnalyticInput::Type::DataOut:
          field = createFile(i);
          break;
       }
@@ -469,7 +469,7 @@ QWidget* SetupAnalyticDialog::createBool(quint16 index)
    // Create a new qt check box _ret_, settings its state to the default value of the 
    // analytic manager argument with the given index. 
    QCheckBox* ret = new QCheckBox;
-   ret->setChecked(_manager->data(index,EAbstractAnalytic::Input::Default).toBool());
+   ret->setChecked(_manager->data(index,EAbstractAnalyticInput::Default).toBool());
 
    // Append _ret_ to this object's list of edit widgets and return it. 
    _edits.append(ret);
@@ -496,9 +496,9 @@ QWidget* SetupAnalyticDialog::createInteger(quint16 index)
    // Create a new qt spin box _ret_, setting its minimum, maximum, and default 
    // values from interrogating the analytic manager argument with the given index. 
    QSpinBox* ret = new QSpinBox;
-   ret->setMinimum(_manager->data(index,EAbstractAnalytic::Input::Minimum).toInt());
-   ret->setMaximum(_manager->data(index,EAbstractAnalytic::Input::Maximum).toInt());
-   ret->setValue(_manager->data(index,EAbstractAnalytic::Input::Default).toInt());
+   ret->setMinimum(_manager->data(index,EAbstractAnalyticInput::Minimum).toInt());
+   ret->setMaximum(_manager->data(index,EAbstractAnalyticInput::Maximum).toInt());
+   ret->setValue(_manager->data(index,EAbstractAnalyticInput::Default).toInt());
 
    // Append _ret_ to this object's list of edit widgets and return it. 
    _edits.append(ret);
@@ -527,11 +527,11 @@ QWidget* SetupAnalyticDialog::createDouble(quint16 index)
    // default, bottom, top, and decimals values from interrogating the analytic 
    // manager argument with the given index. 
    QLineEdit* ret = new QLineEdit;
-   ret->setText(QString::number(_manager->data(index,EAbstractAnalytic::Input::Default).toDouble()));
-   double bottom {_manager->data(index,EAbstractAnalytic::Input::Minimum).toDouble()};
-   double top {_manager->data(index,EAbstractAnalytic::Input::Maximum).toDouble()};
+   ret->setText(QString::number(_manager->data(index,EAbstractAnalyticInput::Default).toDouble()));
+   double bottom {_manager->data(index,EAbstractAnalyticInput::Minimum).toDouble()};
+   double top {_manager->data(index,EAbstractAnalyticInput::Maximum).toDouble()};
    int decimals {1000};
-   QVariant value {_manager->data(index,EAbstractAnalytic::Input::Decimals)};
+   QVariant value {_manager->data(index,EAbstractAnalyticInput::Decimals)};
    if ( !value.isNull() )
    {
       decimals = value.toInt();
@@ -563,7 +563,7 @@ QWidget* SetupAnalyticDialog::createString(quint16 index)
    // Create a new qt line edit _ret_, setting its default value from interrogating 
    // the analytic manager argument with the given index. 
    QLineEdit* ret = new QLineEdit;
-   ret->setText(_manager->data(index,EAbstractAnalytic::Input::Default).toString());
+   ret->setText(_manager->data(index,EAbstractAnalyticInput::Default).toString());
 
    // Append _ret_ to this object's list of edit widgets and return it. 
    _edits.append(ret);
@@ -592,13 +592,13 @@ QWidget* SetupAnalyticDialog::createSelection(quint16 index)
    QComboBox* ret = new QComboBox;
    const QStringList options
    {
-      _manager->data(index,EAbstractAnalytic::Input::SelectionValues).toStringList()
+      _manager->data(index,EAbstractAnalyticInput::SelectionValues).toStringList()
    };
    for (auto option: options)
    {
       ret->addItem(option);
    }
-   ret->setCurrentIndex(ret->findText(_manager->data(index,EAbstractAnalytic::Input::Default).toString()));
+   ret->setCurrentIndex(ret->findText(_manager->data(index,EAbstractAnalyticInput::Default).toString()));
 
    // Append _ret_ to this object's list of edit widgets and return it. 
    _edits.append(ret);
@@ -630,12 +630,12 @@ QWidget* SetupAnalyticDialog::createFile(quint16 index)
    QPushButton* browse {new QPushButton(tr("Browse"))};
    switch (_manager->type(index))
    {
-   case EAbstractAnalytic::Input::Type::FileIn:
-   case EAbstractAnalytic::Input::Type::FileOut:
+   case EAbstractAnalyticInput::Type::FileIn:
+   case EAbstractAnalyticInput::Type::FileOut:
       connect(browse,&QPushButton::clicked,[this,index]{ findFile(index); });
       break;
-   case EAbstractAnalytic::Input::Type::DataIn:
-   case EAbstractAnalytic::Input::Type::DataOut:
+   case EAbstractAnalyticInput::Type::DataIn:
+   case EAbstractAnalyticInput::Type::DataOut:
       connect(browse,&QPushButton::clicked,[this,index]{ findDataObject(index); });
       break;
    default:

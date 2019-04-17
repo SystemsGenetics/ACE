@@ -47,7 +47,7 @@ MathTransform::OpenCL::Worker::Worker(MathTransform* base, ::OpenCL::Context* co
  *
  * @return Pointer to results block produced from the given work block. 
  */
-std::unique_ptr<EAbstractAnalytic::Block> MathTransform::OpenCL::Worker::execute(const EAbstractAnalytic::Block* block)
+std::unique_ptr<EAbstractAnalyticBlock> MathTransform::OpenCL::Worker::execute(const EAbstractAnalyticBlock* block)
 {
    if ( ELog::isActive() )
    {
@@ -84,5 +84,5 @@ std::unique_ptr<EAbstractAnalytic::Block> MathTransform::OpenCL::Worker::execute
 
    // Create a new result block with the given work block's index and 
    // _row_, returning its pointer. 
-   return unique_ptr<EAbstractAnalytic::Block>(new MathTransform::Block(block->index(),row.size(),row.data()));
+   return unique_ptr<EAbstractAnalyticBlock>(new MathTransform::Block(block->index(),row.size(),row.data()));
 }
