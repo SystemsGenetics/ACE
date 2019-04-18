@@ -7,8 +7,8 @@
 
 
 
-using namespace OpenCL;
-//
+namespace OpenCL
+{
 
 
 
@@ -16,23 +16,25 @@ using namespace OpenCL;
 
 
 /*!
- * Constructs a new OpenCL context with the given list of devices and optional 
- * parent. If the given device list is empty or all devices are not part of the 
- * same platform then an exception is thrown. 
+ * Constructs a new OpenCL context with the given list of devices and optional
+ * parent. If the given device list is empty or all devices are not part of the
+ * same platform then an exception is thrown.
  *
- * @param devices List of pointers to devices this context is created from. All 
- *                devices must be part of the given platform. 
+ * @param devices List of pointers to devices this context is created from. All
+ *                devices must be part of the given platform.
  *
- * @param parent Optional parent for this new context. 
+ * @param parent Optional parent for this new context.
  */
-Context::Context(const QList<Device*>& devices, QObject* parent):
+Context::Context(const QList<Device*>& devices, QObject* parent)
+   :
    QObject(parent),
    _devices(devices)
 {
-   EDEBUG_FUNC(this,&devices,parent)
+   // Add the debug header.
+   EDEBUG_FUNC(this,&devices,parent);
 
-   // If the given device list is empty then throw an exception, else go to the next 
-   // step. 
+   // If the given device list is empty then throw an exception, else go to the next
+   // step.
    if ( devices.isEmpty() )
    {
       E_MAKE_EXCEPTION(e);
@@ -41,22 +43,27 @@ Context::Context(const QList<Device*>& devices, QObject* parent):
       throw e;
    }
 
-   // Create a new OpenCL context with the given platform and list of devices, 
-   // setting this object's OpenCL context ID to the one returned. If creating the 
-   // context fails then throw an exception. 
+   // Create a new OpenCL context with the given platform and list of devices,
+   // setting this object's OpenCL context ID to the one returned. If creating the
+   // context fails then throw an exception.
    cl_int code;
    cl_context_properties properties[] =
    {
       CL_CONTEXT_PLATFORM,
-      (cl_context_properties)devices.first()->platform(),
+      reinterpret_cast<cl_context_properties>(devices.first()->platform()),
       0
    };
-   cl_device_id deviceIds[devices.size()];
+   QVector<cl_device_id> deviceIds(devices.size());
    for (int i = 0; i < devices.size() ;++i)
    {
       deviceIds[i] = devices.at(i)->id();
    }
-   _id = clCreateContext(properties,devices.size(),deviceIds,nullptr,nullptr,&code);
+   _id = clCreateContext(properties
+                         ,static_cast<cl_uint>(devices.size())
+                         ,deviceIds.data()
+                         ,nullptr
+                         ,nullptr
+                         ,&code);
    if ( code != CL_SUCCESS )
    {
       E_MAKE_EXCEPTION(e);
@@ -71,12 +78,11 @@ Context::Context(const QList<Device*>& devices, QObject* parent):
 
 
 /*!
- * Releases the underlying OpenCL context that this object represents. 
+ * Releases the underlying OpenCL context that this object represents.
  */
 Context::~Context()
 {
-   EDEBUG_FUNC(this)
-
+   EDEBUG_FUNC(this);
    clReleaseContext(_id);
 }
 
@@ -86,14 +92,13 @@ Context::~Context()
 
 
 /*!
- * Returns the OpenCL context ID of this object. 
+ * Returns the OpenCL context ID of this object.
  *
- * @return OpenCL context ID of this object. 
+ * @return OpenCL context ID of this object.
  */
 cl_context Context::id() const
 {
-   EDEBUG_FUNC(this)
-
+   EDEBUG_FUNC(this);
    return _id;
 }
 
@@ -103,14 +108,15 @@ cl_context Context::id() const
 
 
 /*!
- * Returns a read only reference to the list of device pointers which is part of 
- * this context. 
+ * Returns a read only reference to the list of device pointers which is part of
+ * this context.
  *
- * @return Read only reference to list of devices of this context. 
+ * @return Read only reference to list of devices of this context.
  */
 const QList<Device*>& Context::devices() const
 {
-   EDEBUG_FUNC(this)
-
+   EDEBUG_FUNC(this);
    return _devices;
+}
+
 }
