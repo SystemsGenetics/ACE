@@ -3,17 +3,19 @@
 #include <CL/cl.h>
 #include <QObject>
 #include "opencl.h"
-//
 
 
 
+/*!
+ * This contains all classes and functions associated with using OpenCL in ACE.
+ */
 namespace OpenCL
 {
    /*!
-    * This contains an OpenCL command queue. This is a very basic class that simply 
-    * maintains ownership of an underlying command queue. The main purpose of this 
-    * class is to be used by other classes that add commands to its underlying command 
-    * queue. 
+    * This contains an OpenCL command queue. This is a very basic class that simply
+    * maintains ownership of an underlying command queue. The main purpose of this
+    * class is to be used by other classes that add commands to its underlying
+    * command queue.
     */
    class CommandQueue : public QObject
    {
@@ -25,16 +27,14 @@ namespace OpenCL
       Device* device() const;
    private:
       /*!
-       * The OpenCL command queue ID of this object. 
+       * The OpenCL command queue ID of this object.
        */
       cl_command_queue _id;
       /*!
-       * Pointer to the device this command queue uses. 
+       * Pointer to the device this command queue uses.
        */
       Device* _device;
    };
 }
-
-
 
 #endif
