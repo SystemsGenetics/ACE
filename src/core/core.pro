@@ -37,7 +37,6 @@ SOURCES += \
     opencl_event.cpp \
     opencl_commandqueue.cpp \
     opencl_kernel.cpp \
-    opencl_kernel_locker.cpp \
     ace_analytic_simplerun.cpp \
     ace_analytic_serialrun.cpp \
     ace_analytic_openclrun.cpp \
@@ -103,7 +102,6 @@ HEADERS += \
     opencl_commandqueue.h \
     opencl_buffer.h \
     opencl_kernel.h \
-    opencl_kernel_locker.h \
     ace_analytic_simplerun.h \
     ace_analytic_serialrun.h \
     ace_analytic_openclrun.h \

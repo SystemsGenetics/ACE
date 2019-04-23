@@ -1,5 +1,4 @@
 #include "opencl_kernel.h"
-#include "opencl_kernel_locker.h"
 #include "opencl_device.h"
 #include "opencl_program.h"
 #include "opencl_commandqueue.h"
@@ -10,8 +9,8 @@
 
 
 
-using namespace OpenCL;
-//
+namespace OpenCL
+{
 
 
 
@@ -19,13 +18,14 @@ using namespace OpenCL;
 
 
 /*!
- * Clears all resources this kernel contains. 
+ * Clears all resources this kernel contains.
  */
 Kernel::~Kernel()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // Release the OpenCL kernel and clear all arrays. 
+   // Release the OpenCL kernel and clear all arrays.
    clReleaseKernel(_id);
    clear();
 }
@@ -36,22 +36,22 @@ Kernel::~Kernel()
 
 
 /*!
- * Executes this object's OpenCL kernel on the given command queue with the 
- * dimensions, global, and local sizes this object possesses, returning the event 
- * for the kernel command. 
+ * Executes this object's OpenCL kernel on the given command queue with the
+ * dimensions, global, and local sizes this object possesses, returning the
+ * event for the kernel command.
  *
- * @param queue  
  *
- * @return The event for the kernel command running on the given command queue. 
+ * @return The event for the kernel command running on the given command queue.
  */
 Event Kernel::execute(CommandQueue* queue)
 {
-   EDEBUG_FUNC(this,queue)
+   // Add the debug header.
+   EDEBUG_FUNC(this,queue);
 
-   // Add a ND range kernel execution command to the given command queue with this 
-   // objects dimensions of offsets, global sizes, and local sizes, returning the 
-   // event for the added command. If adding the command fails then throw an 
-   // exception. 
+   // Add a ND range kernel execution command to the given command queue with this
+   // objects dimensions of offsets, global sizes, and local sizes, returning the
+   // event for the added command. If adding the command fails then throw an
+   // exception.
    cl_event id;
    cl_int code
    {
@@ -72,23 +72,79 @@ Event Kernel::execute(CommandQueue* queue)
 
 
 /*!
- * Constructs a new kernel object from the given program with the given kernel name 
- * and optional parent. 
+ * Constructs a new locker object with the given locked kernel object.
  *
- * @param program Pointer to the program which has built the kernel with the given 
- *                name that is created. 
- *
- * @param name The name of the kernel that is created. 
- *
- * @param parent Optional parent for this new kernel object. 
  */
-Kernel::Kernel(Program* program, const QString& name, QObject* parent):
+Kernel::Locker::Locker(Kernel* kernel)
+   :
+   _kernel(kernel)
+{
+   EDEBUG_FUNC(this,kernel);
+}
+
+
+
+
+
+
+/*!
+ * Constructs a new locker object taking ownership of the other locker object's
+ * kernel lock.
+ *
+ */
+Kernel::Locker::Locker(Locker&& other)
+   :
+   _kernel(other._kernel)
+{
+   EDEBUG_FUNC(this,&other);
+   other._kernel = nullptr;
+}
+
+
+
+
+
+
+/*!
+ * Unlocks the kernel object this locker object contains.
+ */
+Kernel::Locker::~Locker()
+{
+   // Add the debug header.
+   EDEBUG_FUNC(this);
+
+   // If this object contains a kernel object then call its unlock method.
+   if ( _kernel )
+   {
+      _kernel->unlock();
+   }
+}
+
+
+
+
+
+
+/*!
+ * Constructs a new kernel object from the given program with the given kernel
+ * name and optional parent.
+ *
+ * @param program Pointer to the program which has built the kernel with the
+ *                given name that is created.
+ *
+ * @param name The name of the kernel that is created.
+ *
+ * @param parent Optional parent for this new kernel object.
+ */
+Kernel::Kernel(Program* program, const QString& name, QObject* parent)
+   :
    QObject(parent)
 {
-   EDEBUG_FUNC(this,program,name,parent)
+   // Add the debug header.
+   EDEBUG_FUNC(this,program,name,parent);
 
-   // Create a new OpenCL kernel from the given program with the given name, storing 
-   // its id to this object. If creating the kernel fails then throw an exception. 
+   // Create a new OpenCL kernel from the given program with the given name, storing
+   // its id to this object. If creating the kernel fails then throw an exception.
    cl_int code;
    _id = clCreateKernel(program->id(),name.toLocal8Bit().data(),&code);
    if ( code != CL_SUCCESS )
@@ -98,7 +154,7 @@ Kernel::Kernel(Program* program, const QString& name, QObject* parent):
       throw e;
    }
 
-   // Allocate all dimension arrays. 
+   // Allocate all dimension arrays.
    allocate();
 }
 
@@ -108,17 +164,19 @@ Kernel::Kernel(Program* program, const QString& name, QObject* parent):
 
 
 /*!
- * Locks this kernel object allowing the setting of this object's kernel parameters 
- * and returning a locker object that unlocks this kernel on its destruction. 
+ * Locks this kernel object allowing the setting of this object's kernel
+ * parameters and returning a locker object that unlocks this kernel on its
+ * destruction.
  *
- * @return Locker object that unlocks this kernel upon its destruction. 
+ * @return Locker object that unlocks this kernel upon its destruction.
  */
 Kernel::Locker Kernel::lock()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // Lock this kernel's mutex, set this object as locked, and return a locker object 
-   // pointing to this kernel. 
+   // Lock this kernel's mutex, set this object as locked, and return a locker object
+   // pointing to this kernel.
    _lock.lock();
    _isLocked = true;
    return Locker(this);
@@ -130,14 +188,15 @@ Kernel::Locker Kernel::lock()
 
 
 /*!
- * Unlocks this kernel object after which parameters cannot be set and allows other 
- * threads to lock it. 
+ * Unlocks this kernel object after which parameters cannot be set and allows
+ * other threads to lock it.
  */
 void Kernel::unlock()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // Unlock this kernel's mutex and set this object as unlocked. 
+   // Unlock this kernel's mutex and set this object as unlocked.
    _lock.unlock();
    _isLocked = false;
 }
@@ -148,18 +207,18 @@ void Kernel::unlock()
 
 
 /*!
- * Returns the maximum work group (local) size this kernel can possess for the 
- * given device. If this kernel is not locked then an exception is thrown. 
+ * Returns the maximum work group (local) size this kernel can possess for the
+ * given device. If this kernel is not locked then an exception is thrown.
  *
- * @param device  
  *
- * @return Maximum work group size this kernel can possess for the given device. 
+ * @return Maximum work group size this kernel can possess for the given device.
  */
 int Kernel::maxWorkGroupSize(Device* device) const
 {
-   EDEBUG_FUNC(this,device)
+   // Add the debug header.
+   EDEBUG_FUNC(this,device);
 
-   // If this kernel is not locked then throw an exception, else go to the next step. 
+   // If this kernel is not locked then throw an exception, else go to the next step.
    if ( !_isLocked )
    {
       E_MAKE_EXCEPTION(e);
@@ -168,8 +227,8 @@ int Kernel::maxWorkGroupSize(Device* device) const
       throw e;
    }
 
-   // Get the maximum work group size for this kernel if ran on the given device and 
-   // return it. If getting that information fails then throw an exception. 
+   // Get the maximum work group size for this kernel if ran on the given device and
+   // return it. If getting that information fails then throw an exception.
    size_t size;
    cl_int code
    {
@@ -186,7 +245,8 @@ int Kernel::maxWorkGroupSize(Device* device) const
       fillException(&e,code);
       throw e;
    }
-   return size;
+   Q_ASSERT(size < std::numeric_limits<int>::max());
+   return static_cast<int>(size);
 }
 
 
@@ -195,18 +255,18 @@ int Kernel::maxWorkGroupSize(Device* device) const
 
 
 /*!
- * Returns the recommended, for efficiency, work group multiple for the given 
- * device. If this kernel is not locked then an exception is thrown. 
+ * Returns the recommended, for efficiency, work group multiple for the given
+ * device. If this kernel is not locked then an exception is thrown.
  *
- * @param device  
  *
- * @return Work group multiple for the given device. 
+ * @return Work group multiple for the given device.
  */
 int Kernel::workGroupMultiple(Device* device) const
 {
-   EDEBUG_FUNC(this,device)
+   // Add the debug header.
+   EDEBUG_FUNC(this,device);
 
-   // If this kernel is not locked then throw an exception, else go to the next step. 
+   // If this kernel is not locked then throw an exception, else go to the next step.
    if ( !_isLocked )
    {
       E_MAKE_EXCEPTION(e);
@@ -215,8 +275,8 @@ int Kernel::workGroupMultiple(Device* device) const
       throw e;
    }
 
-   // Get the work group multiple for the given device and return it. If getting that 
-   // information fails then throw an exception. 
+   // Get the work group multiple for the given device and return it. If getting that
+   // information fails then throw an exception.
    size_t size;
    cl_int code
    {
@@ -233,7 +293,8 @@ int Kernel::workGroupMultiple(Device* device) const
       fillException(&e,code);
       throw e;
    }
-   return size;
+   Q_ASSERT(size < std::numeric_limits<int>::max());
+   return static_cast<int>(size);
 }
 
 
@@ -242,18 +303,19 @@ int Kernel::workGroupMultiple(Device* device) const
 
 
 /*!
- * Sets the number of dimensions for parallel execution of this kernel object. If 
- * this kernel is not locked or the given size is less than one then an exception 
- * is thrown. 
+ * Sets the number of dimensions for parallel execution of this kernel object.
+ * If this kernel is not locked or the given size is less than one then an
+ * exception is thrown.
  *
- * @param size The number of dimensions for this kernel. 
+ * @param size The number of dimensions for this kernel.
  */
 void Kernel::setDimensions(cl_uint size)
 {
-   EDEBUG_FUNC(this,size)
+   // Add the debug header.
+   EDEBUG_FUNC(this,size);
 
-   // If this kernel is not locked or the given size is less than one then throw an 
-   // exception, else go to the next step. 
+   // If this kernel is not locked or the given size is less than one then throw an
+   // exception, else go to the next step.
    if ( !_isLocked )
    {
       E_MAKE_EXCEPTION(e);
@@ -270,9 +332,9 @@ void Kernel::setDimensions(cl_uint size)
       throw e;
    }
 
-   // if the new given size is different form this object's current dimension size 
-   // then change it to the new size, clear the previous arrays, and allocate new 
-   // arrays. 
+   // if the new given size is different form this object's current dimension size
+   // then change it to the new size, clear the previous arrays, and allocate new
+   // arrays.
    if ( size != _size )
    {
       _size = size;
@@ -287,26 +349,27 @@ void Kernel::setDimensions(cl_uint size)
 
 
 /*!
- * Sets the global and local sizes of the given dimension used for parallel 
- * execution of this kernel object. If this kernel is not locked, the dimension is 
- * invalid, the local or group size is less than one, or the global size is not a 
- * multiple of the local size then an exception is thrown. 
+ * Sets the global and local sizes of the given dimension used for parallel
+ * execution of this kernel object. If this kernel is not locked, the dimension
+ * is invalid, the local or group size is less than one, or the global size is
+ * not a multiple of the local size then an exception is thrown.
  *
- * @param dimension The dimension whose global and local sizes are set. 
+ * @param dimension The dimension whose global and local sizes are set.
  *
- * @param globalSize The new global size that is set. This must be a multiple of 
- *                   the local size. 
+ * @param globalSize The new global size that is set. This must be a multiple of
+ *                   the local size.
  *
- * @param localSize The new local or work group size that is set. This must be 
- *                  divisible of the global size. 
+ * @param localSize The new local or work group size that is set. This must be
+ *                  divisible of the global size.
  */
 void Kernel::setSizes(cl_uint dimension, qint64 globalSize, qint64 localSize)
 {
-   EDEBUG_FUNC(this,dimension,globalSize,localSize)
+   // Add the debug header.
+   EDEBUG_FUNC(this,dimension,globalSize,localSize);
 
-   // If this kernel is not locked, the given dimension is out of rage, the global or 
-   // local sizes are less then one, or the global size is not a multiple of the 
-   // local size then throw an exception, else go to the next step. 
+   // If this kernel is not locked, the given dimension is out of rage, the global or
+   // local sizes are less then one, or the global size is not a multiple of the
+   // local size then throw an exception, else go to the next step.
    if ( !_isLocked )
    {
       E_MAKE_EXCEPTION(e);
@@ -333,9 +396,9 @@ void Kernel::setSizes(cl_uint dimension, qint64 globalSize, qint64 localSize)
       throw e;
    }
 
-   // Set the global and local sizes of the given dimension to the given values. 
-   _globalSizes[dimension] = globalSize;
-   _localSizes[dimension] = localSize;
+   // Set the global and local sizes of the given dimension to the given values.
+   _globalSizes[dimension] = static_cast<size_t>(globalSize);
+   _localSizes[dimension] = static_cast<size_t>(localSize);
 }
 
 
@@ -344,23 +407,24 @@ void Kernel::setSizes(cl_uint dimension, qint64 globalSize, qint64 localSize)
 
 
 /*!
- * Allocates new arrays for the offsets, global sizes, and local sizes of this 
- * object used for adding a kernel parallel execution command. The dimension size 
- * is used for the new sizes. Any memory pointed to previously is overwritten and 
- * not deleted. 
+ * Allocates new arrays for the offsets, global sizes, and local sizes of this
+ * object used for adding a kernel parallel execution command. The dimension
+ * size is used for the new sizes. Any memory pointed to previously is
+ * overwritten and not deleted.
  */
 void Kernel::allocate()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // Allocate new arrays for offsets, global sizes, and local sizes, setting this 
-   // object's pointers to the new arrays. 
+   // Allocate new arrays for offsets, global sizes, and local sizes, setting this
+   // object's pointers to the new arrays.
    _offsets = new size_t[_size];
    _globalSizes = new size_t[_size];
    _localSizes = new size_t[_size];
 
-   // Iterate through all new arrays and set their offsets to 0, global size to 1, 
-   // and local size to 1. 
+   // Iterate through all new arrays and set their offsets to 0, global size to 1,
+   // and local size to 1.
    for (cl_uint i = 0; i < _size ;++i)
    {
       _offsets[i] = 0;
@@ -375,15 +439,18 @@ void Kernel::allocate()
 
 
 /*!
- * Deletes arrays pointed to by this object's offsets, global sizes, and local 
- * sizes array pointers. 
+ * Deletes arrays pointed to by this object's offsets, global sizes, and local
+ * sizes array pointers.
  */
 void Kernel::clear()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // Delete all arrays this object points to. 
+   // Delete all arrays this object points to.
    delete[] _offsets;
    delete[] _globalSizes;
    delete[] _localSizes;
+}
+
 }

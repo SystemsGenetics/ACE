@@ -425,12 +425,12 @@ namespace OpenCL
          e.setDetails(QObject::tr("Cannot unmap OpenCL buffer that is not mapped."));
          throw e;
       }
-         
+                  
       // Add an unmap command to the given command queue for this object's OpenCL
       // buffer. If adding the command fails then throw an exception.
       cl_event id;
       clEnqueueUnmapMemObject(queue->id(),*_id,_data,0,nullptr,&id);
-         
+                  
       // Release the OpenCL command queue used to map this object's buffer and return
       // the event of the unmapping command added to the given command queue in the last
       // step. If releasing the command queue fails then throw an exception.
@@ -513,7 +513,7 @@ namespace OpenCL
          e.setDetails(QObject::tr("Cannot map OpenCL buffer that is already mapped."));
          throw e;
       }
-         
+                  
       // Add a map command to the given command queue for this object's OpenCL buffer
       // with the given mapping. If adding the command fails then throw an exception.
       cl_int code;
@@ -534,7 +534,7 @@ namespace OpenCL
          fillException(&e,code);
          throw e;
       }
-         
+                  
       // Save the given command queue ID to this object, retain it, and return the event
       // of the mapping command added to the given command queue in the last step. If
       // retaining the command queue fails then throw an exception.
@@ -575,7 +575,7 @@ namespace OpenCL
             clEnqueueUnmapMemObject(_last,*_id,_data,0,nullptr,nullptr);
             clReleaseCommandQueue(_last);
          }
-         
+                  
          // Release this object's OpenCL buffer ID and then delete it.
          clReleaseMemObject(*_id);
          delete _id;
