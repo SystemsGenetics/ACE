@@ -1,7 +1,11 @@
+#ifndef ACE_H
+#define ACE_H
+
+
 
 /*!
- * This contains all private classes used internally by the ACE library and should 
- * never be accessed by a developer using this library. 
+ * This contains all private classes used internally by the ACE library and
+ * should never be accessed by a developer using this library.
  */
 namespace Ace
 {
@@ -12,3 +16,5 @@ namespace Ace
    class MetadataModel;
    class QMPI;
 }
+
+#endif

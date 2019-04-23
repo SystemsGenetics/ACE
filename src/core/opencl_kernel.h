@@ -127,7 +127,7 @@ namespace OpenCL
    {
       // Add the debug header.
       EDEBUG_FUNC(this,index,value);
-            
+                     
       // If this kernel is not locked then throw an exception, else go to the next step.
       if ( !_isLocked )
       {
@@ -136,7 +136,7 @@ namespace OpenCL
          e.setDetails(tr("Cannot set OpenCL kernel parameters without locking the object first."));
          throw e;
       }
-            
+                     
       // Set the kernel argument with the given index to the given value. If setting the
       // argument fails then throw an exception.
       cl_int code {clSetKernelArg(_id,index,sizeof(T),&value)};
@@ -168,7 +168,7 @@ namespace OpenCL
    {
       // Add the debug header.
       EDEBUG_FUNC(this,index,buffer);
-            
+                     
       // If this kernel is not locked then throw an exception, else go to the next step.
       if ( !_isLocked )
       {
@@ -177,7 +177,7 @@ namespace OpenCL
          e.setDetails(tr("Cannot set OpenCL kernel parameters without locking the object first."));
          throw e;
       }
-            
+                     
       // Set the kernel argument with the given index to the given OpenCL buffer. If
       // setting the argument fails then throw an exception.
       cl_mem id {buffer->id()};
@@ -212,7 +212,7 @@ namespace OpenCL
    {
       // Add the debug header.
       EDEBUG_FUNC(this,index,size);
-            
+                     
       // If this kernel is not locked or the given size is less than one then throw an
       // exception, else go to the next step.
       if ( !_isLocked )
@@ -229,7 +229,7 @@ namespace OpenCL
          e.setDetails(tr("Cannot set local memory argument of OpenCL kernel with a size of less than 1."));
          throw e;
       }
-            
+                     
       // Set the kernel argument with the given index to allocate the given amount of
       // local memory. If setting the argument fails then throw an exception.
       cl_int code {clSetKernelArg(_id,index,sizeof(T)*size,nullptr)};

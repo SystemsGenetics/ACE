@@ -56,7 +56,6 @@ SOURCES += \
     ace_logserver.cpp \
     elog.cpp \
     edebug.cpp \
-    ace_logserver_thread.cpp \
     cuda_common.cpp \
     cuda_context.cpp \
     cuda_device.cpp \
@@ -122,7 +121,6 @@ HEADERS += \
     ace_logserver.h \
     elog.h \
     edebug.h \
-    ace_logserver_thread.h \
     cuda_buffer.h \
     cuda_common.h \
     cuda_context.h \
