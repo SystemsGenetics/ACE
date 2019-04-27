@@ -1,5 +1,5 @@
 #include "ace_metadatamodel.h"
-#include "ace_metadatamodel_node.h"
+#include "ace_metadatamodelnode.h"
 #include "emetadata.h"
 #include "emetaarray.h"
 #include "emetaobject.h"
@@ -122,7 +122,7 @@ QModelIndex MetadataModel::index(int row, int column, const QModelIndex& parent)
    EDEBUG_FUNC(this,row,column,parent)
 
    // Get the node pointer of the given parent index. 
-   Node* parent_ {pointer(parent)};
+   MetadataModelNode* parent_ {pointer(parent)};
 
    // If the parent node is not a container then throw an exception, else go to the 
    // next step. 
@@ -164,7 +164,7 @@ QModelIndex MetadataModel::parent(const QModelIndex& child) const
 
    // Get node pointer to parent of the given child index. If the parent is null then 
    // return an invalid index else go to the next step. 
-   Node* parent {pointer(child)->parent()};
+   MetadataModelNode* parent {pointer(child)->parent()};
    if ( !parent )
    {
       return QModelIndex();
@@ -172,7 +172,7 @@ QModelIndex MetadataModel::parent(const QModelIndex& child) const
 
    // Get node pointer to grandparent of the given child index. If the grandparent is 
    // null then return an invalid index else go to the next step. 
-   Node* grandParent {parent->parent()};
+   MetadataModelNode* grandParent {parent->parent()};
    if ( !grandParent )
    {
       return QModelIndex();
@@ -201,7 +201,7 @@ Qt::ItemFlags MetadataModel::flags(const QModelIndex& index) const
 
    // Create return flag variable with default flags all indexes contain. 
    Qt::ItemFlags ret {Qt::ItemIsSelectable|Qt::ItemIsEnabled};
-   Node* node {pointer(index)};
+   MetadataModelNode* node {pointer(index)};
    if ( _readOnly )
    {
       return ret;
@@ -349,7 +349,7 @@ QVariant MetadataModel::data(const QModelIndex& index, int role) const
    EDEBUG_FUNC(this,index,role)
 
    // Get the node pointer for the given index. 
-   Node* node {pointer(index)};
+   MetadataModelNode* node {pointer(index)};
 
    // If the given role is raw image data and the node is a bytes type then return 
    // the byte array of the given index. 
@@ -474,7 +474,7 @@ bool MetadataModel::dropMimeData(const QMimeData* data, Qt::DropAction action, i
    QDataStream stream(bytes);
    quintptr pointer;
    stream >> pointer;
-   Node* node = reinterpret_cast<Node*>(pointer);
+   MetadataModelNode* node = reinterpret_cast<MetadataModelNode*>(pointer);
    if ( stream.status() != QDataStream::Ok )
    {
       return false;
@@ -483,11 +483,11 @@ bool MetadataModel::dropMimeData(const QMimeData* data, Qt::DropAction action, i
    // Either copy a new node from the node pointer or take it from its current 
    // location in the model, depending on if the action is copy or move, 
    // respectively. 
-   unique_ptr<Node> newNode;
+   unique_ptr<MetadataModelNode> newNode;
    switch (action)
    {
    case Qt::CopyAction:
-      newNode.reset(new Node(*node));
+      newNode.reset(new MetadataModelNode(*node));
       break;
    case Qt::MoveAction:
       newNode = take(node);
@@ -516,7 +516,7 @@ bool MetadataModel::dropMimeData(const QMimeData* data, Qt::DropAction action, i
  */
 MetadataModel::MetadataModel(QObject* parent):
    QAbstractItemModel(parent),
-   _root(new Node(EMetadata::Object,this))
+   _root(new MetadataModelNode(EMetadata::Object,this))
 {
    EDEBUG_FUNC(this,parent)
 }
@@ -615,7 +615,7 @@ bool MetadataModel::insert(const QModelIndex& parent, EMetadata::Type type)
 {
    EDEBUG_FUNC(this,parent,type)
 
-   return insert(parent,0,unique_ptr<Node>(new Node(type)));
+   return insert(parent,0,unique_ptr<MetadataModelNode>(new MetadataModelNode(type)));
 }
 
 
@@ -725,16 +725,16 @@ void MetadataModel::setReadOnly(bool state)
  *
  * @return The node pointer of the given index. 
  */
-MetadataModel::Node* MetadataModel::pointer(const QModelIndex& index) const
+MetadataModelNode* MetadataModel::pointer(const QModelIndex& index) const
 {
    EDEBUG_FUNC(this,index)
 
    // If the index is valid extract its internal pointer and return it as a node 
    // pointer, else return this model's root node pointer. 
-   Node* ret;
+   MetadataModelNode* ret;
    if ( index.isValid() )
    {
-      ret = reinterpret_cast<Node*>(index.internalPointer());
+      ret = reinterpret_cast<MetadataModelNode*>(index.internalPointer());
    }
    else
    {
@@ -769,8 +769,8 @@ bool MetadataModel::setKey(const QModelIndex& index, const QString& newKey)
    // within it's parent's map. Then set the key of the given index to the new given 
    // key, notifying the model the position of the index has changed if that is the 
    // case. Then return true on success. 
-   Node* node {pointer(index)};
-   Node* parent {node->parent()};
+   MetadataModelNode* node {pointer(index)};
+   MetadataModelNode* parent {node->parent()};
    if ( !parent->contains(newKey) )
    {
       int oldRow {parent->indexOf(node)};
@@ -805,13 +805,13 @@ bool MetadataModel::setKey(const QModelIndex& index, const QString& newKey)
  *
  * @return Node pointer. 
  */
-std::unique_ptr<MetadataModel::Node> MetadataModel::take(Node* node)
+std::unique_ptr<MetadataModelNode> MetadataModel::take(MetadataModelNode* node)
 {
    EDEBUG_FUNC(this,node)
 
    // If the node does not have a parent because it is the root node then return a 
    // null pointer, else go to the next step. 
-   Node* parent {node->parent()};
+   MetadataModelNode* parent {node->parent()};
    if ( !parent )
    {
       return nullptr;
@@ -827,7 +827,7 @@ std::unique_ptr<MetadataModel::Node> MetadataModel::take(Node* node)
    }
    int row {parent->indexOf(node)};
    beginRemoveRows(parent_,row,row);
-   unique_ptr<Node> ret {parent->cut(row)};
+   unique_ptr<MetadataModelNode> ret {parent->cut(row)};
    endRemoveRows();
    return ret;
 }
@@ -855,12 +855,12 @@ std::unique_ptr<MetadataModel::Node> MetadataModel::take(Node* node)
  *
  * @return Returns true on successful insertion else returns false. 
  */
-bool MetadataModel::insert(const QModelIndex& parent, int row, std::unique_ptr<Node>&& node)
+bool MetadataModel::insert(const QModelIndex& parent, int row, std::unique_ptr<MetadataModelNode>&& node)
 {
    EDEBUG_FUNC(this,parent,row,node.get())
 
    // Get node pointer of given parent index. 
-   Node* parent_ {pointer(parent)};
+   MetadataModelNode* parent_ {pointer(parent)};
 
    // If the node parent is an object type then go to the next step, else go to step 
    // 5. 
@@ -926,7 +926,7 @@ bool MetadataModel::insert(const QModelIndex& parent, int row, std::unique_ptr<N
  *
  * @return Copy of the given pointed to node. 
  */
-EMetadata MetadataModel::buildMeta(const Node* node) const
+EMetadata MetadataModel::buildMeta(const MetadataModelNode* node) const
 {
    EDEBUG_FUNC(this,node)
 
@@ -965,7 +965,7 @@ EMetadata MetadataModel::buildMeta(const Node* node) const
  *
  * @return Copy of the given metadata value. 
  */
-std::unique_ptr<MetadataModel::Node> MetadataModel::buildNode(const EMetadata& meta)
+std::unique_ptr<MetadataModelNode> MetadataModel::buildNode(const EMetadata& meta)
 {
    EDEBUG_FUNC(this,&meta)
 
@@ -973,7 +973,7 @@ std::unique_ptr<MetadataModel::Node> MetadataModel::buildNode(const EMetadata& m
    // the given metadata value's type. If the given metadata type is a container then 
    // recursively copy all children metadata into the new node with the same keys if 
    // it is an object type. Then return the node pointer of the new node. 
-   unique_ptr<Node> ret {new Node(meta)};
+   unique_ptr<MetadataModelNode> ret {new MetadataModelNode(meta)};
    if ( meta.isArray() )
    {
       for (auto child : qAsConst(meta.toArray()))

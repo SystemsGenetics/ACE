@@ -13,6 +13,7 @@ namespace Ace
    class Settings;
    class DataManager;
    class DataObject;
+   class MetadataModelNode;
    class MetadataModel;
    class QMPI;
 }

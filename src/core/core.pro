@@ -13,7 +13,7 @@ SOURCES += \
     emetaarray.cpp \
     emetaobject.cpp \
     ace_metadatamodel.cpp \
-    ace_metadatamodel_node.cpp \
+    ace_metadatamodelnode.cpp \
     ace_dataobject.cpp \
     edatastream.cpp \
     eabstractdata.cpp \
@@ -71,7 +71,7 @@ HEADERS += \
     emetaarray.h \
     emetaobject.h \
     ace_metadatamodel.h \
-    ace_metadatamodel_node.h \
+    ace_metadatamodelnode.h \
     ace_dataobject.h \
     edatastream.h \
     edatastream_ext.h \
