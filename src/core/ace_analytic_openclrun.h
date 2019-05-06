@@ -3,24 +3,34 @@
 #include <memory>
 #include <QVector>
 #include <QQueue>
+#include <QThread>
 #include "ace_analytic_abstractrun.h"
 #include "ace_analytic.h"
 #include "opencl.h"
 #include "eabstractanalytic.h"
-//
 
 
 
+/*!
+ * This contains all private classes used internally by the ACE library and
+ * should never be accessed by a developer using this library.
+ */
 namespace Ace
 {
+   /*!
+    * This contains all classes related to running an analytic. This required its
+    * own name space because of the immense complexity required for ACE to provide
+    * an abstract interface for running analytic types in heterogeneous
+    * environments.
+    */
    namespace Analytic
    {
       /*!
-       * This is an OpenCL analytic run that processes the blocks of an analytic using an 
-       * OpenCL device with multiple threads using the device at once to process work 
-       * blocks. This is a complicated analytic run that has its own subclass 
-       * representing a thread that actually processes the work blocks into result 
-       * blocks. 
+       * This is an OpenCL analytic run that processes the blocks of an analytic using
+       * an OpenCL device with multiple threads using the device at once to process
+       * work blocks. This is a complicated analytic run that has its own subclass
+       * representing a thread that actually processes the work blocks into result
+       * blocks.
        */
       class OpenCLRun : public AbstractRun
       {
@@ -33,34 +43,30 @@ namespace Ace
       private slots:
          void blockFinished(int index);
       private:
-         class Thread;
-      private:
          /*!
-          * Pointer to the OpenCL context used by this OpenCL run object. 
+          * Pointer to the OpenCL context used by this OpenCL run object.
           */
          OpenCL::Context* _context;
          /*!
-          * Pointer to the abstract OpenCL object used by this object to create abstract 
-          * workers for all its threads. 
+          * Pointer to the abstract OpenCL object used by this object to create abstract
+          * workers for all its threads.
           */
          EAbstractAnalyticOpenCL* _opencl;
          /*!
-          * Pointer to the abstract input object used to save results. 
+          * Pointer to the abstract input object used to save results.
           */
          AbstractInput* _base;
          /*!
-          * Pointer list to all threads this object contains for processing work blocks into 
-          * result blocks. 
+          * Pointer list to all threads this object contains for processing work blocks
+          * into result blocks.
           */
-         QVector<Thread*> _threads;
+         QVector<OpenCLRunThread*> _threads;
          /*!
-          * Queue of idle threads ready to execute another work block. 
+          * Queue of idle threads ready to execute another work block.
           */
-         QQueue<Thread*> _idle;
+         QQueue<OpenCLRunThread*> _idle;
       };
    }
 }
-
-
 
 #endif

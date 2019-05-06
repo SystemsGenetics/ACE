@@ -40,7 +40,7 @@ SOURCES += \
     ace_analytic_simplerun.cpp \
     ace_analytic_serialrun.cpp \
     ace_analytic_openclrun.cpp \
-    ace_analytic_openclrun_thread.cpp \
+    ace_analytic_openclrunthread.cpp \
     ace_analytic_cudarun.cpp \
     ace_analytic_cudarun_thread.cpp \
     ace_analytic_single.cpp \
@@ -104,7 +104,7 @@ HEADERS += \
     ace_analytic_simplerun.h \
     ace_analytic_serialrun.h \
     ace_analytic_openclrun.h \
-    ace_analytic_openclrun_thread.h \
+    ace_analytic_openclrunthread.h \
     ace_analytic_cudarun.h \
     ace_analytic_cudarun_thread.h \
     ace_analytic_single.h \
