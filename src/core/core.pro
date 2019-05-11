@@ -42,7 +42,7 @@ SOURCES += \
     ace_analytic_openclrun.cpp \
     ace_analytic_openclrunthread.cpp \
     ace_analytic_cudarun.cpp \
-    ace_analytic_cudarun_thread.cpp \
+    ace_analytic_cudarunthread.cpp \
     ace_analytic_single.cpp \
     ace_settings.cpp \
     ace_analytic_mpimaster.cpp \
@@ -106,7 +106,7 @@ HEADERS += \
     ace_analytic_openclrun.h \
     ace_analytic_openclrunthread.h \
     ace_analytic_cudarun.h \
-    ace_analytic_cudarun_thread.h \
+    ace_analytic_cudarunthread.h \
     ace_analytic_single.h \
     openclxx.h \
     ace_settings.h \

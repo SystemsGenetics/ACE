@@ -23,8 +23,8 @@ namespace Ace
       /*!
        * This is a single thread of execution used by the OpenCL run class to process
        * work blocks into result blocks. The execution of this processing is done on a
-       * separate thread t enhance speed. An abstract OpenCL worker object is used for
-       * actual processing using an OpenCL device for acceleration.
+       * separate thread to enhance speed. An abstract OpenCL worker object is used
+       * for actual processing using an OpenCL device for acceleration.
        */
       class OpenCLRunThread : public QThread
       {

@@ -1,27 +1,36 @@
-#ifndef ACE_ANALYTIC_CUDARUN_THREAD_H
-#define ACE_ANALYTIC_CUDARUN_THREAD_H
+#ifndef ACE_ANALYTIC_CUDARUNTHREAD_H
+#define ACE_ANALYTIC_CUDARUNTHREAD_H
 #include <QThread>
 #include "ace_analytic_cudarun.h"
 #include "global.h"
-//
 
 
 
+/*!
+ * This contains all private classes used internally by the ACE library and
+ * should never be accessed by a developer using this library.
+ */
 namespace Ace
 {
+   /*!
+    * This contains all classes related to running an analytic. This required its
+    * own name space because of the immense complexity required for ACE to provide
+    * an abstract interface for running analytic types in heterogeneous
+    * environments.
+    */
    namespace Analytic
    {
       /*!
-       * This is a single thread of execution used by its parent CUDA run class to
-       * process work blocks into result blocks. The execution of this processing is done
-       * on a separate thread to enhance speed. An abstract CUDA worker object is used
-       * for actual processing using an CUDA device for acceleration.
+       * This is a single thread of execution used by the CUDA run class to process
+       * work blocks into result blocks. The execution of this processing is done on a
+       * separate thread to enhance speed. An abstract CUDA worker object is used for
+       * actual processing using a CUDA device for acceleration.
        */
-      class CUDARun::Thread : public QThread
+      class CUDARunThread : public QThread
       {
          Q_OBJECT
       public:
-         explicit Thread(std::unique_ptr<EAbstractAnalyticCUDAWorker>&& worker, QObject* parent = nullptr);
+         explicit CUDARunThread(std::unique_ptr<EAbstractAnalyticCUDAWorker>&& worker, QObject* parent = nullptr);
          void execute(std::unique_ptr<EAbstractAnalyticBlock>&& block);
          std::unique_ptr<EAbstractAnalyticBlock> result();
       signals:
@@ -56,7 +65,5 @@ namespace Ace
       };
    }
 }
-
-
 
 #endif

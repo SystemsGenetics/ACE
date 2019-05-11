@@ -1,4 +1,4 @@
-#include "ace_analytic_cudarun_thread.h"
+#include "ace_analytic_cudarunthread.h"
 #include "eexception.h"
 #include "edebug.h"
 #include "eabstractanalyticblock.h"
@@ -6,9 +6,10 @@
 
 
 
-using namespace std;
-using namespace Ace::Analytic;
-//
+namespace Ace
+{
+namespace Analytic
+{
 
 
 
@@ -19,17 +20,17 @@ using namespace Ace::Analytic;
  * Constructs a new thread object with the given abstract CUDA worker and
  * optional parent.
  *
- * @param worker An abstract CUDA worker used to do the actual processing of work
- *               blocks into result blocks.
+ * @param worker An abstract CUDA worker used to do the actual processing of
+ *               work blocks into result blocks.
  *
  * @param parent Optional parent of this new thread object.
  */
-CUDARun::Thread::Thread(std::unique_ptr<EAbstractAnalyticCUDAWorker>&& worker, QObject* parent):
+CUDARunThread::CUDARunThread(std::unique_ptr<EAbstractAnalyticCUDAWorker>&& worker, QObject* parent)
+   :
    QThread(parent),
    _worker(worker.release())
 {
-   EDEBUG_FUNC(this,worker.get(),parent)
-
+   EDEBUG_FUNC(this,worker.get(),parent);
    _worker->setParent(this);
 }
 
@@ -46,12 +47,13 @@ CUDARun::Thread::Thread(std::unique_ptr<EAbstractAnalyticCUDAWorker>&& worker, Q
  *
  * @param block The work block that is processed on a separate thread.
  */
-void CUDARun::Thread::execute(std::unique_ptr<EAbstractAnalyticBlock>&& block)
+void CUDARunThread::execute(std::unique_ptr<EAbstractAnalyticBlock>&& block)
 {
-   EDEBUG_FUNC(this,block.get())
+   // Add the debug header.
+   EDEBUG_FUNC(this,block.get());
 
-   // If this thread already contains a result block then throw an exception, else go 
-   // to the next step. 
+   // If this thread already contains a result block then throw an exception, else go
+   // to the next step.
    if ( _result )
    {
       E_MAKE_EXCEPTION(e);
@@ -60,8 +62,8 @@ void CUDARun::Thread::execute(std::unique_ptr<EAbstractAnalyticBlock>&& block)
       throw e;
    }
 
-   // Delete any previous work block this object contains, set the given work block 
-   // as this objects new work block and then start its separate thread. 
+   // Delete any previous work block this object contains, set the given work block
+   // as this objects new work block and then start its separate thread.
    delete _work;
    _work = block.release();
    _work->setParent(this);
@@ -81,12 +83,13 @@ void CUDARun::Thread::execute(std::unique_ptr<EAbstractAnalyticBlock>&& block)
  *
  * @return Result block produced by this object's separate thread execution.
  */
-std::unique_ptr<EAbstractAnalyticBlock> CUDARun::Thread::result()
+std::unique_ptr<EAbstractAnalyticBlock> CUDARunThread::result()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // If this object has a saved exception from its separate thread then copy it and 
-   // throw it on this thread, else go to the next step. 
+   // If this object has a saved exception from its separate thread then copy it and
+   // throw it on this thread, else go to the next step.
    if ( _exception )
    {
       EException e(*_exception);
@@ -95,8 +98,8 @@ std::unique_ptr<EAbstractAnalyticBlock> CUDARun::Thread::result()
       throw e;
    }
 
-   // If this object does not contain a result block then throw an exception, else go 
-   // the next step. 
+   // If this object does not contain a result block then throw an exception, else go
+   // the next step.
    if ( !_result )
    {
       E_MAKE_EXCEPTION(e);
@@ -105,9 +108,9 @@ std::unique_ptr<EAbstractAnalyticBlock> CUDARun::Thread::result()
       throw e;
    }
 
-   // Release this object's saved result block from its ownership and return it. 
+   // Release this object's saved result block from its ownership and return it.
    _result->setParent(nullptr);
-   unique_ptr<EAbstractAnalyticBlock> ret {_result};
+   std::unique_ptr<EAbstractAnalyticBlock> ret {_result};
    _result = nullptr;
    return ret;
 }
@@ -122,17 +125,18 @@ std::unique_ptr<EAbstractAnalyticBlock> CUDARun::Thread::result()
  * result block. If any exception is thrown within this separate thread it is
  * caught and saved.
  */
-void CUDARun::Thread::run()
+void CUDARunThread::run()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
    while (true)
    {
       if ( _switch == 1 )
       {
-         // Process this object's saved work block, saving the result block and 
-         // transferring it to this object's main thread. If any ACE exception occurs then 
-         // catch it and save it. 
+         // Process this object's saved work block, saving the result block and
+         // transferring it to this object's main thread. If any ACE exception occurs then
+         // catch it and save it.
          try
          {
             _result = _worker->execute(_work).release();
@@ -156,4 +160,7 @@ void CUDARun::Thread::run()
          msleep(10);
       }
    }
+}
+
+}
 }

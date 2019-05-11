@@ -28,9 +28,9 @@ namespace Ace
       /*!
        * This is an OpenCL analytic run that processes the blocks of an analytic using
        * an OpenCL device with multiple threads using the device at once to process
-       * work blocks. This is a complicated analytic run that has its own subclass
-       * representing a thread that actually processes the work blocks into result
-       * blocks.
+       * work blocks. This is a complicated analytic run that has its own separate
+       * class representing a thread that actually processes the work blocks into
+       * result blocks.
        */
       class OpenCLRun : public AbstractRun
       {

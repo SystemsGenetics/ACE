@@ -25,6 +25,8 @@ namespace Ace
       class Single;
       class OpenCLRunThread;
       class OpenCLRun;
+      class CUDARunThread;
+      class CUDARun;
       class Chunk;
       class Merge;
       class AbstractMPI;
