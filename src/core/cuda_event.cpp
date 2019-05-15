@@ -17,7 +17,12 @@ Event::Event()
 {
    // Create a new event and assign it to this object's state. If creation fails
    // then throw an exception.
-   CUDA_SAFE_CALL(cuEventCreate(&_id, CU_EVENT_DEFAULT));
+   CUresult result = cuEventCreate(&_id, CU_EVENT_DEFAULT);
+   if ( result != CUDA_SUCCESS )
+   {
+      E_MAKE_EXCEPTION(e);
+      throwError(&e,result);
+   }
 }
 
 
@@ -88,7 +93,12 @@ void Event::record(const Stream& stream)
 {
    // Record the contents of the given stream to this event. If this command
    // fails then throw an exception.
-   CUDA_SAFE_CALL(cuEventRecord(_id, stream.id()));
+   CUresult result = cuEventRecord(_id, stream.id());
+   if ( result != CUDA_SUCCESS )
+   {
+      E_MAKE_EXCEPTION(e);
+      throwError(&e,result);
+   }
 }
 
 
@@ -104,7 +114,12 @@ void Event::wait() const
 {
    // Wait for this object's event to complete. If waiting fails then throw an
    // exception.
-   CUDA_SAFE_CALL(cuEventSynchronize(_id));
+   CUresult result = cuEventSynchronize(_id);
+   if ( result != CUDA_SUCCESS )
+   {
+      E_MAKE_EXCEPTION(e);
+      throwError(&e,result);
+   }
 }
 
 
@@ -132,8 +147,10 @@ bool Event::isDone() const
    }
    else
    {
-      CUDA_THROW_ERROR(result);
+      E_MAKE_EXCEPTION(e);
+      throwError(&e,result);
    }
+   return false;
 }
 
 
@@ -155,7 +172,12 @@ float Event::getElapsedTime(Event& start, Event& end)
    // Get the elapsed time (ms) between the two given events. If this command
    // fails then throw an exception.
    float ms;
-   CUDA_SAFE_CALL(cuEventElapsedTime(&ms, start._id, end._id));
+   CUresult result = cuEventElapsedTime(&ms, start._id, end._id);
+   if ( result != CUDA_SUCCESS )
+   {
+      E_MAKE_EXCEPTION(e);
+      throwError(&e,result);
+   }
 
    return ms;
 }

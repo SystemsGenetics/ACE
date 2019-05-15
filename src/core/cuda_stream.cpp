@@ -17,7 +17,12 @@ using namespace CUDA;
 Stream::Stream()
 {
    // Create a new CUDA stream. If the command fails then throw an exception.
-   CUDA_SAFE_CALL(cuStreamCreate(&_id, CU_STREAM_DEFAULT));
+   CUresult result = cuStreamCreate(&_id, CU_STREAM_DEFAULT);
+   if ( result != CUDA_SUCCESS )
+   {
+      E_MAKE_EXCEPTION(e);
+      throwError(&e,result);
+   }
 }
 
 
@@ -100,7 +105,12 @@ CUDA::Stream Stream::getDefaultStream()
  */
 void Stream::wait()
 {
-   CUDA_SAFE_CALL(cuStreamSynchronize(_id));
+   CUresult result = cuStreamSynchronize(_id);
+   if ( result != CUDA_SUCCESS )
+   {
+      E_MAKE_EXCEPTION(e);
+      throwError(&e,result);
+   }
 }
 
 
@@ -116,7 +126,12 @@ void Stream::wait()
  */
 void Stream::waitEvent(const Event& event)
 {
-   CUDA_SAFE_CALL(cuStreamWaitEvent(_id, event.id(), 0));
+   CUresult result = cuStreamWaitEvent(_id, event.id(), 0);
+   if ( result != CUDA_SUCCESS )
+   {
+      E_MAKE_EXCEPTION(e);
+      throwError(&e,result);
+   }
 }
 
 
@@ -145,6 +160,8 @@ bool Stream::isDone()
    }
    else
    {
-      CUDA_THROW_ERROR(result);
+      E_MAKE_EXCEPTION(e);
+      throwError(&e,result);
    }
+   return false;
 }

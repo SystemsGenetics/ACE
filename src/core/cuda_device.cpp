@@ -78,7 +78,12 @@ Device::Device(int ordinal)
 {
    // Get a device pointer for the given device index. If this command fails
    // then throw an exception.
-   CUDA_SAFE_CALL(cuDeviceGet(&_id, ordinal));
+   CUresult result = cuDeviceGet(&_id, ordinal);
+   if ( result != CUDA_SUCCESS )
+   {
+      E_MAKE_EXCEPTION(e);
+      throwError(&e,result);
+   }
 }
 
 
@@ -96,7 +101,12 @@ QString Device::name() const
    // Read the name of this device into a character buffer and return it as a
    // string. If this command fails then throw an exception.
    char name[256];
-   CUDA_SAFE_CALL(cuDeviceGetName(name, sizeof(name), _id));
+   CUresult result = cuDeviceGetName(name, sizeof(name), _id);
+   if ( result != CUDA_SUCCESS )
+   {
+      E_MAKE_EXCEPTION(e);
+      throwError(&e,result);
+   }
 
    return QString(name);
 }
@@ -119,7 +129,12 @@ int Device::getAttribute(CUdevice_attribute attribute) const
    // Get the value of the given device attribute. If this command fails then
    // throw an exception.
    int value;
-   CUDA_SAFE_CALL(cuDeviceGetAttribute(&value, attribute, _id));
+   CUresult result = cuDeviceGetAttribute(&value, attribute, _id);
+   if ( result != CUDA_SUCCESS )
+   {
+      E_MAKE_EXCEPTION(e);
+      throwError(&e,result);
+   }
 
    return value;
 }
@@ -139,7 +154,12 @@ size_t Device::getGlobalMemorySize() const
    // Get the global memory size of this device. If this command fails then
    // throw an exception.
    size_t bytes;
-   CUDA_SAFE_CALL(cuDeviceTotalMem(&bytes, _id));
+   CUresult result = cuDeviceTotalMem(&bytes, _id);
+   if ( result != CUDA_SUCCESS )
+   {
+      E_MAKE_EXCEPTION(e);
+      throwError(&e,result);
+   }
 
    return bytes;
 }
@@ -163,7 +183,12 @@ void Device::populate()
       // Initialize the CUDA Driver API. This function must be called before any
       // other function in the CUDA Driver API. If initialization fails then
       // throw an exception.
-      CUDA_SAFE_CALL(cuInit(0));
+      CUresult result = cuInit(0);
+      if ( result != CUDA_SUCCESS )
+      {
+         E_MAKE_EXCEPTION(e);
+         throwError(&e,result);
+      }
 
       // Initialize the global device list.
       _devices = new QList<Device*>();
@@ -171,7 +196,12 @@ void Device::populate()
       // Query the number of CUDA devices. If the query fails then throw an
       // exception.
       int count;
-      CUDA_SAFE_CALL(cuDeviceGetCount(&count));
+      result = cuDeviceGetCount(&count);
+      if ( result != CUDA_SUCCESS )
+      {
+         E_MAKE_EXCEPTION(e);
+         throwError(&e,result);
+      }
 
       // For each device index, create a new device object and append it to the
       // global device list.

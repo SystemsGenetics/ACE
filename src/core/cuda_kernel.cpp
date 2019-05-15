@@ -24,7 +24,12 @@ Kernel::Kernel(Program* program, const QString& name)
 {
    // Create a new CUDA kernel from the given program with the given name, storing 
    // its id to this object. If creating the kernel fails then throw an exception. 
-   CUDA_SAFE_CALL(cuModuleGetFunction(&_kernel, program->id(), name.toLatin1().data()));
+   CUresult result = cuModuleGetFunction(&_kernel, program->id(), name.toLatin1().data());
+   if ( result != CUDA_SUCCESS )
+   {
+      E_MAKE_EXCEPTION(e);
+      throwError(&e,result);
+   }
 }
 
 
@@ -45,13 +50,25 @@ Event Kernel::execute(const Stream& stream)
 {
    // Launch this kernel on the given stream using this object's work sizes and
    // kernel arguments. If the kernel launch fails then throw an exception.
-   CUDA_SAFE_CALL(cuLaunchKernel(
-      _kernel,
-      _gridDim.x, _gridDim.y, _gridDim.z,
-      _blockDim.x, _blockDim.y, _blockDim.z,
-      _sharedMemBytes,
-      stream.id(),
-      _args.data(), nullptr));
+   CUresult result
+   {
+      cuLaunchKernel(_kernel
+                     ,_gridDim.x
+                     ,_gridDim.y
+                     ,_gridDim.z
+                     ,_blockDim.x
+                     ,_blockDim.y
+                     ,_blockDim.z
+                     ,_sharedMemBytes
+                     ,stream.id()
+                     ,_args.data()
+                     ,nullptr)
+   };
+   if ( result != CUDA_SUCCESS )
+   {
+      E_MAKE_EXCEPTION(e);
+      throwError(&e,result);
+   }
 
    // Record the enqueued kernel launch to an event and return the event.
    Event event;
@@ -76,7 +93,12 @@ int Kernel::getAttribute(CUfunction_attribute attribute) const
    // Get the value of the given kernel attribute. If this command fails then
    // throw an exception.
    int value;
-   CUDA_SAFE_CALL(cuFuncGetAttribute(&value, attribute, _kernel));
+   CUresult result = cuFuncGetAttribute(&value, attribute, _kernel);
+   if ( result != CUDA_SUCCESS )
+   {
+      E_MAKE_EXCEPTION(e);
+      throwError(&e,result);
+   }
 
    return value;
 }

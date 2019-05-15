@@ -81,7 +81,12 @@ Program::Program(const QStringList& paths, QObject* parent):
 
    // Create a new NVRTC program from the source string. If creation fails then
    // throw an exception.
-   NVRTC_SAFE_CALL(nvrtcCreateProgram(&_program, _source.toLatin1().data(), nullptr, 0, nullptr, nullptr));
+   nvrtcResult result = nvrtcCreateProgram(&_program, _source.toLatin1().data(), nullptr, 0, nullptr, nullptr);
+   if ( result != NVRTC_SUCCESS )
+   {
+      E_MAKE_EXCEPTION(e);
+      throwError(&e,result);
+   }
 
    // Build the program using the current CUDA context.
    build();
@@ -178,20 +183,37 @@ void Program::build()
    }
    else if ( result != NVRTC_SUCCESS )
    {
-      NVRTC_THROW_ERROR(result);
+      E_MAKE_EXCEPTION(e);
+      throwError(&e,result);
    }
 
    // Get the size of the PTX source, then get the PTX source data for the
    // program. If either command fails then throw an exception.
    size_t ptxSize;
-   NVRTC_SAFE_CALL(nvrtcGetPTXSize(_program, &ptxSize));
+   result = nvrtcGetPTXSize(_program, &ptxSize);
+   if ( result != NVRTC_SUCCESS )
+   {
+      E_MAKE_EXCEPTION(e);
+      throwError(&e,result);
+   }
 
-   char ptx[ptxSize];
-   NVRTC_SAFE_CALL(nvrtcGetPTX(_program, ptx));
+   Q_ASSERT(ptxSize < std::numeric_limits<int>::max());
+   QByteArray ptx(static_cast<int>(ptxSize),'\0');
+   result = nvrtcGetPTX(_program, ptx.data());
+   if ( result != NVRTC_SUCCESS )
+   {
+      E_MAKE_EXCEPTION(e);
+      throwError(&e,result);
+   }
 
    // Load a CUDA module with the given PTX source. If this command fails then
    // throw an exception.
-   CUDA_SAFE_CALL(cuModuleLoadData(&_module, ptx));
+   CUresult cudaResult = cuModuleLoadData(&_module, ptx.data());
+   if ( cudaResult != CUDA_SUCCESS )
+   {
+      E_MAKE_EXCEPTION(e);
+      throwError(&e,cudaResult);
+   }
 }
 
 
@@ -210,10 +232,21 @@ QString Program::getBuildLog() const
    // Get the size of the build log, then get the build log for the program. If
    // either command fails then throw an exception.
    size_t logSize;
-   NVRTC_SAFE_CALL(nvrtcGetProgramLogSize(_program, &logSize));
+   nvrtcResult result = nvrtcGetProgramLogSize(_program, &logSize);
+   if ( result != NVRTC_SUCCESS )
+   {
+      E_MAKE_EXCEPTION(e);
+      throwError(&e,result);
+   }
 
-   char log[logSize];
-   NVRTC_SAFE_CALL(nvrtcGetProgramLog(_program, log));
+   Q_ASSERT(logSize < std::numeric_limits<int>::max());
+   QByteArray log(static_cast<int>(logSize),'\0');
+   result = nvrtcGetProgramLog(_program, log.data());
+   if ( result != NVRTC_SUCCESS )
+   {
+      E_MAKE_EXCEPTION(e);
+      throwError(&e,result);
+   }
 
    // Return the build log as a string.
    return QString(log);
