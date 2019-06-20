@@ -23,7 +23,7 @@ namespace CUDA
        * Constructs a new buffer object that is set to null.
        */
       Buffer() = default;
-      Buffer(int size);
+      Buffer(int size, bool allocateHost = true);
       Buffer(Buffer<T>&& other);
       ~Buffer();
       void operator=(Buffer<T>&& other);
@@ -65,19 +65,25 @@ namespace CUDA
     *
     * @param size The size of the buffer created as the number of elements of the
     *             template type defined.
+    *
+    * @param allocateHost Whether to allocate a host buffer in addition to a
+    *                     device buffer.
     */
-   template<class T> Buffer<T>::Buffer(int size):
+   template<class T> Buffer<T>::Buffer(int size, bool allocateHost):
       _size(size)
    {
       // Allocate a CUDA device buffer and a pinned host buffer.
       // If either allocation fails then throw an exception.
-      CUresult result = cuMemAllocHost(reinterpret_cast<void**>(&_host), size * sizeof(T));
-      if ( result != CUDA_SUCCESS )
+      if ( allocateHost )
       {
-         E_MAKE_EXCEPTION(e);
-         throwError(&e,result);
+         CUresult result = cuMemAllocHost(reinterpret_cast<void**>(&_host), size * sizeof(T));
+         if ( result != CUDA_SUCCESS )
+         {
+            E_MAKE_EXCEPTION(e);
+            throwError(&e,result);
+         }
       }
-      result = cuMemAlloc(&_dev, size * sizeof(T));
+      CUresult result = cuMemAlloc(&_dev, size * sizeof(T));
       if ( result != CUDA_SUCCESS )
       {
          E_MAKE_EXCEPTION(e);
@@ -250,7 +256,7 @@ namespace CUDA
    template<class T> Event Buffer<T>::read(const Stream& stream)
    {
       // If this object is null then throw an exception, else go to the next step. 
-      if ( !_dev )
+      if ( !_host || !_dev )
       {
          E_MAKE_EXCEPTION(e);
          e.setTitle(QObject::tr("Logic Error"));
@@ -296,7 +302,7 @@ namespace CUDA
    template<class T> Event Buffer<T>::write(const Stream& stream)
    {
       // If this object is null then throw an exception, else go to the next step. 
-      if ( !_dev )
+      if ( !_host || !_dev )
       {
          E_MAKE_EXCEPTION(e);
          e.setTitle(QObject::tr("Logic Error"));

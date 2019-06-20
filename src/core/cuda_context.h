@@ -8,8 +8,15 @@
 namespace CUDA
 {
    /*!
-    * This contains a CUDA context. Unlike OpenCL, in which the context is
-    * the top-level object, a CUDA context is created per device per process.
+    * This class contains a CUDA context. There are two main differences between
+    * an OpenCL context and a CUDA context: whereas an OpenCL context is the
+    * top-level object and is used explicitly to manage OpenCL resources, a CUDA
+    * context is created per device per process and is used implicitly by being
+    * "bound" to the calling thread using setCurrent(). Threads within the same
+    * process may share the same CUDA context, but each thread must bind the CUDA
+    * context when it (the thread) is created. This way, the CUDA Driver API uses
+    * whatever CUDA context is bound to the calling thread to manage CUDA resources.
+    * If no CUDA context is bound, the CUDA Driver API will throw an error.
     */
    class Context : public QObject
    {

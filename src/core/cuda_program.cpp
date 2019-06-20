@@ -165,6 +165,7 @@ void Program::build()
       "--std=c++11",
 #ifdef QT_DEBUG
       "--device-debug",
+#else
       "--generate-line-info"
 #endif
    };

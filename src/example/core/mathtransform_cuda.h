@@ -17,16 +17,12 @@ public:
    class Worker;
    explicit CUDA(MathTransform* parent);
    virtual std::unique_ptr<EAbstractAnalyticCUDAWorker> makeWorker() override final;
-   virtual void initialize(::CUDA::Context* context) override final;
+   virtual void initialize() override final;
 private:
    /*!
     * Pointer to this object's parent math transform analytic. 
     */
    MathTransform* _base;
-   /*!
-    * Pointer to this object's base CUDA context used to create all other resources. 
-    */
-   ::CUDA::Context* _context {nullptr};
    /*!
     * Pointer to this object's CUDA program. 
     */

@@ -53,9 +53,6 @@ std::unique_ptr<EAbstractAnalyticBlock> MathTransform::CUDA::Worker::execute(con
    // Cast the given generic work block to this analytic type work block _valid_. 
    const MathTransform::Block* valid {block->cast<const MathTransform::Block>()};
 
-   // Bind the base class's CUDA context to the worker's thread.
-   _baseCuda->_context->setCurrent();
-
    // Write the row data from _valid_ and wait for writing to finish.
    for ( int i = 0; i < valid->_data.size(); i++ )
    {

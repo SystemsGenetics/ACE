@@ -29,7 +29,7 @@ public:
     * implementation.
     *
     */
-   virtual void initialize(::CUDA::Context* context) = 0;
+   virtual void initialize() = 0;
 public:
    explicit EAbstractAnalyticCUDA(EAbstractAnalytic* parent);
 };

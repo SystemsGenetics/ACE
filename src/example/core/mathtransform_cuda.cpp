@@ -45,15 +45,10 @@ std::unique_ptr<EAbstractAnalyticCUDAWorker> MathTransform::CUDA::makeWorker()
 
 /*!
  * Implements the interface that initializes all CUDA resources used by this 
- * object's implementation. 
- *
- * @param context The CUDA context to used to initialize all other CUDA 
- *                resources. 
+ * object's implementation.
  */
-void MathTransform::CUDA::initialize(::CUDA::Context* context)
+void MathTransform::CUDA::initialize()
 {
-   // Set this object's context pointer to the one given and then create this 
-   // object's CUDA program. 
-   _context = context;
+   // Create this object's CUDA program.
    _program = new ::CUDA::Program({":/cuda/mathtransform.cu"},this);
 }

@@ -76,9 +76,8 @@ CUDARun::CUDARun(EAbstractAnalyticCUDA* cuda, CUDA::Device* device, AbstractInpu
    // Add the debug header.
    EDEBUG_FUNC(this,cuda,device,base,parent);
 
-   // Initialize the given abstract CUDA object, create a qt mapper and connect its
-   // mapped signal.
-   cuda->initialize(_context);
+   // Initialize the given abstract CUDA object. 
+   cuda->initialize();
 
    // Iterate through the number of OpenCL threads this run object contains,
    // initializing each one with a new worker created from the abstract OpenCL
@@ -87,7 +86,7 @@ CUDARun::CUDARun(EAbstractAnalyticCUDA* cuda, CUDA::Device* device, AbstractInpu
    // using the mapper to get the index.
    for (int i = 0; i < _threads.size() ;++i)
    {
-      CUDARunThread* thread {new CUDARunThread(_cuda->makeWorker())};
+      CUDARunThread* thread {new CUDARunThread(_context, _cuda->makeWorker())};
       _threads[i] = thread;
       _idle << thread;
       connect(thread

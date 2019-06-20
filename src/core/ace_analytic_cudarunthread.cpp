@@ -1,4 +1,5 @@
 #include "ace_analytic_cudarunthread.h"
+#include "cuda_context.h"
 #include "eexception.h"
 #include "edebug.h"
 #include "eabstractanalyticblock.h"
@@ -17,20 +18,24 @@ namespace Analytic
 
 
 /*!
- * Constructs a new thread object with the given abstract CUDA worker and
- * optional parent.
+ * Constructs a new thread object with the given CUDA context, abstract CUDA
+ * worker, and optional parent.
+ *
+ * @param context The CUDA context to bind to this thread.
  *
  * @param worker An abstract CUDA worker used to do the actual processing of
  *               work blocks into result blocks.
  *
  * @param parent Optional parent of this new thread object.
  */
-CUDARunThread::CUDARunThread(std::unique_ptr<EAbstractAnalyticCUDAWorker>&& worker, QObject* parent)
+CUDARunThread::CUDARunThread(CUDA::Context* context, std::unique_ptr<EAbstractAnalyticCUDAWorker>&& worker, QObject* parent)
    :
    QThread(parent),
+   _context(context),
    _worker(worker.release())
 {
-   EDEBUG_FUNC(this,worker.get(),parent);
+   EDEBUG_FUNC(this,worker.get(),context,parent)
+
    _worker->setParent(this);
 }
 
@@ -130,6 +135,10 @@ void CUDARunThread::run()
    // Add the debug header.
    EDEBUG_FUNC(this);
 
+   // Bind the given CUDA context to this thread.
+   _context->setCurrent();
+
+   // Start the event loop.
    while (true)
    {
       if ( _switch == 1 )
