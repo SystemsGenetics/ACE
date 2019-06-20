@@ -1,14 +1,15 @@
 #include "ace_analytic_mpimaster.h"
 #include "ace_qmpi.h"
 #include "ace_settings.h"
-#include "eabstractanalytic_block.h"
 #include "edebug.h"
+#include "eabstractanalyticblock.h"
 
 
 
-using namespace std;
-using namespace Ace::Analytic;
-//
+namespace Ace
+{
+namespace Analytic
+{
 
 
 
@@ -16,15 +17,14 @@ using namespace Ace::Analytic;
 
 
 /*!
- * Implements the interface that tests if this abstract input is finished and 
- * received all result blocks for its analytic. 
+ * Implements the interface that tests if this abstract input is finished and
+ * received all result blocks for its analytic.
  *
- * @return True if this abstract input is finished or false otherwise. 
+ * @return True if this abstract input is finished or false otherwise.
  */
 bool MPIMaster::isFinished() const
 {
-   EDEBUG_FUNC(this)
-
+   EDEBUG_FUNC(this);
    return _nextResult >= analytic()->size();
 }
 
@@ -34,16 +34,16 @@ bool MPIMaster::isFinished() const
 
 
 /*!
- * Constructs a new MPI master manager with the given analytic type. 
+ * Constructs a new MPI master manager with the given analytic type.
  *
- * @param type The analytic type this manager will use. 
+ * @param type The analytic type this manager will use.
  */
-MPIMaster::MPIMaster(quint16 type):
+MPIMaster::MPIMaster(quint16 type)
+   :
    AbstractMPI(type),
    _mpi(QMPI::instance())
 {
    EDEBUG_FUNC(this,type);
-
    connect(&_mpi,&QMPI::dataReceived,this,&MPIMaster::dataReceived);
 }
 
@@ -53,12 +53,11 @@ MPIMaster::MPIMaster(quint16 type):
 
 
 /*!
- * Properly shuts down the MPI system. 
+ * Properly shuts down the MPI system.
  */
 MPIMaster::~MPIMaster()
 {
-   EDEBUG_FUNC(this)
-
+   EDEBUG_FUNC(this);
    QMPI::shutdown();
 }
 
@@ -68,15 +67,14 @@ MPIMaster::~MPIMaster()
 
 
 /*!
- * Implements the interface that returns the next expected result block index to 
- * maintain order of result blocks. 
+ * Implements the interface that returns the next expected result block index to
+ * maintain order of result blocks.
  *
- * @return The next expected result block index to maintain order. 
+ * @return The next expected result block index to maintain order.
  */
 int MPIMaster::index() const
 {
-   EDEBUG_FUNC(this)
-
+   EDEBUG_FUNC(this);
    return _nextResult;
 }
 
@@ -86,19 +84,20 @@ int MPIMaster::index() const
 
 
 /*!
- * Implements the interface that is called to save the given result block to the 
- * underlying analytic and it can be assumed that the index order is maintained 
- * from least to greatest. 
+ * Implements the interface that is called to save the given result block to the
+ * underlying analytic and it can be assumed that the index order is maintained
+ * from least to greatest.
  *
- * @param result The result block that is processed by this manager's analytic. 
+ * @param result The result block that is processed by this manager's analytic.
  */
-void MPIMaster::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
+void MPIMaster::writeResult(std::unique_ptr<EAbstractAnalyticBlock>&& result)
 {
-   EDEBUG_FUNC(this,result.get())
+   // Add the debug header.
+   EDEBUG_FUNC(this,result.get());
 
-   // Write the result block to this manager's underlying analytic. If this manager 
-   // is finished with all result blocks then emit the done signal and call the 
-   // manager's finish slot. 
+   // Write the result block to this manager's underlying analytic. If this manager
+   // is finished with all result blocks then emit the done signal and call the
+   // manager's finish slot.
    AbstractManager::writeResult(std::move(result),_nextResult++);
    if ( isFinished() )
    {
@@ -113,20 +112,22 @@ void MPIMaster::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result)
 
 
 /*!
- * Called when new data has been received from one of the slave nodes. This takes 
- * the data and processes it depending on what it is. 
+ * Called when new data has been received from one of the slave nodes. This
+ * takes the data and processes it depending on what it is.
  *
- * @param data The data received from a slave node. 
+ * @param data The data received from a slave node.
  *
- * @param fromRank The rank of the slave node process that sent the received data. 
+ * @param fromRank The rank of the slave node process that sent the received
+ *                 data.
  */
 void MPIMaster::dataReceived(const QByteArray& data, int fromRank)
 {
-   EDEBUG_FUNC(this,data,fromRank)
+   // Add the debug header.
+   EDEBUG_FUNC(this,data,fromRank);
 
-   // Extract the index from the given data. If the index is less than 0 and a code 
-   // then process it as a code, else process it as a result block. 
-   int index {EAbstractAnalytic::Block::extractIndex(data)};
+   // Extract the index from the given data. If the index is less than 0 and a code
+   // then process it as a code, else process it as a result block.
+   int index {EAbstractAnalyticBlock::extractIndex(data)};
    if ( index < 0 )
    {
       processCode(index,fromRank);
@@ -143,24 +144,25 @@ void MPIMaster::dataReceived(const QByteArray& data, int fromRank)
 
 
 /*!
- * Processes a special code sent to this master node by a slave node. The only 
- * special codes processes are for the slave node signaling it is ready to process 
- * blocks. 
+ * Processes a special code sent to this master node by a slave node. The only
+ * special codes processes are for the slave node signaling it is ready to
+ * process blocks.
  *
- * @param code The special code sent to this master node by a slave node. 
+ * @param code The special code sent to this master node by a slave node.
  *
- * @param fromRank The process rank of the slave node that sent the code. 
+ * @param fromRank The process rank of the slave node that sent the code.
  */
 void MPIMaster::processCode(int code, int fromRank)
 {
-   EDEBUG_FUNC(this,code,fromRank)
+   // Add the debug header.
+   EDEBUG_FUNC(this,code,fromRank);
 
-   // Initialize the amount of blocks to send using the global setting buffer size. 
+   // Initialize the amount of blocks to send using the global setting buffer size.
    Settings& settings {Settings::instance()};
    int amount {settings.bufferSize()};
 
-   // Add to the amount of blocks to send to the slave node based off it being a 
-   // serial or OpenCL type. 
+   // Add to the amount of blocks to send to the slave node based off it being a
+   // serial or OpenCL type.
    switch (code)
    {
    case ReadyAsCUDA:
@@ -179,21 +181,21 @@ void MPIMaster::processCode(int code, int fromRank)
       }
    }
 
-   // If there is no more work blocks to be processed then send a terminate code to 
-   // the slave node and exit, else go to the next step. 
+   // If there is no more work blocks to be processed then send a terminate code to
+   // the slave node and exit, else go to the next step.
    if ( _nextWork >= analytic()->size() )
    {
       terminate(fromRank);
    }
 
-   // Else there are more work blocks to be processed. 
+   // Else there are more work blocks to be processed.
    else
    {
-      // Send blocks in the amount determined or until there is no more work blocks to 
-      // send. 
+      // Send blocks in the amount determined or until there is no more work blocks to
+      // send.
       while ( amount-- && _nextWork < analytic()->size() )
       {
-         unique_ptr<EAbstractAnalytic::Block> work {makeWork(_nextWork++)};
+         std::unique_ptr<EAbstractAnalyticBlock> work {makeWork(_nextWork++)};
          _mpi.sendData(fromRank,work->toBytes());
       }
    }
@@ -205,22 +207,24 @@ void MPIMaster::processCode(int code, int fromRank)
 
 
 /*!
- * Processes a result block sent to this master node by a slave node by saving it 
- * to this abstract input's hopper for sorting and checking if it is done. 
+ * Processes a result block sent to this master node by a slave node by saving
+ * it to this abstract input's hopper for sorting and checking if it is done.
  *
- * @param data The data containing a result block sent to this master node by a 
- *             slave node. 
+ * @param data The data containing a result block sent to this master node by a
+ *             slave node.
  *
- * @param fromRank The process rank of the slave node that sent the result block. 
+ * @param fromRank The process rank of the slave node that sent the result
+ *                 block.
  */
 void MPIMaster::process(const QByteArray& data, int fromRank)
 {
-   EDEBUG_FUNC(this,data,fromRank)
+   // Add the debug header.
+   EDEBUG_FUNC(this,data,fromRank);
 
-   // Make a blank result block from this manager's analytic and load the given data 
-   // into it. If the analytic fails making a blank result block then throw an 
-   // exception, else go to the next step. 
-   unique_ptr<EAbstractAnalytic::Block> result {analytic()->makeResult()};
+   // Make a blank result block from this manager's analytic and load the given data
+   // into it. If the analytic fails making a blank result block then throw an
+   // exception, else go to the next step.
+   std::unique_ptr<EAbstractAnalyticBlock> result {analytic()->makeResult()};
    if ( !result )
    {
       E_MAKE_EXCEPTION(e);
@@ -230,15 +234,15 @@ void MPIMaster::process(const QByteArray& data, int fromRank)
    }
    result->fromBytes(data);
 
-   // Save the result block to this abstract input which will sort all result blocks 
-   // using its internal sorting hopper. 
+   // Save the result block to this abstract input which will sort all result blocks
+   // using its internal sorting hopper.
    saveResult(std::move(result));
 
-   // If there are more work blocks to be processed then send the slave node a new 
-   // work block to process, else send the terminate code to the slave node. 
+   // If there are more work blocks to be processed then send the slave node a new
+   // work block to process, else send the terminate code to the slave node.
    if ( _nextWork < analytic()->size() )
    {
-      unique_ptr<EAbstractAnalytic::Block> work {makeWork(_nextWork++)};
+      std::unique_ptr<EAbstractAnalyticBlock> work {makeWork(_nextWork++)};
       _mpi.sendData(fromRank,work->toBytes());
    }
    else
@@ -253,16 +257,20 @@ void MPIMaster::process(const QByteArray& data, int fromRank)
 
 
 /*!
- * Sends a terminate code to the slave node with the given process rank. 
+ * Sends a terminate code to the slave node with the given process rank.
  *
- * @param rank Process rank of the slave node who is sent the terminate code. 
+ * @param rank Process rank of the slave node who is sent the terminate code.
  */
 void MPIMaster::terminate(int rank)
 {
-   EDEBUG_FUNC(this,rank)
+   // Add the debug header.
+   EDEBUG_FUNC(this,rank);
 
-   // Create a special data block with the terminate signal and send it to the slave 
-   // node with the given rank. 
-   unique_ptr<EAbstractAnalytic::Block> code {new EAbstractAnalytic::Block(Terminate)};
+   // Create a special data block with the terminate signal and send it to the slave
+   // node with the given rank.
+   std::unique_ptr<EAbstractAnalyticBlock> code {new EAbstractAnalyticBlock(Terminate)};
    _mpi.sendData(rank,code->toBytes());
+}
+
+}
 }

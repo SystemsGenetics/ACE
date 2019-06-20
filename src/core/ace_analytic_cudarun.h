@@ -7,18 +7,27 @@
 #include "ace_analytic.h"
 #include "cuda_common.h"
 #include "eabstractanalytic.h"
-//
 
 
 
+/*!
+ * This contains all private classes used internally by the ACE library and
+ * should never be accessed by a developer using this library.
+ */
 namespace Ace
 {
+   /*!
+    * This contains all classes related to running an analytic. This required its
+    * own name space because of the immense complexity required for ACE to provide
+    * an abstract interface for running analytic types in heterogeneous
+    * environments.
+    */
    namespace Analytic
    {
       /*!
        * This is a CUDA analytic run that processes the blocks of an analytic using a
        * CUDA device with multiple threads using the device at once to process work
-       * blocks. This is a complicated analytic run that has its own subclass
+       * blocks. This is a complicated analytic run that has its own separate class
        * representing a thread that actually processes the work blocks into result
        * blocks.
        */
@@ -26,14 +35,12 @@ namespace Ace
       {
          Q_OBJECT
       public:
-         virtual void addWork(std::unique_ptr<EAbstractAnalytic::Block>&& block) override final;
+         virtual void addWork(std::unique_ptr<EAbstractAnalyticBlock>&& block) override final;
       public:
-         explicit CUDARun(EAbstractAnalytic::CUDA* cuda, CUDA::Device* device, AbstractInput* base, QObject* parent = nullptr);
+         explicit CUDARun(EAbstractAnalyticCUDA* cuda, CUDA::Device* device, AbstractInput* base, QObject* parent = nullptr);
          virtual ~CUDARun() override final;
       private slots:
          void blockFinished(int index);
-      private:
-         class Thread;
       private:
          /*!
           * Pointer to the CUDA context used by this CUDA run object.
@@ -43,24 +50,22 @@ namespace Ace
           * Pointer to the abstract CUDA object used by this object to create abstract
           * workers for all its threads.
           */
-         EAbstractAnalytic::CUDA* _cuda;
+         EAbstractAnalyticCUDA* _cuda;
          /*!
           * Pointer to the abstract input object used to save results.
           */
          AbstractInput* _base;
          /*!
-          * Pointer list to all threads this object contains for processing work blocks into
-          * result blocks.
+          * Pointer list to all threads this object contains for processing work blocks
+          * into result blocks.
           */
-         QVector<Thread*> _threads;
+         QVector<CUDARunThread*> _threads;
          /*!
           * Queue of idle threads ready to execute another work block.
           */
-         QQueue<Thread*> _idle;
+         QQueue<CUDARunThread*> _idle;
       };
    }
 }
-
-
 
 #endif

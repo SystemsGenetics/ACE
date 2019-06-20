@@ -1,9 +1,5 @@
-#include "eabstractanalytic_cuda.h"
+#include "eabstractanalyticcuda.h"
 #include "edebug.h"
-
-
-
-//
 
 
 
@@ -15,8 +11,10 @@
  *
  * @param parent The parent analytic object for this new CUDA object.
  */
-EAbstractAnalytic::CUDA::CUDA(EAbstractAnalytic* parent):
+EAbstractAnalyticCUDA::EAbstractAnalyticCUDA(EAbstractAnalytic* parent)
+   :
    QObject(parent)
 {
-   EDEBUG_FUNC(this,parent)
+   EDEBUG_FUNC(this,parent);
 }
+

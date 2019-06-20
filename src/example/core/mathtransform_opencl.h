@@ -9,14 +9,14 @@
 /*!
  * This implements the base OpenCL class for its parent math transform analytic. 
  */
-class MathTransform::OpenCL : public EAbstractAnalytic::OpenCL
+class MathTransform::OpenCL : public EAbstractAnalyticOpenCL
 {
    Q_OBJECT
 public:
    class Kernel;
    class Worker;
    explicit OpenCL(MathTransform* parent);
-   virtual std::unique_ptr<EAbstractAnalytic::OpenCL::Worker> makeWorker() override final;
+   virtual std::unique_ptr<EAbstractAnalyticOpenCLWorker> makeWorker() override final;
    virtual void initialize(::OpenCL::Context* context) override final;
 private:
    /*!

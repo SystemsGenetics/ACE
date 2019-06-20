@@ -62,7 +62,7 @@ EApplication::EApplication(const QString& organization, const QString& applicati
       showException(e);
       ::exit(-1);
    }
-   catch (std::exception e)
+   catch (std::exception& e)
    {
       qDebug() << tr("STD exception %1 caught!\n").arg(e.what());
       ::exit(-1);
@@ -113,7 +113,7 @@ bool EApplication::notify(QObject* receiver, QEvent* event)
    }
 
    // .
-   catch (std::exception e)
+   catch (std::exception& e)
    {
       qDebug() << tr("STD exception %1 caught!\n").arg(e.what());
    }

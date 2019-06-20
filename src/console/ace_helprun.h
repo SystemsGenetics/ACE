@@ -1,6 +1,8 @@
 #ifndef ACE_HELPRUN_H
 #define ACE_HELPRUN_H
 #include "ace_command.h"
+#include "../core/global.h"
+class QTextStream;
 
 
 
@@ -19,9 +21,13 @@ namespace Ace
    class HelpRun
    {
    public:
-      HelpRun(const Command& command);
+      HelpRun(const Command& command, const QString& runName);
       void execute();
    private:
+      static void listAnalyticInputProperties(QTextStream& stream, const EAbstractAnalyticInput& input, int index);
+      static void printDescription(QTextStream& stream, const EAbstractAnalyticInput& input, int index);
+   private:
+      void basic();
       void runHelp();
       void chunkrunHelp();
       void mergeHelp();
@@ -30,12 +36,24 @@ namespace Ace
       void analyticHelp();
       void settingsHelp();
       void settingsSetHelp();
+      void settingsSetCUDAHelp();
+      void settingsSetOpenCLHelp();
+      void settingsSetThreadsHelp();
+      void settingsSetBufferHelp();
+      void settingsSetChunkDirHelp();
+      void settingsSetChunkPreHelp();
+      void settingsSetChunkExtHelp();
+      void settingsSetLoggingHelp();
       void settingsListHelp();
       /*!
        * The command arguments parsed out of the command line arguments of the main
        * function, excluding the very first argument used to get to this help class.
        */
       Command _command;
+      /*!
+       * The command name used to execute this application.
+       */
+      QString _runName;
    };
 }
 

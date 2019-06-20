@@ -1,10 +1,11 @@
-#include "opencl_common.h"
+#include "opencl.h"
 #include <QStringList>
 #include "eexception.h"
 
 
 
-//
+namespace OpenCL
+{
 
 
 
@@ -12,16 +13,16 @@
 
 
 /*!
- * Fills in the title and detail properties of an exception to describe an OpenCL 
- * error with the given error code. 
+ * Fills in the title and detail properties of an exception to describe an
+ * OpenCL error with the given error code.
  *
- * @param exception Pointer to the exception whose title and details are filled in 
- *                  describing the given OpenCL error code. 
+ * @param exception Pointer to the exception whose title and details are filled
+ *                  in describing the given OpenCL error code.
  *
- * @param code The OpenCL error code whose description is added to the given 
- *             exception. 
+ * @param code The OpenCL error code whose description is added to the given
+ *             exception.
  */
-void OpenCL::fillException(EException* exception, cl_int code)
+void fillException(EException* exception, cl_int code)
 {
    static const QStringList codeStrings
    {
@@ -110,4 +111,6 @@ void OpenCL::fillException(EException* exception, cl_int code)
    exception->setDetails(QObject::tr("OpenCL system failed with the following error code: %1(%2)")
                          .arg(codeStrings.at(index))
                          .arg(code));
+}
+
 }

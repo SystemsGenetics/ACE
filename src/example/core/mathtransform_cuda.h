@@ -9,14 +9,14 @@
 /*!
  * This implements the base CUDA class for its parent math transform analytic. 
  */
-class MathTransform::CUDA : public EAbstractAnalytic::CUDA
+class MathTransform::CUDA : public EAbstractAnalyticCUDA
 {
    Q_OBJECT
 public:
    class Kernel;
    class Worker;
    explicit CUDA(MathTransform* parent);
-   virtual std::unique_ptr<EAbstractAnalytic::CUDA::Worker> makeWorker() override final;
+   virtual std::unique_ptr<EAbstractAnalyticCUDAWorker> makeWorker() override final;
    virtual void initialize() override final;
 private:
    /*!

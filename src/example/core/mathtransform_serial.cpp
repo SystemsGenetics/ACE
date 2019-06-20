@@ -18,7 +18,7 @@ using namespace std;
  * @param parent The parent math transform object for this new serial object. 
  */
 MathTransform::Serial::Serial(MathTransform* parent):
-   EAbstractAnalytic::Serial(parent),
+   EAbstractAnalyticSerial(parent),
    _base(parent)
 {}
 
@@ -37,7 +37,7 @@ MathTransform::Serial::Serial(MathTransform* parent):
  *
  * @return Pointer to results block produced from the given work block. 
  */
-std::unique_ptr<EAbstractAnalytic::Block> MathTransform::Serial::execute(const EAbstractAnalytic::Block* block)
+std::unique_ptr<EAbstractAnalyticBlock> MathTransform::Serial::execute(const EAbstractAnalyticBlock* block)
 {
    if ( ELog::isActive() )
    {
@@ -71,5 +71,5 @@ std::unique_ptr<EAbstractAnalytic::Block> MathTransform::Serial::execute(const E
 
    // Return a new result block with the given work block index and the transformed 
    // _row_. 
-   return unique_ptr<EAbstractAnalytic::Block>(new Block(block->index(),row.size(),row.data()));
+   return unique_ptr<EAbstractAnalyticBlock>(new Block(block->index(),row.size(),row.data()));
 }

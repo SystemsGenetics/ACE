@@ -3,22 +3,31 @@
 #include "ace_analytic_abstractmanager.h"
 #include "ace_analytic_abstractinput.h"
 #include "ace_analytic.h"
-//
 
 
 
+/*!
+ * This contains all private classes used internally by the ACE library and
+ * should never be accessed by a developer using this library.
+ */
 namespace Ace
 {
+   /*!
+    * This contains all classes related to running an analytic. This required its
+    * own name space because of the immense complexity required for ACE to provide
+    * an abstract interface for running analytic types in heterogeneous
+    * environments.
+    */
    namespace Analytic
    {
       /*!
-       * This is the chunk run manager. This manager is used to execute only a portion of 
-       * the blocks for an analytic, temporarily saving them in a binary file. The 
-       * function of this class is to determine which part of the work blocks it must 
-       * process into result blocks based off the index and size it is given. From there 
-       * it processes the chunk of blocks and saved them into a temporary binary file. 
-       * The location and file name of the chunk is determined by global settings and the 
-       * index of this chunk manager. 
+       * This is the chunk run manager. This manager is used to execute only a portion
+       * of the blocks for an analytic, temporarily saving them in a binary file. The
+       * function of this class is to determine which part of the work blocks it must
+       * process into result blocks based off the index and size it is given. From
+       * there it processes the chunk of blocks and saved them into a temporary binary
+       * file. The location and file name of the chunk is determined by global
+       * settings and the index of this chunk manager.
        */
       class Chunk : public AbstractManager, public AbstractInput
       {
@@ -31,7 +40,7 @@ namespace Ace
       protected:
          virtual QFile* addOutputFile(const QString& path) override final;
          virtual Ace::DataObject* addOutputData(const QString& path, quint16 type, const EMetadata& system) override final;
-         virtual void saveResult(std::unique_ptr<EAbstractAnalytic::Block>&& result) override final;
+         virtual void saveResult(std::unique_ptr<EAbstractAnalyticBlock>&& result) override final;
       protected slots:
          virtual void start() override final;
          void process();
@@ -41,50 +50,49 @@ namespace Ace
          bool setupCUDA();
          bool setupOpenCL();
          bool setupSerial();
+      private:
          /*!
-          * The chunk index for this chunk manager. 
+          * The chunk index for this chunk manager.
           */
          int _index;
          /*!
-          * The chunk size for this chunk run. 
+          * The chunk size for this chunk run.
           */
          int _size;
          /*!
-          * Pointer to the abstract run object used to process work blocks. 
+          * Pointer to the abstract run object used to process work blocks.
           */
          AbstractRun* _runner {nullptr};
          /*!
-          * The file name of the temporary binary file this chunk manager stores all its 
-          * result blocks. 
+          * The file name of the temporary binary file this chunk manager stores all its
+          * result blocks.
           */
          QString _fileName;
          /*!
-          * Pointer to the qt file of this chunk manager's temporary binary file. 
+          * Pointer to the qt file of this chunk manager's temporary binary file.
           */
          QFile* _file;
          /*!
-          * Pointer to the qt data stream associated with this chunk manager's temporary 
-          * binary file. 
+          * Pointer to the qt data stream associated with this chunk manager's temporary
+          * binary file.
           */
          QDataStream* _stream {nullptr};
          /*!
-          * The work block index after the last index this chunk manager must process. 
+          * The work block index after the last index this chunk manager must process.
           */
          int _end;
          /*!
-          * The next work block index this chunk manager must process. 
+          * The next work block index this chunk manager must process.
           */
          int _nextWork;
          /*!
-          * A complicated integer used to keep track of how many result blocks have been 
-          * saved to this chunk manager's binary file. It does not keep track of indexes 
-          * because this manager does not sort its result blocks. 
+          * A complicated integer used to keep track of how many result blocks have been
+          * saved to this chunk manager's binary file. It does not keep track of indexes
+          * because this manager does not sort its result blocks.
           */
          int _nextResult;
       };
    }
 }
-
-
 
 #endif

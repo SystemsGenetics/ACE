@@ -33,6 +33,8 @@ namespace Ace
       void done();
       void finished();
    private:
+      static QString secondsToString(int seconds);
+   private:
       void setupIndexes();
       void setupChunk();
       void setupMerge();
@@ -71,6 +73,9 @@ namespace Ace
        * chunk or merge run.
        */
       int _size {1};
+      /*!
+       */
+      std::chrono::time_point<std::chrono::system_clock> _start;
    };
 }
 

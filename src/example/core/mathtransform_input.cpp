@@ -33,7 +33,7 @@ const QStringList MathTransform::Input::_operationNames
  * @param parent The parent math transform object for this new input object. 
  */
 MathTransform::Input::Input(MathTransform* parent):
-   EAbstractAnalytic::Input(parent),
+   EAbstractAnalyticInput(parent),
    _base(parent)
 {}
 
@@ -65,7 +65,7 @@ int MathTransform::Input::size() const
  *
  * @return Argument type for the given index. 
  */
-EAbstractAnalytic::Input::Type MathTransform::Input::type(int index) const
+EAbstractAnalyticInput::Type MathTransform::Input::type(int index) const
 {
    // Based off the argument index given return its argument type. if the index is 
    // out of range then return a default boolean type. 

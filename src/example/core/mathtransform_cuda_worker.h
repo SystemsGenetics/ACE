@@ -9,12 +9,12 @@
 /*!
  * This implements the CUDA worker class for its parent math transform analytic. 
  */
-class MathTransform::CUDA::Worker : public EAbstractAnalytic::CUDA::Worker
+class MathTransform::CUDA::Worker : public EAbstractAnalyticCUDAWorker
 {
    Q_OBJECT
 public:
    explicit Worker(MathTransform* base, MathTransform::CUDA* baseCuda, ::CUDA::Program* program);
-   virtual std::unique_ptr<EAbstractAnalytic::Block> execute(const EAbstractAnalytic::Block* block) override final;
+   virtual std::unique_ptr<EAbstractAnalyticBlock> execute(const EAbstractAnalyticBlock* block) override final;
 private:
    /*!
     * Pointer to this worker's math transform analytic. 

@@ -7,5 +7,5 @@
 #include "opencl_commandqueue.h"
 #include "opencl_event.h"
 #include "opencl_buffer.h"
-#include "opencl_kernel_locker.h"
+#include "opencl_kernel.h"
 #endif

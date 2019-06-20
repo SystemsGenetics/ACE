@@ -76,9 +76,19 @@ namespace CUDA
       // If either allocation fails then throw an exception.
       if ( allocateHost )
       {
-         CUDA_SAFE_CALL(cuMemAllocHost(reinterpret_cast<void**>(&_host), size * sizeof(T)));
+         CUresult result = cuMemAllocHost(reinterpret_cast<void**>(&_host), size * sizeof(T));
+         if ( result != CUDA_SUCCESS )
+         {
+            E_MAKE_EXCEPTION(e);
+            throwError(&e,result);
+         }
       }
-      CUDA_SAFE_CALL(cuMemAlloc(&_dev, size * sizeof(T)));
+      result = cuMemAlloc(&_dev, size * sizeof(T));
+      if ( result != CUDA_SUCCESS )
+      {
+         E_MAKE_EXCEPTION(e);
+         throwError(&e,result);
+      }
    }
 
 
@@ -256,7 +266,12 @@ namespace CUDA
 
       // Add a copy command to the given CUDA stream for this object's CUDA buffer.
       // If adding the command fails then throw an exception. 
-      CUDA_SAFE_CALL(cuMemcpyDtoHAsync(_host, _dev, _size * sizeof(T), stream.id()));
+      CUresult result = cuMemcpyDtoHAsync(_host, _dev, _size * sizeof(T), stream.id());
+      if ( result != CUDA_SUCCESS )
+      {
+         E_MAKE_EXCEPTION(e);
+         throwError(&e,result);
+      }
 
       // Record the copy command to an event and return the event. Since the copy
       // command is the most recent command on the given stream, waiting for the
@@ -297,7 +312,12 @@ namespace CUDA
 
       // Add a copy command to the given CUDA stream for this object's CUDA buffer.
       // If adding the command fails then throw an exception. 
-      CUDA_SAFE_CALL(cuMemcpyHtoDAsync(_dev, _host, _size * sizeof(T), stream.id()));
+      CUresult result = cuMemcpyHtoDAsync(_dev, _host, _size * sizeof(T), stream.id());
+      if ( result != CUDA_SUCCESS )
+      {
+         E_MAKE_EXCEPTION(e);
+         throwError(&e,result);
+      }
 
       // Record the copy command to an event and return the event. Since the copy
       // command is the most recent command on the given stream, waiting for the
@@ -321,8 +341,18 @@ namespace CUDA
    {
       // Free the device buffer and host buffer. If either command fails then
       // throw an exception.
-      CUDA_SAFE_CALL(cuMemFreeHost(_host));
-      CUDA_SAFE_CALL(cuMemFree(_dev));
+      CUresult result = cuMemFreeHost(_host);
+      if ( result != CUDA_SUCCESS )
+      {
+         E_MAKE_EXCEPTION(e);
+         throwError(&e,result);
+      }
+      result = cuMemFree(_dev);
+      if ( result != CUDA_SUCCESS )
+      {
+         E_MAKE_EXCEPTION(e);
+         throwError(&e,result);
+      }
    }
 
 

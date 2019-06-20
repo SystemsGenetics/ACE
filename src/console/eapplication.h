@@ -24,13 +24,15 @@ class EApplication : public QCoreApplication
 {
    Q_OBJECT
 public:
-   explicit EApplication(const QString& organization, const QString& application, int majorVersion, int minorVersion, int revision, std::unique_ptr<EAbstractDataFactory>&& data, std::unique_ptr<EAbstractAnalyticFactory>&& analytic, int& argc, char** argv);
    virtual bool notify(QObject* receiver, QEvent* event) override final;
+public:
+   explicit EApplication(const QString& organization, const QString& application, int majorVersion, int minorVersion, int revision, std::unique_ptr<EAbstractDataFactory>&& data, std::unique_ptr<EAbstractAnalyticFactory>&& analytic, int& argc, char** argv);
    int exec();
 private:
    static QJsonDocument getJson(const QString& path);
    static void inject(const QString& path, const QJsonDocument& document);
    static void showException(const EException& exception);
+private:
    void dump();
    void inject();
    /*!
@@ -43,6 +45,10 @@ private:
     * function.
     */
    Ace::Command _command;
+   /*!
+    * The command name used to execute this application.
+    */
+   QString _runName;
 };
 
 #endif

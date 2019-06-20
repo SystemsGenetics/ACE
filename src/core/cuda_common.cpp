@@ -9,6 +9,30 @@
 
 
 
+void CUDA::throwError(EException *e, CUresult error)
+{
+   e->setTitle(QObject::tr("CUDA Error"));
+   e->setDetails(QObject::tr("%1: %2.").arg(getErrorName(error)).arg(getErrorString(error)));
+   throw e;
+}
+
+
+
+
+
+
+void CUDA::throwError(EException *e, nvrtcResult error)
+{
+   e->setTitle(QObject::tr("CUDA Error"));
+   e->setDetails(QObject::tr("%1: %2.").arg("NVRTC Error").arg(getErrorString(error)));
+   throw e;
+}
+
+
+
+
+
+
 /*!
  * Get the name of a CUDA error code.
  *

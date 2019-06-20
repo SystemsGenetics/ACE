@@ -1,10 +1,6 @@
-#include "eabstractanalytic_cuda_worker.h"
+#include "eabstractanalyticcudaworker.h"
 #include "ace_settings.h"
 #include "edebug.h"
-
-
-
-//
 
 
 
@@ -16,9 +12,9 @@
  *
  * @return Total number of CUDA worker threads.
  */
-int EAbstractAnalytic::CUDA::Worker::threadSize()
+int EAbstractAnalyticCUDAWorker::threadSize()
 {
-   EDEBUG_FUNC()
-
+   EDEBUG_FUNC();
    return Ace::Settings::instance().threadSize();
 }
+
