@@ -1,4 +1,5 @@
 #include "ace_run.h"
+#include <limits>
 #include "../core/ace_analytic_abstractmanager.h"
 #include "../core/eabstractanalyticfactory.h"
 #include "../core/eexception.h"
@@ -9,8 +10,8 @@
 
 
 
-using namespace Ace;
-//
+namespace Ace
+{
 
 
 
@@ -18,24 +19,29 @@ using namespace Ace;
 
 
 /*!
- * Constructs a new run object with the given command arguments and options. 
+ * Constructs a new run object with the given command arguments and options.
  *
- * @param command The command arguments, including the very first argument that 
- *                should be run, chunkrun, or merge. 
+ * @param command The command arguments, including the very first argument that
+ *                should be run, chunkrun, or merge.
  *
- * @param options The command line options used as input for the analytic being 
- *                ran. 
+ * @param options The command line options used as input for the analytic being
+ *                ran.
  */
-Run::Run(const Command& command, const Options& options):
+Run::Run(const Command& command, const Options& options)
+   :
    _stream(stdout),
    _options(options),
    _command(command)
 {
-   EDEBUG_FUNC(this,&command,&options)
+   // Add the debug header.
+   EDEBUG_FUNC(this,&command,&options);
 
-   // Setup the chunk run indexes and then setup this object's analytic manager. 
+   // Setup the chunk run indexes and then setup this object's analytic manager.
    setupIndexes();
    setupManager(getType());
+
+   // .
+   _start = std::chrono::system_clock::now();
 }
 
 
@@ -44,19 +50,38 @@ Run::Run(const Command& command, const Options& options):
 
 
 /*!
- * Called when this object's analytic manager has made progress to a new percent 
- * complete. 
+ * Called when this object's analytic manager has made progress to a new percent
+ * complete.
  *
- * @param percentComplete The new percent complete out of 100 for this object's 
- *                        analytic manager. 
+ * @param percentComplete The new percent complete out of 100 for this object's
+ *                        analytic manager.
  */
 void Run::progressed(int percentComplete)
 {
-   EDEBUG_FUNC(this,percentComplete)
+   // Add the debug header.
+   EDEBUG_FUNC(this,percentComplete);
 
-   // Output a new percent complete to standard output, overwriting the previous 
-   // percent. Flush the stream to make sure it updates. 
-   _stream << QString::number(percentComplete) << "%\n";
+   // Get the current time and determine the time elapsed since the start of this
+   // analytic run.
+   auto current {std::chrono::system_clock::now()};
+   long elapsed {std::chrono::duration_cast<std::chrono::seconds>(current - _start).count()};
+
+   // Estimate the time left in seconds for this analytic run based off the elapsed
+   // time and percent complete.
+   long left {(elapsed*100/percentComplete) - elapsed};
+
+   // Make sure the elapsed and left integers will not overflow.
+   Q_ASSERT(elapsed <= std::numeric_limits<int>::max());
+   Q_ASSERT(left <= std::numeric_limits<int>::max());
+
+   // Output a new percent complete, time elapsed, and predicted time left to
+   // standard output.
+   _stream << QString::number(percentComplete)
+           << "%\t" << secondsToString(static_cast<int>(elapsed))
+           << "\t" << secondsToString(static_cast<int>(left))
+           << "\n";
+
+   // Flush the stream to make sure it updates
    _stream.flush();
 }
 
@@ -66,13 +91,12 @@ void Run::progressed(int percentComplete)
 
 
 /*!
- * This is called when this object's analytic manager is done. This is simply used 
- * to update the percent complete to 100. 
+ * This is called when this object's analytic manager is done. This is simply
+ * used to update the percent complete to 100.
  */
 void Run::done()
 {
-   EDEBUG_FUNC(this)
-
+   EDEBUG_FUNC(this);
    _stream << "100%\n";
 }
 
@@ -82,12 +106,12 @@ void Run::done()
 
 
 /*!
- * Called when this object's analytic manager is finished and ready to be deleted. 
+ * Called when this object's analytic manager is finished and ready to be
+ * deleted.
  */
 void Run::finished()
 {
-   EDEBUG_FUNC(this)
-
+   EDEBUG_FUNC(this);
    deleteLater();
 }
 
@@ -97,27 +121,83 @@ void Run::finished()
 
 
 /*!
- * Configures the chunk indexes, if any, for this analytic run. If this is not a 
- * chunk or merge run then the default index is 0 and default size is 1. 
+ * Convert and return the given number of seconds into a string in the format of
+ * days, hours, minutes, and seconds.
+ *
+ *
+ * @return The given number of seconds as a string in the format of days, hours,
+ *         minutes, and seconds.
+ */
+QString Run::secondsToString(int seconds)
+{
+   // Determine the number of days, hours, minutes and seconds from the given total
+   // number of seconds.
+   int days {seconds};
+   seconds = days%60;
+   days /= 60;
+   int minutes {days%60};
+   days /= 60;
+   int hours {days%24};
+   days /= 24;
+
+   // Create an empty return string.
+   QString ret;
+
+   // Add the days, hours, minutes, and seconds to the string, leaving out any of
+   // them that are zero.
+   if ( days > 0 )
+   {
+      ret += QString::number(days) + QStringLiteral("d");
+   }
+   if ( hours > 0 )
+   {
+      ret += QString::number(hours) + QStringLiteral("h");
+   }
+   if ( minutes > 0 )
+   {
+      ret += QString::number(minutes) + QStringLiteral("m");
+   }
+   if ( seconds > 0 )
+   {
+      ret += QString::number(seconds) + QStringLiteral("s");
+   }
+
+   // Return the formatted time string.
+   return ret;
+}
+
+
+
+
+
+
+/*!
+ * Configures the chunk indexes, if any, for this analytic run. If this is not a
+ * chunk or merge run then the default index is 0 and default size is 1.
  */
 void Run::setupIndexes()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // Pop this object's first command argument. If it is a chunk run then setup the 
-   // chunk run, else if it is a merge run then setup the merge run, else it must be 
-   // a regular run so leave the default index and size. 
+   // Pop this object's first command argument to test it for any chunk commands or
+   // simply removing it if it is a basic run command.
    QString command {_command.pop()};
+
+   // If the command is chunk run then setup the chunk run.
    if ( command == QString("chunkrun") )
    {
       setupChunk();
    }
+
+   // Else if the command is merge then setup the merge run.
    else if ( command == QString("merge") )
    {
       setupMerge();
    }
 
-   // If this object's command argument size is empty then throw an exception. 
+   // Make sure there is an additional command argument naming the analytic to run
+   // regardless of the type of run.
    if ( _command.size() < 1 )
    {
       E_MAKE_EXCEPTION(e);
@@ -133,16 +213,16 @@ void Run::setupIndexes()
 
 
 /*!
- * Initializes this analytic run as a chunk run, grabbing the index and size from 
- * this object's command arguments. If the index and/or size given is not valid 
- * then an exception is thrown. 
+ * Initializes this analytic run as a chunk run, grabbing the index and size
+ * from this object's command arguments. If the index and/or size given is not
+ * valid then an exception is thrown.
  */
 void Run::setupChunk()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // If this object's command argument size is less than two then throw an 
-   // exception, else go to the next step. 
+   // Make sure there are two command arguments to be processed.
    if ( _command.size() < 2 )
    {
       E_MAKE_EXCEPTION(e);
@@ -151,10 +231,7 @@ void Run::setupChunk()
       throw e;
    }
 
-   // Get the index value by popping the first command argument and the size value by 
-   // popping the second command argument, setting this object's index and size to 
-   // the given values. If the values fail being read as integers or they are invalid 
-   // then throw an exception. 
+   // Pop and read the chunk index argument and make sure it worked.
    bool ok;
    _index = _command.pop().toInt(&ok);
    if ( !ok )
@@ -164,6 +241,8 @@ void Run::setupChunk()
       e.setDetails(tr("Given index for chunkrun is invalid, exiting..."));
       throw e;
    }
+
+   // Pop and read the chunk size argument and make sure it worked.
    _size = _command.pop().toInt(&ok);
    if ( !ok )
    {
@@ -172,6 +251,8 @@ void Run::setupChunk()
       e.setDetails(tr("Given size for chunkrun is invalid, exiting..."));
       throw e;
    }
+
+   // Make sure the index and size arguments given are valid.
    if ( _index < 0 || _size < 0 || _index >= _size )
    {
       E_MAKE_EXCEPTION(e);
@@ -187,16 +268,18 @@ void Run::setupChunk()
 
 
 /*!
- * Initializes this analytic run as a merge run, grabbing the size form this 
- * object's command arguments. 
+ * Initializes this analytic run as a merge run, grabbing the size form this
+ * object's command arguments.
  */
 void Run::setupMerge()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // Set this object's index to -1 denoting a merge run. If this object's command 
-   // argument size is empty then throw an exception, else go to the next step. 
+   // Set this object's index to -1 denoting a merge run.
    _index = -1;
+
+   // Make sure there is a command argument to be processed.
    if ( _command.size() < 1 )
    {
       E_MAKE_EXCEPTION(e);
@@ -205,8 +288,7 @@ void Run::setupMerge()
       throw e;
    }
 
-   // Get the size by popping the first command argument, setting it to this object's 
-   // size. If reading the size as an integer fails then throw an exception. 
+   // Pop and read in the size argument, making sure it worked.
    bool ok;
    _size = _command.pop().toInt(&ok);
    if ( !ok )
@@ -224,38 +306,44 @@ void Run::setupMerge()
 
 
 /*!
- * Returns the analytic type based off the name given from this object's first 
- * command argument. If no analytic can be found with the given command line name 
- * then an exception is thrown. 
+ * Returns the analytic type based off the name given from this object's first
+ * command argument. If no analytic can be found with the given command line
+ * name then an exception is thrown.
  *
- * @return The analytic type that matches the name given by this object's first 
- *         command argument. 
+ * @return The analytic type that matches the name given by this object's first
+ *         command argument.
  */
 quint16 Run::getType()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // Populate a string list of all analytic command names so that their indexes 
-   // match their integer type. 
+   // Create a string list used to hold all command line names of available
+   // analytics.
    QStringList commandNames;
+
+   // Populate a string list with all analytic command names so that their indexes
+   // match their integer type.
    EAbstractAnalyticFactory& factory {EAbstractAnalyticFactory::instance()};
    for (quint16 i = 0; i < factory.size() ;++i)
    {
       commandNames << factory.commandName(i);
    }
 
-   // Pop this object's first command argument and attempt to find it in the list of 
-   // analytic command names. If the analytic is not found in the list then throw an 
-   // exception, else return the analytic type found. 
+   // Pop this object's first command argument and attempt to find it in the list of
+   // analytic command names, making sure the found index is a valid unsigned 16 bit
+   // integer.
    QString name {_command.pop()};
    int type {commandNames.indexOf(name)};
-   if ( type < 0 )
+   if ( type < 0 || type > 0xffff )
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(tr("Invalid Argument"));
       e.setDetails(tr("Unknown analytic '%1'; no analytic exists by that name.").arg(name));
       throw e;
    }
+
+   // Return the found analytic type.
    return static_cast<quint16>(type);
 }
 
@@ -265,30 +353,32 @@ quint16 Run::getType()
 
 
 /*!
- * Creates a new analytic manager with a given analytic type and this object's size 
- * and index, setting this object as its parent. This also connects all relevant 
- * signals to this object's slots, sets all analytic arguments for this object's 
- * options, and initializes the manager for execution. 
+ * Creates a new analytic manager with a given analytic type and this object's
+ * size and index, setting this object as its parent. This also connects all
+ * relevant signals to this object's slots, sets all analytic arguments for this
+ * object's options, and initializes the manager for execution.
  *
- * @param type  
  */
 void Run::setupManager(quint16 type)
 {
-   EDEBUG_FUNC(this,type)
+   // Add the debug header.
+   EDEBUG_FUNC(this,type);
 
-   // Create a new analytic manager with the given analytic type and this object's 
-   // index and size, setting this as its parent. 
+   // Create a new analytic manager with the given analytic type and this object's
+   // index and size, setting this as its parent.
    _manager = Analytic::AbstractManager::makeManager(type,_index,_size).release();
    _manager->setParent(this);
 
-   // Connect all signals to slots, add all arguments to the analytic manager, and 
-   // then initialize the manager for execution. 
+   // Connect all required signals to this run object.
    connect(_manager,&Analytic::AbstractManager::progressed,this,&Run::progressed);
    connect(_manager,&Analytic::AbstractManager::done,this,&Run::done);
    connect(_manager,&Analytic::AbstractManager::finished,this,&Run::finished);
+
+   // Set all input arguments to the analytic manager in turn setting the analytic
+   // input.
    addArguments();
 
-   // Initialize the analytic manager immediately. 
+   // Initialize the analytic manager immediately.
    _manager->initialize();
 }
 
@@ -298,18 +388,19 @@ void Run::setupManager(quint16 type)
 
 
 /*!
- * Parses this object's options and sets them to this object's analytic manager as 
- * analytic arguments. 
+ * Parses this object's options and sets them to this object's analytic manager
+ * as analytic arguments.
  */
 void Run::addArguments()
 {
+   // Add the debug header.
    EDEBUG_FUNC(this);
 
-   // Iterate through all options passed to this run object. 
+   // Iterate through all options passed to this run object.
    const QList<QString> arguments {_manager->commandLineArguments()};
    for (int i = 0; i < _options.size() ;++i)
    {
-      // Make sure the given option is valid for this run object's analytic. 
+      // Make sure the given option is valid for this run object's analytic.
       if ( !arguments.contains(_options.key(i)) )
       {
          E_MAKE_EXCEPTION(e);
@@ -319,45 +410,45 @@ void Run::addArguments()
       }
    }
 
-   // Iterate through all arguments for this object's analytic manager for the 
-   // following steps. 
+   // Iterate through all arguments for this object's analytic manager for the
+   // following steps.
    for (int i = 0; i < _manager->size() ;++i)
    {
-      // Get the command line name for the analytic argument. 
+      // Get the command line name for the analytic argument.
       QString argumentName
       {
-         _manager->data(i,EAbstractAnalytic::Input::Role::CommandLineName).toString()
+         _manager->data(i,EAbstractAnalyticInput::Role::CommandLineName).toString()
       };
 
-      // If the command line name does not exist in this object's options then skip to 
-      // the next analytic argument. 
+      // If the command line name does not exist in this object's options then skip to
+      // the next analytic argument.
       if ( !_options.contains(argumentName) )
       {
          continue;
       }
 
-      // If the analytic argument type is integer, double, or selection then pass the 
-      // argument index and its command line name to special methods that handle those 
-      // types. Else simply set the analytic argument by attempting to find one of this 
-      // object's options whose key equals this argument's command line name, defaulting 
-      // to the default value if not found. 
+      // If the analytic argument type is integer, double, or selection then pass the
+      // argument index and its command line name to special methods that handle those
+      // types. Else simply set the analytic argument by attempting to find one of this
+      // object's options whose key equals this argument's command line name, defaulting
+      // to the default value if not found.
       switch (_manager->type(i))
       {
-      case EAbstractAnalytic::Input::Type::Boolean:
-      case EAbstractAnalytic::Input::Type::String:
-      case EAbstractAnalytic::Input::Type::FileIn:
-      case EAbstractAnalytic::Input::Type::FileOut:
-      case EAbstractAnalytic::Input::Type::DataIn:
-      case EAbstractAnalytic::Input::Type::DataOut:
+      case EAbstractAnalyticInput::Type::Boolean:
+      case EAbstractAnalyticInput::Type::String:
+      case EAbstractAnalyticInput::Type::FileIn:
+      case EAbstractAnalyticInput::Type::FileOut:
+      case EAbstractAnalyticInput::Type::DataIn:
+      case EAbstractAnalyticInput::Type::DataOut:
          _manager->set(i,_options.find(argumentName));
          break;
-      case EAbstractAnalytic::Input::Type::Integer:
+      case EAbstractAnalyticInput::Type::Integer:
          addInteger(i,argumentName);
          break;
-      case EAbstractAnalytic::Input::Type::Double:
+      case EAbstractAnalyticInput::Type::Double:
          addDouble(i,argumentName);
          break;
-      case EAbstractAnalytic::Input::Type::Selection:
+      case EAbstractAnalyticInput::Type::Selection:
          addSelection(i,argumentName);
          break;
       }
@@ -370,22 +461,22 @@ void Run::addArguments()
 
 
 /*!
- * Sets an analytic argument with the given index to one of this object's options 
- * with the given key as an integer. If the option's value cannot be converted to 
- * an integer or it is out of bounds then an exception is thrown. 
+ * Sets an analytic argument with the given index to one of this object's
+ * options with the given key as an integer. If the option's value cannot be
+ * converted to an integer or it is out of bounds then an exception is thrown.
  *
- * @param index The analytic argument index whose value is set with an option with 
- *              the given key. 
+ * @param index The analytic argument index whose value is set with an option
+ *              with the given key.
  *
- * @param key The key used to find the option used to set the analytic argument. 
+ * @param key The key used to find the option used to set the analytic argument.
  */
 void Run::addInteger(int index, const QString& key)
 {
-   EDEBUG_FUNC(this,index,key)
+   // Add the debug header.
+   EDEBUG_FUNC(this,index,key);
 
-   // Find an option with the given key, converting it to an integer value. If 
-   // converting it to an integer fails then throw an exception, else go to the next 
-   // step. 
+   // Grab the option value with the given key and convert it to an integer, making
+   // sure it worked.
    bool ok;
    int value {_options.find(key).toInt(&ok)};
    if ( !ok )
@@ -396,11 +487,10 @@ void Run::addInteger(int index, const QString& key)
       throw e;
    }
 
-   // If the integer value is less than the minimum or greater than the maximum then 
-   // throw an exception, else set the analytic argument with the given index to the 
-   // integer value. 
-   int minimum {_manager->data(index,EAbstractAnalytic::Input::Role::Minimum).toInt()};
-   int maximum {_manager->data(index,EAbstractAnalytic::Input::Role::Maximum).toInt()};
+   // Make sure the integer value is within the minimum and maximum bounds for the
+   // argument.
+   int minimum {_manager->data(index,EAbstractAnalyticInput::Role::Minimum).toInt()};
+   int maximum {_manager->data(index,EAbstractAnalyticInput::Role::Maximum).toInt()};
    if ( value < minimum || value > maximum )
    {
       E_MAKE_EXCEPTION(e);
@@ -412,6 +502,8 @@ void Run::addInteger(int index, const QString& key)
                    .arg(maximum));
       throw e;
    }
+
+   // Set the analytic argument with the given index to the valid integer value.
    _manager->set(index,value);
 }
 
@@ -421,22 +513,22 @@ void Run::addInteger(int index, const QString& key)
 
 
 /*!
- * Sets an analytic argument with the given index to one of this object's options 
- * with the given key as a double. If the option's value cannot be converted to a 
- * double or it is out of bounds then an exception is thrown. 
+ * Sets an analytic argument with the given index to one of this object's
+ * options with the given key as a double. If the option's value cannot be
+ * converted to a double or it is out of bounds then an exception is thrown.
  *
- * @param index The analytic argument index whose value is set with an option with 
- *              the given key. 
+ * @param index The analytic argument index whose value is set with an option
+ *              with the given key.
  *
- * @param key The key used to find the option used to set the analytic argument. 
+ * @param key The key used to find the option used to set the analytic argument.
  */
 void Run::addDouble(int index, const QString& key)
 {
-   EDEBUG_FUNC(this,index,key)
+   // Add the debug header.
+   EDEBUG_FUNC(this,index,key);
 
-   // Find an option with the given key, converting it to a double value. If 
-   // converting it to a double fails then throw an exception, else go to the next 
-   // step. 
+   // Grab the option value with the given key and convert it to a double floating
+   // point, making sure it worked.
    bool ok;
    double value {_options.find(key).toDouble(&ok)};
    if ( !ok )
@@ -447,11 +539,10 @@ void Run::addDouble(int index, const QString& key)
       throw e;
    }
 
-   // If the double value is less than the minimum or greater than the maximum then 
-   // throw an exception, else set the analytic argument with the given index to the 
-   // double value. 
-   double minimum {_manager->data(index,EAbstractAnalytic::Input::Role::Minimum).toDouble()};
-   double maximum {_manager->data(index,EAbstractAnalytic::Input::Role::Maximum).toDouble()};
+   // Make sure the double floating point value is within the minimum and maximum
+   // bounds for the given argument.
+   double minimum {_manager->data(index,EAbstractAnalyticInput::Role::Minimum).toDouble()};
+   double maximum {_manager->data(index,EAbstractAnalyticInput::Role::Maximum).toDouble()};
    if ( value < minimum || value > maximum )
    {
       E_MAKE_EXCEPTION(e);
@@ -463,6 +554,9 @@ void Run::addDouble(int index, const QString& key)
                    .arg(maximum));
       throw e;
    }
+
+   // Set the analytic argument with the given index to the valid double floating
+   // point value.
    _manager->set(index,value);
 }
 
@@ -472,28 +566,24 @@ void Run::addDouble(int index, const QString& key)
 
 
 /*!
- * Sets an analytic argument with the given index to one of this object's options 
- * with the given key as a selection. If the option's value is not a valid 
- * selection then an exception is thrown. 
+ * Sets an analytic argument with the given index to one of this object's
+ * options with the given key as a selection. If the option's value is not a
+ * valid selection then an exception is thrown.
  *
- * @param index The analytic argument index whose value is set with an option with 
- *              the given key. 
+ * @param index The analytic argument index whose value is set with an option
+ *              with the given key.
  *
- * @param key The key used to find the option used to set the analytic argument. 
+ * @param key The key used to find the option used to set the analytic argument.
  */
 void Run::addSelection(int index, const QString& key)
 {
-   EDEBUG_FUNC(this,index,key)
+   // Add the debug header.
+   EDEBUG_FUNC(this,index,key);
 
-   // Find an option with the given key, setting it to the analytic argument with the 
-   // given index. If the value of the option found is not a valid selection option 
-   // for the analytic argument with the given index then throw an exception. 
+   // Grab the option value with the given key, making sure it is a valid selection
+   // value.
    QString value {_options.find(key)};
-   QStringList values
-   {
-      _manager->data(index,EAbstractAnalytic::Input::Role::SelectionValues).toStringList()
-   };
-   if ( !values.contains(value) )
+   if ( !_manager->data(index,EAbstractAnalyticInput::Role::SelectionValues).toStringList().contains(value) )
    {
       E_MAKE_EXCEPTION(e);
       e.setTitle(tr("Invalid Argument"));
@@ -502,5 +592,9 @@ void Run::addSelection(int index, const QString& key)
                    .arg(value));
       throw e;
    }
+
+   // Set the analytic argument with the given index to the valid selection value.
    _manager->set(index,value);
+}
+
 }

@@ -1,17 +1,13 @@
 #ifndef EMETAARRAY_H
 #define EMETAARRAY_H
 #include <QList>
-
-
-
 class EMetadata;
-//
 
 
 
 /*!
- * This holds a list of metadata objects. It inherits from Qt so it is copy on 
- * write. Refer to EMetadata for more information about the metadata system. 
+ * This holds a list of metadata objects. It inherits from Qt so it is copy on
+ * write. Refer to EMetadata for more information about the metadata system.
  */
 class EMetaArray : private QList<EMetadata>
 {
@@ -34,7 +30,5 @@ public:
    void append(const EMetadata& value);
    void clear();
 };
-
-
 
 #endif

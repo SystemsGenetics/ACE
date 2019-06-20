@@ -3,6 +3,7 @@
 #include "mathtransform_input.h"
 #include "mathtransform_serial.h"
 #include "mathtransform_opencl.h"
+#include "mathtransform_cuda.h"
 #include "dataframe_iterator.h"
 #include "core/elog.h"
 
@@ -41,7 +42,7 @@ int MathTransform::size() const
  *
  * @return Pointer new work block with the given index. 
  */
-std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeWork(int index) const
+std::unique_ptr<EAbstractAnalyticBlock> MathTransform::makeWork(int index) const
 {
    if ( ELog::isActive() )
    {
@@ -52,7 +53,7 @@ std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeWork(int index) con
    DataFrame::Iterator iterator(_in);
    iterator.read(index);
 
-   return unique_ptr<EAbstractAnalytic::Block>(new Block(index, _in->columnSize(), &iterator[0]));
+   return unique_ptr<EAbstractAnalyticBlock>(new Block(index, _in->columnSize(), &iterator[0]));
 }
 
 
@@ -65,9 +66,9 @@ std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeWork(int index) con
  *
  * @return Pointer uninitialized work block. 
  */
-std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeWork() const
+std::unique_ptr<EAbstractAnalyticBlock> MathTransform::makeWork() const
 {
-   return unique_ptr<EAbstractAnalytic::Block>(new Block);
+   return unique_ptr<EAbstractAnalyticBlock>(new Block);
 }
 
 
@@ -80,9 +81,9 @@ std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeWork() const
  *
  * @return Pointer uninitialized result block. 
  */
-std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeResult() const
+std::unique_ptr<EAbstractAnalyticBlock> MathTransform::makeResult() const
 {
-   return unique_ptr<EAbstractAnalytic::Block>(new Block);
+   return unique_ptr<EAbstractAnalyticBlock>(new Block);
 }
 
 
@@ -97,7 +98,7 @@ std::unique_ptr<EAbstractAnalytic::Block> MathTransform::makeResult() const
  *
  * @param result  
  */
-void MathTransform::process(const EAbstractAnalytic::Block* result)
+void MathTransform::process(const EAbstractAnalyticBlock* result)
 {
    if ( ELog::isActive() )
    {
@@ -128,7 +129,7 @@ void MathTransform::process(const EAbstractAnalytic::Block* result)
  *
  * @return Pointer to new input object. 
  */
-EAbstractAnalytic::Input* MathTransform::makeInput()
+EAbstractAnalyticInput* MathTransform::makeInput()
 {
    return new Input(this);
 }
@@ -143,7 +144,7 @@ EAbstractAnalytic::Input* MathTransform::makeInput()
  *
  * @return Pointer to new serial object. 
  */
-EAbstractAnalytic::Serial* MathTransform::makeSerial()
+EAbstractAnalyticSerial* MathTransform::makeSerial()
 {
    return new Serial(this);
 }
@@ -158,9 +159,24 @@ EAbstractAnalytic::Serial* MathTransform::makeSerial()
  *
  * @return Pointer to new OpenCL object. 
  */
-EAbstractAnalytic::OpenCL* MathTransform::makeOpenCL()
+EAbstractAnalyticOpenCL* MathTransform::makeOpenCL()
 {
    return new OpenCL(this);
+}
+
+
+
+
+
+
+/*!
+ * Implements the interface that makes a new CUDA object and returns its pointer. 
+ *
+ * @return Pointer to new CUDA object. 
+ */
+EAbstractAnalyticCUDA* MathTransform::makeCUDA()
+{
+   return new CUDA(this);
 }
 
 

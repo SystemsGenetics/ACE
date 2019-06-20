@@ -3,8 +3,10 @@
 
 
 
-using namespace Ace::Analytic;
-//
+namespace Ace
+{
+namespace Analytic
+{
 
 
 
@@ -12,12 +14,16 @@ using namespace Ace::Analytic;
 
 
 /*!
- * Constructs a new abstract run object with an optional parent. 
+ * Constructs a new abstract run object with an optional parent.
  *
- * @param parent Optional parent for this new abstract run. 
+ * @param parent Optional parent for this new abstract run.
  */
-AbstractRun::AbstractRun(QObject* parent):
+AbstractRun::AbstractRun(QObject* parent)
+   :
    QObject(parent)
 {
-   EDEBUG_FUNC(this,parent)
+   EDEBUG_FUNC(this,parent);
+}
+
+}
 }

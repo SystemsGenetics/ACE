@@ -17,7 +17,7 @@
  * @param parent The parent analytic object for this new input object.
  */
 ImportDataFrame::Input::Input(ImportDataFrame* parent):
-   EAbstractAnalytic::Input(parent),
+   EAbstractAnalyticInput(parent),
    _base(parent)
 {}
 
@@ -49,7 +49,7 @@ int ImportDataFrame::Input::size() const
  *
  * @return Argument type for the given index.
  */
-EAbstractAnalytic::Input::Type ImportDataFrame::Input::type(int index) const
+EAbstractAnalyticInput::Type ImportDataFrame::Input::type(int index) const
 {
    // Based off the argument index given return its argument type. If the index is
    // out of range then return a boolean type.

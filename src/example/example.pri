@@ -1,7 +1,8 @@
 
 isEmpty(MPICXX) { MPICXX = "yes" }
+isEmpty(CUDADIR) { CUDADIR = /usr/local/cuda }
 
-LIBS += -L$${PWD}/../../build/libs -laceexcore -lacecore -lOpenCL -lmpi
+LIBS += -L$${PWD}/../../build/libs -laceexcore -lacecore -L$${CUDADIR}/lib64 -lcuda -lnvrtc -lOpenCL -lmpi
 equals(MPICXX,"yes") { LIBS += -lmpi_cxx }
 
 INCLUDEPATH += $${PWD}/../ $${PWD}/core/

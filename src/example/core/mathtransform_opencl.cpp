@@ -18,7 +18,7 @@ using namespace std;
  *               object. 
  */
 MathTransform::OpenCL::OpenCL(MathTransform* parent):
-   EAbstractAnalytic::OpenCL(parent),
+   EAbstractAnalyticOpenCL(parent),
    _base(parent)
 {}
 
@@ -33,9 +33,9 @@ MathTransform::OpenCL::OpenCL(MathTransform* parent):
  *
  * @return Pointer to a new OpenCL worker object. 
  */
-std::unique_ptr<EAbstractAnalytic::OpenCL::Worker> MathTransform::OpenCL::makeWorker()
+std::unique_ptr<EAbstractAnalyticOpenCLWorker> MathTransform::OpenCL::makeWorker()
 {
-   return unique_ptr<EAbstractAnalytic::OpenCL::Worker>(new Worker(_base,_context,_program));
+   return unique_ptr<EAbstractAnalyticOpenCLWorker>(new Worker(_base,_context,_program));
 }
 
 

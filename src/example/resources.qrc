@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
+        <file>cuda/mathtransform.cu</file>
         <file>opencl/mathtransform.cl</file>
     </qresource>
 </RCC>

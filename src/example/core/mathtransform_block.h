@@ -10,7 +10,7 @@
  * analytic class. Most real analytic classes will have to implement separate work 
  * and result blocks. 
  */
-class MathTransform::Block : public EAbstractAnalytic::Block
+class MathTransform::Block : public EAbstractAnalyticBlock
 {
    Q_OBJECT
 public:

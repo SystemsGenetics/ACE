@@ -15,7 +15,7 @@
  * @param index The index for this new block. 
  */
 MathTransform::Block::Block(int index):
-   EAbstractAnalytic::Block(index)
+   EAbstractAnalyticBlock(index)
 {}
 
 
@@ -33,7 +33,7 @@ MathTransform::Block::Block(int index):
  * @param data Pointer to the data for this new block. 
  */
 MathTransform::Block::Block(int index, int size, const float* data):
-   EAbstractAnalytic::Block(index)
+   EAbstractAnalyticBlock(index)
 {
    _data.resize(size);
    

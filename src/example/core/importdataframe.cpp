@@ -37,7 +37,7 @@ int ImportDataFrame::size() const
  *
  * @param result
  */
-void ImportDataFrame::process(const EAbstractAnalytic::Block* result)
+void ImportDataFrame::process(const EAbstractAnalyticBlock* result)
 {
    EDEBUG_FUNC(this, result);
 
@@ -168,7 +168,7 @@ void ImportDataFrame::process(const EAbstractAnalytic::Block* result)
 /*!
  * Make a new input object and return its pointer.
  */
-EAbstractAnalytic::Input* ImportDataFrame::makeInput()
+EAbstractAnalyticInput* ImportDataFrame::makeInput()
 {
    EDEBUG_FUNC(this);
 

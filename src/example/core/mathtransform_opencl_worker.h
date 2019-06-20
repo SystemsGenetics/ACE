@@ -8,12 +8,12 @@
 /*!
  * This implements the OpenCL worker class for its parent math transform analytic. 
  */
-class MathTransform::OpenCL::Worker : public EAbstractAnalytic::OpenCL::Worker
+class MathTransform::OpenCL::Worker : public EAbstractAnalyticOpenCLWorker
 {
    Q_OBJECT
 public:
    explicit Worker(MathTransform* base, ::OpenCL::Context* context, ::OpenCL::Program* program);
-   virtual std::unique_ptr<EAbstractAnalytic::Block> execute(const EAbstractAnalytic::Block* block) override final;
+   virtual std::unique_ptr<EAbstractAnalyticBlock> execute(const EAbstractAnalyticBlock* block) override final;
 private:
    /*!
     * Pointer to this worker's math transform analytic. 

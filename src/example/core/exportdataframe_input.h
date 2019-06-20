@@ -8,7 +8,7 @@
 /*!
  * This class implements the abstract input of the export dataframe analytic.
  */
-class ExportDataFrame::Input : public EAbstractAnalytic::Input
+class ExportDataFrame::Input : public EAbstractAnalyticInput
 {
    Q_OBJECT
 public:
@@ -36,7 +36,7 @@ public:
    };
    explicit Input(ExportDataFrame* parent);
    virtual int size() const override final;
-   virtual EAbstractAnalytic::Input::Type type(int index) const override final;
+   virtual EAbstractAnalyticInput::Type type(int index) const override final;
    virtual QVariant data(int index, Role role) const override final;
    virtual void set(int index, const QVariant& value) override final;
    virtual void set(int index, QFile* file) override final;

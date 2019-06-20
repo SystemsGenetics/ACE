@@ -8,12 +8,12 @@
 /*!
  * This implements the serial working class for its parent math transform analytic. 
  */
-class MathTransform::Serial : public EAbstractAnalytic::Serial
+class MathTransform::Serial : public EAbstractAnalyticSerial
 {
    Q_OBJECT
 public:
    explicit Serial(MathTransform* parent);
-   virtual std::unique_ptr<EAbstractAnalytic::Block> execute(const EAbstractAnalytic::Block* block) override final;
+   virtual std::unique_ptr<EAbstractAnalyticBlock> execute(const EAbstractAnalyticBlock* block) override final;
 private:
    /*!
     * Pointer to this serial object's parent math transform analytic. 

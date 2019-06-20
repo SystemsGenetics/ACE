@@ -8,17 +8,18 @@
 #include "ace_qmpi.h"
 #include "ace_settings.h"
 #include "eabstractanalyticfactory.h"
-#include "eabstractanalytic_block.h"
 #include "eabstractdata.h"
 #include "emetaobject.h"
 #include "eexception.h"
+#include "eabstractanalyticblock.h"
 #include "edebug.h"
 
 
 
-using namespace std;
-using namespace Ace::Analytic;
-//
+namespace Ace
+{
+namespace Analytic
+{
 
 
 
@@ -26,63 +27,64 @@ using namespace Ace::Analytic;
 
 
 /*!
- * Makes a new manager with the correct implementation class and given analytic 
- * type, returning a pointer to the new manager. The index and size parameters are 
- * for chunk/merge runs. If this is not a chunk/merge run the index is 0 and size 
- * is 1. If this is a merge run the index is -1. 
+ * Makes a new manager with the correct implementation class and given analytic
+ * type, returning a pointer to the new manager. The index and size parameters
+ * are for chunk/merge runs. If this is not a chunk/merge run the index is 0 and
+ * size is 1. If this is a merge run the index is -1.
  *
- * @param type The analytic type that is instantiated for this manager's run. 
+ * @param type The analytic type that is instantiated for this manager's run.
  *
- * @param index The chunk index for this process. Unless this is a chunk or merge 
- *              run this is always 0. If this is a chunk run the index is the ID 
- *              for this chunk process so it knows what work to do. An index of -1 
- *              means this is a merge run that takes all the chunk files to produce 
- *              the finished output. 
+ * @param index The chunk index for this process. Unless this is a chunk or
+ *              merge run this is always 0. If this is a chunk run the index is
+ *              the ID for this chunk process so it knows what work to do. An
+ *              index of -1 means this is a merge run that takes all the chunk
+ *              files to produce the finished output.
  *
- * @param size The chunk size of this process. Unless this is a chunk run this is 
- *             always 1. If this is a chunk run this is the total number of chunk 
- *             processes running the analytic process. 
+ * @param size The chunk size of this process. Unless this is a chunk run this
+ *             is always 1. If this is a chunk run this is the total number of
+ *             chunk processes running the analytic process.
  *
- * @return Pointer to the new manager object. 
+ * @return Pointer to the new manager object.
  */
 std::unique_ptr<Ace::Analytic::AbstractManager> AbstractManager::makeManager(quint16 type, int index, int size)
 {
-   EDEBUG_FUNC(type,index,size)
+   // Add the debug header.
+   EDEBUG_FUNC(type,index,size);
 
-   // If the given size is greater than 1 and the given index is less than zero then 
-   // return a new merge manager, else if the index is greater to or equal to 0 then 
-   // return a new chunk manager, else go to the next step. 
+   // If the given size is greater than 1 and the given index is less than zero then
+   // return a new merge manager, else if the index is greater to or equal to 0 then
+   // return a new chunk manager, else go to the next step.
    if ( size > 1 )
    {
       if ( index < 0 )
       {
-         return unique_ptr<AbstractManager>(new Merge(type,size));
+         return std::unique_ptr<AbstractManager>(new Merge(type,size));
       }
       else
       {
-         return unique_ptr<AbstractManager>(new Chunk(type,index,size));
+         return std::unique_ptr<AbstractManager>(new Chunk(type,index,size));
       }
    }
 
-   // If the MPI size is greater than 1 and this is the master process then return a 
-   // new MPI master manager, else if this is a slave process return a new MPI slave 
-   // manager, else go to the next step. 
+   // If the MPI size is greater than 1 and this is the master process then return a
+   // new MPI master manager, else if this is a slave process return a new MPI slave
+   // manager, else go to the next step.
    else if ( QMPI::instance().size() > 1 )
    {
       if ( QMPI::instance().isMaster() )
       {
-         return unique_ptr<AbstractManager>(new MPIMaster(type));
+         return std::unique_ptr<AbstractManager>(new MPIMaster(type));
       }
       else
       {
-         return unique_ptr<AbstractManager>(new MPISlave(type));
+         return std::unique_ptr<AbstractManager>(new MPISlave(type));
       }
    }
 
-   // Return a new single manager. 
+   // Return a new single manager.
    else
    {
-      return unique_ptr<AbstractManager>(new Single(type));
+      return std::unique_ptr<AbstractManager>(new Single(type));
    }
 }
 
@@ -92,14 +94,13 @@ std::unique_ptr<Ace::Analytic::AbstractManager> AbstractManager::makeManager(qui
 
 
 /*!
- * Returns the analytic type this analytic manager contains. 
+ * Returns the analytic type this analytic manager contains.
  *
- * @return Analytic type this analytic manager contains. 
+ * @return Analytic type this analytic manager contains.
  */
 quint16 AbstractManager::analyticType() const
 {
-   EDEBUG_FUNC(this)
-
+   EDEBUG_FUNC(this);
    return _type;
 }
 
@@ -109,14 +110,13 @@ quint16 AbstractManager::analyticType() const
 
 
 /*!
- * Returns the number of arguments this manager's analytic has for user input. 
+ * Returns the number of arguments this manager's analytic has for user input.
  *
- * @return Number of analytic arguments for this manager. 
+ * @return Number of analytic arguments for this manager.
  */
 int AbstractManager::size() const
 {
-   EDEBUG_FUNC(this)
-
+   EDEBUG_FUNC(this);
    return _input->size();
 }
 
@@ -126,17 +126,16 @@ int AbstractManager::size() const
 
 
 /*!
- * Returns the argument type for the given argument index of this manager's 
- * analytic. 
+ * Returns the argument type for the given argument index of this manager's
+ * analytic.
  *
- * @param index Argument index whose type is returned. 
+ * @param index Argument index whose type is returned.
  *
- * @return Argument type for the given index. 
+ * @return Argument type for the given index.
  */
-EAbstractAnalytic::Input::Type AbstractManager::type(int index) const
+EAbstractAnalyticInput::Type AbstractManager::type(int index) const
 {
-   EDEBUG_FUNC(this,index)
-
+   EDEBUG_FUNC(this,index);
    return _input->type(index);
 }
 
@@ -146,18 +145,17 @@ EAbstractAnalytic::Input::Type AbstractManager::type(int index) const
 
 
 /*!
- * Returns data about an analytic argument with the given role and index. 
+ * Returns data about an analytic argument with the given role and index.
  *
- * @param index Argument index whose data is returned with the given role. 
+ * @param index Argument index whose data is returned with the given role.
  *
- * @param role Role of the data that is returned with the given index. 
+ * @param role Role of the data that is returned with the given index.
  *
- * @return Data with the given role and index. 
+ * @return Data with the given role and index.
  */
-QVariant AbstractManager::data(int index, EAbstractAnalytic::Input::Role role) const
+QVariant AbstractManager::data(int index, EAbstractAnalyticInput::Role role) const
 {
    EDEBUG_FUNC(this,role);
-
    return _input->data(index,role);
 }
 
@@ -167,22 +165,22 @@ QVariant AbstractManager::data(int index, EAbstractAnalytic::Input::Role role) c
 
 
 /*!
- * Returns a list of all command line arguments this manager's analytic provides as 
- * input arguments. 
+ * Returns a list of all command line arguments this manager's analytic provides
+ * as input arguments.
  *
- * @return List of all command line arguments for this manager's analytic. 
+ * @return List of all command line arguments for this manager's analytic.
  */
 QList<QString> AbstractManager::commandLineArguments() const
 {
-   // Build the list of command line arguments from this manager's analytic input 
-   // instance. 
+   // Build the list of command line arguments from this manager's analytic input
+   // instance.
    QList<QString> ret;
    for (int i = 0; i < _input->size() ;++i)
    {
-      ret << _input->data(i,EAbstractAnalytic::Input::CommandLineName).toString();
+      ret << _input->data(i,EAbstractAnalyticInput::CommandLineName).toString();
    }
 
-   // Return the command line argument list. 
+   // Return the command line argument list.
    return ret;
 }
 
@@ -192,18 +190,17 @@ QList<QString> AbstractManager::commandLineArguments() const
 
 
 /*!
- * Sets the analytic argument to the given value with the given index. The value is 
- * not given to the underlying analytic until initialize is called. For file and 
- * data arguments the file path should be given as a string. 
+ * Sets the analytic argument to the given value with the given index. The value
+ * is not given to the underlying analytic until initialize is called. For file
+ * and data arguments the file path should be given as a string.
  *
- * @param index Argument index whose value is set to the given value. 
+ * @param index Argument index whose value is set to the given value.
  *
- * @param value Value that the argument with the given index is set to. 
+ * @param value Value that the argument with the given index is set to.
  */
 void AbstractManager::set(int index, const QVariant& value)
 {
-   EDEBUG_FUNC(this,index,value)
-
+   EDEBUG_FUNC(this,index,value);
    _inputs[index] = value;
 }
 
@@ -213,22 +210,23 @@ void AbstractManager::set(int index, const QVariant& value)
 
 
 /*!
- * Called to Finalize all input to this manager's analytic and calls the analytic 
- * object's initialize interface. This also emits a signal to call the start slot 
- * once the event loop is started. 
+ * Called to Finalize all input to this manager's analytic and calls the
+ * analytic object's initialize interface. This also emits a signal to call the
+ * start slot once the event loop is started.
  */
 void AbstractManager::initialize()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // Set analytic input arguments for basic types, files, and data objects. 
+   // Set analytic input arguments for basic types, files, and data objects.
    inputBasic();
    inputFiles();
    inputData();
 
-   // Clear the analytic input pointer, run the initialize interface of this 
-   // manager's analytic, and prepare the start slot to be called once the event loop 
-   // begins. 
+   // Clear the analytic input pointer, run the initialize interface of this
+   // manager's analytic, and prepare the start slot to be called once the event loop
+   // begins.
    _input = nullptr;
    _analytic->initialize();
    QTimer::singleShot(0,this,&AbstractManager::start);
@@ -240,12 +238,11 @@ void AbstractManager::initialize()
 
 
 /*!
- * Called to request this manager terminate its analytic run before completion. 
+ * Called to request this manager terminate its analytic run before completion.
  */
 void AbstractManager::terminationRequested()
 {
-   EDEBUG_FUNC(this)
-
+   EDEBUG_FUNC(this);
    deleteLater();
 }
 
@@ -255,25 +252,26 @@ void AbstractManager::terminationRequested()
 
 
 /*!
- * Called to Complete this manager's analytic run, signaling completion and 
- * requesting deletion. 
+ * Called to Complete this manager's analytic run, signaling completion and
+ * requesting deletion.
  */
 void AbstractManager::finish()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // Call the finish interface for this manager's analytic. 
+   // Call the finish interface for this manager's analytic.
    _analytic->finish();
 
-   // Call all this object's output abstract data finish interfaces and then their 
-   // finalize methods. 
+   // Call all this object's output abstract data finish interfaces and then their
+   // finalize methods.
    for (auto data: qAsConst(_outputData))
    {
       data->data()->finish();
       data->finalize();
    }
 
-   // Signal this manager is finished with execution and ready to be deleted. 
+   // Signal this manager is finished with execution and ready to be deleted.
    emit finished();
 }
 
@@ -283,28 +281,70 @@ void AbstractManager::finish()
 
 
 /*!
- * This interface opens a new file set to write only and truncate with the given 
- * path. If the file fails to open then an exception is thrown. The default 
- * implementation opens the file unless the path is an empty string. 
+ * Constructs a new manager object with the given analytic type. If the given
+ * type is out of range then an exception is thrown. This is protected because
+ * this class should never created without an implementation.
  *
- * @param path Path to the output file that is opened. 
+ * @param type Analytic type that is used for this manager's analytic run.
+ */
+AbstractManager::AbstractManager(quint16 type)
+   :
+   _type(type)
+{
+   // Add the debug header.
+   EDEBUG_FUNC(this,type);
+
+   // If the given analytic type is out of range then throw an exception, else go to
+   // the next step.
+   EAbstractAnalyticFactory& factory {EAbstractAnalyticFactory::instance()};
+   if ( _type >= factory.size() )
+   {
+      E_MAKE_EXCEPTION(e);
+      e.setTitle(tr("Invalid Argument"));
+      e.setDetails(tr("%1 is not a valid analytic type. (max is %2)")
+                   .arg(_type)
+                   .arg(factory.size() - 1));
+      throw e;
+   }
+
+   // Create a new abstract analytic object of the given type and set it as this
+   // manager's analytic.
+   _analytic = factory.make(_type).release();
+   _analytic->setParent(this);
+
+   // Setup the abstract input and input fields.
+   setupInput();
+}
+
+
+
+
+
+
+/*!
+ * This interface opens a new file set to write only and truncate with the given
+ * path. If the file fails to open then an exception is thrown. The default
+ * implementation opens the file unless the path is an empty string.
  *
- * @return Pointer to qt file device of opened file or null if no path given. 
+ * @param path Path to the output file that is opened.
+ *
+ * @return Pointer to qt file device of opened file or null if no path given.
  */
 QFile* AbstractManager::addOutputFile(const QString& path)
 {
-   EDEBUG_FUNC(this,path)
+   // Add the debug header.
+   EDEBUG_FUNC(this,path);
 
-   // If the given path is empty then return a null pointer, else go to the next 
-   // step. 
+   // If the given path is empty then return a null pointer, else go to the next
+   // step.
    if ( path.isEmpty() )
    {
       return nullptr;
    }
 
-   // Open the file with the given path set to write only and truncate, returning a 
-   // pointer to the qt file device. If opening the file failed then throw an 
-   // exception. 
+   // Open the file with the given path set to write only and truncate, returning a
+   // pointer to the qt file device. If opening the file failed then throw an
+   // exception.
    QFile* ret {new QFile(path,this)};
    if ( !ret->open(QIODevice::WriteOnly|QIODevice::Truncate) )
    {
@@ -322,32 +362,34 @@ QFile* AbstractManager::addOutputFile(const QString& path)
 
 
 /*!
- * This interface opens a new data object with the given path, erasing any data the 
- * file may have contained and returning a pointer to the new data object. The 
- * default implementation opens the data object unless the given path string is 
- * empty. 
+ * This interface opens a new data object with the given path, erasing any data
+ * the file may have contained and returning a pointer to the new data object.
+ * The default implementation opens the data object unless the given path string
+ * is empty.
  *
- * @param path Path to the output data object that is opened. 
+ * @param path Path to the output data object that is opened.
  *
- * @param type Data type the new data object file is initialized to. 
+ * @param type Data type the new data object file is initialized to.
  *
- * @param system The system metadata for the new data object. 
+ * @param system The system metadata for the new data object.
  *
- * @return Pointer to new data object with the given path or null if no path given. 
+ * @return Pointer to new data object with the given path or null if no path
+ *         given.
  */
 Ace::DataObject* AbstractManager::addOutputData(const QString& path, quint16 type, const EMetadata& system)
 {
-   EDEBUG_FUNC(this,path,type,&system)
+   // Add the debug header.
+   EDEBUG_FUNC(this,path,type,&system);
 
-   // If the given path is empty then return a null pointer, else go to the next 
-   // step. 
+   // If the given path is empty then return a null pointer, else go to the next
+   // step.
    if ( path.isEmpty() )
    {
       return nullptr;
    }
 
-   // Create a new data object with the given path, type, and system data, returning 
-   // a pointer to the new object and setting its parent to this manager. 
+   // Create a new data object with the given path, type, and system data, returning
+   // a pointer to the new object and setting its parent to this manager.
    return new Ace::DataObject(path,type,system,this);
 }
 
@@ -357,60 +399,21 @@ Ace::DataObject* AbstractManager::addOutputData(const QString& path, quint16 typ
 
 
 /*!
- * Constructs a new manager object with the given analytic type. If the given type 
- * is out of range then an exception is thrown. This is protected because this 
- * class should never created without an implementation. 
+ * Returns a new work block from this manager's analytic with the given index.
+ * This also does error checking on the new work block.
  *
- * @param type Analytic type that is used for this manager's analytic run. 
+ *
+ * @return Pointer to a new work block with the given index.
  */
-AbstractManager::AbstractManager(quint16 type):
-   _type(type)
+std::unique_ptr<EAbstractAnalyticBlock> AbstractManager::makeWork(int index)
 {
-   EDEBUG_FUNC(this,type)
+   // Add the debug header.
+   EDEBUG_FUNC(this,index);
 
-   // If the given analytic type is out of range then throw an exception, else go to 
-   // the next step. 
-   EAbstractAnalyticFactory& factory {EAbstractAnalyticFactory::instance()};
-   if ( _type >= factory.size() )
-   {
-      E_MAKE_EXCEPTION(e);
-      e.setTitle(tr("Invalid Argument"));
-      e.setDetails(tr("%1 is not a valid analytic type. (max is %2)")
-                   .arg(_type)
-                   .arg(factory.size() - 1));
-      throw e;
-   }
-
-   // Create a new abstract analytic object of the given type and set it as this 
-   // manager's analytic. 
-   _analytic = factory.make(_type).release();
-   _analytic->setParent(this);
-
-   // Setup the abstract input and input fields. 
-   setupInput();
-}
-
-
-
-
-
-
-/*!
- * Returns a new work block from this manager's analytic with the given index. This 
- * also does error checking on the new work block. 
- *
- * @param index  
- *
- * @return Pointer to a new work block with the given index. 
- */
-std::unique_ptr<EAbstractAnalytic::Block> AbstractManager::makeWork(int index)
-{
-   EDEBUG_FUNC(this,index)
-
-   // Call this manager's analytic interface to make a new work block with the given 
-   // index. If the analytic returned a null pointer or the work block has an 
-   // incorrect index then throw an exception, else return the new work block. 
-   unique_ptr<EAbstractAnalytic::Block> ret {analytic()->makeWork(index)};
+   // Call this manager's analytic interface to make a new work block with the given
+   // index. If the analytic returned a null pointer or the work block has an
+   // incorrect index then throw an exception, else return the new work block.
+   std::unique_ptr<EAbstractAnalyticBlock> ret {analytic()->makeWork(index)};
    if ( !ret )
    {
       E_MAKE_EXCEPTION(e);
@@ -436,20 +439,21 @@ std::unique_ptr<EAbstractAnalytic::Block> AbstractManager::makeWork(int index)
 
 
 /*!
- * Processes the given result block with this manager's analytic. This also does 
- * error checking and determines the progress of this analytic run. 
+ * Processes the given result block with this manager's analytic. This also does
+ * error checking and determines the progress of this analytic run.
  *
- * @param result The result block that is processed by this manager's analytic. 
+ * @param result The result block that is processed by this manager's analytic.
  *
- * @param expectedIndex The expected index that should be equal to the given result 
- *                      block's index. 
+ * @param expectedIndex The expected index that should be equal to the given
+ *                      result block's index.
  */
-void AbstractManager::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& result, int expectedIndex)
+void AbstractManager::writeResult(std::unique_ptr<EAbstractAnalyticBlock>&& result, int expectedIndex)
 {
-   EDEBUG_FUNC(this,result.get(),expectedIndex)
+   // Add the debug header.
+   EDEBUG_FUNC(this,result.get(),expectedIndex);
 
-   // If the given result block's index is not equal to the expected index then throw 
-   // an exception, else go to the next step. 
+   // If the given result block's index is not equal to the expected index then throw
+   // an exception, else go to the next step.
    if ( result->index() != expectedIndex )
    {
       E_MAKE_EXCEPTION(e);
@@ -460,14 +464,14 @@ void AbstractManager::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& re
       throw e;
    }
 
-   // Process the result block with this manager's analytic and then delete it. 
+   // Process the result block with this manager's analytic and then delete it.
    analytic()->process(result.get());
    result.reset();
 
-   // Determine the progress made from processing this result block. If the percent 
-   // complete has changed since last time this was called then emit the progressed 
-   // signal. 
-   int percentComplete {expectedIndex*100/analytic()->size()};
+   // Determine the progress made from processing this result block. If the percent
+   // complete has changed since last time this was called then emit the progressed
+   // signal.
+   int percentComplete {static_cast<int>(static_cast<qint64>(expectedIndex)*100/analytic()->size())};
    if ( percentComplete != _percentComplete )
    {
       _percentComplete = percentComplete;
@@ -481,14 +485,13 @@ void AbstractManager::writeResult(std::unique_ptr<EAbstractAnalytic::Block>&& re
 
 
 /*!
- * Returns a pointer to the abstract analytic for this manager. 
+ * Returns a pointer to the abstract analytic for this manager.
  *
- * @return Pointer to this manager's abstract analytic. 
+ * @return Pointer to this manager's abstract analytic.
  */
 EAbstractAnalytic* AbstractManager::analytic()
 {
-   EDEBUG_FUNC(this)
-
+   EDEBUG_FUNC(this);
    return _analytic;
 }
 
@@ -498,14 +501,13 @@ EAbstractAnalytic* AbstractManager::analytic()
 
 
 /*!
- * Returns a read only pointer to the abstract analytic for this manager. 
+ * Returns a read only pointer to the abstract analytic for this manager.
  *
- * @return Read only pointer to this manager's abstract analytic. 
+ * @return Read only pointer to this manager's abstract analytic.
  */
 const EAbstractAnalytic* AbstractManager::analytic() const
 {
-   EDEBUG_FUNC(this)
-
+   EDEBUG_FUNC(this);
    return _analytic;
 }
 
@@ -515,12 +517,13 @@ const EAbstractAnalytic* AbstractManager::analytic() const
 
 
 /*!
- * This interface is called once to begin the analytic run for this manager after 
- * all argument input has been set. The default implementation does nothing. 
+ * This interface is called once to begin the analytic run for this manager
+ * after all argument input has been set. The default implementation does
+ * nothing.
  */
 void AbstractManager::start()
 {
-   EDEBUG_FUNC(this)
+   EDEBUG_FUNC(this);
 }
 
 
@@ -529,20 +532,21 @@ void AbstractManager::start()
 
 
 /*!
- * Initialize the abstract analytic input and input fields for this manager. 
+ * Initialize the abstract analytic input and input fields for this manager.
  */
 void AbstractManager::setupInput()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // Create a new abstract analytic input from this manager's analytic, resize the 
-   // array of inputs to the argument size of the abstract input object, and then 
-   // populate all inputs with their default values. 
+   // Create a new abstract analytic input from this manager's analytic, resize the
+   // array of inputs to the argument size of the abstract input object, and then
+   // populate all inputs with their default values.
    _input = _analytic->makeInput();
    _inputs.resize(_input->size());
    for (int i = 0; i < _input->size() ;++i)
    {
-      _inputs[i] = _input->data(i,EAbstractAnalytic::Input::Default);
+      _inputs[i] = _input->data(i,EAbstractAnalyticInput::Default);
    }
 }
 
@@ -552,25 +556,26 @@ void AbstractManager::setupInput()
 
 
 /*!
- * Sets all basic arguments to this manager's abstract analytic input object, 
- * excluding file or data arguments. 
+ * Sets all basic arguments to this manager's abstract analytic input object,
+ * excluding file or data arguments.
  */
 void AbstractManager::inputBasic()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // Iterate through all of this manager's array of argument settings for the 
-   // proceeding steps. 
+   // Iterate through all of this manager's array of argument settings for the
+   // proceeding steps.
    for (int i = 0; i < _inputs.size() ;++i)
    {
-      // If the argument type is not a file or data object then set the argument using 
-      // the set interface of this manager's abstract analytic input object. 
+      // If the argument type is not a file or data object then set the argument using
+      // the set interface of this manager's abstract analytic input object.
       switch(_input->type(i))
       {
-      case EAbstractAnalytic::Input::Type::FileIn:
-      case EAbstractAnalytic::Input::Type::FileOut:
-      case EAbstractAnalytic::Input::Type::DataIn:
-      case EAbstractAnalytic::Input::Type::DataOut:
+      case EAbstractAnalyticInput::Type::FileIn:
+      case EAbstractAnalyticInput::Type::FileOut:
+      case EAbstractAnalyticInput::Type::DataIn:
+      case EAbstractAnalyticInput::Type::DataOut:
          break;
       default:
          _input->set(i,_inputs.at(i));
@@ -585,33 +590,34 @@ void AbstractManager::inputBasic()
 
 
 /*!
- * Sets input and output file arguments to this manager's abstract analytic input 
- * object, opening the files in the process. If a file path argument is blank then 
- * no file is opened and the argument is not set. 
+ * Sets input and output file arguments to this manager's abstract analytic
+ * input object, opening the files in the process. If a file path argument is
+ * blank then no file is opened and the argument is not set.
  */
 void AbstractManager::inputFiles()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // Iterate through all of this manager's array of argument settings for the 
-   // proceeding steps. 
+   // Iterate through all of this manager's array of argument settings for the
+   // proceeding steps.
    for (int i = 0; i < _inputs.size() ;++i)
    {
       switch(_input->type(i))
       {
-      // If the argument type is an input file then call the add input file method, 
-      // setting the abstract analytic input if it returns a qt file device, else go to 
-      // the next step. 
-      case EAbstractAnalytic::Input::Type::FileIn:
+      // If the argument type is an input file then call the add input file method,
+      // setting the abstract analytic input if it returns a qt file device, else go to
+      // the next step.
+      case EAbstractAnalyticInput::Type::FileIn:
          if ( QFile* file = addInputFile(_inputs.at(i).toString()) )
          {
             _input->set(i,file);
          }
          break;
 
-      // If the argument type is an output file then call the add output file method, 
-      // setting the abstract analytic input if it returns a qt file device. 
-      case EAbstractAnalytic::Input::Type::FileOut:
+      // If the argument type is an output file then call the add output file method,
+      // setting the abstract analytic input if it returns a qt file device.
+      case EAbstractAnalyticInput::Type::FileOut:
          if ( QFile* file = addOutputFile(_inputs.at(i).toString()) )
          {
             _input->set(i,file);
@@ -629,31 +635,32 @@ void AbstractManager::inputFiles()
 
 
 /*!
- * Opens an existing file set to read only with the given path. If the file fails 
- * to open then an exception is thrown. If the given path is an empty string this 
- * does nothing. 
+ * Opens an existing file set to read only with the given path. If the file
+ * fails to open then an exception is thrown. If the given path is an empty
+ * string this does nothing.
  *
- * @param path Path the the input file that is opened. 
+ * @param path Path the the input file that is opened.
  *
- * @return Pointer to qt file device of opened file or null if no path given. 
+ * @return Pointer to qt file device of opened file or null if no path given.
  */
 QFile* AbstractManager::addInputFile(const QString& path)
 {
-   EDEBUG_FUNC(this,path)
+   // Add the debug header.
+   EDEBUG_FUNC(this,path);
 
-   // if the given path string is empty then return a null pointer, else go to the 
-   // next step. 
+   // if the given path string is empty then return a null pointer, else go to the
+   // next step.
    if ( path.isEmpty() )
    {
       return nullptr;
    }
 
-   // Create a new qt file device with the given path and setting its parent as this 
-   // manager. 
+   // Create a new qt file device with the given path and setting its parent as this
+   // manager.
    QFile* ret {new QFile(path,this)};
 
-   // Open the file with the qt file device. If opening failed then throw an 
-   // exception, else return a pointer to the qt file device. 
+   // Open the file with the qt file device. If opening failed then throw an
+   // exception, else return a pointer to the qt file device.
    if ( !ret->open(QIODevice::ReadOnly) )
    {
       E_MAKE_EXCEPTION(e);
@@ -670,16 +677,18 @@ QFile* AbstractManager::addInputFile(const QString& path)
 
 
 /*!
- * Sets input and output data object arguments to this manager's abstract analytic 
- * input object, opening the data objects in the process. If a data object path 
- * argument is blank then no data object is opened and the argument is not set. 
+ * Sets input and output data object arguments to this manager's abstract
+ * analytic input object, opening the data objects in the process. If a data
+ * object path argument is blank then no data object is opened and the argument
+ * is not set.
  */
 void AbstractManager::inputData()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // Initialize all input data objects, build the system metadata for output data 
-   // objects, and initialize all output data objects. 
+   // Initialize all input data objects, build the system metadata for output data
+   // objects, and initialize all output data objects.
    EMetadata system{inputDataIn()};
    inputDataOut(system);
 }
@@ -690,26 +699,27 @@ void AbstractManager::inputData()
 
 
 /*!
- * Sets input data object arguments to this manager's abstract analytic input 
- * object, opening the data objects and constructing the system metadata for output 
- * data objects in the process. 
+ * Sets input data object arguments to this manager's abstract analytic input
+ * object, opening the data objects and constructing the system metadata for
+ * output data objects in the process.
  */
 EMetadata AbstractManager::inputDataIn()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // Iterate through all of this manager's array of argument settings for steps 2 
-   // and 3. 
+   // Iterate through all of this manager's array of argument settings for steps 2
+   // and 3.
    QList<Ace::DataObject*> inputs;
    for (int i = 0; i < _inputs.size() ;++i)
    {
-      // If the argument type is an input data object then go to the next step, else 
-      // iterate to next argument. 
-      if ( _input->type(i) == EAbstractAnalytic::Input::Type::DataIn )
+      // If the argument type is an input data object then go to the next step, else
+      // iterate to next argument.
+      if ( _input->type(i) == EAbstractAnalyticInput::Type::DataIn )
       {
-         // Call the add input data method and if it returns a valid data object pointer 
-         // then set the abstract analytic input and add the data object pointer to a list 
-         // of data inputs. 
+         // Call the add input data method and if it returns a valid data object pointer
+         // then set the abstract analytic input and add the data object pointer to a list
+         // of data inputs.
          if ( Ace::DataObject* object = addInputData(_inputs.at(i).toString()) )
          {
             _input->set(i,object->data());
@@ -718,8 +728,8 @@ EMetadata AbstractManager::inputDataIn()
       }
    }
 
-   // Build and return the system metadata used for output data objects from the list 
-   // of input data objects. 
+   // Build and return the system metadata used for output data objects from the list
+   // of input data objects.
    return buildMeta(inputs);
 }
 
@@ -729,27 +739,29 @@ EMetadata AbstractManager::inputDataIn()
 
 
 /*!
- * Opens an existing data object for read only with the given path, returning a 
- * pointer to the data object. If the given path is an empty string this does 
- * nothing. 
+ * Opens an existing data object for read only with the given path, returning a
+ * pointer to the data object. If the given path is an empty string this does
+ * nothing.
  *
- * @param path Path the the input data object that is opened. 
+ * @param path Path the the input data object that is opened.
  *
- * @return Pointer to the data object with the given path or null if no path given. 
+ * @return Pointer to the data object with the given path or null if no path
+ *         given.
  */
 Ace::DataObject* AbstractManager::addInputData(const QString& path)
 {
-   EDEBUG_FUNC(this,path)
+   // Add the debug header.
+   EDEBUG_FUNC(this,path);
 
-   // If the given path string is empty then return a null pointer, else go to the 
-   // next step. 
+   // If the given path string is empty then return a null pointer, else go to the
+   // next step.
    if ( path.isEmpty() )
    {
       return nullptr;
    }
 
-   // Open an existing data object with the given path, setting the data object's 
-   // parent as this manager and return a pointer to it. 
+   // Open an existing data object with the given path, setting the data object's
+   // parent as this manager and return a pointer to it.
    return new Ace::DataObject(path,this);
 }
 
@@ -759,19 +771,20 @@ Ace::DataObject* AbstractManager::addInputData(const QString& path)
 
 
 /*!
- * Builds the system metadata for new output data objects with the given list of 
- * input data objects. 
+ * Builds the system metadata for new output data objects with the given list of
+ * input data objects.
  *
- * @param inputs List of input data objects used to build the metadata. 
+ * @param inputs List of input data objects used to build the metadata.
  *
- * @return System metadata for new output data objects. 
+ * @return System metadata for new output data objects.
  */
 EMetadata AbstractManager::buildMeta(const QList<Ace::DataObject*>& inputs)
 {
-   EDEBUG_FUNC(this,&inputs)
+   // Add the debug header.
+   EDEBUG_FUNC(this,&inputs);
 
-   // Create and return a metadata object type, inserting the input, command, uuid, 
-   // and version keys with the input and command sections of system metadata. 
+   // Create and return a metadata object type, inserting the input, command, uuid,
+   // and version keys with the input and command sections of system metadata.
    EMetadata ret(EMetadata::Object);
    ret.toObject().insert("uuid",EMetadata(QUuid::createUuid().toString()));
    ret.toObject().insert("version",buildMetaVersion());
@@ -786,31 +799,33 @@ EMetadata AbstractManager::buildMeta(const QList<Ace::DataObject*>& inputs)
 
 
 /*!
- * Builds the version section of the system metadata for new output data objects. 
+ * Builds the version section of the system metadata for new output data
+ * objects.
  *
- * @return Version section of system metadata for new output data objects. 
+ * @return Version section of system metadata for new output data objects.
  */
 EMetadata AbstractManager::buildMetaVersion()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // Create a new metadata object for the application setting the keys for the major 
-   // version, minor version, and revision. 
+   // Create a new metadata object for the application setting the keys for the major
+   // version, minor version, and revision.
    EMetadata application(EMetadata::Object);
    application.toObject().insert("major",EMetadata(Settings::appMajorVersion()));
    application.toObject().insert("minor",EMetadata(Settings::appMinorVersion()));
    application.toObject().insert("revision",EMetadata(Settings::appRevision()));
    Settings& settings {Settings::instance()};
 
-   // Create a new metadata object for the ACE library setting the keys for the major 
-   // version, minor version, and revision. 
+   // Create a new metadata object for the ACE library setting the keys for the major
+   // version, minor version, and revision.
    EMetadata ace(EMetadata::Object);
    ace.toObject().insert("major",EMetadata(settings._majorVersion));
    ace.toObject().insert("minor",EMetadata(settings._minorVersion));
    ace.toObject().insert("revision",EMetadata(settings._revision));
 
-   // Create a metadata return object setting the ace and application name keys and 
-   // setting them to the previously made objects, returning the created object. 
+   // Create a metadata return object setting the ace and application name keys and
+   // setting them to the previously made objects, returning the created object.
    EMetadata ret(EMetadata::Object);
    ret.toObject().insert("ace",ace);
    ret.toObject().insert(Settings::application(),application);
@@ -823,33 +838,34 @@ EMetadata AbstractManager::buildMetaVersion()
 
 
 /*!
- * Builds the input section of the system metadata for new output data objects with 
- * the given list of input data objects. 
+ * Builds the input section of the system metadata for new output data objects
+ * with the given list of input data objects.
  *
- * @param inputs List of input data objects used to build the metadata. 
+ * @param inputs List of input data objects used to build the metadata.
  *
- * @return Input section of system metadata for new output data objects. 
+ * @return Input section of system metadata for new output data objects.
  */
 EMetadata AbstractManager::buildMetaInput(const QList<Ace::DataObject*>& inputs)
 {
-   EDEBUG_FUNC(this,&inputs)
+   // Add the debug header.
+   EDEBUG_FUNC(this,&inputs);
 
-   // Iterate through all input data objects in given list of them for step 2. 
+   // Iterate through all input data objects in given list of them for step 2.
    EMetadata ret(EMetadata::Object);
    for (auto input: inputs)
    {
-      // Create a new metadata object type, inserting the system and user keys for the 
-      // system and user metadata of the input data object, and insert the new metadata 
-      // object type into the return metadata object type using the input data object's 
-      // raw path as the key. 
+      // Create a new metadata object type, inserting the system and user keys for the
+      // system and user metadata of the input data object, and insert the new metadata
+      // object type into the return metadata object type using the input data object's
+      // raw path as the key.
       EMetadata inputMeta(EMetadata::Object);
       inputMeta.toObject().insert("system",input->systemMeta());
       inputMeta.toObject().insert("user",input->userMeta());
       ret.toObject().insert(input->rawPath(),inputMeta);
    }
 
-   // Return the metadata object type containing a list of all input data objects 
-   // with their corresponding system and user metadata. 
+   // Return the metadata object type containing a list of all input data objects
+   // with their corresponding system and user metadata.
    return ret;
 }
 
@@ -859,28 +875,29 @@ EMetadata AbstractManager::buildMetaInput(const QList<Ace::DataObject*>& inputs)
 
 
 /*!
- * Builds the command section of the system metadata for new output data objects 
- * using this managers list of set arguments. 
+ * Builds the command section of the system metadata for new output data objects
+ * using this managers list of set arguments.
  *
- * @return Command section of system metadata for new output data objects. 
+ * @return Command section of system metadata for new output data objects.
  */
 EMetadata AbstractManager::buildMetaCommand()
 {
-   EDEBUG_FUNC(this)
+   // Add the debug header.
+   EDEBUG_FUNC(this);
 
-   // Create a metadata object for the command options, populating it with all 
-   // analytic input options using the command line name for the keys and values for 
-   // the values. 
+   // Create a metadata object for the command options, populating it with all
+   // analytic input options using the command line name for the keys and values for
+   // the values.
    EMetadata options(EMetadata::Object);
    for (int i = 0; i < _inputs.size() ;++i)
    {
-      options.toObject().insert(_input->data(i,EAbstractAnalytic::Input::CommandLineName).toString()
+      options.toObject().insert(_input->data(i,EAbstractAnalyticInput::CommandLineName).toString()
                                 ,_inputs.at(i).toString());
    }
 
-   // Create a new metadata return object, setting the options key to the previously 
-   // made options metadata and the analytic key to the full name of the analytic 
-   // type this manager is using, returning the return object. 
+   // Create a new metadata return object, setting the options key to the previously
+   // made options metadata and the analytic key to the full name of the analytic
+   // type this manager is using, returning the return object.
    EMetadata ret(EMetadata::Object);
    ret.toObject().insert("options",options);
    ret.toObject().insert("analytic",EAbstractAnalyticFactory::instance().name(_type));
@@ -893,31 +910,37 @@ EMetadata AbstractManager::buildMetaCommand()
 
 
 /*!
- * Sets output data object arguments to this manager's abstract analytic input 
- * object, opening the new data objects with the given system metadata in the 
- * process. 
+ * Sets output data object arguments to this manager's abstract analytic input
+ * object, opening the new data objects with the given system metadata in the
+ * process.
  *
- * @param system System metadata used for creating new output data objects. 
+ * @param system System metadata used for creating new output data objects.
  */
 void AbstractManager::inputDataOut(const EMetadata& system)
 {
-   EDEBUG_FUNC(this,&system)
+   // Add the debug header.
+   EDEBUG_FUNC(this,&system);
 
-   // Iterate through all of this manager's array of argument settings for the 
-   // proceeding steps. 
+   // Iterate through all of this manager's array of argument settings for the
+   // proceeding steps.
    for (int i = 0; i < _inputs.size() ;++i)
    {
-      // If the argument type is an output data object then go to the next step, else 
-      // iterate to the next argument. 
-      if (_input->type(i) == EAbstractAnalytic::Input::Type::DataOut )
+      // If the argument type is an output data object then go to the next step, else
+      // iterate to the next argument.
+      if (_input->type(i) == EAbstractAnalyticInput::Type::DataOut )
       {
-         // Call the add output data method with the given system metadata and if it 
-         // returns a valid pointer then set the abstract analytic input argument. 
-         if ( Ace::DataObject* object = addOutputData(_inputs.at(i).toString(),_input->data(i,EAbstractAnalytic::Input::Role::DataType).toUInt(),system) )
+         // Call the add output data method with the given system metadata and if it
+         // returns a valid pointer then set the abstract analytic input argument.
+         unsigned int tmp {_input->data(i,EAbstractAnalyticInput::Role::DataType).toUInt()};
+         Q_ASSERT(tmp < std::numeric_limits<quint16>::max());
+         if ( Ace::DataObject* object = addOutputData(_inputs.at(i).toString(),static_cast<quint16>(tmp),system) )
          {
             _input->set(i,object->data());
             _outputData << object;
          }
       }
    }
+}
+
+}
 }
