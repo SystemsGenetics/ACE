@@ -83,7 +83,7 @@ namespace CUDA
             throwError(&e,result);
          }
       }
-      result = cuMemAlloc(&_dev, size * sizeof(T));
+      CUresult result = cuMemAlloc(&_dev, size * sizeof(T));
       if ( result != CUDA_SUCCESS )
       {
          E_MAKE_EXCEPTION(e);
