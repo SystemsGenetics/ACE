@@ -207,7 +207,13 @@ void Chunk::start()
  */
 void Chunk::process()
 {
-   EDEBUG_FUNC(this)
+   EDEBUG_FUNC(this);
+
+   if ( _nextWork >= _end )
+   {
+      emit _runner->finished();
+      return;
+   }
 
    // While this manager still has work block indexes to process make the next work
    // block and add it to this manager's abstract run object.
