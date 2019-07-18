@@ -6,7 +6,12 @@
 #include "eabstractanalytic.h"
 #include "ace_analytic_abstractmpi.h"
 #ifdef QT_DEBUG
-#define EDEBUG_FUNC(...) EDebug debug(__PRETTY_FUNCTION__,#__VA_ARGS__); debug.setArguments(__VA_ARGS__);
+#ifdef EDEBUG
+//#define EDEBUG_FUNC(...) EDebug debug(__PRETTY_FUNCTION__,#__VA_ARGS__); debug.setArguments(__VA_ARGS__);
+#define EDEBUG_FUNC(...) qDebug("lala");
+#else
+#define EDEBUG_FUNC(...)
+#endif
 #else
 #define EDEBUG_FUNC(...)
 #endif
