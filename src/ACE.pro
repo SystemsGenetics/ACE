@@ -9,13 +9,13 @@ TEMPLATE = subdirs
 SUBDIRS += \
     core \
     #tests \
-    console \
+    cli \
     example \
     log
 
 #tests.depends = core
-console.depends = core
-example.depends = core console
+cli.depends = core
+example.depends = core cli
 
 equals(GUI,"yes") {
     SUBDIRS += gui

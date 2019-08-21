@@ -1,6 +1,6 @@
 #include <core/core.h>
 #if(GUI == 0)
-#include <console/eapplication.h>
+#include <cli/eapplication.h>
 #else
 #include <gui/eapplication.h>
 #endif
