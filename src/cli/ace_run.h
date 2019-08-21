@@ -14,7 +14,7 @@
 namespace Ace
 {
    /*!
-    * This handles all run commands for the console program of ACE. These commands
+    * This handles all run commands for the CLI program of ACE. These commands
     * include run, chunk run, and merge. If MPI is being used it is auto detected
     * by this class. The main responsibility of this class is to initialize an
     * analytic manager and start its process of running the analytic. This class

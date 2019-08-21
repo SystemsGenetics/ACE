@@ -543,7 +543,7 @@ void HelpRun::settingsHelp()
          stream << "Command: " << _runName << " settings [set|list|] ...\n"
                 << "Executes the settings command that accesses the persistent settings of this\n"
                 << "application. These settings are persistent across all instances of this\n"
-                << "application in both the console and GUI version. The basic command with no sub\n"
+                << "application in both the CLI and GUI version. The basic command with no sub\n"
                 << "arguments will simply print out the current value of all settings. The set sub\n"
                 << "command will set a specific setting to a new value. The list sub command will\n"
                 << "list valid values for certain settings.\n\n"

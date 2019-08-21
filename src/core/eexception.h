@@ -14,7 +14,7 @@
  * function name, and line fields. This class is thrown as an exception on any
  * ACE error. If the program using ACE does not catch a thrown error ACE itself
  * will handle it, either reporting it to the user without crashing if in GUI
- * mode or reporting it to the user and exiting if in console mode.
+ * mode or reporting it to the user and exiting if in CLI mode.
  */
 class EException
 {

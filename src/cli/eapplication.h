@@ -9,7 +9,7 @@
 
 
 /*!
- * This is the console application instantiated and executed by a program using
+ * This is the CLI application instantiated and executed by a program using
  * ACE. This class initializes the ACE system with the given application
  * information and factories, along with parsing the command line and
  * determining which command the user has given. If the command given is a dump
