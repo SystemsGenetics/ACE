@@ -78,9 +78,11 @@ namespace Ace
           */
          QDataStream* _stream {nullptr};
          /*!
-          * The work block index after the last index this chunk manager must process.
           */
          int _begin;
+         /*!
+          * The work block index after the last index this chunk manager must process.
+          */
          int _end;
          /*!
           * The next work block index this chunk manager must process.
@@ -92,6 +94,8 @@ namespace Ace
           * because this manager does not sort its result blocks.
           */
          int _nextResult;
+         /*!
+          */
          int _percentComplete;
       };
    }

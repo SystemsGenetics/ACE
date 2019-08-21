@@ -40,10 +40,13 @@ namespace OpenCL
       Buffer(Context* context, int size);
       Buffer(Buffer<T>&& other);
       ~Buffer();
+   public:
       const T& at(int index) const;
       bool isNull() const;
       cl_mem id() const;
       int size() const;
+      Event read(CommandQueue* queue, QVector<T>* vector);
+      Event write(CommandQueue* queue, const QVector<T>& vector);
       Event mapRead(CommandQueue* queue);
       Event mapWrite(CommandQueue* queue);
       Event unmap(CommandQueue* queue);
@@ -52,6 +55,7 @@ namespace OpenCL
       Event map(CommandQueue* queue, cl_map_flags mapping);
       void clear();
       void nullify();
+   private:
       /*!
        * Pointer to the OpenCL buffer ID of this object. If this object is null then
        * this is null.
@@ -340,6 +344,135 @@ namespace OpenCL
    {
       EDEBUG_FUNC(this);
       return _size;
+   }
+
+
+
+
+
+
+   /*!
+    * Reads this object's OpenCL buffer data to host memory located in the given qt
+    * vector. The command to read is sent to the given command queue and is not
+    * complete until the returned event is done. This object must not be null and
+    * the given vector must be the same size as this buffer.
+    *
+    * @param queue Pointer to the command queue used to add the OpenCL command.
+    *
+    * @param vector The vector whose data is overwritten with this OpenCL buffer
+    *               once the read command is finished.
+    */
+   template<class T> Event Buffer<T>::read(CommandQueue* queue, QVector<T>* vector)
+   {
+      // Add the debug header.
+      EDEBUG_FUNC(this,queue,&vector);
+
+      // Make sure the given vector pointer is valid, this is not a null buffer, and the
+      // given vector's size matches this buffer.
+      Q_ASSERT(vector);
+      if ( !_id )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setTitle(QObject::tr("Logic Error"));
+         e.setDetails(QObject::tr("Cannot read OpenCL buffer that is null."));
+         throw e;
+      }
+      if ( vector->size() != _size )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setTitle(QObject::tr("Logic Error"));
+         e.setDetails(QObject::tr("Given vector and OpenCL buffer sizes are different."));
+         throw e;
+      }
+
+      // Add the read command to the given command queue, saving its return code and the
+      // OpenCL event id associated with the read command.
+      cl_int code;
+      cl_event id;
+      code = clEnqueueReadBuffer(queue->id()
+                                  ,*_id
+                                  ,false
+                                  ,0
+                                  ,sizeof(T)*_size
+                                  ,vector->data()
+                                  ,0
+                                  ,nullptr
+                                  ,&id);
+
+      // Make sure the OpenCL call was successful.
+      if ( code != CL_SUCCESS )
+      {
+         E_MAKE_EXCEPTION(e);
+         fillException(&e,code);
+         throw e;
+      }
+
+      // Return the event for the read command.
+      return Event(id);
+   }
+
+
+
+
+
+
+   /*!
+    * Writes to this object's OpenCL buffer data from host memory located in the
+    * given qt vector. The command to write is sent to the given command queue and
+    * is not complete until the returned event is done. This object must not be
+    * null and the given vector must be the same size as this buffer.
+    *
+    * @param queue Pointer to the command queue used to add the OpenCL command.
+    *
+    * @param vector The vector whose data is written to this OpenCL buffer once the
+    *               write command is finished.
+    */
+   template<class T> Event Buffer<T>::write(CommandQueue* queue, const QVector<T>& vector)
+   {
+      // Add the debug header.
+      EDEBUG_FUNC(this,queue,&vector);
+
+      // Make sure this is not a null buffer and the given vector's size matches this
+      // buffer.
+      if ( !_id )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setTitle(QObject::tr("Logic Error"));
+         e.setDetails(QObject::tr("Cannot write OpenCL buffer that is null."));
+         throw e;
+      }
+      if ( vector.size() != _size )
+      {
+         E_MAKE_EXCEPTION(e);
+         e.setTitle(QObject::tr("Logic Error"));
+         e.setDetails(QObject::tr("Given vector and OpenCL buffer sizes are different."));
+         throw e;
+      }
+
+      // Add the write command to the given command queue, saving its return code and
+      // the OpenCL event id associated with the read command.
+      cl_int code;
+      cl_event id;
+      code = clEnqueueWriteBuffer(queue->id()
+                                  ,*_id
+                                  ,false
+                                  ,0
+                                  ,sizeof(T)*_size
+                                  ,vector.data()
+                                  ,0
+                                  ,nullptr
+                                  ,&id);
+
+      // Make sure the OpenCL call was successful.
+      if ( code != CL_SUCCESS )
+      {
+         E_MAKE_EXCEPTION(e);
+         fillException(&e,code);
+         throw e;
+      }
+
+      // Return the event for the write command.
+      return Event(id);
    }
 
 
