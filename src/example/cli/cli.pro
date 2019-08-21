@@ -4,7 +4,7 @@ include(../example.pri)
 
 TARGET = aceex
 
-LIBS += -laceconsole
+LIBS += -lacecli
 
 SOURCES += \
     ../main.cpp \
