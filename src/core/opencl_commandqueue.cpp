@@ -1,6 +1,7 @@
 #include "opencl_commandqueue.h"
 #include "opencl_context.h"
 #include "opencl_device.h"
+#include "opencl_event.h"
 #include "opencl.h"
 #include "eexception.h"
 #include "edebug.h"
@@ -94,6 +95,36 @@ Device* CommandQueue::device() const
 {
    EDEBUG_FUNC(this);
    return _device;
+}
+
+
+
+
+
+
+/*!
+ * Blocks until all previous commands added to this command queue are done.
+ */
+void CommandQueue::wait()
+{
+   // Add the debug header.
+   EDEBUG_FUNC(this);
+
+   // Add a marker command to this command queue, getting the event id associated
+   // with it and making sure it worked.
+   cl_int code;
+   cl_event id;
+   code = clEnqueueMarkerWithWaitList(_id,0,nullptr,&id);
+   if ( code != CL_SUCCESS )
+   {
+      E_MAKE_EXCEPTION(e);
+      fillException(&e,code);
+      throw e;
+   }
+
+   // Create a new event with the returned id and wait until it is done.
+   Event event(id);
+   event.wait();
 }
 
 }
