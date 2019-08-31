@@ -124,12 +124,7 @@ private:
     * The list of argument names of the function this debug object is tracking. The
     * list is separated by null terminators within the string.
     */
-   char* _argumentNames {nullptr};
-   /*!
-    * The list of argument name indexes pointing to the position of each argument
-    * name within the argument names list for this debug object.
-    */
-   QVector<int> _argumentIndexes;
+   QStringList _argumentNames;
    /*!
     * List of argument values of the function this debug object is tracking.
     */
