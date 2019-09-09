@@ -109,6 +109,31 @@ int Kernel::getAttribute(CUfunction_attribute attribute) const
 
 
 /*!
+ * Sets an attribute of this CUDA kernel. Refer to the CUDA Toolkit Documentation
+ * for more information on the available kernel attributes.
+ *
+ * @param attribute Enumerated value for a CUDA kernel attribute.
+ *
+ * @param value The value to set the given attribute to.
+ */
+void Kernel::setAttribute(CUfunction_attribute attribute, int value)
+{
+   // Set the value of the given kernel attribute. If this command fails then
+   // throw an exception.
+   CUresult result = cuFuncSetAttribute(_kernel, attribute, value);
+   if ( result != CUDA_SUCCESS )
+   {
+      E_MAKE_EXCEPTION(e);
+      throwError(&e,result);
+   }
+}
+
+
+
+
+
+
+/*!
  * Sets the global and local work sizes used for parallel execution of this kernel
  * object. Each work size can be one-, two-, or three-dimensional.
  *
