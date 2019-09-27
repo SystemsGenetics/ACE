@@ -3,7 +3,7 @@ include(../ACE.pri)
 
 QT += gui widgets
 
-DESTDIR = $$PWD/../../build/libs/
+DESTDIR = $$OUT_PWD/../libs/
 TARGET = acegui
 
 TEMPLATE = lib

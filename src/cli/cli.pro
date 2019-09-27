@@ -1,7 +1,7 @@
 
 include(../ACE.pri)
 
-DESTDIR = $$PWD/../../build/libs/
+DESTDIR = $$OUT_PWD/../libs/
 TARGET = acecli
 
 TEMPLATE = lib

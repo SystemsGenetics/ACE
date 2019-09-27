@@ -1,6 +1,8 @@
 
-lessThan(QT_MAJOR_VERSION,5): error("Requires Qt 5")
-lessThan(QT_MINOR_VERSION,7): error("Requires Qt 5.7")
+lessThan(QT_MAJOR_VERSION,5): error("Requires Qt 5 or Greater")
+equals(QT_MAJOR_VERSION,5) {
+    lessThan(QT_MINOR_VERSION,7): error("Requires Qt 5.7 or Greater")
+}
 
 isEmpty(GUI) { GUI = "yes" }
 
@@ -8,12 +10,10 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     core \
-    #tests \
     cli \
     example \
     log
 
-#tests.depends = core
 cli.depends = core
 example.depends = core cli
 
