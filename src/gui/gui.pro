@@ -10,6 +10,7 @@ TEMPLATE = lib
 
 SOURCES += \
     eapplication.cpp \
+    eabstractcustomizer.cpp \
     ace_mainwindow.cpp \
     ace_datawindow.cpp \
     ace_setupanalyticdialog.cpp \
@@ -17,10 +18,12 @@ SOURCES += \
     ace_analyticdialog.cpp \
     ace_metadatadialog.cpp \
     ace_metadatadialog_imageviewdialog.cpp \
-    ace_settingsdialog.cpp
+    ace_settingsdialog.cpp \
+    ace_defaultcustomizer.cpp
 
 HEADERS += \
     eapplication.h \
+    eabstractcustomizer.h \
     ace_mainwindow.h \
     ace_datawindow.h \
     ace_setupanalyticdialog.h \
@@ -29,7 +32,8 @@ HEADERS += \
     ace.h \
     ace_metadatadialog.h \
     ace_metadatadialog_imageviewdialog.h \
-    ace_settingsdialog.h
+    ace_settingsdialog.h \
+    ace_defaultcustomizer.h
 
 RESOURCES += \
     resources.qrc
