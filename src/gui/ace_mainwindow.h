@@ -30,6 +30,7 @@ namespace Ace
       void openTriggered(quint16 type);
       void runTriggered(quint16 type);
       void settingsTriggered();
+      void aboutTriggered();
    private:
       MainWindow();
       void createActions();
@@ -65,6 +66,7 @@ namespace Ace
        * The settings action for this main window. 
        */
       QAction* _settingsAction;
+      QAction* _aboutAction;
       /*!
        * The central text edit widget for this main window that displays a list of any 
        * example command line version of executed analytic runs. 

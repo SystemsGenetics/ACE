@@ -3,6 +3,7 @@
 #include <functional>
 class QObject;
 class QMenu;
+class QString;
 
 
 
@@ -16,6 +17,8 @@ public:
 public:
     virtual void setupDataMenu(QMenu& menu, QObject* parent, const std::function<void(int)>& callback) = 0;
     virtual void setupAnalyticMenu(QMenu& menu, QObject* parent, const std::function<void(int)>& callback) = 0;
+    virtual QString aboutTitle() = 0;
+    virtual QString aboutRichText() = 0;
 private:
     static EAbstractCustomizer* _instance;
 };

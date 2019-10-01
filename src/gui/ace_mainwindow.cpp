@@ -5,6 +5,7 @@
 #include <QFileDialog>
 #include <QCloseEvent>
 #include <QSettings>
+#include <QMessageBox>
 #include "../core/eabstractdatafactory.h"
 #include "../core/eabstractanalyticfactory.h"
 #include "../core/ace_analytic_abstractmanager.h"
@@ -202,6 +203,17 @@ void MainWindow::settingsTriggered()
 
 
 
+void MainWindow::aboutTriggered()
+{
+    auto& customizer {EAbstractCustomizer::instance()};
+    QMessageBox::about(this,customizer.aboutTitle(),customizer.aboutRichText());
+}
+
+
+
+
+
+
 /*!
  * Constructs a new main window instance. This is private because only the instance 
  * static method should ever create a main window. 
@@ -240,6 +252,10 @@ void MainWindow::createActions()
    _exitAction->setShortcut(QKeySequence::Quit);
    _exitAction->setStatusTip(tr("Exit the application."));
    connect(_exitAction,&QAction::triggered,this,&QMainWindow::close);
+
+   _aboutAction = new QAction(tr("&About"),this);
+   _aboutAction->setStatusTip(tr("About ACE."));
+   connect(_aboutAction,&QAction::triggered,this,&MainWindow::aboutTriggered);
 }
 
 
@@ -257,6 +273,7 @@ void MainWindow::createMenus()
 
    // Add the settings and exit actions to the file menu. 
    file->addAction(_settingsAction);
+   file->addAction(_aboutAction);
    file->addAction(_exitAction);
 
    std::function<void(int)> dataCallback {std::bind(&MainWindow::openTriggered,this,std::placeholders::_1)};

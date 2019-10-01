@@ -30,3 +30,17 @@ void Ace::DefaultCustomizer::setupAnalyticMenu(QMenu &menu, QObject *parent, con
        menu.addAction(action);
     }
 }
+
+
+
+QString Ace::DefaultCustomizer::aboutTitle()
+{
+    return QStringLiteral("About ACE");
+}
+
+
+
+QString Ace::DefaultCustomizer::aboutRichText()
+{
+    return QStringLiteral("<p>ACE is a generic framework for creating GPU-accelerated applications.</p>");
+}
