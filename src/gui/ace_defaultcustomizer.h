@@ -12,6 +12,8 @@ namespace Ace
         virtual void setupAnalyticMenu(QMenu& menu, QObject* parent, const std::function<void(int)>& callback) override final;
         virtual QString aboutTitle() override final;
         virtual QString aboutRichText() override final;
+        virtual QPixmap splashImage() override final;
+        virtual QIcon icon() override final;
     };
 }
 

@@ -44,3 +44,17 @@ QString Ace::DefaultCustomizer::aboutRichText()
 {
     return QStringLiteral("<p>ACE is a generic framework for creating GPU-accelerated applications.</p>");
 }
+
+
+
+QPixmap Ace::DefaultCustomizer::splashImage()
+{
+    return QPixmap();
+}
+
+
+
+QIcon Ace::DefaultCustomizer::icon()
+{
+    return QIcon();
+}
