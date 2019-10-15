@@ -6,6 +6,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QIcon>
+#include <QCheckBox>
 #include "../core/ace_settings.h"
 #include "../core/cuda_device.h"
 #include "../core/opencl_platform.h"
@@ -105,6 +106,9 @@ void SettingsDialog::applyClicked()
    settings.setChunkDir(_chunkDirEdit->text());
    settings.setChunkPrefix(_chunkPrefixEdit->text());
    settings.setChunkExtension(_chunkExtensionEdit->text());
+
+   settings.setLoggingEnabled(_loggingEdit->isChecked());
+   settings.setLoggingPort(_loggingPortEdit->value());
 }
 
 
@@ -193,6 +197,13 @@ QLayout* SettingsDialog::createForm()
    _chunkExtensionEdit = new QLineEdit;
    _chunkExtensionEdit->setText(settings.chunkExtension());
 
+   _loggingEdit = new QCheckBox(tr("Enabled"));
+   _loggingEdit->setChecked(settings.loggingEnabled());
+   _loggingPortEdit = new QSpinBox;
+   _loggingPortEdit->setMinimum(0);
+   _loggingPortEdit->setMaximum(65535);
+   _loggingPortEdit->setValue(settings.loggingPort());
+
    // .
    QFormLayout* ret {new QFormLayout};
    ret->addRow(new QLabel(tr("CUDA Device:")),createCUDA());
@@ -202,6 +213,9 @@ QLayout* SettingsDialog::createForm()
    ret->addRow(new QLabel(tr("Chunk Working Directory:")),_chunkDirEdit);
    ret->addRow(new QLabel(tr("Chunk Prefix:")),_chunkPrefixEdit);
    ret->addRow(new QLabel(tr("Chunk Extension:")),_chunkExtensionEdit);
+
+   ret->addRow(new QLabel(tr("Logging:")),_loggingEdit);
+   ret->addRow(new QLabel(tr("Logging Port:")),_loggingPortEdit);
 
    // .
    return ret;
