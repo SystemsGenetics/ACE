@@ -36,6 +36,7 @@ namespace Ace
       void setChunkPre();
       void setChunkExt();
       void setLogging();
+      void setLogPort();
       void list();
       void listCUDA();
       void listOpenCL();

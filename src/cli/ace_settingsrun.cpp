@@ -58,6 +58,7 @@ void SettingsRun::execute()
       stream << "           Chunk Prefix: " << settings.chunkPrefix() << "\n";
       stream << "        Chunk Extension: " << settings.chunkExtension() << "\n";
       stream << "                Logging: " << ( settings.loggingEnabled() ? QStringLiteral("on") : QStringLiteral("off") ) << "\n";
+      stream << "           Logging Port: " << settings.loggingPort() << "\n";
    }
 
    // Else call the setting parser method to determine which command was given.
@@ -197,8 +198,8 @@ void SettingsRun::set()
    }
 
    // Create an enumeration and string list used to determine the command given.
-   enum {Unknown=-1,CUDACom,OpenCLCom,Threads,Buffer,ChunkDir,ChunkPre,ChunkExt,Logging};
-   QStringList list {"cuda","opencl","threads","buffer","chunkdir","chunkpre","chunkext","logging"};
+   enum {Unknown=-1,CUDACom,OpenCLCom,Threads,Buffer,ChunkDir,ChunkPre,ChunkExt,Logging,LogPort};
+   QStringList list {"cuda","opencl","threads","buffer","chunkdir","chunkpre","chunkext","logging","logport"};
 
    // Determine which setting is to be set by the command given, calling the
    // appropriate method and popping this object's first command argument.
@@ -229,6 +230,9 @@ void SettingsRun::set()
    case Logging:
       setLogging();
       break;
+   case LogPort:
+       setLogPort();
+       break;
    case Unknown:
       {
          // The set command is not known so throw an exception informing the user.
@@ -558,6 +562,38 @@ void SettingsRun::setLogging()
    // Set the state of logging to ACE global settings, using the on keyword to enable
    // it or disable it if the argument is any other string.
    Ace::Settings::instance().setLoggingEnabled(_command.first() == QStringLiteral("on"));
+}
+
+
+
+
+
+
+void SettingsRun::setLogPort()
+{
+    // Add the debug header.
+    EDEBUG_FUNC(this);
+
+    // Make sure there is a command argument to process.
+    if ( _command.size() < 1 )
+    {
+       E_MAKE_EXCEPTION(e);
+       e.setTitle(QObject::tr("Invalid argument"));
+       e.setDetails(QObject::tr("Settings set logport requires sub argument, exiting..."));
+       throw e;
+    }
+
+    bool ok;
+    int port {_command.first().toInt(&ok)};
+    if ( !ok || port < 0 || port > 65535 )
+    {
+       E_MAKE_EXCEPTION(e);
+       e.setTitle(QObject::tr("Invalid argument"));
+       e.setDetails(QObject::tr("Given logging port '%1' invalid, exiting...").arg(_command.first()));
+       throw e;
+    }
+
+    Ace::Settings::instance().setLoggingPort(port);
 }
 
 

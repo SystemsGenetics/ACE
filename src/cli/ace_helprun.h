@@ -44,6 +44,7 @@ namespace Ace
       void settingsSetChunkPreHelp();
       void settingsSetChunkExtHelp();
       void settingsSetLoggingHelp();
+      void settingsSetLogPortHelp();
       void settingsListHelp();
       /*!
        * The command arguments parsed out of the command line arguments of the main
