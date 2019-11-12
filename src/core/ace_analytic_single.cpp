@@ -152,6 +152,11 @@ void Single::process()
       // Increment the next work index by one.
       ++_nextWork;
    }
+
+   if ( analytic()->size() == 0 )
+   {
+       emit _runner->finished();
+   }
 }
 
 
