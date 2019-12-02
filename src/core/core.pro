@@ -1,7 +1,7 @@
 
 include(../ACE.pri)
 
-DESTDIR = $${PWD}/../../build/libs/
+DESTDIR = $${OUT_PWD}/../libs/
 TARGET = acecore
 
 TEMPLATE = lib

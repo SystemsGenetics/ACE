@@ -26,6 +26,7 @@ namespace CUDA
       Event execute(const Stream& stream = Stream::getDefaultStream());
    protected:
       int getAttribute(CUfunction_attribute attribute) const;
+      void setAttribute(CUfunction_attribute attribute, int value);
       void setSizes(dim3 globalSize, dim3 localSize);
       template<class T> void setArgument(int index, T value);
       template<class T> void setBuffer(int index, Buffer<T>* buffer);

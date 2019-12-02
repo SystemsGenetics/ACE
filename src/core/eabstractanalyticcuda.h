@@ -27,7 +27,6 @@ public:
    /*!
     * This interface initializes all CUDA resources used by this object's
     * implementation.
-    *
     */
    virtual void initialize() = 0;
 public:

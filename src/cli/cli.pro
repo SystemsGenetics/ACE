@@ -1,8 +1,8 @@
 
 include(../ACE.pri)
 
-DESTDIR = $$PWD/../../build/libs/
-TARGET = aceconsole
+DESTDIR = $$OUT_PWD/../libs/
+TARGET = acecli
 
 TEMPLATE = lib
 
@@ -26,6 +26,6 @@ HEADERS += \
 isEmpty(PREFIX) { PREFIX = /usr/local }
 library.path = $${PREFIX}/lib
 library.extra = cp -fd $${OUT_PWD}/../libs/lib$${TARGET}.so* $${PREFIX}/lib/
-includes.path = $${PREFIX}/include/ace/console
+includes.path = $${PREFIX}/include/ace/cli
 includes.files = $${PWD}/*.h
 INSTALLS += library includes

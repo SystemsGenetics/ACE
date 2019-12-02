@@ -543,7 +543,7 @@ void HelpRun::settingsHelp()
          stream << "Command: " << _runName << " settings [set|list|] ...\n"
                 << "Executes the settings command that accesses the persistent settings of this\n"
                 << "application. These settings are persistent across all instances of this\n"
-                << "application in both the console and GUI version. The basic command with no sub\n"
+                << "application in both the CLI and GUI version. The basic command with no sub\n"
                 << "arguments will simply print out the current value of all settings. The set sub\n"
                 << "command will set a specific setting to a new value. The list sub command will\n"
                 << "list valid values for certain settings.\n\n"
@@ -599,8 +599,8 @@ void HelpRun::settingsSetHelp()
 {
    // Initialize an enumeration and string list used to determine what setting set
    // command was given to get help on, if any.
-   enum {CUDA,OpenCL,Threads,Buffer,ChunkDir,ChunkPre,ChunkExt,Logging};
-   QStringList list {"cuda","opencl","threads","buffer","chunkdir","chunkpre","chunkext","logging"};
+   enum {CUDA,OpenCL,Threads,Buffer,ChunkDir,ChunkPre,ChunkExt,Logging,LogPort};
+   QStringList list {"cuda","opencl","threads","buffer","chunkdir","chunkpre","chunkext","logging","logport"};
 
    // Create an empty command string, setting it to this run's next command argument
    // is any exists.
@@ -637,6 +637,9 @@ void HelpRun::settingsSetHelp()
    case Logging:
       settingsSetLoggingHelp();
       break;
+   case LogPort:
+       settingsSetLogPortHelp();
+       break;
    default:
       {
          // If the setting set command was not recognized or was empty then print the basic
@@ -645,11 +648,12 @@ void HelpRun::settingsSetHelp()
          stream << "Command: " << _runName << " settings set <key> <value>\n"
                 << "Updates a persistent setting with the given key to the new given value.\n\n"
                 << "  key: The key of the setting that will be updated to a new value. Valid keys\n"
-                << "       are cuda, opencl, threads, buffer, chunkdir, chunkpre, chunkext, and\n"
-                << "       logging.\n\n"
+                << "       are cuda, opencl, threads, buffer, chunkdir, chunkpre, chunkext,\n"
+                << "       logging, and logport.\n\n"
                 << "value: The new value of the given setting.\n\n"
                 << "Help: " << _runName << " help settings set <key>\n"
-                << "Get help about a specific setting to set with the given key.\n\n";
+                << "Get help about a specific setting to set with the given key.\n\n"
+                << "Valid settings set keys:\n";
          break;
       }
    }
@@ -815,6 +819,20 @@ void HelpRun::settingsSetLoggingHelp()
           << "logging system can be accessed using the utility command acelog. If logging is\n"
           << "on then running an analytic will not start until a logging client has connected\n"
           << "to the application.\n\n";
+}
+
+
+
+
+
+
+void HelpRun::settingsSetLogPortHelp()
+{
+    QTextStream stream(stdout);
+    stream << "Command: " << _runName << " settings set logport <port>\n"
+           << "Updates the logging port setting. The logging port is the port number the ACE\n"
+           << "logging system listens on for logging client connections.\n\n"
+           << "port: The new port number.\n\n";
 }
 
 

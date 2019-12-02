@@ -25,6 +25,7 @@ namespace OpenCL
       virtual ~CommandQueue() override final;
       cl_command_queue id() const;
       Device* device() const;
+      void wait();
    private:
       /*!
        * The OpenCL command queue ID of this object.

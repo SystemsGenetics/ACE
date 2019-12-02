@@ -709,19 +709,8 @@ EDebug::EDebug(const char* function, const char* argumentNames)
    setupArguments(argumentNames);
 
    // Output the opening function string to the logging server if it is enabled.
-   QByteArray message(_stackDepth*3,' ');
-   message.append(function)
-          .append("\n")
-          .append(QByteArray(_stackDepth*3,' '))
-          .append("{");
-   Ace::LogServer* log {Ace::LogServer::log()};
-   if ( log )
-   {
-      log->broadcast(Ace::LogServer::Debug,_threadId,message);
-   }
 
    // Increment the stack depth for the new function.
-   ++_stackDepth;
 }
 
 
@@ -736,7 +725,6 @@ EDebug::EDebug(const char* function, const char* argumentNames)
 EDebug::~EDebug()
 {
    // Delete all argument name strings.
-   delete[] _argumentNames;
 
    // Decrement the stack depth, clamping it to 0 if it goes below that value.
    --_stackDepth;
@@ -746,7 +734,7 @@ EDebug::~EDebug()
    }
 
    // Output the closing function string to the logging server if it is enabled.
-   QByteArray message(_stackDepth*3,' ');
+   QByteArray message(_stackDepth*4,' ');
    message.append("}");
    Ace::LogServer* log {Ace::LogServer::log()};
    if ( log )
@@ -783,35 +771,18 @@ void EDebug::setArgument(int depth)
  */
 void EDebug::setupArguments(const char* argumentNames)
 {
+   QString temp(argumentNames);
+   _argumentNames = temp.split(QRegularExpression("[,\\s]+"));
    // Get the size of the input string, including the null terminator.
-   size_t size {strlen(argumentNames) + 1};
 
    // Create a new string of the same size for this object and copy over the given
    // argument string. This is done because the copied string is modified by
    // replacing each comma character with a null terminator. That along with a
    // pointer to each smaller string created within the larger one allows using a
    // single large string to contain all indexes argument names.
-   _argumentNames = new char[size];
-   memcpy(_argumentNames,argumentNames,size);
-
-   // Iterate through each character of the copied argument list string.
-   size_t last {0};
-   for (size_t i = 0; i < size ;++i)
-   {
-      // Check to see if this character is a comma or the final null terminator string.
-      if ( argumentNames[i] == ',' || argumentNames[i] == '\0' )
-      {
-         // Set the character to a null terminator, save the index of this argument name,
-         // and then set the next index value.
-         _argumentNames[i] = '\0';
-         _argumentIndexes << static_cast<int>(last);
-         last = i + 1;
-         Q_ASSERT(last < std::numeric_limits<int>::max());
-      }
-   }
 
    // Resize the argument value list to the size of the argument names index list.
-   _argumentValues.resize(_argumentIndexes.size());
+   _argumentValues.resize(_argumentNames.size());
 }
 
 
@@ -826,23 +797,31 @@ void EDebug::setupArguments(const char* argumentNames)
 void EDebug::dumpArguments()
 {
    // Initialize the message byte array.
-   QByteArray message;
+   QByteArray message(_stackDepth*4,' ');
+
+   QString function(_function);
+   function.resize(function.indexOf('(') + 1);
+   function = function.trimmed();
+   int index {function.lastIndexOf(' ')};
+   if ( index > 0 )
+   {
+      function = function.mid(index + 1);
+   }
+   message += function;
 
    // Iterate through all argument indexes.
-   for (int i = 0; i < _argumentIndexes.size() ;++i)
+   for (int i = 0; i < _argumentNames.size() ;++i)
    {
       // Append the argument name and value to the message byte array.
-      message.append(QByteArray(_stackDepth*3,' '))
-             .append(&_argumentNames[_argumentIndexes[i]])
-             .append(" = ")
-             .append(_argumentValues[i]);
+      message += _argumentNames[i] + QStringLiteral(" = ") + _argumentValues[i];
 
       // If this is not the last argument index append a new line to the message.
-      if ( i < (_argumentIndexes.size() - 1) )
+      if ( i < (_argumentNames.size() - 1) )
       {
-         message.append("\n");
+         message.append(", ");
       }
    }
+   message += QStringLiteral(") {");
 
    // If logging is enabled output the argument names and values message to the
    // logging server.
@@ -851,5 +830,6 @@ void EDebug::dumpArguments()
    {
       log->broadcast(Ace::LogServer::Debug,_threadId,message);
    }
+   ++_stackDepth;
 }
 

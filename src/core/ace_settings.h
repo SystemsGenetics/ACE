@@ -94,7 +94,7 @@ namespace Ace
       /*!
        * The default CUDA device index value.
        */
-      constexpr static int _cudaDeviceDefault {0};
+      constexpr static int _cudaDeviceDefault {-1};
       /*!
        * The default OpenCL platform index value.
        */

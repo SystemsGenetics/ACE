@@ -7,6 +7,7 @@
 class QComboBox;
 class QSpinBox;
 class QLineEdit;
+class QCheckBox;
 //
 
 
@@ -64,6 +65,8 @@ namespace Ace
        * The line edit for this dialog used to edit the chunk extension setting. 
        */
       QLineEdit* _chunkExtensionEdit;
+      QCheckBox* _loggingEdit;
+      QSpinBox* _loggingPortEdit;
    };
 }
 

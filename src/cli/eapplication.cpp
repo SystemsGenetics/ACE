@@ -185,7 +185,9 @@ int EApplication::exec()
             }
 
             // Start the analytic run.
-            return QCoreApplication::exec();
+            int ret {QCoreApplication::exec()};
+            Ace::QMPI::shutdown();
+            return ret;
          }
       case Dump:
          _command.pop();

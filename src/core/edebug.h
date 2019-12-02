@@ -6,7 +6,11 @@
 #include "eabstractanalytic.h"
 #include "ace_analytic_abstractmpi.h"
 #ifdef QT_DEBUG
+#ifdef EDEBUG
 #define EDEBUG_FUNC(...) EDebug debug(__PRETTY_FUNCTION__,#__VA_ARGS__); debug.setArguments(__VA_ARGS__);
+#else
+#define EDEBUG_FUNC(...)
+#endif
 #else
 #define EDEBUG_FUNC(...)
 #endif
@@ -120,12 +124,7 @@ private:
     * The list of argument names of the function this debug object is tracking. The
     * list is separated by null terminators within the string.
     */
-   char* _argumentNames {nullptr};
-   /*!
-    * The list of argument name indexes pointing to the position of each argument
-    * name within the argument names list for this debug object.
-    */
-   QVector<int> _argumentIndexes;
+   QStringList _argumentNames;
    /*!
     * List of argument values of the function this debug object is tracking.
     */

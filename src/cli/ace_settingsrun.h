@@ -12,7 +12,7 @@
 namespace Ace
 {
    /*!
-    * This handles the settings command for the console program of ACE. This class
+    * This handles the settings command for the CLI program of ACE. This class
     * only requires command argument be passed to it because it does not use
     * options at all. The majority of this class deals with parsing user input and
     * verifying its validity along with taking the current settings of ACE and
@@ -36,6 +36,7 @@ namespace Ace
       void setChunkPre();
       void setChunkExt();
       void setLogging();
+      void setLogPort();
       void list();
       void listCUDA();
       void listOpenCL();

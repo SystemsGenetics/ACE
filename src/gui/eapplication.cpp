@@ -1,11 +1,14 @@
 #include "eapplication.h"
 #include <QMessageBox>
+#include <QSplashScreen>
+#include <QWindow>
 #include "../core/ace_settings.h"
 #include "../core/eabstractdatafactory.h"
 #include "../core/eabstractanalyticfactory.h"
 #include "../core/eexception.h"
 #include "ace_mainwindow.h"
 #include "ace_analyticthread.h"
+#include "eabstractcustomizer.h"
 
 
 
@@ -40,7 +43,15 @@
  *
  * @param argv The command line arguments passed from the main function. 
  */
-EApplication::EApplication(const QString& organization, const QString& application, int majorVersion, int minorVersion, int revision, std::unique_ptr<EAbstractDataFactory>&& data, std::unique_ptr<EAbstractAnalyticFactory>&& analytic, int& argc, char** argv):
+EApplication::EApplication(const QString& organization
+                           ,const QString& application
+                           ,int majorVersion
+                           ,int minorVersion
+                           ,int revision
+                           ,std::unique_ptr<EAbstractDataFactory>&& data
+                           ,std::unique_ptr<EAbstractAnalyticFactory>&& analytic
+                           ,int& argc
+                           ,char** argv):
    QApplication(argc,argv)
 {
    try
@@ -51,9 +62,26 @@ EApplication::EApplication(const QString& organization, const QString& applicati
       EAbstractAnalyticFactory::setInstance(std::move(analytic));
 
       // .
+      auto splashImage {EAbstractCustomizer::instance().splashImage()};
+      auto icon {EAbstractCustomizer::instance().icon()};
+      QSplashScreen splash(splashImage);
+      if ( !splashImage.isNull() )
+      {
+          splash.show();
+          for (int i = 0; i < 1000 ;++i)
+          {
+              QThread::msleep(1);
+              processEvents();
+          }
+      }
       Ace::MainWindow& window {Ace::MainWindow::instance()};
+      if ( !icon.isNull() )
+      {
+          window.setWindowIcon(icon);
+      }
       window.setWindowTitle(application);
       window.show();
+      splash.finish(&window);
    }
 
    // .
@@ -88,7 +116,8 @@ EApplication::EApplication(const QString& organization, const QString& applicati
  *
  * @param event The qt event itself. 
  */
-bool EApplication::notify(QObject* receiver, QEvent* event)
+bool EApplication::notify(QObject* receiver
+                          ,QEvent* event)
 {
    try
    {

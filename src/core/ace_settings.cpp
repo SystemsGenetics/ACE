@@ -45,7 +45,7 @@ const char* Settings::_chunkPrefixDefault {"chunk"};
 const char* Settings::_chunkExtensionDefault {"abd"};
 /*!
  */
-const bool Settings::_loggingEnabledDefault {true};
+const bool Settings::_loggingEnabledDefault {false};
 /*!
  */
 const int Settings::_loggingPortDefault {40000};

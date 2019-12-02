@@ -5,6 +5,7 @@
 #include <QFileDialog>
 #include <QCloseEvent>
 #include <QSettings>
+#include <QMessageBox>
 #include "../core/eabstractdatafactory.h"
 #include "../core/eabstractanalyticfactory.h"
 #include "../core/ace_analytic_abstractmanager.h"
@@ -14,6 +15,7 @@
 #include "ace_settingsdialog.h"
 #include "ace_setupanalyticdialog.h"
 #include "ace_analyticdialog.h"
+#include "eabstractcustomizer.h"
 
 
 
@@ -201,6 +203,17 @@ void MainWindow::settingsTriggered()
 
 
 
+void MainWindow::aboutTriggered()
+{
+    auto& customizer {EAbstractCustomizer::instance()};
+    QMessageBox::about(this,customizer.aboutTitle(),customizer.aboutRichText());
+}
+
+
+
+
+
+
 /*!
  * Constructs a new main window instance. This is private because only the instance 
  * static method should ever create a main window. 
@@ -229,22 +242,6 @@ MainWindow::MainWindow()
  */
 void MainWindow::createActions()
 {
-   // Create a list of actions for all possible data object types that can be opened. 
-   EAbstractDataFactory& dataFactory {EAbstractDataFactory::instance()};
-   for (quint16 i = 0; i < dataFactory.size() ;++i)
-   {
-      _openActions.append(new QAction(dataFactory.name(i),this));
-      connect(_openActions.back(),&QAction::triggered,[this,i]{ openTriggered(i); });
-   }
-
-   // Create a list of actions for all possible analytic types that can be executed. 
-   EAbstractAnalyticFactory& analyticFactory {EAbstractAnalyticFactory::instance()};
-   for (quint16 i = 0; i < analyticFactory.size() ;++i)
-   {
-      _runActions.append(new QAction(analyticFactory.name(i),this));
-      connect(_runActions.back(),&QAction::triggered,[this,i]{ runTriggered(i); });
-   }
-
    // Create and initialize the settings action. 
    _settingsAction = new QAction(tr("&Settings"),this);
    _settingsAction->setStatusTip(tr("Open the application settings dialog."));
@@ -255,6 +252,10 @@ void MainWindow::createActions()
    _exitAction->setShortcut(QKeySequence::Quit);
    _exitAction->setStatusTip(tr("Exit the application."));
    connect(_exitAction,&QAction::triggered,this,&QMainWindow::close);
+
+   _aboutAction = new QAction(tr("&About"),this);
+   _aboutAction->setStatusTip(tr("About ACE."));
+   connect(_aboutAction,&QAction::triggered,this,&MainWindow::aboutTriggered);
 }
 
 
@@ -272,21 +273,18 @@ void MainWindow::createMenus()
 
    // Add the settings and exit actions to the file menu. 
    file->addAction(_settingsAction);
+   file->addAction(_aboutAction);
    file->addAction(_exitAction);
 
-   // Create the open menu, adding the list of open data type actions to it. 
+   std::function<void(int)> dataCallback {std::bind(&MainWindow::openTriggered,this,std::placeholders::_1)};
+   std::function<void(int)> analyticCallback {std::bind(&MainWindow::runTriggered,this,std::placeholders::_1)};
+   // Create the open menu, adding the list of open data type actions to it.
    QMenu* data {menuBar()->addMenu(tr("&Open"))};
-   for (auto action: _openActions)
-   {
-      data->addAction(action);
-   }
+   EAbstractCustomizer::instance().setupDataMenu(*data,this,dataCallback);
 
    // Create the execute menu, adding the list of analytic types to it. 
    QMenu* analytic {menuBar()->addMenu(tr("&Execute"))};
-   for (auto action: _runActions)
-   {
-      analytic->addAction(action);
-   }
+   EAbstractCustomizer::instance().setupAnalyticMenu(*analytic,this,analyticCallback);
 }
 
 

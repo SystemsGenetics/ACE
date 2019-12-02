@@ -76,7 +76,7 @@ CUDARun::CUDARun(EAbstractAnalyticCUDA* cuda, CUDA::Device* device, AbstractInpu
    // Add the debug header.
    EDEBUG_FUNC(this,cuda,device,base,parent);
 
-   // Initialize the given abstract CUDA object. 
+   // Initialize the given abstract CUDA object.
    cuda->initialize();
 
    // Iterate through the number of OpenCL threads this run object contains,

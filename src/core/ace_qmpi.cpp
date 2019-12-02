@@ -78,6 +78,7 @@ void QMPI::shutdown()
    {
       delete _instance;
       _hasShutdown = true;
+      _instance = nullptr;
    }
 }
 

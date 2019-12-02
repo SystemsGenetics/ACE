@@ -159,6 +159,13 @@ void Chunk::saveResult(std::unique_ptr<EAbstractAnalyticBlock>&& result)
                    .arg(_file->errorString()));
       throw e;
    }
+
+   int percentComplete {static_cast<int>(static_cast<qint64>(_nextResult - _begin)*100/(_end - _begin))};
+   if ( percentComplete != _percentComplete )
+   {
+      _percentComplete = percentComplete;
+      emit progressed(_percentComplete);
+   }
 }
 
 
@@ -207,7 +214,13 @@ void Chunk::start()
  */
 void Chunk::process()
 {
-   EDEBUG_FUNC(this)
+   EDEBUG_FUNC(this);
+
+   if ( _nextWork >= _end )
+   {
+      emit _runner->finished();
+      return;
+   }
 
    // While this manager still has work block indexes to process make the next work
    // block and add it to this manager's abstract run object.
@@ -275,9 +288,10 @@ void Chunk::setupIndexes()
    // then determine the first next work index and the end index for this chunk
    // manager.
    int chunkSize {analytic()->size()/_size + ( analytic()->size()%_size ? 1 : 0)};
-   _nextWork = _nextResult = _index*chunkSize;
+   _begin = _nextWork = _nextResult = _index*chunkSize;
    _end = (_index + 1)*chunkSize;
    _end = _end > analytic()->size() ? analytic()->size() : _end;
+   _percentComplete = 0;
 }
 
 
