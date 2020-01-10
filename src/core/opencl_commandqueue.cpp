@@ -6,59 +6,42 @@
 #include "eexception.h"
 #include "edebug.h"
 
-
-
 namespace OpenCL
 {
 
 
 
 
-
-
-/*!
- * Constructs a new command queue with the given context, device, and optional
- * parent. If the given device is not part of the given context then an
- * exception is thrown.
- *
- * @param context Pointer to context this command queue is created from.
- *
- * @param device Pointer to device this command queue is created from.
- *
- * @param parent Optional parent for this new command queue.
- */
-CommandQueue::CommandQueue(Context* context, Device* device, QObject* parent)
-   :
-   QObject(parent),
-   _device(device)
+CommandQueue::CommandQueue(
+    Context* context
+    ,Device* device
+    ,QObject* parent
+)
+    :
+    QObject(parent),
+    _device(device)
 {
-   // Add the debug header.
-   EDEBUG_FUNC(this,context,device,parent);
-
-   // Create a new OpenCL command queue with the given context and device, setting it
-   // to out of order execution and saving the new ID to this object. If creation
-   // fails then throw an exception.
-   cl_int code;
-   _id = clCreateCommandQueue(context->id()
-                              ,device->id()
-                              ,CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE
-                              ,&code);
-   if ( code != CL_SUCCESS )
-   {
-      E_MAKE_EXCEPTION(e);
-      fillException(&e,code);
-      throw e;
-   }
+    EDEBUG_FUNC(this,context,device,parent);
+    cl_int code;
+    _id = (
+        clCreateCommandQueue(
+            context->id()
+            ,device->id()
+            ,CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE
+            ,&code
+        )
+    );
+    if (code!=CL_SUCCESS)
+    {
+        E_MAKE_EXCEPTION(e);
+        fillException(&e,code);
+        throw e;
+    }
 }
 
 
 
 
-
-
-/*!
- * Releases the underlying OpenCL command queue resource.
- */
 CommandQueue::~CommandQueue()
 {
    EDEBUG_FUNC(this);
@@ -68,13 +51,6 @@ CommandQueue::~CommandQueue()
 
 
 
-
-
-/*!
- * Returns the OpenCL command queue ID of this object.
- *
- * @return OpenCL command queue ID of this object.
- */
 cl_command_queue CommandQueue::id() const
 {
    EDEBUG_FUNC(this);
@@ -84,13 +60,6 @@ cl_command_queue CommandQueue::id() const
 
 
 
-
-
-/*!
- * Returns a pointer to the device that this command queue uses.
- *
- * @return Pointer to device for this command queue.
- */
 Device* CommandQueue::device() const
 {
    EDEBUG_FUNC(this);
@@ -100,29 +69,18 @@ Device* CommandQueue::device() const
 
 
 
-
-
-/*!
- * Blocks until all previous commands added to this command queue are done.
- */
 void CommandQueue::wait()
 {
-   // Add the debug header.
    EDEBUG_FUNC(this);
-
-   // Add a marker command to this command queue, getting the event id associated
-   // with it and making sure it worked.
    cl_int code;
    cl_event id;
    code = clEnqueueMarkerWithWaitList(_id,0,nullptr,&id);
-   if ( code != CL_SUCCESS )
+   if (code!=CL_SUCCESS)
    {
       E_MAKE_EXCEPTION(e);
       fillException(&e,code);
       throw e;
    }
-
-   // Create a new event with the returned id and wait until it is done.
    Event event(id);
    event.wait();
 }
