@@ -444,7 +444,33 @@ const T& Buffer<T>::at(
 ) const
 {
     EDEBUG_FUNC(this,index);
-    return (*this)[index];
+    if (!_data)
+    {
+        E_MAKE_EXCEPTION(e);
+        e.setTitle(QObject::tr("Logic Error"));
+        e.setDetails(QObject::tr("Cannot access data from unmapped OpenCL buffer."));
+        throw e;
+    }
+    if (_mapping!=CL_MAP_READ)
+    {
+        E_MAKE_EXCEPTION(e);
+        e.setTitle(QObject::tr("Logic Error"));
+        e.setDetails(QObject::tr("Cannot read data from OpenCL buffer mapped for writing."));
+        throw e;
+    }
+    if ( index<0 || index>=_size )
+    {
+        E_MAKE_EXCEPTION(e);
+        e.setTitle(QObject::tr("Out Of Range"));
+        e.setDetails(
+            (QObject::tr("The index %1 is out of range for this OpenCL buffer (%2 size).")
+                .arg(index)
+                .arg(_size)
+            )
+        );
+        throw e;
+    }
+    return _data[index];
 }
 
 
@@ -698,9 +724,9 @@ Event Buffer<T>::map(
     );
     if (code!=CL_SUCCESS)
     {
-    E_MAKE_EXCEPTION(e);
-    fillException(&e,code);
-    throw e;
+        E_MAKE_EXCEPTION(e);
+        fillException(&e,code);
+        throw e;
     }
     _last = queue->id();
     code = clRetainCommandQueue(_last);
