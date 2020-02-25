@@ -53,10 +53,10 @@ MathTransform::CUDA::Kernel::Kernel(::CUDA::Program* program):
    // Set the work sizes. The global work size is determined by the row size, but
    // it must also be a multiple of the local work size, so it is rounded up
    // accordingly.
-   int localWorkSize = 1;
-   int workgroupSize = (buffer->size() + localWorkSize - 1) / localWorkSize;
+   int blockSize = 1;
+   int gridSize = (buffer->size() + blockSize - 1) / blockSize;
 
-   setSizes(workgroupSize * localWorkSize, localWorkSize);
+   setSizes(gridSize, blockSize);
 
    // Execute this object's CUDA kernel with the given stream, returning its 
    // generated CUDA event. 
