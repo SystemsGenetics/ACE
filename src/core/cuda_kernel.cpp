@@ -172,7 +172,7 @@ void Kernel::setSharedMemory(unsigned int size)
  *
  * @param blockSize Number of threads per block.
  */
-int Kernel::getMaxActiveBlocksPerMultiprocessor(int blockSize)
+int Kernel::getMaxActiveBlocksPerMultiprocessor(int blockSize) const
 {
    int numBlocks;
    CUresult result = cuOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocks, _kernel, blockSize, _sharedMemBytes);
