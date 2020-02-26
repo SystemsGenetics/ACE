@@ -146,3 +146,41 @@ void Kernel::setSizes(dim3 globalSize, dim3 localSize)
    _gridDim = globalSize;
    _blockDim = localSize;
 }
+
+
+
+
+
+
+/*!
+ * Sets the amount of dynamic shared memory per thread block to allocate.
+ *
+ * @param size Dynamic shared memory size per thread block in bytes.
+ */
+void Kernel::setSharedMemory(unsigned int size)
+{
+   _sharedMemBytes = size;
+}
+
+
+
+
+
+
+/*!
+ * Get the occupancy of this kernel for a given block size.
+ *
+ * @param blockSize Number of threads per block.
+ */
+int Kernel::getMaxActiveBlocksPerMultiprocessor(int blockSize)
+{
+   int numBlocks;
+   CUresult result = cuOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocks, _kernel, blockSize, _sharedMemBytes);
+   if ( result != CUDA_SUCCESS )
+   {
+      E_MAKE_EXCEPTION(e);
+      throwError(&e,result);
+   }
+
+   return numBlocks;
+}

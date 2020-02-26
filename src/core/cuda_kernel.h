@@ -30,7 +30,8 @@ namespace CUDA
       void setSizes(dim3 globalSize, dim3 localSize);
       template<class T> void setArgument(int index, T value);
       template<class T> void setBuffer(int index, Buffer<T>* buffer);
-      void setSharedMemory(unsigned int size) { _sharedMemBytes = size; }
+      void setSharedMemory(unsigned int size);
+      int getMaxActiveBlocksPerMultiprocessor(int blockSize);
    private:
       /*!
        * The CUDA kernel of this object.
