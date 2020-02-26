@@ -24,7 +24,6 @@ namespace CUDA
       Kernel(Program* program, const QString& name);
       virtual ~Kernel() {};
       Event execute(const Stream& stream = Stream::getDefaultStream());
-      int getMaxActiveBlocksPerMultiprocessor(int blockSize) const;
    protected:
       int getAttribute(CUfunction_attribute attribute) const;
       void setAttribute(CUfunction_attribute attribute, int value);
@@ -32,6 +31,7 @@ namespace CUDA
       template<class T> void setArgument(int index, T value);
       template<class T> void setBuffer(int index, Buffer<T>* buffer);
       void setSharedMemory(unsigned int size);
+      int getMaxActiveBlocksPerMultiprocessor(int blockSize) const;
    private:
       /*!
        * The CUDA kernel of this object.
