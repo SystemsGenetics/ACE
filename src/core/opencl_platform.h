@@ -201,6 +201,12 @@ private:
 
 
     /*!
+     * OpenCL platform ID for this platform.
+     */
+    cl_platform_id __id;
+
+
+    /*!
      * Pointer list of OpenCL devices this platform provides on this system.
      */
     QList<Device*> _devices;
@@ -210,12 +216,6 @@ private:
      * OpenCL extensions supported by this platform.
      */
     QStringList _extensions;
-
-
-    /*!
-     * OpenCL platform ID for this platform.
-     */
-    cl_platform_id _id;
 
 
     /*!

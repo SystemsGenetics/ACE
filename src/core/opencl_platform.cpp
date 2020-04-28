@@ -93,7 +93,7 @@ QStringList Platform::extensions() const
 cl_platform_id Platform::id() const
 {
     EDEBUG_FUNC(this);
-    return _id;
+    return __id;
 }
 
 
@@ -171,8 +171,8 @@ Platform::Platform(
 )
 :
     QObject(parent)
+    ,__id(id)
     ,_extensions(getInfo(CL_PLATFORM_EXTENSIONS).split(' '))
-    ,_id(id)
     ,_name(getInfo(CL_PLATFORM_NAME))
     ,_profile(getInfo(CL_PLATFORM_PROFILE))
     ,_vendor(getInfo(CL_PLATFORM_VENDOR))
@@ -191,7 +191,7 @@ QString Platform::getInfo(
 {
     EDEBUG_FUNC(this,type);
     size_t rawSize;
-    cl_int code {clGetPlatformInfo(_id,type,0,nullptr,&rawSize)};
+    cl_int code {clGetPlatformInfo(__id,type,0,nullptr,&rawSize)};
     if (code!=CL_SUCCESS)
     {
         E_MAKE_EXCEPTION(e);
@@ -201,7 +201,7 @@ QString Platform::getInfo(
     Q_ASSERT(rawSize < std::numeric_limits<int>::max());
     int size {static_cast<int>(rawSize)};
     QByteArray info(size,'\0');
-    code = clGetPlatformInfo(_id,type,rawSize,info.data(),nullptr);
+    code = clGetPlatformInfo(__id,type,rawSize,info.data(),nullptr);
     if (code!=CL_SUCCESS)
     {
         E_MAKE_EXCEPTION(e);
@@ -218,7 +218,7 @@ void Platform::populateDevices()
 {
     EDEBUG_FUNC(this);
     cl_uint rawSize;
-    cl_int code {clGetDeviceIDs(_id,CL_DEVICE_TYPE_ALL,0,nullptr,&rawSize)};
+    cl_int code {clGetDeviceIDs(__id,CL_DEVICE_TYPE_ALL,0,nullptr,&rawSize)};
     if (code!=CL_SUCCESS)
     {
         E_MAKE_EXCEPTION(e);
@@ -228,7 +228,7 @@ void Platform::populateDevices()
     Q_ASSERT(rawSize < std::numeric_limits<int>::max());
     int size {static_cast<int>(rawSize)};
     QVector<cl_device_id> devices(size);
-    code = clGetDeviceIDs(_id,CL_DEVICE_TYPE_ALL,rawSize,devices.data(),nullptr);
+    code = clGetDeviceIDs(__id,CL_DEVICE_TYPE_ALL,rawSize,devices.data(),nullptr);
     if (code!=CL_SUCCESS)
     {
         E_MAKE_EXCEPTION(e);
