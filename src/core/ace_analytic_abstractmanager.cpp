@@ -13,6 +13,7 @@
 #include "eexception.h"
 #include "eabstractanalyticblock.h"
 #include "edebug.h"
+#include <limits>
 
 
 

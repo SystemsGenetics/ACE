@@ -1,5 +1,6 @@
 #include "eapplication.h"
 #include <QTextStream>
+#include <exception>
 #include "../core/ace_settings.h"
 #include "../core/ace_dataobject.h"
 #include "../core/eabstractdatafactory.h"
@@ -48,7 +49,12 @@ bool EApplication::notify(QObject* receiver, QEvent* event)
    }
    catch (...)
    {
-      qDebug() << tr("Unknown exception caught!\n");
+      qDebug() << tr("Unknown exception caught in notify()!\n");
+      qDebug() << tr("Receiver: %1\n").arg(receiver ? receiver->metaObject()->className() : "null");
+      qDebug() << tr("Event type: %1\n").arg(event ? event->type() : -1);
+      try { std::rethrow_exception(std::current_exception()); }
+      catch (const std::exception& e) { qDebug() << tr("Rethrown as std::exception: %1\n").arg(e.what()); }
+      catch (...) { qDebug() << tr("Could not identify exception type\n"); }
    }
    std::exit(-1);
 }
@@ -108,12 +114,15 @@ EApplication::EApplication(const QString& organization, const QString& applicati
    }
    catch (std::exception& e)
    {
-      qDebug() << tr("STD exception %1 caught!\n").arg(e.what());
+      qDebug() << tr("STD exception %1 caught in constructor!\n").arg(e.what());
       ::exit(-1);
    }
    catch (...)
    {
-      qDebug() << tr("Unknown exception caught!\n");
+      qDebug() << tr("Unknown exception caught in EApplication constructor!\n");
+      try { std::rethrow_exception(std::current_exception()); }
+      catch (const std::exception& e) { qDebug() << tr("Rethrown as std::exception: %1\n").arg(e.what()); }
+      catch (...) { qDebug() << tr("Could not identify exception type\n"); }
       ::exit(-1);
    }
 }
@@ -217,11 +226,14 @@ int EApplication::exec()
    }
    catch (std::exception& e)
    {
-      qDebug() << tr("STD exception %1 caught!\n").arg(e.what());
+      qDebug() << tr("STD exception %1 caught in exec()!\n").arg(e.what());
    }
    catch (...)
    {
-      qDebug() << tr("Unknown exception caught!\n");
+      qDebug() << tr("Unknown exception caught in EApplication::exec()!\n");
+      try { std::rethrow_exception(std::current_exception()); }
+      catch (const std::exception& e) { qDebug() << tr("Rethrown as std::exception: %1\n").arg(e.what()); }
+      catch (...) { qDebug() << tr("Could not identify exception type\n"); }
    }
    return -1;
 }

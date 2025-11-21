@@ -2,6 +2,7 @@
 #include <QHostInfo>
 #include <QTcpServer>
 #include <QTcpSocket>
+#include <limits>
 #include "eexception.h"
 #include "ace_qmpi.h"
 #include "ace_settings.h"

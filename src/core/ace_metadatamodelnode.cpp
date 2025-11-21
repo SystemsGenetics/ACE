@@ -1,6 +1,7 @@
 #include "ace_metadatamodelnode.h"
 #include "eexception.h"
 #include "edebug.h"
+#include <limits>
 
 
 

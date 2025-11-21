@@ -2,6 +2,7 @@
 #include "opencl_context.h"
 #include "opencl_device.h"
 #include "opencl.h"
+#include <cstring>
 #include "eexception.h"
 #include "edebug.h"
 

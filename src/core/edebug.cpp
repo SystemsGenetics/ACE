@@ -1,5 +1,5 @@
 #include "edebug.h"
-#include <string.h>
+#include <cstring>
 #include <QTextStream>
 #include "emetadata.h"
 #include "eexception.h"
